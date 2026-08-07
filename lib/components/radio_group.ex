@@ -231,18 +231,18 @@ defmodule Corex.RadioGroup do
   end
   ```
 
-  ### Stream
+  ### Dynamic items
 
-  Use `Phoenix.LiveView.stream/3` to add or remove items at runtime. Keep `@items_list` in sync with the stream and pass it as `items`. Configure `dom_id` to match each item (`radio-group:stream-radio-group:item:#{value}`).
+  Grow or shrink options at runtime by updating a list assign and passing it as `items`. Radio group items are rebuilt from props after morph (not a LiveView stream consumer); use `Phoenix.LiveView.stream/3` only with components that render `@streams.*` (for example `data_table`).
 
   ```heex
   <.radio_group
-    name="stream-rg"
+    name="dynamic-rg"
     class="radio-group"
-    items={@items_list}
-    value={@stream_value}
+    items={@items}
+    value={@value}
     controlled
-    on_value_change="patterns_stream_value"
+    on_value_change="patterns_dynamic_value"
   >
     <:label>Choose one</:label>
     <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -295,17 +295,17 @@ defmodule Corex.RadioGroup do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group ui-accent ui-size-lg` or `radio-group ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on item controls. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `radio-group ui-solid` for a filled checked state.
+  Semantic modifiers set the checked item-control fill and indicator ink. Unchecked stays a neutral circle; checked uses the semantic fill with on-color ink. Radio group has no variant axis.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for control ink and fill. Does not change surface treatment by itself.
+  Palette for the checked item-control fill and indicator ink.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -315,15 +315,6 @@ defmodule Corex.RadioGroup do
   | Alert | `radio-group ui-alert` |
   | Info | `radio-group ui-info` |
   | Success | `radio-group ui-success` |
-
-  ### Variant
-
-  Visual treatment of item controls. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `radio-group` or `radio-group ui-accent` |
-  | Solid | `radio-group ui-accent ui-solid` |
 
   ### Size
 
@@ -341,12 +332,13 @@ defmodule Corex.RadioGroup do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, [:api, :form]
+
   import Corex.Api.Doc
 
   alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [respond_to_fields: 1]
+  alias Phoenix.LiveView.JS
 
   alias Corex.RadioGroup.Anatomy.{
     Indicator,
@@ -362,21 +354,15 @@ defmodule Corex.RadioGroup do
 
   alias Corex.RadioGroup.Connect
 
-  attr(:id, :string, required: false)
-  attr(:value, :string, default: nil)
-  attr(:controlled, :boolean, default: false)
-  attr(:name, :string, default: nil)
-  attr(:form, :string, default: nil)
-  attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: nil)
+  alias Corex.Selectors
 
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
+  form_control_attrs(
+    docs: [
+      field: "A form field, e.g. f[:choice] or @form[:choice]"
+    ]
   )
 
-  attr(:required, :boolean, default: false)
-  attr(:read_only, :boolean, default: false)
+  attr(:value, :string, default: nil)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:on_value_change, :string, default: nil)
@@ -388,8 +374,6 @@ defmodule Corex.RadioGroup do
   )
 
   attr(:errors, :list, default: [], doc: "Error messages to display (non-field API)")
-  attr(:field, Phoenix.HTML.FormField, doc: "A form field, e.g. f[:choice] or @form[:choice]")
-
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -409,11 +393,9 @@ defmodule Corex.RadioGroup do
   end
 
   def radio_group(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    v = if field.value in [nil, ""], do: nil, else: to_string(field.value)
-
     assigns
     |> Corex.FormField.assign_form_field(field)
-    |> assign(:value, v)
+    |> assign(:value, radio_field_value(field.value))
     |> assign(:form_field, true)
     |> do_radio_group()
   end
@@ -423,6 +405,9 @@ defmodule Corex.RadioGroup do
     |> assign_new(:form_field, fn -> false end)
     |> do_radio_group()
   end
+
+  defp radio_field_value(value) when value in [nil, ""], do: nil
+  defp radio_field_value(value), do: to_string(value)
 
   defp do_radio_group(assigns) do
     assigns =
@@ -436,8 +421,7 @@ defmodule Corex.RadioGroup do
     <div
       id={@id}
       phx-hook="RadioGroup"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -458,25 +442,16 @@ defmodule Corex.RadioGroup do
     >
       <input
         :if={@form_field}
-        phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
-        {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.mounted_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
         name={@name}
         value={@value || ""}
       />
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != [], read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != [], read_only: @read_only})}>
-        <div :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != [], read_only: @read_only})}>
+        <div :if={@label != []} {Connect.mounted_label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </div>
-        <div phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})} {Connect.indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})} />
-        <label :if={@item == []} :for={entry <- @items} phx-mounted={Connect.ignore_item(%Item{
-          id: @id,
-          value: entry.value,
-          disabled: entry.disabled,
-          invalid: entry.invalid,
-          checked: @value == entry.value,
-          dir: @dir,
-          orientation: @orientation
-        })} {Connect.item(%Item{
+        <div {Connect.mounted_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})} />
+        <label :if={@item == []} :for={entry <- @items} {Connect.mounted_item(%Item{
           id: @id,
           value: entry.value,
           disabled: entry.disabled,
@@ -485,21 +460,11 @@ defmodule Corex.RadioGroup do
           dir: @dir,
           orientation: @orientation
         })}>
-          <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, dir: @dir, orientation: @orientation})}>{entry.label}</span>
-          <div phx-mounted={Connect.ignore_item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value, dir: @dir, orientation: @orientation})} {Connect.item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value, dir: @dir, orientation: @orientation})}>
+          <span {Connect.mounted_item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, dir: @dir, orientation: @orientation})}>{entry.label}</span>
+          <div {Connect.mounted_item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value, dir: @dir, orientation: @orientation})}>
             {render_slot(@item_control)}
           </div>
-          <input phx-mounted={Connect.ignore_item_hidden_input(%ItemHiddenInput{
-            id: @id,
-            value: entry.value,
-            disabled: entry.disabled,
-            invalid: entry.invalid,
-            name: if(@form_field, do: nil, else: @name),
-            form: @form,
-            checked: @value == entry.value,
-            dir: @dir,
-            orientation: @orientation
-          })} {Connect.item_hidden_input(%ItemHiddenInput{
+          <input {Connect.mounted_item_hidden_input(%ItemHiddenInput{
             id: @id,
             value: entry.value,
             disabled: entry.disabled,
@@ -511,15 +476,7 @@ defmodule Corex.RadioGroup do
             orientation: @orientation
           })} />
         </label>
-        <label :if={@item != []} :for={{entry, item_slot} <- Enum.zip(@items, @item || [])} phx-mounted={Connect.ignore_item(%Item{
-          id: @id,
-          value: entry.value,
-          disabled: entry.disabled,
-          invalid: entry.invalid,
-          checked: @value == entry.value,
-          dir: @dir,
-          orientation: @orientation
-        })} {Connect.item(%Item{
+        <label :if={@item != []} :for={{entry, item_slot} <- Enum.zip(@items, @item || [])} {Connect.mounted_item(%Item{
           id: @id,
           value: entry.value,
           disabled: entry.disabled,
@@ -537,14 +494,7 @@ defmodule Corex.RadioGroup do
           })}
         </label>
       </div>
-      <div
-        :if={@error != [] and !Enum.empty?(@errors)}
-        :for={msg <- @errors}
-        data-scope="radio-group"
-        data-part="error"
-      >
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="radio-group" errors={@errors} error={@error} />
     </div>
     """
   end
@@ -591,9 +541,12 @@ defmodule Corex.RadioGroup do
   ```
   """)
 
+  @spec set_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(radio_group_id, value) when is_binary(radio_group_id) and is_binary(value) do
     JS.dispatch("corex:radio-group:set-value",
-      to: "##{radio_group_id}",
+      to: Selectors.css_id(radio_group_id),
       detail: %{value: value},
       bubbles: false
     )
@@ -625,9 +578,11 @@ defmodule Corex.RadioGroup do
   ```
   """)
 
+  @spec clear_value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_value(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear_value(radio_group_id) when is_binary(radio_group_id) do
     JS.dispatch("corex:radio-group:clear-value",
-      to: "##{radio_group_id}",
+      to: Selectors.css_id(radio_group_id),
       bubbles: false
     )
   end
@@ -658,8 +613,10 @@ defmodule Corex.RadioGroup do
   ```
   """)
 
+  @spec focus(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec focus(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def focus(radio_group_id) when is_binary(radio_group_id) do
-    JS.dispatch("corex:radio-group:focus", to: "##{radio_group_id}", bubbles: false)
+    JS.dispatch("corex:radio-group:focus", to: Selectors.css_id(radio_group_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -699,9 +656,12 @@ defmodule Corex.RadioGroup do
   ```
   """)
 
+  @spec value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def value(radio_group_id, opts) when is_binary(radio_group_id) and is_list(opts) do
     JS.dispatch("corex:radio-group:value",
-      to: "##{radio_group_id}",
+      to: Selectors.css_id(radio_group_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )
@@ -712,7 +672,7 @@ defmodule Corex.RadioGroup do
     value(socket, radio_group_id, [])
   end
 
-  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
+  api_doc("Same as [`value/2`](#value/2) with default `respond_to:`.")
   def value(radio_group_id) when is_binary(radio_group_id), do: value(radio_group_id, [])
 
   api_doc(~S"""

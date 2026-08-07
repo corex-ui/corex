@@ -70,29 +70,7 @@ defmodule E2eWeb.UserController do
     end
   end
 
-  defp normalize_avatar_params(params) when is_map(params) do
-    case Map.get(params, "avatar") do
-      %Plug.Upload{filename: name} when is_binary(name) and name != "" ->
-        Map.put(params, "avatar", name)
-
-      _ ->
-        case Map.get(params, "avatar_label") do
-          label when is_binary(label) ->
-            trimmed = String.trim(label)
-
-            if trimmed != "" do
-              Map.put(params, "avatar", trimmed)
-            else
-              params
-            end
-
-          _ ->
-            params
-        end
-    end
-  end
-
-  defp normalize_avatar_params(params), do: params
+  defp normalize_avatar_params(params), do: E2e.Form.AvatarParams.normalize(params)
 
   def delete(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)

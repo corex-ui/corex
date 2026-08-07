@@ -13,17 +13,17 @@ defmodule E2eWeb.PasswordInputFormLiveTest do
     assert html =~ "can&#39;t be blank"
   end
 
-  test "ecto save with password pushes toast-create", %{conn: conn} do
+  test "ecto save with password pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/password-input/live-form")
 
     view
     |> form("#password-input-live-form-ecto")
     |> render_submit(%{"password_input_ecto" => %{"password" => "secret123"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "password=***",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -40,17 +40,17 @@ defmodule E2eWeb.PasswordInputFormLiveTest do
     assert html =~ "must be at least 8 characters"
   end
 
-  test "ecto save with long password pushes toast-create", %{conn: conn} do
+  test "ecto save with long password pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/password-input/live-form")
 
     view
     |> form("#password-input-live-form-ecto")
     |> render_submit(%{"password_input_ecto" => %{"password" => "longenough"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "password=***",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

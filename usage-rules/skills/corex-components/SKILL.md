@@ -18,15 +18,15 @@ description: >-
 
 | Builder | Components |
 |---------|------------|
-| `Corex.Content.new/1` | accordion, tabs |
-| `Corex.List.new/1` | select, combobox, menu |
-| `Corex.Tree.new/1` | tree-view |
+| `Corex.Content.new/1` | accordion, tabs, data_list |
+| `Corex.List.new/1` | select, combobox, listbox |
+| `Corex.Tree.new/1` | menu, tree_view |
 | `Corex.Image.new/2` | carousel |
 
 ## Compound slots
 
 ```heex
-<.accordion id="faq" class="accordion accordion--accent accordion--sm sm:accordion--md" items={Corex.Content.new([…])}>
+<.accordion id="faq" class="accordion ui-accent ui-size-sm sm:ui-size-md" items={Corex.Content.new([…])}>
   <:trigger :let={item}>
     <.heroicon name={item.meta.icon} />
     {item.label}

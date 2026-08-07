@@ -50,6 +50,25 @@ defmodule E2eWeb.PasswordInputTest do
       )
     end
 
+    feature "client js  -  Show reveals password text", %{session: session} do
+      section = "password-input-api-client-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(PasswordInput, :password_input, :api)
+        |> PasswordInput.wait_section_password_input_ready(section)
+        |> PasswordInput.fill_input_in_section(section, "secret")
+        |> PasswordInput.click_button_in_section(section, "Show")
+
+      assert_has(
+        session,
+        css(
+          ~s|section##{section} [data-scope="password-input"][data-part="input"][type="text"]|,
+          visible: :any
+        )
+      )
+    end
+
     feature "server  -  Show via LiveView reveals password text", %{session: session} do
       section = "password-input-api-server-section"
 
@@ -85,6 +104,24 @@ defmodule E2eWeb.PasswordInputTest do
       session
       |> PasswordInput.click_visibility_trigger_in_section(section)
       |> PasswordInput.wait_log_rows_grew("password-input-events-log-server", before,
+        timeout: 10_000
+      )
+    end
+
+    feature "client  -  visibility change appends log row", %{session: session} do
+      section = "password-input-events-client-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(PasswordInput, :password_input, :events)
+        |> PasswordInput.prepare_live_form()
+        |> PasswordInput.wait_section_password_input_ready(section)
+
+      before = PasswordInput.log_row_count(session, "password-input-events-log-client")
+
+      session
+      |> PasswordInput.click_visibility_trigger_in_section(section)
+      |> PasswordInput.wait_log_rows_grew("password-input-events-log-client", before,
         timeout: 10_000
       )
     end

@@ -1,7 +1,8 @@
 defmodule <%= @app_module %>.Theme do
   use Phoenix.Component
   use Corex
-
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
+<% end %>
   def themes, do: <%= @app_module %>.Config.themes()
 
   def default_theme, do: <%= @app_module %>.Config.default_theme()
@@ -42,25 +43,26 @@ defmodule <%= @app_module %>.Theme do
     |> Corex.List.new()
   end
 
-  attr :theme, :string, required: true
+  attr(:id, :string, default: "theme-select")
+  attr(:theme, :string, required: true)
 
   def theme_toggle(assigns) do
     ~H"""
     <.select
-      id="theme-select"
+      id={@id}
       class="select ui-size-sm w-auto"
       items={select_items()}
       value={[@theme]}
       positioning={%Corex.Positioning{same_width: false}}
       on_value_change_client="phx:set-theme"
     >
-      <:label class="sr-only">Theme</:label>
+      <:label class="sr-only"><%= if @lang do %>{~t"Theme"}<% else %>Theme<% end %></:label>
       <:item :let={item}>{item.label}</:item>
       <:trigger>
-        <.heroicon name="hero-swatch" class="icon" />
+        <.heroicon name="hero-swatch" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """

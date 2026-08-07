@@ -2,7 +2,7 @@
 
 ## Understanding Corex
 
-Corex is an accessible, unstyled Phoenix component library powered by Zag.js state machines. Every component exposes a **server API** (LiveView/socket helpers) and a **client API** (JS commands). Corex Design is optional token-based CSS with modifier classes such as `button--accent`.
+Corex is an accessible, unstyled Phoenix component library powered by Zag.js state machines. Every component exposes a **server API** (LiveView/socket helpers) and a **client API** (JS commands). Corex Design is optional token-based CSS with shared modifier classes such as `ui-accent`.
 
 Read documentation and call Corex MCP tools **before** guessing attrs, slots, or install steps.
 
@@ -22,9 +22,15 @@ Sub-rules hold depth for AGENTS.md. Skills hold short triggers + examples for Cu
 
 1. **Never enable `plug Corex.MCP` in production.** Dev and test only.
 2. **Call MCP before writing HEEx.** Add `corex_mcp`, then `list_components` → `get_component` (and design tools when styling) — never invent attrs, slots, or event names.
-3. **Every API-driven component needs a stable `id`.**
+3. **Every API-driven component needs a stable `id`.** Form controls derive it from `field={...}` when present. Non-form hook hosts may omit `:id` (derived from `:name`, else a prefixed random id); pass an explicit `:id` when using `controlled` or server `on_*` handlers.
 4. **Esbuild must use ESM splitting.** `--format=esm --splitting`; load `app.js` with `type="module"`.
 5. **Do not web-search Hexdocs.** Use `mix usage_rules.search_docs -p corex`.
+
+## Attr vocabulary
+
+- Selection components use `value` / `on_value_change` (and `_client` twin).
+- Boolean Zag widgets keep Zag names: `checked` / `on_checked_change` (checkbox, switch), `pressed` / `on_pressed_change` (toggle).
+- `data_table` uses `selected` for row selection.
 
 ## Doc lookup
 
@@ -37,7 +43,7 @@ mix usage_rules.search_docs "on_value_change" -p corex --query-by title
 
 | Sub-rule | When to read |
 |----------|--------------|
-| `corex:installation` | `mix corex.new`, manual install, esbuild, hooks, `use Corex`, `mix corex.design` |
+| `corex:installation` | `mix corex.new`, manual install, esbuild, hooks, `use Corex`, `mix corex.design.build` |
 | `corex:components` | HEEx wiring, MCP lookup, data builders, slots, hooks |
 | `corex:design` | Modifiers, tokens, `.typo`, themes — no custom template CSS |
 | `corex:mcp` | Dev MCP plug, `.cursor/mcp.json`, tool call order |
@@ -76,4 +82,4 @@ mix archive.install hex corex_new
 mix corex.new my_app
 ```
 
-Existing app: see `corex:installation`. Design: `mix corex.design` then `corex:design`.
+Existing app: see `corex:installation`. Design: `mix corex.design.build` then `corex:design`.

@@ -17,6 +17,12 @@ defmodule Corex.DialogTest do
       assert html =~ ~r/data-animation="js"/
       assert html =~ "data-anim-scale-duration"
     end
+
+    test "merges content slot class onto content part" do
+      html = render_component(&CorexTest.ComponentHelpers.render_dialog_content_class/1, [])
+
+      assert html =~ ~r/data-part="content"[^>]*class="p-0!"|class="p-0!"[^>]*data-part="content"/
+    end
   end
 
   describe "set_open/2" do

@@ -109,7 +109,8 @@ defmodule Corex.Accordion.Anatomy do
       "data-focus",
       "data-orientation",
       "dir",
-      "aria-labelledby"
+      "aria-labelledby",
+      "tabindex"
     ]
     def ignored_attrs, do: @ignored_attrs
   end

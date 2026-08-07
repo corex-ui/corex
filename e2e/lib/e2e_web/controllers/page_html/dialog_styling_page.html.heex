@@ -9,9 +9,19 @@
     id="dialog-styling-page"
     title={~t"Dialog · Style"}
     subtitle={
-      ~t"Semantic colors, size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
+      ~t"Semantic colors, visual variants, density, corner radius, and side layout on the dialog root."
     }
   >
+    <.demo_section
+      id="dialog-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.DialogDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.DialogDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="dialog-styling-color"
       title={~t"Semantic"}
@@ -80,6 +90,19 @@
     >
       <:preview>
         <E2eWeb.Demos.DialogDemo.styling_sidebar_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.DialogDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DialogDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

@@ -1,5 +1,7 @@
 const MAX_EVENT_ROWS = 20
 const ACCORDION_EVENT = "hero-accordion-changed"
+const EVENT_FLASH_MS = 800
+const ROTATOR_DEFAULT_MS = 2800
 
 function formatOpen(value) {
   if (value == null) return " - "
@@ -32,10 +34,14 @@ function dispatchAccordionValue(accordionEl, value) {
 const HomeHero = {
   mounted() {
     this.accordionEl = document.getElementById("hero-accordion")
+    this.eventsBadge = document.getElementById("hero-events-badge")
+    this.flashTimer = null
+    this.rotatorTimer = null
 
     this.onAccordionChange = (event) => {
       const detail = event.detail ?? {}
       this.prependEventRow(formatTime(), formatOpen(detail.value))
+      this.flashEventsBadge()
     }
 
     this.el.addEventListener(ACCORDION_EVENT, this.onAccordionChange)
@@ -53,12 +59,57 @@ const HomeHero = {
         dispatchAccordionValue(this.accordionEl, value)
       })
     })
+
+    this.startRotator()
   },
 
   destroyed() {
     if (this.onAccordionChange) {
       this.el.removeEventListener(ACCORDION_EVENT, this.onAccordionChange)
     }
+    if (this.flashTimer) {
+      clearTimeout(this.flashTimer)
+      this.flashTimer = null
+    }
+    if (this.rotatorTimer) {
+      clearInterval(this.rotatorTimer)
+      this.rotatorTimer = null
+    }
+  },
+
+  startRotator() {
+    const root = document.getElementById("home-hero-rotator")
+    if (!root) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const words = Array.from(root.querySelectorAll(".home-hero-rotator__word"))
+    if (words.length < 2) return
+
+    let index = words.findIndex((word) => word.hasAttribute("data-active"))
+    if (index < 0) index = 0
+
+    const interval = Number(root.getAttribute("data-interval-ms")) || ROTATOR_DEFAULT_MS
+
+    this.rotatorTimer = setInterval(() => {
+      words[index].removeAttribute("data-active")
+      index = (index + 1) % words.length
+      words[index].setAttribute("data-active", "")
+    }, interval)
+  },
+
+  flashEventsBadge() {
+    const badge = this.eventsBadge
+    if (!badge) return
+
+    badge.classList.add("ui-success")
+    badge.classList.remove("ui-ghost")
+
+    if (this.flashTimer) clearTimeout(this.flashTimer)
+    this.flashTimer = setTimeout(() => {
+      badge.classList.remove("ui-success")
+      badge.classList.add("ui-ghost")
+      this.flashTimer = null
+    }, EVENT_FLASH_MS)
   },
 
   prependEventRow(time, open) {

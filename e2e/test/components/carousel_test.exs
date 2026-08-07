@@ -45,6 +45,19 @@ defmodule E2eWeb.CarouselTest do
       |> Carousel.wait_indicator_current_at(host, 1, timeout: 8_000)
     end
 
+    feature "client js  -  Next advances slide", %{session: session} do
+      host = "api-carousel-play-client-js"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Carousel, :carousel, :api)
+        |> Carousel.wait_host_carousel_ready(host)
+
+      session
+      |> Carousel.click_in_section("carousel-api-client-js", "Next")
+      |> Carousel.wait_indicator_current_at(host, 1, timeout: 8_000)
+    end
+
     feature "server  -  Next advances slide", %{session: session} do
       host = "api-carousel-play-server"
 
@@ -78,6 +91,25 @@ defmodule E2eWeb.CarouselTest do
       )
 
       assert Carousel.carousel_events_server_log_has_row?(session)
+    end
+
+    feature "client  -  next slide appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Carousel, :carousel, :events)
+        |> Carousel.prepare_live_form()
+        |> Carousel.wait_host_carousel_ready("carousel-events-client")
+
+      refute Carousel.carousel_events_client_log_has_row?(session)
+
+      session
+      |> Carousel.click_next_in_host("carousel-events-client")
+      |> Carousel.wait_for_has(
+        css("#carousel-events-log-client tr[data-part='row']"),
+        timeout: 10_000
+      )
+
+      assert Carousel.carousel_events_client_log_has_row?(session)
     end
   end
 end

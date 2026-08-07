@@ -214,10 +214,14 @@ defmodule Corex.AccordionTest do
       assert %Phoenix.LiveView.JS{} = js
     end
 
-    test "raises error for invalid list values" do
-      assert_raise ArgumentError, ~r/value must be a list of strings/, fn ->
-        Accordion.set_value("my-accordion", [1, 2, 3])
-      end
+    test "warns and drops invalid list values" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.JS{} = Accordion.set_value("my-accordion", [1, 2, 3])
+        end)
+
+      assert log =~ "Corex.Accordion.set_value/2"
+      assert log =~ "value must be a list of strings"
     end
 
     test "accepts empty list values" do
@@ -250,12 +254,16 @@ defmodule Corex.AccordionTest do
       assert %Phoenix.LiveView.Socket{} = result
     end
 
-    test "raises error for invalid list values" do
+    test "warns and drops invalid list values" do
       socket = %Phoenix.LiveView.Socket{}
 
-      assert_raise ArgumentError, ~r/value must be a list of strings/, fn ->
-        Accordion.set_value(socket, "my-accordion", [1, 2, 3])
-      end
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.Socket{} =
+                   Accordion.set_value(socket, "my-accordion", [1, 2, 3])
+        end)
+
+      assert log =~ "value must be a list of strings"
     end
 
     test "accepts empty list values" do
@@ -618,6 +626,7 @@ defmodule Corex.AccordionTest do
       content_attrs = Connect.content(assigns)
 
       assert content_attrs["data-state"] == "open"
+      assert content_attrs["tabindex"] == "0"
       assert content_attrs["data-disabled"] == nil
       assert content_attrs["data-focus"] == nil
       assert content_attrs["data-orientation"] == "vertical"

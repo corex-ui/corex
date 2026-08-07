@@ -48,6 +48,14 @@ defmodule Corex.Checkbox.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :checked, orientation: "horizontal", read_only: false]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            checked: boolean() | :indeterminate,
+            orientation: String.t(),
+            read_only: boolean()
+          }
+
     @ignored_attrs [
       "data-state",
       "dir",
@@ -79,6 +87,17 @@ defmodule Corex.Checkbox.Anatomy do
       controlled: false
     ]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            name: String.t(),
+            checked: boolean() | :indeterminate,
+            disabled: boolean(),
+            required: boolean(),
+            invalid: boolean(),
+            value: String.t(),
+            controlled: boolean()
+          }
+
     @ignored_attrs [
       "checked",
       "disabled",
@@ -101,6 +120,13 @@ defmodule Corex.Checkbox.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :checked, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            checked: boolean() | :indeterminate,
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "data-state",
       "dir",
@@ -120,6 +146,13 @@ defmodule Corex.Checkbox.Anatomy do
   defmodule Label do
     @moduledoc false
     defstruct [:id, :dir, :checked, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            checked: boolean() | :indeterminate,
+            orientation: String.t()
+          }
 
     @ignored_attrs [
       "data-state",
@@ -141,6 +174,13 @@ defmodule Corex.Checkbox.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :checked, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            checked: boolean() | :indeterminate,
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "hidden",
       "data-state",
@@ -161,6 +201,13 @@ defmodule Corex.Checkbox.Anatomy do
   defmodule Indeterminate do
     @moduledoc false
     defstruct [:id, :dir, :checked, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            checked: boolean() | :indeterminate,
+            orientation: String.t()
+          }
 
     @ignored_attrs [
       "hidden",

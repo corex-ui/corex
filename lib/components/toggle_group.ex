@@ -171,17 +171,17 @@ defmodule Corex.ToggleGroup do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.toggle_group>`). Combine axes, for example `toggle-group ui-accent ui-size-lg` or `toggle-group ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.toggle_group>`). Combine axes, for example `toggle-group ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `ui-solid` for a filled on state.
+  Semantic modifiers set palette variables for the filled selected state. Idle items stay neutral. Selected items always fill.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for item ink and fill. Does not change surface treatment by itself.
+  Palette variables for the filled selected state.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -191,15 +191,6 @@ defmodule Corex.ToggleGroup do
   | Alert | `toggle-group ui-alert` |
   | Info | `toggle-group ui-info` |
   | Success | `toggle-group ui-success` |
-
-  ### Variant
-
-  Visual treatment of item triggers. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `toggle-group` or `toggle-group ui-accent` |
-  | Solid | `toggle-group ui-accent ui-solid` |
 
   ### Size
 
@@ -230,6 +221,7 @@ defmodule Corex.ToggleGroup do
 
   import Corex.Api.Doc
 
+  alias Corex.Selectors
   alias Corex.ToggleGroup.Anatomy.{Item, Props, Root}
   alias Corex.ToggleGroup.Connect
   alias Phoenix.LiveView
@@ -307,7 +299,7 @@ defmodule Corex.ToggleGroup do
   def toggle_group(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "toggle-group-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("toggle-group")
       |> assign_new(:dir, fn -> "ltr" end)
 
     label_id =
@@ -319,7 +311,7 @@ defmodule Corex.ToggleGroup do
     assigns = assign(assigns, :label_id, label_id)
 
     ~H"""
-    <div id={@id} phx-hook="ToggleGroup" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} {@rest}
+    <div id={@id} phx-hook="ToggleGroup" {Corex.Hook.loading()}{@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
@@ -337,17 +329,9 @@ defmodule Corex.ToggleGroup do
       <span :if={@label != []} id={@label_id} class={Map.get(Enum.at(@label, 0), :class)}>
         {render_slot(@label)}
       </span>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, aria_labelledby: @label_id})} {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, aria_labelledby: @label_id})}>
+      <div {Connect.mounted_root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, aria_labelledby: @label_id})}>
         <button :for={{item_entry, index} <- Enum.with_index(@item)}
-        phx-mounted={Connect.ignore_item(%Item{
-          id: @id,
-          value: Map.get(item_entry, :value, "item-#{index}"),
-          disabled: Map.get(item_entry, :disabled, false),
-          aria_label: Map.get(item_entry, :aria_label),
-          values: @value, orientation: @orientation,
-          dir: @dir,
-          disabled_root: @disabled})}
-        {Connect.item(%Item{
+        {Connect.mounted_item(%Item{
           id: @id,
           value: Map.get(item_entry, :value, "item-#{index}"),
           disabled: Map.get(item_entry, :disabled, false),
@@ -383,10 +367,13 @@ defmodule Corex.ToggleGroup do
   ```
   """)
 
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
     JS.dispatch("corex:toggle-group:set-value",
-      to: "##{toggle_group_id}",
-      detail: %{value: Corex.Helpers.validate_value!(value)}
+      to: Selectors.css_id(toggle_group_id),
+      detail: %{value: Corex.Value.coerce_string_list(value, "Corex.ToggleGroup.set_value/2")}
     )
   end
 
@@ -410,9 +397,9 @@ defmodule Corex.ToggleGroup do
 
   def set_value(socket, toggle_group_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_group_id) do
-    LiveView.push_event(socket, "toggle-group_set_value", %{
+    LiveView.push_event(socket, "toggle_group_set_value", %{
       id: toggle_group_id,
-      value: Corex.Helpers.validate_value!(value)
+      value: Corex.Value.coerce_string_list(value, "Corex.ToggleGroup.set_value/2")
     })
   end
 end

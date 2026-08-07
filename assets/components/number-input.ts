@@ -1,13 +1,14 @@
 import { connect, machine, type Props, type Api } from "@zag-js/number-input";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
-import { getNumber, getString } from "../lib/util";
-import { formatSubmitValue } from "../lib/number-input-format";
+import { Component, type SchemaOf } from "../lib/core";
+import { getNumber } from "../lib/util";
+import { resolveNumberInputSubmitValue } from "../lib/number-input-format";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
-export class NumberInput extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class NumberInput extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -43,7 +44,12 @@ export class NumberInput extends Component<Props, Api> {
       const visibleProps = { ...(this.api.getInputProps() as Record<string, unknown>) };
       delete visibleProps.name;
       delete visibleProps.form;
+      const ssrAriaLabel = inputEl.getAttribute("aria-label");
       this.spreadProps(inputEl, visibleProps);
+      // Keep SSR aria-label when there is no label part (Zag input props omit it).
+      if (ssrAriaLabel && !inputEl.getAttribute("aria-label")) {
+        inputEl.setAttribute("aria-label", ssrAriaLabel);
+      }
       const formatted = this.api.value ?? "";
       if (inputEl.value !== formatted) {
         inputEl.value = formatted;
@@ -65,10 +71,11 @@ export class NumberInput extends Component<Props, Api> {
     );
     if (valueInputEl instanceof HTMLInputElement) {
       const step = getNumber(this.el, "step") ?? 1;
-      const n = this.api.valueAsNumber;
-      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
-      const submit =
-        Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
+      const submit = resolveNumberInputSubmitValue(
+        this.api.valueAsNumber,
+        this.api.value ?? "",
+        step
+      );
       syncHiddenInputValue(
         valueInputEl,
         this.el,

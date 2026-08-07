@@ -1,0 +1,9 @@
+defmodule <%= @web_module %>.Hooks.Accessibility do
+  @moduledoc false
+
+  def on_mount(:default, _params, session, socket) do
+    a11y = session["a11y"] || Corex.Design.Accessibility.defaults()
+
+    {:cont, Phoenix.Component.assign(socket, :a11y, a11y)}
+  end
+end

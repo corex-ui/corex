@@ -91,7 +91,7 @@ defmodule Corex.EditableTest do
   end
 
   describe "Connect.form_value/1" do
-    test "returns hidden form submit attributes" do
+    test "returns form submit attributes as visually hidden text" do
       result =
         Connect.form_value(%Corex.Editable.Anatomy.FormValue{
           id: "my-editable",
@@ -103,7 +103,10 @@ defmodule Corex.EditableTest do
       assert result["id"] == "my-editable-value"
       assert result["name"] == "user[title]"
       assert result["value"] == "Hi"
-      assert result["type"] == "hidden"
+      assert result["type"] == "text"
+      assert result["hidden"] == "true"
+      assert result["tabindex"] == "-1"
+      assert result["aria-hidden"] == "true"
     end
   end
 

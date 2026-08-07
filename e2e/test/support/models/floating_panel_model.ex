@@ -145,4 +145,8 @@ defmodule E2eWeb.FloatingPanelModel do
   def floating_panel_events_log_has_row?(session) do
     has?(session, css("#floating-panel-events-log-server tr[data-part='row']", visible: :any))
   end
+
+  def floating_panel_events_client_log_has_row?(session) do
+    has?(session, css("#floating-panel-events-log-client tr[data-part='row']", visible: :any))
+  end
 end

@@ -143,9 +143,13 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   use Mix.Task
 
   alias Mix.Corex, as: Corex
+  alias Mix.Corex.DesignComponents
   alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
+
+  @typep context :: %Context{}
+  @typep schema :: %Schema{}
 
   @impl Mix.Task
   def run(args) do
@@ -190,7 +194,8 @@ defmodule Mix.Tasks.Corex.Gen.Html do
       scope: schema.scope,
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
-      layout_locale: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_paths: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_assigns: Mix.Corex.layout_locale_assigns?(layout_opts),
       inputs: inputs(schema),
       conn_scope: conn_scope,
       context_scope_prefix: context_scope_prefix,
@@ -209,6 +214,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
     context
     |> copy_new_files(binding)
+    |> tap(fn _ -> DesignComponents.ensure_for_html!(build: false) end)
     |> print_shell_instructions()
   end
 
@@ -228,6 +234,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   end
 
   @doc "Lists files emitted by the HTML generator for conflict prompts."
+  @spec files_to_be_generated(context()) :: [{:eex, String.t(), String.t()}]
   def files_to_be_generated(%Context{schema: schema, context_app: context_app}) do
     singular = schema.singular
     web_prefix = Mix.Corex.web_path(context_app)
@@ -253,18 +260,24 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   defp copy_new_files(%Context{} = context, binding) do
     files = files_to_be_generated(context)
     template_dirs = Corex.generator_template_dirs("corex.gen.html")
-    Corex.copy_from(template_dirs, "", binding, files)
-
-    if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
-
-    Corex.format_generated_files(files)
+    _ = Corex.copy_from(template_dirs, "", binding, files)
+    copy_context_files(context, binding)
+    _ = Corex.format_generated_files(files)
 
     context
   end
 
+  defp copy_context_files(%Context{generate?: true} = context, binding) do
+    _ = Mix.Corex.Gen.Context.copy_new_files(context, binding)
+    :ok
+  end
+
+  defp copy_context_files(%Context{}, _binding), do: :ok
+
   defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
     layout_opts = Mix.Corex.layout_generators_opts()
     locale_scoped = Mix.Corex.locale_scoped_routes?(context.web_module, layout_opts)
+    web_path = Mix.Corex.web_path(ctx_app)
 
     resource_path =
       if schema.scope && schema.scope.route_prefix do
@@ -273,11 +286,14 @@ defmodule Mix.Tasks.Corex.Gen.Html do
         "/#{schema.plural}"
       end
 
+    resource_line =
+      ~s|resources "#{resource_path}", #{inspect(schema.alias)}Controller#{if schema.opts[:primary_key], do: ~s[, param: "#{schema.opts[:primary_key]}"]}|
+
     scope_instruction =
       if locale_scoped do
-        "Add the resource inside the existing scope \"/:locale\" block in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:"
+        "Add the resource inside the existing scope \"/:locale\" block in #{web_path}/router.ex (not scope \"/\"):"
       else
-        "Add the resource to your browser scope in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:"
+        "Add the resource to your browser scope in #{web_path}/router.ex:"
       end
 
     if schema.web_namespace do
@@ -288,7 +304,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
           scope "/#{schema.web_path}", #{inspect(Module.concat(context.web_module, schema.web_namespace))} do
             pipe_through :browser
             ...
-            resources "#{resource_path}", #{inspect(schema.alias)}Controller#{if schema.opts[:primary_key], do: ~s[, param: "#{schema.opts[:primary_key]}"]}
+            #{resource_line}
           end
       """)
     else
@@ -296,7 +312,13 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
       #{scope_instruction}
 
-          resources "#{resource_path}", #{inspect(schema.alias)}Controller#{if schema.opts[:primary_key], do: ~s[, param: "#{schema.opts[:primary_key]}"]}
+          #{resource_line}
+      """)
+    end
+
+    if locale_scoped do
+      Mix.shell().info("""
+      With verified route path_prefixes, ~p"/#{schema.plural}" resolves to /<locale>/#{schema.plural}.
       """)
     end
 
@@ -322,11 +344,13 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.html templates."
+  @spec inputs(schema()) :: [String.t() | nil]
   def inputs(%Schema{} = schema) do
     Inputs.inputs(schema, "f")
   end
 
   @doc "Pads generated input snippets when emitted into generator templates."
+  @spec indent_inputs([String.t() | nil], non_neg_integer()) :: [String.t()]
   def indent_inputs(inputs, column_padding) do
     columns = String.duplicate(" ", column_padding)
 

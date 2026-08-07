@@ -353,6 +353,24 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.collapsible class="collapsible ui-size-md">
+      <:trigger>Subtle (default)</:trigger>
+      <:content>Content</:content>
+    </.collapsible>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    ~H"""
+    <.collapsible id="collapsible-style-canonical" class="collapsible ui-size-md">
+      <:trigger>Subtle (default)</:trigger>
+      <:content>Content</:content>
+    </.collapsible>
+    """
+  end
+
   def styling_color_code do
     ~S"""
     <.collapsible class="collapsible ui-size-md">
@@ -372,7 +390,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-xl">
       <.collapsible id="collapsible-style-default" class="collapsible ui-size-md">
         <:trigger>Default width</:trigger>
         <:content>Content</:content>
@@ -405,13 +423,17 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
       <:trigger>Solid</:trigger>
       <:content>Content</:content>
     </.collapsible>
+    <.collapsible class="collapsible ui-ghost ui-size-md">
+      <:trigger>Ghost</:trigger>
+      <:content>Content</:content>
+    </.collapsible>
 
     """
   end
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-xl">
       <.collapsible id="collapsible-style-variant-subtle" class="collapsible ui-size-md">
         <:trigger>Subtle (default)</:trigger>
         <:content>Content</:content>
@@ -421,6 +443,13 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
         class="collapsible ui-solid ui-size-md"
       >
         <:trigger>Solid</:trigger>
+        <:content>Content</:content>
+      </.collapsible>
+      <.collapsible
+        id="collapsible-style-variant-ghost"
+        class="collapsible ui-ghost ui-size-md"
+      >
+        <:trigger>Ghost</:trigger>
         <:content>Content</:content>
       </.collapsible>
     </div>
@@ -486,7 +515,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full">
+    <div class="flex flex-col gap-space-lg items-start w-full">
       <.collapsible id="collapsible-style-sm" class="collapsible ui-size-sm">
         <:trigger>Small</:trigger>
         <:content>
@@ -535,7 +564,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.collapsible
           id={"collapsible-style-max-#{variant.id}"}
@@ -543,6 +572,48 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
         >
           <:trigger>{variant.label}</:trigger>
           <:content>Content</:content>
+        </.collapsible>
+      </div>
+    </div>
+    """
+  end
+
+  @styling_max_height_content "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Praesent vel sapien at lacus efficitur volutpat. Mauris vitae urna eu nibh fermentum faucibus. Donec condimentum ex mi, congue molestie ipsum gravida a. Sed ac eros luctus, finibus libero non, laoreet lectus. Integer at metus sed nisl faucibus volutpat."
+
+  def styling_max_height_code do
+    content = @styling_max_height_content
+
+    DemoScales.max_height_variants("collapsible")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("collapsible", modifier)
+
+      """
+      <.collapsible id="collapsible-style-max-h-#{id}" class="#{class}" open>
+        <:trigger>#{id}</:trigger>
+        <:content>#{content}</:content>
+      </.collapsible>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:max_height_variants, DemoScales.max_height_variants("collapsible"))
+      |> assign(:max_height_content, @styling_max_height_content)
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.collapsible
+          id={"collapsible-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("collapsible", variant.modifier)}
+          open
+        >
+          <:trigger>{variant.label}</:trigger>
+          <:content>{@max_height_content}</:content>
         </.collapsible>
       </div>
     </div>

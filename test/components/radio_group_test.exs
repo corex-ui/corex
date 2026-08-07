@@ -13,6 +13,7 @@ defmodule Corex.RadioGroupTest do
       field={@field}
       class="radio-group"
       items={[{"a", "A"}]}
+      auto_invalid={false}
     >
       <:error :let={msg}>{msg}</:error>
     </.radio_group>

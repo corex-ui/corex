@@ -280,6 +280,91 @@ defmodule Corex.SelectTest do
     end
   end
 
+  describe "set_value/2" do
+    test "returns JS command with list of values" do
+      js = Corex.Select.set_value("my-select", ["bel", "deu"])
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "wraps single binary into list" do
+      js = Corex.Select.set_value("my-select", "bel")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "accepts empty list" do
+      js = Corex.Select.set_value("my-select", [])
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "warns and drops invalid list values" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.JS{} = Corex.Select.set_value("my-select", [1, 2, 3])
+        end)
+
+      assert log =~ "Corex.Select.set_value/2"
+      assert log =~ "value must be a list of strings"
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket with list of values" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Select.set_value(socket, "my-select", ["bel"])
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "wraps single binary into list" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Select.set_value(socket, "my-select", "bel")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "accepts empty list" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Select.set_value(socket, "my-select", [])
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "warns and drops invalid list values" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.Socket{} =
+                   Corex.Select.set_value(socket, "my-select", [1, 2, 3])
+        end)
+
+      assert log =~ "value must be a list of strings"
+    end
+  end
+
+  describe "set_open/2" do
+    test "returns JS command when open is true" do
+      js = Corex.Select.set_open("my-select", true)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command when open is false" do
+      js = Corex.Select.set_open("my-select", false)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_open/3" do
+    test "pushes event to socket when open is true" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Select.set_open(socket, "my-select", true)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "pushes event to socket when open is false" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Select.set_open(socket, "my-select", false)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
   describe "select/1 with options" do
     test "renders with controlled and multiple" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_controlled_multiple/1, [])

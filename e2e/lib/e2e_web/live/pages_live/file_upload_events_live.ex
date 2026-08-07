@@ -79,7 +79,7 @@ defmodule E2eWeb.FileUploadEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.file_upload
                 id="file-upload-events-server"
                 class="file-upload"
@@ -117,7 +117,7 @@ defmodule E2eWeb.FileUploadEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.file_upload
                 id="file-upload-events-client"
                 class="file-upload"

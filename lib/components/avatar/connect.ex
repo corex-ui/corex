@@ -1,10 +1,14 @@
 defmodule Corex.Avatar.Connect do
   @moduledoc false
-  alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
-  alias Corex.Selectors
-  alias Phoenix.LiveView.JS
+  use Corex.Connect.Mounted
 
-  import Corex.Helpers, only: [maybe_put: 3]
+  use Corex.Component, :connect
+
+  alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
+
+  alias Corex.Selectors
+
+  alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
   def props(assigns) do

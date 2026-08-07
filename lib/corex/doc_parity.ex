@@ -166,6 +166,7 @@ defmodule Corex.DocParity do
     |> String.replace(~r/field=\{f\[/, "field={@form[")
     |> String.replace(~r/upload=\{@uploads\.[^}]+\}/, "upload={@uploads.FIELD}")
     |> String.replace(~r/@uploads\.[a-z_]+/, "@uploads.FIELD")
+    |> String.replace(~r/upload_name=\{:[a-z_]+\}/, "upload_name={:FIELD}")
     |> String.replace(~r/field=\{:[a-z_]+\}/, "field={:FIELD}")
     |> String.replace("…", "")
     |> String.replace("...", "")
@@ -184,22 +185,33 @@ defmodule Corex.DocParity do
 
   @spec component_slugs() :: [String.t()]
   def component_slugs do
-    @components_dir
-    |> File.ls!()
-    |> Enum.filter(&String.ends_with?(&1, ".ex"))
-    |> Enum.map(&String.trim_trailing(&1, ".ex"))
-    |> Enum.reject(&(&1 in ["heroicon", "hidden_input", "image"]))
+    top_level =
+      @components_dir
+      |> File.ls!()
+      |> Enum.filter(&String.ends_with?(&1, ".ex"))
+      |> Enum.map(&String.trim_trailing(&1, ".ex"))
+      |> Enum.reject(&(&1 in ["heroicon", "hidden_input", "image"]))
+
+    (top_level ++ ["layout_heading"])
+    |> Enum.uniq()
     |> Enum.sort()
   end
 
-  defp moduledoc_for(slug) do
-    case read_within(@components_dir, "#{slug}.ex") do
-      {:ok, source} -> doc_with_anatomy(source)
+  defp moduledoc_for("layout_heading") do
+    case read_within(@components_dir, "layout/heading.ex") do
+      {:ok, source} -> doc_with_anatomy("layout_heading", source)
       _ -> nil
     end
   end
 
-  defp doc_with_anatomy(source) do
+  defp moduledoc_for(slug) do
+    case read_within(@components_dir, "#{slug}.ex") do
+      {:ok, source} -> doc_with_anatomy(slug, source)
+      _ -> nil
+    end
+  end
+
+  defp doc_with_anatomy(_slug, source) do
     moduledoc = extract_moduledoc(source)
 
     if is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") do
@@ -233,7 +245,8 @@ defmodule Corex.DocParity do
     end
   end
 
-  defp valid_basename?(name), do: name =~ ~r/^[a-z][a-z0-9_.-]*$/
+  # Allow nested component paths like "layout/heading.ex" while blocking traversal.
+  defp valid_basename?(name), do: name =~ ~r/^[a-z][a-z0-9_.-]*(\/[a-z][a-z0-9_.-]*)*$/
 
   defp safe_read(path, base) do
     expanded_base = Path.expand(base) <> "/"
@@ -455,8 +468,6 @@ defmodule Corex.DocParity do
     |> Enum.filter(fn [_, h, _] -> String.downcase(h) == key end)
     |> Enum.map(fn [_, _, name] -> name end)
   end
-
-  defp demo_parity_fns(_, _), do: []
 
   defp pick_demo_snippet(demo_source, fn_names) do
     Enum.find_value(fn_names, fn name ->

@@ -105,17 +105,24 @@ defmodule Corex.ToggleGroupTest do
     end
   end
 
-  describe "Helpers.validate_value!/1 for toggle group values" do
-    test "raises error on non-list" do
-      assert_raise ArgumentError, ~r/value must be a list of strings, got: "not a list"/, fn ->
-        Corex.Helpers.validate_value!("not a list")
-      end
+  describe "set_value/2 with a bad value" do
+    test "drops a non-list value and warns instead of crashing the render" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.JS{} = Corex.ToggleGroup.set_value("tg", "not a list")
+        end)
+
+      assert log =~ "Corex.ToggleGroup.set_value/2"
+      assert log =~ ~S(value must be a list of strings, got: "not a list")
     end
 
-    test "raises error on list with non-strings" do
-      assert_raise ArgumentError, ~r/value must be a list of strings, got: \["a", 1\]/, fn ->
-        Corex.Helpers.validate_value!(["a", 1])
-      end
+    test "drops a list with non-strings and warns" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.JS{} = Corex.ToggleGroup.set_value("tg", ["a", 1])
+        end)
+
+      assert log =~ ~S(value must be a list of strings, got: ["a", 1])
     end
   end
 

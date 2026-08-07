@@ -1,6 +1,7 @@
 defmodule Corex.Accordion do
   @moduledoc ~S'''
   Expandable panels for Phoenix LiveView. Behavior follows [Zag.js Accordion](https://zagjs.com/components/react/accordion).
+
   ## Anatomy
 
   <!-- tabs-open -->
@@ -9,12 +10,12 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
+    id="faq"
   class="accordion"
   items={
-    Corex.Content.new([
-      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
-      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
-      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+    Corex.Content.new([    %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+      %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
     ])
   }
   />
@@ -26,6 +27,7 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
+    id="faq"
   class="accordion"
   items={
     Corex.Content.new([
@@ -47,6 +49,7 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
+    id="faq"
     class="accordion"
     value="lorem"
     items={
@@ -89,7 +92,8 @@ defmodule Corex.Accordion do
   Each slot takes a `value` string that ties the three together. 
 
   ```heex
-  <.accordion class="accordion" value="lorem">
+  <.accordion
+    id="faq" class="accordion" value="lorem">
     <:trigger value="lorem">
       <.heroicon name="hero-chevron-right" /> Lorem ipsum dolor sit amet
     </:trigger>
@@ -115,7 +119,8 @@ defmodule Corex.Accordion do
   #### Manual items
 
   ```heex
-  <.accordion :let={ctx} compound class="accordion">
+  <.accordion
+    id="faq" :let={ctx} compound class="accordion">
     <.accordion_root ctx={ctx}>
       <.accordion_item :let={item} ctx={ctx} value="lorem">
         <.accordion_trigger item={item}>
@@ -186,7 +191,8 @@ defmodule Corex.Accordion do
 
   ## API
 
-  Requires a stable `id` on `<.accordion>`.
+  Requires a stable `id` on `<.accordion
+    id="faq">`.
 
   | Function | Action | Returns |
   | -------- | ------ | ------- |
@@ -201,7 +207,8 @@ defmodule Corex.Accordion do
 
   ## Events
 
-  Pick an event name and pass it to `on_*` on `<.accordion>`.
+  Pick an event name and pass it to `on_*` on `<.accordion
+    id="faq">`.
 
   ### Server events
 
@@ -430,12 +437,12 @@ defmodule Corex.Accordion do
   end
   ```
 
-  ### Stream
+  ### Dynamic items
 
-  Use `Phoenix.LiveView.stream/3` to add or remove accordion items at runtime. Keep a list assign in sync with the stream and pass it as `items`. Configure `dom_id` to match each item element id (`accordion:my-accordion:item:#{value}`).
+  Grow or shrink panels at runtime by updating a list assign and passing it as `items`. Accordion panels are DOM parts (not a LiveView stream consumer); use `Phoenix.LiveView.stream/3` only with components that render `@streams.*` (for example `data_table`).
 
   ```elixir
-  defmodule MyAppWeb.AccordionStreamLive do
+  defmodule MyAppWeb.AccordionDynamicLive do
     use MyAppWeb, :live_view
 
     @initial_items [
@@ -445,12 +452,7 @@ defmodule Corex.Accordion do
     ]
 
     def mount(_params, _session, socket) do
-      {:ok,
-       socket
-       |> stream_configure(:items, dom_id: &"accordion:my-accordion:item:#{&1.value}")
-       |> stream(:items, @initial_items)
-       |> assign(:items_list, @initial_items)
-       |> assign(:next_id, 4)}
+      {:ok, socket |> assign(:items, @initial_items) |> assign(:next_id, 4)}
     end
 
     def handle_event("add_item", _params, socket) do
@@ -459,14 +461,17 @@ defmodule Corex.Accordion do
 
       {:noreply,
        socket
-       |> stream_insert(:items, item)
-       |> assign(:items_list, socket.assigns.items_list ++ [item])
+       |> assign(:items, socket.assigns.items ++ [item])
        |> assign(:next_id, socket.assigns.next_id + 1)}
+    end
+
+    def handle_event("reset", _params, socket) do
+      {:noreply, socket |> assign(:items, @initial_items) |> assign(:next_id, 4)}
     end
 
     def render(assigns) do
       ~H"""
-      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new(@items_list)} />
+      <.accordion id="dynamic-accordion" class="accordion" items={Corex.Content.new(@items)} />
       """
     end
   end
@@ -480,10 +485,11 @@ defmodule Corex.Accordion do
 
   ### JS
 
-  Built-in height and opacity (Web Animations API). Set `animation_options` with `Corex.Animation.Height` for duration, easing, and opacity.
+
 
   ```heex
   <.accordion
+    id="faq"
     class="accordion"
     animation="js"
     animation_options={%Corex.Animation.Height{duration: 0.3, easing: "ease-out", opacity_start: 0, opacity_end: 1}}
@@ -516,6 +522,7 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
+    id="faq"
     class="accordion"
     animation="instant"
     items={
@@ -552,6 +559,7 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
+    id="faq"
     class="accordion"
     animation="custom"
     on_value_change_client="my-accordion-changed"
@@ -623,7 +631,8 @@ defmodule Corex.Accordion do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `accordion.css`, then set `class="accordion"` on `<.accordion>`.
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `accordion.css`, then set `class="accordion"` on `<.accordion
+    id="faq">`.
 
   ```css
   [data-scope="accordion"][data-part="root"] {}
@@ -638,7 +647,8 @@ defmodule Corex.Accordion do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion ui-accent ui-size-lg` or `accordion ui-info`.
+  Stack modifiers on the host (`class` on `<.accordion
+    id="faq">`). Combine axes, for example `accordion ui-accent ui-size-lg` or `accordion ui-info`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
@@ -715,26 +725,18 @@ defmodule Corex.Accordion do
   | 5XL | `accordion max-w-5xl` |
 
   <!-- tabs-close -->
-
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Accordion.Anatomy.{Item, Props, Root}
-  alias Corex.Accordion.Connect
-  alias Corex.Api.RespondTo
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
+  use Corex.Api.Imports, to: Corex.Accordion.Api
 
   import Corex.Api.Doc
 
-  import Corex.Helpers,
-    only: [
-      validate_content_items_required!: 2,
-      respond_to_fields: 1,
-      normalize_string_list_value!: 1
-    ]
+  alias Corex.Accordion.Anatomy.{Item, Props, Root}
+
+  alias Corex.Accordion.Connect
 
   @doc """
   Renders an accordion. See the module documentation for list-driven `items`, With slots, Custom slots, Manual and Compound modes, patterns, API, and events.
@@ -743,12 +745,12 @@ defmodule Corex.Accordion do
   attr(:id, :string,
     required: false,
     doc:
-      "DOM id on the accordion root. Used by `set_value`, `value`, `focused`, and `item_state`; auto-generated when omitted."
+      "DOM id on the accordion root. Used by `set_value`, `value`, `focused`, and `item_state`. Optional; derived from :name when present, otherwise a prefixed random id (pass a stable :id when using controlled or server on_* handlers)."
   )
 
   attr(:items, :list,
     default: [],
-    doc: "List of `%Corex.Content.Item{}` from `Corex.Content.new/1`."
+    doc: "Items from `Corex.Content.new/1` (see `Corex.Content` for the full contract)"
   )
 
   attr(:value, :any,
@@ -964,12 +966,12 @@ defmodule Corex.Accordion do
   def accordion(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "accordion-#{System.unique_integer([:positive])}" end)
-      |> update(:value, &normalize_value/1)
+      |> Corex.FormField.assign_stable_id("accordion")
+      |> update(:value, &accordion_value_list/1)
       |> then(fn assigns ->
         if not assigns.compound and Enum.empty?(assigns.items) and
              assigns.trigger == [] and assigns.content == [] do
-          validate_content_items_required!(assigns, "Accordion")
+          Corex.Content.assert_content_items!(assigns, "Accordion")
         else
           assigns
         end
@@ -992,8 +994,7 @@ defmodule Corex.Accordion do
     <div
       id={@id}
       phx-hook="Accordion"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {Connect.props(%Props{
         id: @id,
         controlled: @controlled,
@@ -1015,8 +1016,7 @@ defmodule Corex.Accordion do
     {if @compound do render_slot(@inner_block, @ctx) end}
 
     <div :if={not @compound}
-        phx-mounted={Connect.ignore_root(%Root{id: @id, orientation: @orientation, dir: @dir})}
-        {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}
+        {Connect.mounted_root(%Root{id: @id, orientation: @orientation, dir: @dir})}
         >
         <.accordion_item
           :for={panel <- @panels}
@@ -1082,8 +1082,7 @@ defmodule Corex.Accordion do
 
     ~H"""
     <div
-      phx-mounted={Connect.ignore_root(@root)}
-      {Connect.root(@root)}
+      {Connect.mounted_root(@root)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -1125,7 +1124,7 @@ defmodule Corex.Accordion do
     assigns = assign(assigns, :item, item)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_item(@item)} {Connect.item(@item)} {@rest}>
+    <div {Connect.mounted_item(@item)} {@rest}>
       {render_slot(@inner_block, @item)}
     </div>
     """
@@ -1148,7 +1147,7 @@ defmodule Corex.Accordion do
   def accordion_trigger(assigns) do
     ~H"""
     <h3>
-      <button phx-mounted={Connect.ignore_trigger(@item)} {Connect.trigger(@item)} {@rest}>
+      <button {Connect.mounted_trigger(@item)} {@rest}>
         <span data-scope="accordion" data-part="item-text">
           {render_slot(@inner_block)}
         </span>
@@ -1175,7 +1174,7 @@ defmodule Corex.Accordion do
 
   def accordion_indicator(assigns) do
     ~H"""
-    <span phx-mounted={Connect.ignore_indicator(@item)} {Connect.indicator(@item)} {@rest}>
+    <span {Connect.mounted_indicator(@item)} {@rest}>
       {render_slot(@inner_block)}
     </span>
     """
@@ -1282,13 +1281,10 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def set_value(accordion_id, value) when is_binary(accordion_id) do
-    JS.dispatch("corex:accordion:set-value",
-      to: "##{accordion_id}",
-      detail: %{value: normalize_string_list_value!(value)},
-      bubbles: false
-    )
-  end
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
+  defdelegate set_value(accordion_id, value), to: Api
 
   api_doc(~S"""
   Open or close items from `handle_event`. Pushes `accordion_set_value` (no reply event).
@@ -1309,15 +1305,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def set_value(socket, accordion_id, value)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
-    RespondTo.push_set_value(
-      socket,
-      "accordion_set_value",
-      accordion_id,
-      normalize_string_list_value!(value)
-    )
-  end
+  defdelegate set_value(socket, accordion_id, value), to: Api
 
   api_doc(~S"""
   Read open items from `phx-click`. Dispatches `corex:accordion:value`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
@@ -1354,19 +1342,17 @@ defmodule Corex.Accordion do
   `values` is a list of open item `value` strings, or `nil`.
   """)
 
-  def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
-    JS.dispatch("corex:accordion:value",
-      to: "##{accordion_id}",
-      detail: respond_to_fields(opts),
-      bubbles: false
-    )
-  end
+  @spec value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
+  def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts),
+    do: Api.value(accordion_id, opts)
 
   def value(socket, accordion_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id),
-      do: value(socket, accordion_id, [])
+      do: Api.value(socket, accordion_id)
 
-  def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
+  def value(accordion_id) when is_binary(accordion_id), do: Api.value(accordion_id)
 
   api_doc(~S"""
   Read open items from `handle_event` (`accordion_value`). Same replies as [`value/2`](#value/2).
@@ -1395,15 +1381,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def value(socket, accordion_id, opts)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_list(opts) do
-    LiveView.push_event(
-      socket,
-      "accordion_value",
-      Map.merge(%{id: accordion_id}, respond_to_fields(opts))
-    )
-  end
+  defdelegate value(socket, accordion_id, opts), to: Api
 
   api_doc(~S"""
   Read the focused item from `phx-click`. Dispatches `corex:accordion:focused`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
@@ -1438,19 +1416,17 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
-    JS.dispatch("corex:accordion:focused",
-      to: "##{accordion_id}",
-      detail: respond_to_fields(opts),
-      bubbles: false
-    )
-  end
+  @spec focused(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec focused(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec focused(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
+  def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts),
+    do: Api.focused(accordion_id, opts)
 
   def focused(socket, accordion_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id),
-      do: focused(socket, accordion_id, [])
+      do: Api.focused(socket, accordion_id)
 
-  def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
+  def focused(accordion_id) when is_binary(accordion_id), do: Api.focused(accordion_id)
 
   api_doc(~S"""
   Read the focused item from `handle_event` (`accordion_focused`). Same replies as [`focused/2`](#focused/2).
@@ -1479,15 +1455,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def focused(socket, accordion_id, opts)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_list(opts) do
-    LiveView.push_event(
-      socket,
-      "accordion_focused",
-      Map.merge(%{id: accordion_id}, respond_to_fields(opts))
-    )
-  end
+  defdelegate focused(socket, accordion_id, opts), to: Api
 
   api_doc(~S"""
   Read expanded, focused, and disabled state for one item from `phx-click`. Dispatches `corex:accordion:item-state`. Optional `disabled:` and `respond_to:` `:server` (default), `:client`, or `:both`.
@@ -1522,31 +1490,22 @@ defmodule Corex.Accordion do
   ```
   """)
 
+  @spec item_state(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec item_state(String.t(), String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec item_state(Phoenix.LiveView.Socket.t(), String.t(), String.t(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def item_state(accordion_id, item_value, opts)
-      when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
-    disabled = Keyword.get(opts, :disabled, false)
-
-    JS.dispatch("corex:accordion:item-state",
-      to: "##{accordion_id}",
-      detail:
-        Map.merge(
-          %{value: accordion_validate_item_value!(item_value), disabled: disabled},
-          respond_to_fields(opts)
-        ),
-      bubbles: false
-    )
-  end
+      when is_binary(accordion_id) and is_binary(item_value) and is_list(opts),
+      do: Api.item_state(accordion_id, item_value, opts)
 
   def item_state(socket, accordion_id, item_value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_binary(item_value) do
-    item_state(socket, accordion_id, item_value, [])
-  end
+             is_binary(item_value),
+      do: Api.item_state(socket, accordion_id, item_value)
 
   def item_state(accordion_id, item_value)
-      when is_binary(accordion_id) and is_binary(item_value) do
-    item_state(accordion_id, item_value, [])
-  end
+      when is_binary(accordion_id) and is_binary(item_value),
+      do: Api.item_state(accordion_id, item_value)
 
   api_doc(~S"""
   Read item state from `handle_event` (`accordion_item_state`). Same replies as [`item_state/3`](#item_state/3).
@@ -1575,29 +1534,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def item_state(socket, accordion_id, item_value, opts)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_binary(item_value) and is_list(opts) do
-    disabled = Keyword.get(opts, :disabled, false)
-
-    LiveView.push_event(
-      socket,
-      "accordion_item_state",
-      Map.merge(
-        %{
-          id: accordion_id,
-          value: accordion_validate_item_value!(item_value),
-          disabled: disabled
-        },
-        respond_to_fields(opts)
-      )
-    )
-  end
-
-  defp accordion_validate_item_value!(v) when is_binary(v) and byte_size(v) > 0, do: v
-
-  defp accordion_validate_item_value!(_),
-    do: raise(ArgumentError, "accordion item value must be a non-empty string")
+  defdelegate item_state(socket, accordion_id, item_value, opts), to: Api
 
   defp accordion_assert_trigger_content_pair!(assigns) do
     if not assigns.compound and Enum.empty?(assigns.items) do
@@ -1691,8 +1628,8 @@ defmodule Corex.Accordion do
 
   defp panel_source_label(_), do: nil
 
-  defp normalize_value(nil), do: []
-  defp normalize_value(v) when is_binary(v), do: [v]
-  defp normalize_value(v) when is_list(v), do: v
-  defp normalize_value(_), do: []
+  defp accordion_value_list(nil), do: []
+  defp accordion_value_list(v) when is_binary(v), do: [v]
+  defp accordion_value_list(v) when is_list(v), do: v
+  defp accordion_value_list(_), do: []
 end

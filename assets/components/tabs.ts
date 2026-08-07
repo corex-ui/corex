@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/tabs";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
 export type TabsDomIds = {
   root: string;
@@ -20,20 +20,21 @@ export function tabsDomIds(rootId: string): TabsDomIds {
   };
 }
 
-export class Tabs extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Tabs extends Component<Props, Api, Schema> {
   private withDomIds(props: Partial<Props>): Partial<Props> {
     const id = props.id ?? this.el.id;
     return { ...props, id, ids: tabsDomIds(id) };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, this.withDomIds(props) as Props);
   }
 
-  updateProps = (props: Partial<Props>) => {
-    super.updateProps(this.withDomIds(props));
-  };
+  updateProps(props: Partial<Props>): boolean {
+    return super.updateProps(this.withDomIds(props));
+  }
 
   initApi(): Api {
     return this.zagConnect(connect);

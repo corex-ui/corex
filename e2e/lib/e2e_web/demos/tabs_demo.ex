@@ -164,7 +164,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button ui-size-sm">
           Lorem
@@ -188,13 +188,26 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <button
-      type="button"
-      class="button ui-size-sm"
-      onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
-    >
-      Lorem (client JS)
-    </button>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action
+        phx-click={JS.dispatch("corex:tabs:set-value", to: "#tabs-api-cjs", bubbles: false, detail: %{value: "lorem"})}
+        class="button ui-size-sm"
+      >
+        Lorem
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:tabs:set-value", to: "#tabs-api-cjs", bubbles: false, detail: %{value: "duis"})}
+        class="button ui-size-sm"
+      >
+        Duis
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:tabs:set-value", to: "#tabs-api-cjs", bubbles: false, detail: %{value: nil})}
+        class="button ui-size-sm"
+      >
+        Close all
+      </.action>
+    </div>
     <.tabs id="tabs-api-cjs" class="tabs" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
@@ -209,6 +222,12 @@ defmodule E2eWeb.Demos.TabsDemo do
     el?.dispatchEvent(
       new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "lorem" } })
     );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "duis" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: null } })
+    );
     """
   end
 
@@ -218,6 +237,12 @@ defmodule E2eWeb.Demos.TabsDemo do
     el?.dispatchEvent(
       new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "lorem" } })
     );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "duis" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: null } })
+    );
     """
   end
 
@@ -225,15 +250,44 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
-        <button
-          type="button"
+        <.action
+          phx-click={
+            JS.dispatch("corex:tabs:set-value",
+              to: "#tabs-api-cjs",
+              bubbles: false,
+              detail: %{value: "lorem"}
+            )
+          }
           class="button ui-size-sm"
-          onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
         >
-          Lorem (client JS)
-        </button>
+          Lorem
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:tabs:set-value",
+              to: "#tabs-api-cjs",
+              bubbles: false,
+              detail: %{value: "duis"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Duis
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:tabs:set-value",
+              to: "#tabs-api-cjs",
+              bubbles: false,
+              detail: %{value: nil}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Close all
+        </.action>
       </div>
       <.tabs
         id="tabs-api-cjs"
@@ -278,7 +332,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="tabs_api_lorem" class="button ui-size-sm">Lorem</.action>
         <.action phx-click="tabs_api_duis" class="button ui-size-sm">Duis</.action>
@@ -402,7 +456,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.tabs
         id="tabs-style-color-default"
         class="tabs"
@@ -443,6 +497,27 @@ defmodule E2eWeb.Demos.TabsDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.tabs class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    ~H"""
+    <.tabs
+      id="tabs-style-canonical"
+      class="tabs"
+      value="lorem"
+      items={E2eWeb.Demos.TabsDemo.basic_items()}
+    />
+    """
+  end
+
   def styling_variant_code do
     ~S"""
     <.tabs class="tabs" value="lorem" items={Corex.Content.new([
@@ -460,7 +535,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.tabs
         id="tabs-style-variant-subtle"
         class="tabs"
@@ -543,7 +618,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.tabs
         id="tabs-style-sm"
         class="tabs ui-size-sm"
@@ -606,7 +681,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.tabs
         id="tabs-style-rounded-none"
         class="tabs ui-rounded-none"
@@ -660,7 +735,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tabs
           id={"tabs-style-max-#{variant.id}"}

@@ -119,6 +119,83 @@ defmodule E2eWeb.RadioGroupModel do
     has?(session, css("#radio-group-events-log-server tr[data-part='row']"))
   end
 
+  def radio_group_events_client_log_has_row?(session) do
+    has?(session, css("#radio-group-events-log-client tr[data-part='row']"))
+  end
+
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
+  def wait_item_checked_by_host_id(session, host_dom_id, value, opts \\ []) do
+    wait_for_has(
+      session,
+      css(
+        "##{host_dom_id} [data-scope='radio-group'][data-part='item'][data-value='#{value}'][data-state='checked']"
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def wait_item_not_checked_by_host_id(session, host_dom_id, value, opts \\ []) do
+    wait_for_refute_has(
+      session,
+      css(
+        "##{host_dom_id} [data-scope='radio-group'][data-part='item'][data-value='#{value}'][data-state='checked']"
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def assert_focus_inside(session, host_dom_id) when is_binary(host_dom_id) do
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{host_dom_id}');
+      return !!(root && root.contains(document.activeElement) && document.activeElement !== document.body);
+      """,
+      [],
+      fn v ->
+        assert v == true, "expected focus inside ##{host_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def dispatch_set_value_js(session, host_dom_id, value) when is_binary(value) do
+    execute_script(
+      session,
+      """
+      const el = document.getElementById('#{host_dom_id}');
+      if (el) {
+        el.dispatchEvent(new CustomEvent('corex:radio-group:set-value', {
+          bubbles: false,
+          detail: { value: '#{value}' }
+        }));
+      }
+      """,
+      []
+    )
+
+    session
+  end
+
   def goto_form(session, mode) do
     {path, page_id} =
       case mode do
@@ -231,5 +308,53 @@ defmodule E2eWeb.RadioGroupModel do
     else
       click(session, css("#radio-group-form-phoenix button[type='submit']"))
     end
+  end
+
+  defp safe_dom_token?(token), do: String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+
+  def focus_item_in_section(session, section_dom_id, value)
+      when is_binary(section_dom_id) and is_binary(value) do
+    if not safe_dom_token?(section_dom_id) or not safe_dom_token?(value),
+      do: raise(ArgumentError, "invalid section or value id")
+
+    execute_script(
+      session,
+      """
+      const host = document.querySelector(
+        '[id="#{section_dom_id}"][phx-hook="RadioGroup"]'
+      );
+      const input = host && host.querySelector(
+        '[data-scope="radio-group"][data-part="item-hidden-input"][value="#{value}"]'
+      );
+      if (!input) return false;
+      input.style.cssText =
+        'position:fixed;left:8px;top:8px;width:16px;height:16px;opacity:0.01;clip:auto;margin:0;border:0;padding:0;overflow:visible;';
+      input.focus();
+      return document.activeElement === input;
+      """,
+      [],
+      fn v ->
+        assert v == true, "expected focus on radio item #{value} in ##{section_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def wait_item_checked_in_section(session, section_dom_id, value, opts \\ []) do
+    wait_for_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="radio-group"][data-part="item"][data-value="#{value}"][data-state="checked"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
   end
 end

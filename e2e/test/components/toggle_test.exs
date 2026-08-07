@@ -41,7 +41,7 @@ defmodule E2eWeb.ToggleTest do
 
       session
       |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :anatomy)
-      |> Toggle.wait_section_toggle_ready(section, hook_count: 2, timeout: 15_000)
+      |> Toggle.wait_section_toggle_ready(section, timeout: 15_000)
 
       assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-anatomy-switching-label") ==
                "off"

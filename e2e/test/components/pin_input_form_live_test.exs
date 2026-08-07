@@ -35,17 +35,17 @@ defmodule E2eWeb.PinInputFormLiveTest do
     assert html =~ "pin-input-live-form-phoenix"
   end
 
-  test "ecto save pushes toast-create with pin description", %{conn: conn} do
+  test "ecto save pushes toast_create with pin description", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/pin-input/live-form")
 
     view
     |> form("#pin-input-live-form-ecto")
     |> render_submit(%{"pin_ecto" => %{"pin" => ["4", "2", "4", "2"]}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: pin=[\"4\", \"2\", \"4\", \"2\"]",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

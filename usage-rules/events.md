@@ -4,7 +4,7 @@
 
 **API** (`corex:api`) = imperative commands (`Corex.Accordion.set_value/3`, `<.action phx-click={…}>`).
 
-Event names and payloads differ per component. Always read Hexdocs **Events** section or MCP `get_component` — never invent attrs.
+Event names and payloads differ per component. Always read Hexdocs **Events**, or MCP `get_component` structured `events` / `on_*` attrs — never invent attrs.
 
 ## Server events (LiveView)
 
@@ -86,6 +86,14 @@ Pick one authority — do not fight the machine with unmanaged assign updates.
 - Client listener parent needs `phx-update="ignore"` or listeners duplicate on re-render
 - Events **notify**; **navigation** `redirect` attr **navigates** — different concerns
 - For imperative server pushes without user click, use `Corex.*` socket helpers (`corex:api`)
+
+## Attr vocabulary
+
+Corex keeps Zag-faithful names where they map cleanly. Do not rename these for “consistency”:
+
+- **Selection lists** (select, combobox, listbox, tabs, accordion, radio-group, toggle-group, …): `value` / `on_value_change` (+ `_client` where offered)
+- **Boolean Zag widgets** (checkbox, switch, toggle): `checked` / `pressed` and `on_checked_change` / `on_pressed_change`
+- **Data table row selection:** `selected` (not `value` / `checked`)
 
 ## References
 

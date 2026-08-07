@@ -1,0 +1,168 @@
+defmodule <%= @app_module %>.TagsIndexPage do
+<%= if @lang do %>  @moduledoc false
+
+  use Phoenix.Component
+  use Corex
+  use <%= @app_module %>.GettextSigil
+
+  alias <%= @app_module %>.Layouts.Shell
+  alias <%= @app_module %>.Locale
+
+  def template(assigns) do
+    locale = Locale.current(assigns.page)
+
+    tags = Map.get(assigns, :tags, %{})
+
+    sorted =
+      tags
+      |> Map.to_list()
+      |> Enum.sort_by(fn {_tag, posts} -> length(posts) end, :desc)
+
+    assigns =
+      assigns
+      |> Map.put(:sorted_tags, sorted)
+      |> Map.put(:blog_path, Locale.swap_path("/blog", locale))
+
+    ~H"""
+    <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
+      <nav class="blog__nav" aria-label={~t"Blog"}>
+        <.navigate to={@blog_path} class="link ui-nav w-fit">
+          <.heroicon name="hero-arrow-left" /> {~t"Back to blog"}
+        </.navigate>
+      </nav>
+
+      <header class="blog__hero" aria-labelledby="tags-index-heading">
+        <div class="blog__head">
+          <p class="blog__eyebrow">{~t"Blog"}</p>
+          <h1 id="tags-index-heading" class="blog__display">
+            {~t"Browse"} <span class="blog__display__accent">{~t"tags"}</span>
+          </h1>
+          <p class="blog__lede">
+            {~t"Browse topics across your posts. Every tag is a static Tableau page."}
+          </p>
+        </div>
+      </header>
+
+      <ul
+        :if={@sorted_tags != []}
+        class="blog__grid m-0 list-none p-0"
+        aria-label={~t"All tags"}
+      >
+        <li :for={{tag, posts} <- @sorted_tags}>
+          <.navigate to={tag.permalink} class={"#{Shell.card()}"}>
+            <div class="blog__card__top">
+              <p class="blog__card__date">
+                {length(posts)} {if length(posts) == 1, do: ~t"post", else: ~t"posts"}
+              </p>
+              <.heroicon name="hero-arrow-right" class="blog__card__arrow" />
+            </div>
+            <h2 class="blog__card__title">{tag.tag}</h2>
+            <p class="blog__card__excerpt">
+              {~t"View all posts tagged with"} {tag.tag}.
+            </p>
+          </.navigate>
+        </li>
+      </ul>
+
+      <p :if={@sorted_tags == []} class="m-0 text-ink-muted">
+        {~t"No tags yet. Add a"}
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">tags:</code>
+        {~t"list to post front matter."}
+      </p>
+    </article>
+    """
+  end
+end
+
+for locale <- <%= @app_module %>.Locale.locales() do
+  mod = Module.concat(<%= @app_module %>.TagsIndexPage, String.upcase(locale))
+  permalink = "/#{locale}/tags/"
+
+  Module.create(
+    mod,
+    quote do
+      use Tableau.Page,
+        layout: <%= @app_module %>.RootLayout,
+        permalink: unquote(permalink),
+        title: "Tags",
+        page_kind: :tags_index,
+        sitemap: %{priority: 0.5, changefreq: "weekly"}
+
+      def template(assigns), do: <%= @app_module %>.TagsIndexPage.template(assigns)
+    end,
+    __ENV__
+  )
+end
+<% else %>  use Tableau.Page,
+    layout: <%= @app_module %>.RootLayout,
+    permalink: "/tags",
+    title: "Tags",
+    page_kind: :tags_index,
+    sitemap: %{priority: 0.5, changefreq: "weekly"}
+
+  use Phoenix.Component
+  use Corex
+
+  alias <%= @app_module %>.Layouts.Shell
+
+  def template(assigns) do
+    tags = Map.get(assigns, :tags, %{})
+
+    sorted =
+      tags
+      |> Map.to_list()
+      |> Enum.sort_by(fn {_tag, posts} -> length(posts) end, :desc)
+
+    assigns = Map.put(assigns, :sorted_tags, sorted)
+
+    ~H"""
+    <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
+      <nav class="blog__nav" aria-label="Blog">
+        <.navigate to="/blog" class="link ui-nav w-fit">
+          <.heroicon name="hero-arrow-left" /> Back to blog
+        </.navigate>
+      </nav>
+
+      <header class="blog__hero" aria-labelledby="tags-index-heading">
+        <div class="blog__head">
+          <p class="blog__eyebrow">Blog</p>
+          <h1 id="tags-index-heading" class="blog__display">
+            Browse <span class="blog__display__accent">tags</span>
+          </h1>
+          <p class="blog__lede">
+            Browse topics across your posts. Every tag is a static Tableau page.
+          </p>
+        </div>
+      </header>
+
+      <ul
+        :if={@sorted_tags != []}
+        class="blog__grid m-0 list-none p-0"
+        aria-label="All tags"
+      >
+        <li :for={{tag, posts} <- @sorted_tags}>
+          <.navigate to={tag.permalink} class={"#{Shell.card()}"}>
+            <div class="blog__card__top">
+              <p class="blog__card__date">
+                {length(posts)} {if length(posts) == 1, do: "post", else: "posts"}
+              </p>
+              <.heroicon name="hero-arrow-right" class="blog__card__arrow" />
+            </div>
+            <h2 class="blog__card__title">{tag.tag}</h2>
+            <p class="blog__card__excerpt">
+              View all posts tagged with {tag.tag}.
+            </p>
+          </.navigate>
+        </li>
+      </ul>
+
+      <p :if={@sorted_tags == []} class="m-0 text-ink-muted">
+        No tags yet. Add a
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">tags:</code>
+        list to post front matter.
+      </p>
+    </article>
+    """
+  end
+end
+<% end %>

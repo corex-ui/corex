@@ -75,6 +75,14 @@ defmodule Corex.Toast do
 
   `create` opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` `1`–`8`, `action:` map with `label` (string or `~H` / safe HTML), `js`, optional `class`.
 
+  **`:action` is server-only.** Pass it on `create/6` / `update/4` (`push_event`). Client
+  bindings (`create/5`, `update/3`) and DOM `CustomEvent`s ignore `:action` so untrusted
+  scripts cannot inject `exec_js` or HTML labels.
+
+  HTML action labels (`~H` / `{:safe, _}`) are rendered with `innerHTML` in the client.
+  Pass **developer-controlled** markup only — never pipe untrusted user input into
+  safe HTML labels.
+
   ## Style
 
   Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toast.css`, then set `class="toast"` on `<.toast_group>`.
@@ -94,9 +102,9 @@ defmodule Corex.Toast do
 
   Stack modifiers on the group host (`class` on `<.toast_group>`).
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on action triggers and content panels. Variant modifiers control action trigger and toast panel surface treatment. Default is subtle; add `toast ui-solid` for filled action buttons or panels.
+  Semantic modifiers set palette variables on action triggers and content panels.
 
   <!-- tabs-open -->
 
@@ -111,14 +119,6 @@ defmodule Corex.Toast do
   | Info | `toast ui-info` |
   | Success | `toast ui-success` |
 
-  ### Variant
-
-  Visual treatment of `[data-part="action-trigger"]` and the content panel.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `toast` or `toast ui-accent` |
-  | Solid | `toast ui-accent ui-solid` |
 
   <!-- tabs-close -->
 
@@ -130,6 +130,7 @@ defmodule Corex.Toast do
   import Corex.Api.Doc
 
   alias Corex.Flash
+  alias Corex.Selectors
   alias Corex.Toast.Anatomy.Group
   alias Corex.Toast.Connect
   alias Corex.Toast.Payload, as: ToastPayload
@@ -272,8 +273,7 @@ defmodule Corex.Toast do
       {@rest}
     >
       <div
-        phx-mounted={Connect.ignore_group(%Group{id: @id})}
-        {Connect.group(%Group{id: @id})}
+        {Connect.mounted_group(%Group{id: @id})}
       >
       </div>
       <div :if={@loading != []} id={"#{@id}-loading-icon"} data-loading-icon-template style="display: none;">
@@ -328,10 +328,11 @@ defmodule Corex.Toast do
     <div
       id={@id}
       phx-disconnected={
-        JS.remove_attribute("hidden", to: "##{@id}")
+        JS.remove_attribute("hidden", to: Selectors.css_id(@id))
         |> JS.dispatch("corex:toast:create",
-          to: "##{@toast_group_id}",
+          to: Selectors.css_id(@toast_group_id),
           detail: %{
+            group_id: @toast_group_id,
             title: @title,
             description: @description,
             type: @type_str,
@@ -340,7 +341,7 @@ defmodule Corex.Toast do
           }
         )
       }
-      phx-connected={JS.set_attribute({"hidden", ""}, to: "##{@id}")}
+      phx-connected={JS.set_attribute({"hidden", ""}, to: Selectors.css_id(@id))}
       hidden
     >
     </div>
@@ -378,10 +379,11 @@ defmodule Corex.Toast do
     <div
       id={@id}
       phx-disconnected={
-        JS.remove_attribute("hidden", to: "##{@id}")
+        JS.remove_attribute("hidden", to: Selectors.css_id(@id))
         |> JS.dispatch("corex:toast:create",
-          to: "##{@toast_group_id}",
+          to: Selectors.css_id(@toast_group_id),
           detail: %{
+            group_id: @toast_group_id,
             title: @title,
             description: @description,
             type: @type_str,
@@ -390,7 +392,7 @@ defmodule Corex.Toast do
           }
         )
       }
-      phx-connected={JS.set_attribute({"hidden", ""}, to: "##{@id}")}
+      phx-connected={JS.set_attribute({"hidden", ""}, to: Selectors.css_id(@id))}
       hidden
     >
     </div>
@@ -428,8 +430,9 @@ defmodule Corex.Toast do
       id={@id}
       phx-connected={
         JS.dispatch("corex:toast:create",
-          to: "##{@toast_group_id}",
+          to: Selectors.css_id(@toast_group_id),
           detail: %{
+            group_id: @toast_group_id,
             title: @title,
             description: @description,
             type: @type_str,
@@ -456,7 +459,7 @@ defmodule Corex.Toast do
         toast_group_id="layout-toast"
         title="Connection lost"
         description="Attempting to reconnect"
-        type={:warning}
+        type={:info}
         duration={:infinity}
       />
   """
@@ -475,8 +478,9 @@ defmodule Corex.Toast do
       id={@id}
       phx-disconnected={
         JS.dispatch("corex:toast:create",
-          to: "##{@toast_group_id}",
+          to: Selectors.css_id(@toast_group_id),
           detail: %{
+            group_id: @toast_group_id,
             title: @title,
             description: @description,
             type: @type_str,
@@ -492,7 +496,7 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Append a toast from `phx-click`. Dispatches `corex:toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`, `:action`.
+  Append a toast from `phx-click`. Dispatches `corex:toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`. Prefer `create/6` when you need `:action`.
 
   ```heex
   <.action phx-click={Corex.Toast.create("toast-group-id", "Saved", "Draft stored.", :info, duration: 4_000)}>Notify</.action>
@@ -503,24 +507,47 @@ defmodule Corex.Toast do
   document.getElementById("toast-group-id")?.dispatchEvent(
     new CustomEvent("corex:toast:create", {
       bubbles: true,
-      detail: { title: "Saved", description: "OK.", type: "info", duration: 4000 },
+      detail: { group_id: "toast-group-id", title: "Saved", description: "OK.", type: "info", duration: 4000 },
     })
   );
   ```
   """)
 
+  @spec create(
+          String.t(),
+          Corex.Value.coercible(),
+          Corex.Value.coercible(),
+          Corex.Value.coercible(),
+          keyword()
+        ) :: Phoenix.LiveView.JS.t()
+  @spec create(
+          Phoenix.LiveView.Socket.t(),
+          String.t(),
+          Corex.Value.coercible(),
+          Corex.Value.coercible(),
+          Corex.Value.coercible(),
+          keyword()
+        ) :: Phoenix.LiveView.Socket.t()
   def create(toast_group_id, title, description, type, opts)
       when is_binary(toast_group_id) and is_list(opts) do
-    detail = ToastPayload.create_detail(title, description, type, opts)
-    JS.dispatch("corex:toast:create", to: "##{toast_group_id}", detail: detail)
+    detail =
+      title
+      |> ToastPayload.create_detail(description, type, opts)
+      |> Map.put(:group_id, toast_group_id)
+
+    JS.dispatch("corex:toast:create", to: Selectors.css_id(toast_group_id), detail: detail)
   end
 
   api_doc(~S"""
-  Append a toast from `handle_event` (`toast-create`). Payload includes `groupId` plus Zag fields assembled from the same arguments.
+  Append a toast from `handle_event` (`toast_create`). Payload includes `group_id` plus Zag fields assembled from the same arguments. Use this path for `:action` (client `create/5` ignores it).
 
   ```elixir
   def handle_event("notify", _, socket) do
-    {:noreply, Corex.Toast.create(socket, "toast-group-id", "Done", "Completed.", :success, duration: 3_000)}
+    {:noreply,
+     Corex.Toast.create(socket, "toast-group-id", "Done", "Completed.", :success,
+       duration: 3_000,
+       action: %{label: "Undo", js: JS.push("undo"), class: "button ui-size-sm"}
+     )}
   end
   ```
   """)
@@ -529,7 +556,7 @@ defmodule Corex.Toast do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_list(opts) do
     data = ToastPayload.create_server_data(toast_group_id, title, description, type, opts)
-    Phoenix.LiveView.push_event(socket, "toast-create", data)
+    Phoenix.LiveView.push_event(socket, "toast_create", data)
   end
 
   api_doc(~S"""
@@ -541,14 +568,21 @@ defmodule Corex.Toast do
   ```
   """)
 
+  @spec update(String.t(), String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec update(Phoenix.LiveView.Socket.t(), String.t(), String.t(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def update(toast_group_id, toast_id, attrs)
       when is_binary(toast_group_id) and is_binary(toast_id) and (is_map(attrs) or is_list(attrs)) do
-    detail = ToastPayload.update_detail(toast_id, attrs)
-    JS.dispatch("corex:toast:update", to: "##{toast_group_id}", detail: detail)
+    detail =
+      toast_id
+      |> ToastPayload.update_detail(attrs)
+      |> Map.put(:group_id, toast_group_id)
+
+    JS.dispatch("corex:toast:update", to: Selectors.css_id(toast_group_id), detail: detail)
   end
 
   api_doc(~S"""
-  Patch an existing toast from `handle_event` (`toast-update`).
+  Patch an existing toast from `handle_event` (`toast_update`).
 
   ```elixir
   def handle_event("patch_toast", %{"id" => id}, socket) do
@@ -562,7 +596,7 @@ defmodule Corex.Toast do
              is_binary(toast_id) and
              (is_map(attrs) or is_list(attrs)) do
     data = ToastPayload.update_server_data(toast_group_id, toast_id, attrs)
-    Phoenix.LiveView.push_event(socket, "toast-update", data)
+    Phoenix.LiveView.push_event(socket, "toast_update", data)
   end
 
   api_doc(~S"""
@@ -574,12 +608,17 @@ defmodule Corex.Toast do
   ```
   """)
 
+  @spec remove(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec remove(Phoenix.LiveView.Socket.t(), String.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def remove(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
-    JS.dispatch("corex:toast:remove", to: "##{toast_group_id}", detail: %{id: toast_id})
+    JS.dispatch("corex:toast:remove",
+      to: Selectors.css_id(toast_group_id),
+      detail: %{group_id: toast_group_id, id: toast_id}
+    )
   end
 
   api_doc(~S"""
-  Remove a toast immediately from `handle_event` (`toast-remove`).
+  Remove a toast immediately from `handle_event` (`toast_remove`).
 
   ```elixir
   def handle_event("drop_toast", %{"id" => id}, socket) do
@@ -591,7 +630,7 @@ defmodule Corex.Toast do
   def remove(socket, toast_group_id, toast_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) do
-    Phoenix.LiveView.push_event(socket, "toast-remove", %{groupId: toast_group_id, id: toast_id})
+    Phoenix.LiveView.push_event(socket, "toast_remove", %{group_id: toast_group_id, id: toast_id})
   end
 
   api_doc(~S"""
@@ -603,12 +642,18 @@ defmodule Corex.Toast do
   ```
   """)
 
+  @spec dismiss(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec dismiss(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def dismiss(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
-    JS.dispatch("corex:toast:dismiss", to: "##{toast_group_id}", detail: %{id: toast_id})
+    JS.dispatch("corex:toast:dismiss",
+      to: Selectors.css_id(toast_group_id),
+      detail: %{group_id: toast_group_id, id: toast_id}
+    )
   end
 
   api_doc(~S"""
-  Begin dismiss animation from `handle_event` (`toast-dismiss`).
+  Begin dismiss animation from `handle_event` (`toast_dismiss`).
 
   ```elixir
   def handle_event("fade_out", %{"id" => id}, socket) do
@@ -620,6 +665,6 @@ defmodule Corex.Toast do
   def dismiss(socket, toast_group_id, toast_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) do
-    Phoenix.LiveView.push_event(socket, "toast-dismiss", %{groupId: toast_group_id, id: toast_id})
+    Phoenix.LiveView.push_event(socket, "toast_dismiss", %{group_id: toast_group_id, id: toast_id})
   end
 end

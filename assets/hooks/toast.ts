@@ -1,5 +1,4 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 
 import { createToastGroup, disposeToastGroup, getToastStore } from "../components/toast";
 import type { ActionOptions } from "@zag-js/toast";
@@ -8,6 +7,7 @@ import type { Options } from "@zag-js/toast";
 
 import type { RedirectContext } from "../lib/redirect";
 import { getString, getBoolean, getNumber, generateId } from "../lib/util";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type ToastActionSpec = {
   label: string;
@@ -82,7 +82,7 @@ type ToastCreatePayload = {
   type?: "info" | "success" | "error" | "warning" | "loading" | string;
   id?: string;
   duration?: number | string;
-  groupId?: string;
+  group_id?: string;
   loading?: unknown;
   action?: unknown;
   priority?: number | string;
@@ -94,7 +94,7 @@ type ToastUpdatePayload = {
   description?: string;
   type?: "info" | "success" | "error" | "warning" | "loading" | string;
   duration?: number | string;
-  groupId?: string;
+  group_id?: string;
   loading?: unknown;
   action?: unknown;
   priority?: number | string;
@@ -102,19 +102,90 @@ type ToastUpdatePayload = {
 
 type ToastIdPayload = {
   id: string;
-  groupId?: string;
+  group_id?: string;
 };
 
 const loadingMeta = (loading: unknown) =>
   loading === true || loading === "true" ? { meta: { loading: true as const } } : {};
 
-type DomListener = { el: HTMLElement; name: string; fn: EventListener };
-
 type ToastHookState = {
   groupId: string;
-  handlers?: Array<CallbackRef>;
-  domListeners?: DomListener[];
+  toastGroup?: ToastGroupHandle;
 };
+
+type ToastGroupOptions = NonNullable<Parameters<typeof createToastGroup>[1]> & { id: string };
+
+class ToastGroupHandle {
+  constructor(
+    private readonly el: HTMLElement,
+    private readonly options: ToastGroupOptions
+  ) {}
+
+  init(): void {
+    createToastGroup(this.el, this.options);
+    this.el.setAttribute("data-ready", "");
+    this.createFlashToasts();
+  }
+
+  destroy(): void {
+    disposeToastGroup(this.options.id);
+  }
+
+  private createFlashToasts(): void {
+    const store = getToastStore(this.options.id);
+    if (!store) return;
+
+    for (const { type, body, title, duration, fallbackTitle } of readFlashToasts(this.el)) {
+      try {
+        store.create({
+          title: title || fallbackTitle,
+          description: body,
+          type,
+          id: generateId(undefined, "toast"),
+          duration: parseToastDuration(duration ?? undefined),
+        });
+      } catch (error) {
+        console.error(`Failed to create flash ${type} toast:`, error);
+      }
+    }
+  }
+}
+
+type FlashToast = {
+  type: "info" | "error";
+  fallbackTitle: string;
+  body: string;
+  title: string | null;
+  duration: string | null;
+};
+
+function readFlashToasts(el: HTMLElement): FlashToast[] {
+  const specs: Array<Omit<FlashToast, "body">> = [
+    {
+      type: "info",
+      fallbackTitle: "Success",
+      title: el.getAttribute("data-flash-info-title"),
+      duration: el.getAttribute("data-flash-info-duration"),
+    },
+    {
+      type: "error",
+      fallbackTitle: "Error",
+      title: el.getAttribute("data-flash-error-title"),
+      duration: el.getAttribute("data-flash-error-duration"),
+    },
+  ];
+
+  return specs.flatMap((spec) => {
+    const body = el.getAttribute(`data-flash-${spec.type}`);
+    return body ? [{ ...spec, body }] : [];
+  });
+}
+
+function parseToastDuration(duration?: number | string): number | undefined {
+  if (duration === "Infinity" || duration === Infinity) return Infinity;
+  if (typeof duration === "string") return parseInt(duration, 10) || undefined;
+  return duration;
+}
 
 function buildRuntime(self: HookInterface<HTMLElement>): ToastHookRuntime {
   return {
@@ -128,14 +199,15 @@ function buildRuntime(self: HookInterface<HTMLElement>): ToastHookRuntime {
   };
 }
 
-const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & ToastHookState) {
-    const el = this.el;
+const ToastHook = createZagLiveHook<ToastHookState, ToastGroupHandle>({
+  key: "toastGroup",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
 
     if (!el.id) {
       el.id = generateId(el, "toast");
     }
-    this.groupId = el.id;
+    hook.groupId = el.id;
 
     const parseOffsets = (offsetsString?: string) => {
       if (!offsetsString) return undefined;
@@ -146,15 +218,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       }
     };
 
-    const parseDuration = (duration?: number | string): number | undefined => {
-      if (duration === "Infinity" || duration === Infinity) {
-        return Infinity;
-      }
-      if (typeof duration === "string") {
-        return parseInt(duration, 10) || undefined;
-      }
-      return duration;
-    };
+    const parseDuration = parseToastDuration;
 
     const parsePriority = (raw: number | string | undefined): Options["priority"] | undefined => {
       if (raw === undefined || raw === null) return undefined;
@@ -173,8 +237,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
         "bottom-end",
       ]) ?? "bottom-end";
 
-    createToastGroup(el, {
-      id: this.groupId,
+    const group = new ToastGroupHandle(el, {
+      id: hook.groupId,
       placement,
       overlap: getBoolean(el, "overlap"),
       max: getNumber(el, "max"),
@@ -183,45 +247,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle"),
     });
 
-    el.setAttribute("data-ready", "");
-
-    const store = getToastStore(this.groupId);
-    const flashInfo = el.getAttribute("data-flash-info");
-    const flashInfoTitle = el.getAttribute("data-flash-info-title");
-    const flashError = el.getAttribute("data-flash-error");
-    const flashErrorTitle = el.getAttribute("data-flash-error-title");
-    const flashInfoDuration = el.getAttribute("data-flash-info-duration");
-    const flashErrorDuration = el.getAttribute("data-flash-error-duration");
-
-    if (store && flashInfo) {
-      try {
-        store.create({
-          title: flashInfoTitle || "Success",
-          description: flashInfo,
-          type: "info",
-          id: generateId(undefined, "toast"),
-          duration: parseDuration(flashInfoDuration ?? undefined),
-        });
-      } catch (error) {
-        console.error("Failed to create flash info toast:", error);
-      }
-    }
-
-    if (store && flashError) {
-      try {
-        store.create({
-          title: flashErrorTitle || "Error",
-          description: flashError,
-          type: "error",
-          id: generateId(undefined, "toast"),
-          duration: parseDuration(flashErrorDuration ?? undefined),
-        });
-      } catch (error) {
-        console.error("Failed to create flash error toast:", error);
-      }
-    }
-
-    const rt = buildRuntime(this);
+    const rt = buildRuntime(hook);
 
     const buildCreateOptions = (payload: ToastCreatePayload, trusted: boolean): Options => {
       const spec = trusted
@@ -267,12 +293,12 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       return patch;
     };
 
-    const matchesGroup = (payload: { groupId?: string }): payload is { groupId: string } =>
-      typeof payload.groupId === "string" && payload.groupId === this.groupId;
+    const matchesGroup = (payload: { group_id?: string }): payload is { group_id: string } =>
+      typeof payload.group_id === "string" && payload.group_id === hook.groupId;
 
     const handleDismissPayload = (payload: ToastIdPayload) => {
       if (!matchesGroup(payload)) return;
-      const st = getToastStore(payload.groupId);
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
         st.dismiss(payload.id);
@@ -283,7 +309,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     const handleRemovePayload = (payload: ToastIdPayload) => {
       if (!matchesGroup(payload)) return;
-      const st = getToastStore(payload.groupId);
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
         st.remove(payload.id);
@@ -292,96 +318,48 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       }
     };
 
-    this.handlers = [];
-
-    this.handlers.push(
-      this.handleEvent("toast-create", (payload: ToastCreatePayload) => {
-        if (!matchesGroup(payload)) return;
-        const st = getToastStore(payload.groupId);
-        if (!st) return;
-        try {
-          st.create(buildCreateOptions(payload, true));
-        } catch (error) {
-          console.error("Failed to create toast:", error);
-        }
-      })
-    );
-
-    this.handlers.push(
-      this.handleEvent("toast-update", (payload: ToastUpdatePayload) => {
-        if (!matchesGroup(payload) || !payload.id) return;
-        const st = getToastStore(payload.groupId);
-        if (!st) return;
-        try {
-          st.update(payload.id, buildUpdatePatch(payload, true));
-        } catch (error) {
-          console.error("Failed to update toast:", error);
-        }
-      })
-    );
-
-    this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
-
-    this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
-
-    const onToastCreate = ((event: CustomEvent<ToastCreatePayload>) => {
-      const { detail } = event;
-      if (!matchesGroup(detail)) return;
-      const st = getToastStore(detail.groupId);
+    const createToast = (payload: ToastCreatePayload, trusted: boolean) => {
+      if (!matchesGroup(payload)) return;
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
-        st.create(buildCreateOptions(detail, false));
+        st.create(buildCreateOptions(payload, trusted));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
-    }) as EventListener;
+    };
 
-    const onToastUpdate = ((event: CustomEvent<ToastUpdatePayload>) => {
-      const { detail } = event;
-      if (!matchesGroup(detail) || !detail.id) return;
-      const st = getToastStore(detail.groupId);
+    const updateToast = (payload: ToastUpdatePayload, trusted: boolean) => {
+      if (!matchesGroup(payload) || !payload.id) return;
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
-        st.update(detail.id, buildUpdatePatch(detail, false));
+        st.update(payload.id, buildUpdatePatch(payload, trusted));
       } catch (error) {
         console.error("Failed to update toast:", error);
       }
-    }) as EventListener;
-
-    const onToastDismiss = ((event: CustomEvent<ToastIdPayload>) => {
-      handleDismissPayload(event.detail);
-    }) as EventListener;
-
-    const onToastRemove = ((event: CustomEvent<ToastIdPayload>) => {
-      handleRemovePayload(event.detail);
-    }) as EventListener;
-
-    const domListeners: DomListener[] = [];
-    const addDom = (name: string, fn: EventListener) => {
-      el.addEventListener(name, fn);
-      domListeners.push({ el, name, fn });
     };
-    (this as object & ToastHookState).domListeners = domListeners;
 
-    addDom("corex:toast:create", onToastCreate);
-    addDom("corex:toast:update", onToastUpdate);
-    addDom("corex:toast:dismiss", onToastDismiss);
-    addDom("corex:toast:remove", onToastRemove);
-  },
+    server.add("toast_create", (payload: ToastCreatePayload) => createToast(payload, true));
+    server.add("toast_update", (payload: ToastUpdatePayload) => updateToast(payload, true));
+    server.add("toast_dismiss", handleDismissPayload);
+    server.add("toast_remove", handleRemovePayload);
 
-  destroyed(this: object & HookInterface<HTMLElement> & ToastHookState) {
-    for (const { el, name, fn } of this.domListeners ?? []) {
-      el.removeEventListener(name, fn);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    if (this.groupId) {
-      disposeToastGroup(this.groupId);
-    }
+    dom.add<CustomEvent<ToastCreatePayload>>("corex:toast:create", (event) =>
+      createToast(event.detail, false)
+    );
+    dom.add<CustomEvent<ToastUpdatePayload>>("corex:toast:update", (event) =>
+      updateToast(event.detail, false)
+    );
+    dom.add<CustomEvent<ToastIdPayload>>("corex:toast:dismiss", (event) =>
+      handleDismissPayload(event.detail)
+    );
+    dom.add<CustomEvent<ToastIdPayload>>("corex:toast:remove", (event) =>
+      handleRemovePayload(event.detail)
+    );
+
+    return group;
   },
-};
+});
 
 export { ToastHook as Toast };

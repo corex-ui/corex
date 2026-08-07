@@ -23,6 +23,11 @@ defmodule Corex.DocParity.Markers do
       "minimal" => ["minimal_code"],
       "title and description" => ["with_title_description_code"]
     },
+    "layout_heading" => %{
+      "basic" => ["with_actions_code"],
+      "heading tags" => ["heading_tags_code"],
+      "title and subtitle only" => ["title_and_subtitle_code"]
+    },
     "avatar" => %{
       "fallback" => ["anatomy_fallback_code"],
       "pending" => ["anatomy_pending_code"],
@@ -164,6 +169,7 @@ defmodule Corex.DocParity.Markers do
       "with indicator" => ["with_indicator_code"]
     },
     "menu" => %{
+      "custom item" => ["anatomy_custom_item_code"],
       "grouped items" => ["anatomy_grouped_code"],
       "list" => ["anatomy_minimal_code"],
       "nested menu" => ["anatomy_nested_code"],
@@ -185,10 +191,11 @@ defmodule Corex.DocParity.Markers do
     "editable" => %{"basic" => ["minimal_code"]},
     "number_input" => %{
       "min, max, step" => ["min_max_default_code"],
-      "minimal" => ["anatomy_minimal_quantity_code"]
+      "minimal" => ["with_triggers_code"]
     }
   }
 
+  @spec anatomy(String.t(), String.t()) :: {:ok, [String.t()]} | :error
   def anatomy(slug, heading) do
     key = String.downcase(heading)
 
@@ -197,6 +204,4 @@ defmodule Corex.DocParity.Markers do
       _ -> :error
     end
   end
-
-  def anatomy_markers, do: @anatomy_markers
 end

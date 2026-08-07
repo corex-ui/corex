@@ -90,7 +90,7 @@
     padding: var(--spacing-space);
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
-    background: var(--color-layer);
+    background: var(--color-surface);
     max-width: 100%;
     box-sizing: border-box;
   }

@@ -1,5 +1,9 @@
 defmodule Corex.Menu.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.Menu.Anatomy.{
@@ -15,9 +19,8 @@ defmodule Corex.Menu.Connect do
   }
 
   alias Corex.Connect.ItemNav
-  alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [get_boolean: 1]
+  alias Phoenix.LiveView.JS
 
   @spec ignore_hook(String.t()) :: JS.t()
   def ignore_hook(id) when is_binary(id) do
@@ -30,17 +33,17 @@ defmodule Corex.Menu.Connect do
 
     base = %{
       "id" => assigns.id,
-      "data-close-on-select" => get_boolean(assigns.close_on_select),
-      "data-loop-focus" => get_boolean(assigns.loop_focus),
-      "data-typeahead" => get_boolean(assigns.typeahead),
-      "data-composite" => get_boolean(assigns.composite),
+      "data-close-on-select" => presence_attr(assigns.close_on_select),
+      "data-loop-focus" => presence_attr(assigns.loop_focus),
+      "data-typeahead" => presence_attr(assigns.typeahead),
+      "data-composite" => presence_attr(assigns.composite),
       "data-default-highlighted-value" => assigns.value,
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-aria-label" => assigns.aria_label,
       "data-on-select" => assigns.on_select,
       "data-on-select-client" => assigns.on_select_client,
-      "data-redirect" => get_boolean(assigns.redirect),
+      "data-redirect" => presence_attr(assigns.redirect),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client
     }
@@ -146,14 +149,14 @@ defmodule Corex.Menu.Connect do
       "data-scope" => "menu",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "disabled" => assigns.disabled,
       "role" => "menuitem",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "#{assigns.id}/#{assigns.value}",
       "data-nested-menu" => assigns.nested_menu_id,
-      "data-has-nested" => get_boolean(assigns.has_nested)
+      "data-has-nested" => presence_attr(assigns.has_nested)
     }
 
     ItemNav.put_item_nav_attrs(base, assigns)

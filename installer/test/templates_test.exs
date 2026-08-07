@@ -9,9 +9,15 @@ defmodule Corex.New.TemplatesTest do
     assert :layouts_ex in keys
     assert :root_heex in keys
     assert :home_heex in keys
+    assert :error_html_ex in keys
+    assert :error_html_404 in keys
+    refute :design_heex in keys
+    refute :guides_heex in keys
     assert :app_js in keys
     assert :app_css in keys
-    assert length(keys) == 9
+    assert :plug_accessibility in keys
+    assert :hooks_accessibility in keys
+    assert length(keys) == 13
   end
 
   @base_assigns [
@@ -20,6 +26,7 @@ defmodule Corex.New.TemplatesTest do
     otp_app: :my_app,
     mode: false,
     theme: false,
+    a11y: false,
     lang: false,
     design: true,
     tailwind: true,
@@ -35,6 +42,17 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "def app(assigns) do"
       assert out =~ "<.toast_group"
       assert out =~ "<.toast_client_error"
+      assert out =~ ~s(id="site-nav-dialog")
+      assert out =~ "Components"
+      assert out =~ "Hexdocs"
+      assert out =~ "corex.gigalixirapp.com"
+      assert out =~ "ui-size-xl"
+      assert out =~ "ui-size-md"
+      assert out =~ "gap-space-lg md:flex lg:gap-space-xl"
+      assert out =~ "overflow-y-auto"
+      assert out =~ "min-h-[calc(100dvh-var(--spacing-size-lg))]"
+      refute out =~ ~S[~p"/design"]
+      refute out =~ ~S[~p"/guides"]
       refute out =~ "def mode_toggle"
       refute out =~ "def theme_toggle"
       refute out =~ "def language_switch"
@@ -44,15 +62,33 @@ defmodule Corex.New.TemplatesTest do
       out = Templates.layouts_ex(Keyword.put(@base_assigns, :mode, true))
       assert out =~ "attr :mode, :string"
       assert out =~ "def mode_toggle(assigns)"
-      assert out =~ "<.mode_toggle mode={@mode} />"
+      assert out =~ ~s(<.mode_toggle id="mode-switcher" mode={@mode} />)
+      assert out =~ ~s(<.mode_toggle id="mode-switcher-mobile" mode={@mode} />)
+      assert out =~ "ui-trigger--circle"
+      assert out =~ "ui-ghost"
     end
 
     test "includes theme_toggle/1 when theme: true" do
       out = Templates.layouts_ex(Keyword.put(@base_assigns, :theme, true))
       assert out =~ "attr :theme, :string"
       assert out =~ "def theme_toggle(assigns)"
-      assert out =~ "<.theme_toggle theme={@theme} />"
+      assert out =~ ~s(<.theme_toggle id="theme-select" theme={@theme} />)
+      assert out =~ ~s(<.theme_toggle id="theme-select-mobile" theme={@theme} />)
+      assert out =~ ~s(default: "neo")
+      assert out =~ ~s(values: ["neo"])
       assert out =~ ~s(positioning={%Corex.Positioning{same_width: false}})
+    end
+
+    test "theme_toggle lists all themes when multiple are configured" do
+      assigns =
+        @base_assigns
+        |> Keyword.put(:theme, true)
+        |> Keyword.put(:themes, ["neo", "uno", "duo", "leo"])
+        |> Keyword.put(:default_theme, "neo")
+
+      out = Templates.layouts_ex(assigns)
+      assert out =~ ~s(values: ["neo", "uno", "duo", "leo"])
+      assert out =~ ~s(%{label: "Uno", value: "uno"})
     end
 
     test "includes language_switch/1 when lang: true" do
@@ -62,6 +98,30 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "MyAppWeb.Locale.locales()"
       assert out =~ "MyAppWeb.Locale.swap_path"
       assert out =~ "MyAppWeb.Locale.current()"
+      assert out =~ ~S[~t"Site"]
+      assert out =~ ~S[~t"Primary"]
+    end
+
+    test "keeps plain English nav aria labels when lang is off" do
+      out = Templates.layouts_ex(@base_assigns)
+      assert out =~ ~s(aria-label="Site")
+      assert out =~ ~s(aria-label="Primary")
+      refute out =~ ~S[~t"Site"]
+    end
+
+    test "includes accessibility_panel/1 when a11y: true" do
+      out = Templates.layouts_ex(Keyword.put(@base_assigns, :a11y, true))
+      assert out =~ "def accessibility_panel(assigns)"
+      assert out =~ "def accessibility_open_button(assigns)"
+      assert out =~ "a11y_data_attrs"
+      assert out =~ "[--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+      assert out =~ ~s(viewBox="0 0 512 512")
+      refute out =~ "fixed bottom-space end-space"
+      refute out =~ "h-size-md"
+      refute out =~ "hero-adjustments-horizontal"
+      refute out =~ ~r/<\/footer>\s*<\.accessibility_panel/
+      assert out =~ "<.accessibility_panel"
+      assert out =~ "<.accessibility_open_button"
     end
   end
 
@@ -75,24 +135,42 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "data-theme"
     end
 
-    test "omits the bridge script when neither mode nor theme is enabled" do
+    test "includes a11y bridge when a11y: true" do
+      out = Templates.root_heex(Keyword.put(@base_assigns, :a11y, true))
+      assert out =~ "phx:a11y"
+      assert out =~ "phx:set-a11y-reset"
+      refute out =~ "accessibility_panel"
+    end
+
+    test "omits the bridge script when neither mode nor theme nor a11y is enabled" do
       out = Templates.root_heex(@base_assigns)
       refute out =~ "phx:set-mode"
       refute out =~ "phx:set-theme"
+      refute out =~ "phx:a11y"
       assert out =~ ~s(data-theme="neo")
       assert out =~ ~s(data-mode="light")
     end
 
-    test "omits data-theme and data-mode on html when design is off" do
+    test "keeps neo/light data attrs when design is off" do
       out = Templates.root_heex(Keyword.put(@base_assigns, :design, false))
-      refute out =~ ~s(data-theme=)
-      refute out =~ ~s(data-mode=)
+      assert out =~ ~s(data-theme="neo")
+      assert out =~ ~s(data-mode="light")
+      assert out =~ "typo flex min-h-dvh"
     end
 
     test "uses Locale.lang/dir when lang: true" do
       out = Templates.root_heex(Keyword.put(@base_assigns, :lang, true))
       assert out =~ "MyAppWeb.Locale.lang()"
       assert out =~ "MyAppWeb.Locale.dir()"
+      assert out =~ ~S|~t"#{name = "MyApp"}: a Phoenix app powered by Corex."|
+      assert out =~ ~S[~t" · Phoenix Framework"]
+    end
+
+    test "keeps plain English title suffix when lang is off" do
+      out = Templates.root_heex(@base_assigns)
+      assert out =~ ~s(suffix=" · Phoenix Framework")
+      refute out =~ ~S[~t" · Phoenix Framework"]
+      assert out =~ ~s(content="MyApp: a Phoenix app powered by Corex.")
     end
   end
 
@@ -100,13 +178,44 @@ defmodule Corex.New.TemplatesTest do
     test "renders a Corex demo page in <Layouts.app>" do
       out = Templates.home_heex(@base_assigns)
       assert out =~ "<Layouts.app"
-      assert out =~ "<.layout_heading"
-      assert out =~ "Corex for Phoenix"
+      assert out =~ "The Phoenix UI"
+      assert out =~ "real API"
+      assert out =~ ~s(id="home-accordion")
+      assert out =~ "Corex.Accordion.set_value"
+      assert out =~ "Open first"
+      refute out =~ "<.layout_heading"
+      refute out =~ ~S[~p"/design"]
+      refute out =~ ~S[~p"/guides"]
+      refute out =~ "<.button"
     end
 
     test "passes current_path from conn when lang: true" do
       out = Templates.home_heex(Keyword.put(@base_assigns, :lang, true))
       assert out =~ "current_path={@conn.request_path}"
+      assert out =~ ~S[~t"API"]
+      assert out =~ ~S[~t"Accordion"]
+    end
+
+    test "keeps plain English badges when lang is off" do
+      out = Templates.home_heex(@base_assigns)
+      assert out =~ " API"
+      assert out =~ " Accordion"
+      refute out =~ ~S[~t"API"]
+    end
+  end
+
+  describe "error_html/1" do
+    test "renders ErrorHTML module with embed_templates" do
+      out = Templates.error_html_ex(Keyword.put(@base_assigns, :lang, true))
+      assert out =~ "defmodule MyAppWeb.ErrorHTML do"
+      assert out =~ ~s(embed_templates "error_html/*")
+      assert out =~ "status_message_from_template"
+    end
+
+    test "404 template uses gettext strings" do
+      out = Templates.error_html_404(Keyword.put(@base_assigns, :lang, true))
+      assert out =~ ~S[~t"Page not found"]
+      assert out =~ ~S[~t"Back to home"]
     end
   end
 
@@ -202,16 +311,32 @@ defmodule Corex.New.TemplatesTest do
       refute out =~ "tags-input.css"
     end
 
-    test "omits design imports when design: false but keeps Tailwind" do
+    test "imports corex export when design: false but keeps Tailwind" do
       out = Templates.app_css(Keyword.put(@base_assigns, :design, false))
-      refute out =~ "@import \"../corex/main.css\""
+      assert out =~ "@import \"../corex/corex.css\""
+      assert out =~ "@source \"../corex\""
       assert out =~ "@import \"tailwindcss\""
+      refute out =~ "corex-base.css"
     end
 
     test "minimal css when tailwind: false" do
       out = Templates.app_css(Keyword.put(@base_assigns, :tailwind, false))
       refute out =~ "@import \"tailwindcss\""
       assert out =~ "[data-phx-session]"
+      assert out =~ "@import \"../corex/corex.css\""
+    end
+
+    test "imports corex export when design and tailwind are both off" do
+      out =
+        Templates.app_css(
+          @base_assigns
+          |> Keyword.put(:design, false)
+          |> Keyword.put(:tailwind, false)
+        )
+
+      assert out =~ ~s(@import "../corex/corex.css")
+      refute out =~ "@import \"tailwindcss\""
+      refute out =~ "corex-base.css"
     end
   end
 end

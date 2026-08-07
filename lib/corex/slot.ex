@@ -12,9 +12,11 @@ defmodule Corex.Slot do
   @default_disabled &__MODULE__.default_disabled/1
 
   @doc "Fallback string key when a slot entry omits `value`."
+  @spec default_fallback(integer()) :: String.t()
   def default_fallback(index), do: "item-#{index}"
 
   @doc "Default disabled predicate when callers omit `:disabled`."
+  @spec default_disabled(term()) :: false
   def default_disabled(_entries), do: false
 
   @doc """

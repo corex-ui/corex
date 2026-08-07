@@ -18,80 +18,43 @@ defmodule E2eWeb.ListboxPatternsLive do
   ]
 
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      Process.send_after(self(), :add_timestamp_item, 3000)
-    end
-
     {:ok,
      socket
-     |> stream_configure(:items, dom_id: &"listbox:stream-listbox:item:#{&1.value}")
-     |> stream(:items, @initial_items)
-     |> assign(:items_list, @initial_items)
-     |> stream_configure(:grouped_items,
-       dom_id: &"listbox:stream-grouped-listbox:item:#{&1.value}"
-     )
-     |> stream(:grouped_items, @initial_grouped_items)
-     |> assign(:grouped_items_list, @initial_grouped_items)
+     |> assign(:items, @initial_items)
+     |> assign(:grouped_items, @initial_grouped_items)
      |> assign(:next_id, 4)
      |> assign(:next_grouped_id, 4)
      |> assign(:listbox_controlled_value, ["fra", "bel"])}
   end
 
-  def handle_info(:add_timestamp_item, socket) do
-    Process.send_after(self(), :add_timestamp_item, 10_000)
-
-    id = to_string(socket.assigns.next_id)
-
-    time =
-      DateTime.utc_now()
-      |> DateTime.truncate(:second)
-      |> DateTime.to_time()
-      |> Time.to_string()
-
-    item = %{value: id, label: ~t"Item #{id} @ #{time}"}
-
-    {:noreply,
-     socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
-     |> assign(:next_id, socket.assigns.next_id + 1)}
-  end
-
   def handle_event("add_item", _params, socket) do
     id = to_string(socket.assigns.next_id)
-    item = %{value: id, label: ~t"Item #{id}"}
+    item = %{value: id, label: "Item #{id}"}
 
     {:noreply,
      socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
+     |> assign(:items, socket.assigns.items ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
   def handle_event("reset", _params, socket) do
-    {:noreply,
-     socket
-     |> stream(:items, @initial_items, reset: true)
-     |> assign(:items_list, @initial_items)
-     |> assign(:next_id, 4)}
+    {:noreply, socket |> assign(:items, @initial_items) |> assign(:next_id, 4)}
   end
 
   def handle_event("add_to_group", %{"group" => group}, socket) do
     id = "g#{socket.assigns.next_grouped_id}"
-    item = %{value: id, label: ~t"Item #{socket.assigns.next_grouped_id}", group: group}
+    item = %{value: id, label: "Item #{socket.assigns.next_grouped_id}", group: group}
 
     {:noreply,
      socket
-     |> stream_insert(:grouped_items, item)
-     |> assign(:grouped_items_list, socket.assigns.grouped_items_list ++ [item])
+     |> assign(:grouped_items, socket.assigns.grouped_items ++ [item])
      |> assign(:next_grouped_id, socket.assigns.next_grouped_id + 1)}
   end
 
   def handle_event("reset_grouped", _params, socket) do
     {:noreply,
      socket
-     |> stream(:grouped_items, @initial_grouped_items, reset: true)
-     |> assign(:grouped_items_list, @initial_grouped_items)
+     |> assign(:grouped_items, @initial_grouped_items)
      |> assign(:next_grouped_id, 4)}
   end
 
@@ -112,28 +75,28 @@ defmodule E2eWeb.ListboxPatternsLive do
         path={@path}
         id="listbox-patterns-page"
         title={~t"Listbox · Patterns"}
-        subtitle={~t"Streaming items and server-controlled selection."}
+        subtitle={~t"Dynamic items and server-controlled selection."}
       >
         <.demo_section
-          id="listbox-patterns-stream"
-          title={~t"Stream"}
+          id="listbox-patterns-dynamic"
+          title={~t"Dynamic items"}
           code_tabs={[
             %{
               value: "heex",
               label: ~t"Heex",
               language: :heex,
-              code: Demo.patterns_stream_demo_heex()
+              code: Demo.patterns_dynamic_demo_heex()
             },
             %{
               value: "elixir",
               label: ~t"Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_elixir()
+              code: Demo.patterns_dynamic_elixir()
             }
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
@@ -141,7 +104,7 @@ defmodule E2eWeb.ListboxPatternsLive do
                 Reset
               </.action>
             </div>
-            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+            <.listbox id="patterns-dynamic" class="listbox" items={Corex.List.new(@items)}>
               <:label>Choose an item</:label>
               <:empty>No items</:empty>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -150,25 +113,25 @@ defmodule E2eWeb.ListboxPatternsLive do
         </.demo_section>
 
         <.demo_section
-          id="listbox-patterns-stream-grouped"
-          title={~t"Stream grouped"}
+          id="listbox-patterns-dynamic-grouped"
+          title={~t"Dynamic grouped"}
           code_tabs={[
             %{
               value: "heex",
               label: ~t"Heex",
               language: :heex,
-              code: Demo.patterns_stream_grouped_demo_heex()
+              code: Demo.patterns_dynamic_grouped_demo_heex()
             },
             %{
               value: "elixir",
               label: ~t"Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_grouped_elixir()
+              code: Demo.patterns_dynamic_grouped_elixir()
             }
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
@@ -188,9 +151,9 @@ defmodule E2eWeb.ListboxPatternsLive do
               </.action>
             </div>
             <.listbox
-              id="stream-grouped-listbox"
+              id="patterns-dynamic-grouped"
               class="listbox"
-              items={Corex.List.new(@grouped_items_list)}
+              items={Corex.List.new(@grouped_items)}
             >
               <:label>Choose a country</:label>
               <:empty>No items</:empty>
@@ -218,7 +181,7 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full items-center">
+            <div class="flex flex-col gap-space w-full items-center">
               <div class="w-full max-w-md">
                 <.listbox
                   id="listbox-patterns-controlled-field"

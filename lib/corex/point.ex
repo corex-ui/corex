@@ -49,7 +49,9 @@ defmodule Corex.Point do
   @doc """
   Normalizes a point struct or map for JSON / data attributes.
 
-  Returns `nil` when the argument is `nil`.
+  Returns `nil` when the argument is `nil` or is not a numeric point. A bad point
+  means the component falls back to anchor-based placement instead of crashing
+  the render, and logs a warning naming the offending value.
 
   ## Examples
 
@@ -69,5 +71,11 @@ defmodule Corex.Point do
 
   def to_map(%{x: x, y: y}) when is_number(x) and is_number(y), do: %{x: x, y: y}
 
-  def to_map(_), do: raise(ArgumentError, "expected %Corex.Point{} or %{x: _, y: _}")
+  def to_map(other) do
+    Corex.Dev.warn(
+      "expected %Corex.Point{} or %{x: number, y: number}, got: #{inspect(other)}; ignoring it"
+    )
+
+    nil
+  end
 end

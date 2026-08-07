@@ -13,13 +13,20 @@ defmodule Corex.MCP.Server do
 
   alias Corex.MCP.Config
   alias Corex.MCP.Json
+  alias Corex.MCP.Prompts
   alias Corex.MCP.Tools.Components, as: McpToolComponents
   alias Corex.MCP.Tools.Design, as: McpToolDesign
+  alias Corex.MCP.Tools.Guides, as: McpToolGuides
   alias Corex.MCP.Tools.Installation, as: McpToolInstallation
 
-  @protocol_version "2025-03-26"
+  @protocol_version "2025-11-25"
+  @supported_protocol_versions ["2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"]
   @vsn Mix.Project.config()[:version] || "0.0.0"
   @tools_key {__MODULE__, :tools_and_dispatch}
+
+  @instructions """
+  Call list_components then get_component before inventing attrs. Use list_modifiers / get_component_style for ui-* classes. Use search_docs for usage-rules. Prefer installation_guide for install steps. Never enable this server in production.
+  """
 
   @parse_error -32_600
   @method_not_found -32_601
@@ -28,7 +35,12 @@ defmodule Corex.MCP.Server do
   @doc "Loads tool specs and callbacks into persistent term storage."
   def init_tools do
     tools =
-      [McpToolComponents.tools(), McpToolDesign.tools(), McpToolInstallation.tools()]
+      [
+        McpToolComponents.tools(),
+        McpToolDesign.tools(),
+        McpToolInstallation.tools(),
+        McpToolGuides.tools()
+      ]
       |> Enum.flat_map(& &1)
       |> maybe_append_test_tools()
 
@@ -45,6 +57,7 @@ defmodule Corex.MCP.Server do
     end
   end
 
+  @dialyzer {:nowarn_function, test_raise_tool: 0}
   defp test_raise_tool do
     %{
       name: "test_raise",
@@ -99,16 +112,16 @@ defmodule Corex.MCP.Server do
     end
   end
 
-  defp validate_protocol_version(client_version) do
+  defp negotiate_protocol_version(client_version) do
     cond do
       is_nil(client_version) ->
         {:error, "Protocol version is required"}
 
-      client_version < @protocol_version ->
-        {:error, "Unsupported protocol version. Server supports #{@protocol_version} or later"}
+      client_version in @supported_protocol_versions ->
+        {:ok, client_version}
 
       true ->
-        :ok
+        {:ok, @protocol_version}
     end
   end
 
@@ -117,13 +130,16 @@ defmodule Corex.MCP.Server do
   end
 
   defp handle_initialize(request_id, params) do
-    case validate_protocol_version(params["protocolVersion"]) do
-      :ok ->
+    case negotiate_protocol_version(params["protocolVersion"]) do
+      {:ok, protocol_version} ->
         jsonrpc_result(request_id, %{
-          protocolVersion: @protocol_version,
-          capabilities: %{tools: %{listChanged: false}},
+          protocolVersion: protocol_version,
+          capabilities: %{
+            tools: %{listChanged: false},
+            prompts: %{listChanged: false}
+          },
           serverInfo: %{name: "Corex MCP", version: to_string(@vsn)},
-          tools: tools()
+          instructions: String.trim(@instructions)
         })
 
       {:error, reason} ->
@@ -141,7 +157,20 @@ defmodule Corex.MCP.Server do
   end
 
   defp handle_list_prompts(request_id, _params) do
-    result_or_error(request_id, {:ok, %{prompts: []}})
+    result_or_error(request_id, {:ok, %{prompts: Prompts.list()}})
+  end
+
+  defp handle_get_prompt(request_id, %{"name" => name} = params) do
+    args = Map.get(params, "arguments") || %{}
+
+    case Prompts.get(name, args) do
+      {:ok, result} -> result_or_error(request_id, {:ok, result})
+      {:error, message} -> result_or_error(request_id, {:error, message})
+    end
+  end
+
+  defp handle_get_prompt(request_id, _) do
+    result_or_error(request_id, {:error, "prompts/get requires name"})
   end
 
   defp handle_list_resources(request_id, _params) do
@@ -167,15 +196,6 @@ defmodule Corex.MCP.Server do
 
   defp result_or_error(request_id, {:ok, result}) when is_map(result) do
     jsonrpc_result(request_id, result)
-  end
-
-  defp result_or_error(request_id, {:error, :invalid_arguments}) do
-    {:error,
-     %{
-       jsonrpc: "2.0",
-       id: request_id,
-       error: %{code: @invalid_params, message: "Invalid arguments for tool"}
-     }}
   end
 
   defp result_or_error(request_id, {:error, message}) when is_binary(message) do
@@ -271,6 +291,10 @@ defmodule Corex.MCP.Server do
     handle_list_prompts(id, message["params"])
   end
 
+  defp route_request("prompts/get", id, message, _assigns) do
+    handle_get_prompt(id, message["params"] || %{})
+  end
+
   defp route_request("resources/list", id, message, _assigns) do
     handle_list_resources(id, message["params"])
   end
@@ -317,18 +341,13 @@ defmodule Corex.MCP.Server do
     |> send_resp(conn.status || 200, Json.encode!(data))
   end
 
-  defp send_jsonrpc_error(conn, id, code, message, data \\ nil) do
-    error =
-      %{code: code, message: message}
-      |> maybe_put_error_data(data)
+  defp send_jsonrpc_error(conn, id, code, message) do
+    error = %{code: code, message: message}
 
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Json.encode!(%{jsonrpc: "2.0", id: id, error: error}))
   end
-
-  defp maybe_put_error_data(error, nil), do: error
-  defp maybe_put_error_data(error, data), do: Map.put(error, :data, data)
 
   @doc "Handles a JSON-RPC MCP request over HTTP."
   def handle_http_message(conn) do

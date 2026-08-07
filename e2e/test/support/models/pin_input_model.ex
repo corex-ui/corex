@@ -17,8 +17,7 @@ defmodule E2eWeb.PinInputModel do
     assert_has(
       session,
       css(
-        ~s|section##{section_dom_id} [data-scope="pin-input"][data-part="input"]|,
-        at: 0,
+        ~s|section##{section_dom_id} [phx-hook="PinInput"]:not([data-loading])|,
         visible: :any
       )
     )
@@ -33,11 +32,7 @@ defmodule E2eWeb.PinInputModel do
 
     assert_has(
       session,
-      css(
-        ~s|##{host_dom_id} [data-scope="pin-input"][data-part="input"]|,
-        at: 0,
-        visible: :any
-      )
+      css(~s|##{host_dom_id}[phx-hook="PinInput"]:not([data-loading])|, visible: :any)
     )
 
     session
@@ -59,25 +54,17 @@ defmodule E2eWeb.PinInputModel do
   end
 
   def wait_pin_complete_in_section(session, host_id, pin, opts \\ []) when is_binary(pin) do
-    array_inputs =
-      css(~s|##{host_id} [data-scope="pin-input"][data-part="array-inputs"]|, visible: :any)
+    first = pin |> String.graphemes() |> List.first() || ""
 
-    selector =
-      if has?(session, array_inputs) do
-        first = pin |> String.graphemes() |> List.first() || ""
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_id} [data-scope="pin-input"][data-part="input"][value="#{first}"]|,
+        visible: :any
+      ),
+      opts
+    )
 
-        css(
-          ~s|##{host_id} [data-scope="pin-input"][data-part="array-input"][value="#{first}"]|,
-          visible: :any
-        )
-      else
-        css(
-          ~s|##{host_id} [data-scope="pin-input"][data-part="hidden-input"][value="#{pin}"]|,
-          visible: :any
-        )
-      end
-
-    wait_for_has(session, selector, opts)
     session
   end
 
@@ -99,6 +86,24 @@ defmodule E2eWeb.PinInputModel do
 
   def pin_input_events_server_log_has_row?(session) do
     has?(session, css("#pin-input-events-log-server tr[data-part='row']", visible: :any))
+  end
+
+  def pin_input_events_client_log_has_row?(session) do
+    has?(session, css("#pin-input-events-log-client tr[data-part='row']", visible: :any))
+  end
+
+  def wait_pin_cleared(session, host_id, opts \\ []) when is_binary(host_id) do
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_id} [data-scope="pin-input"][data-part="input"][value=""]|,
+        at: 0,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
   end
 
   def goto_form(session, mode) do

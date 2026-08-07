@@ -1,37 +1,31 @@
 import {
   readPressedControlledZagUpdate
-} from "./chunks/chunk-BGER3KYP.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId,
   readPayloadPressed
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getBooleanValue,
   getDir,
   getString
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toggle@1.40.0/node_modules/@zag-js/toggle/dist/toggle.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+toggle@1.42.0/node_modules/@zag-js/toggle/dist/toggle.anatomy.mjs
 var anatomy = createAnatomy("toggle", ["root", "indicator"]);
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+toggle@1.40.0/node_modules/@zag-js/toggle/dist/toggle.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toggle@1.42.0/node_modules/@zag-js/toggle/dist/toggle.connect.mjs
 function connect(service, normalize) {
   const { context, prop, send } = service;
   const pressed = context.get("pressed");
@@ -68,7 +62,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toggle@1.40.0/node_modules/@zag-js/toggle/dist/toggle.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toggle@1.42.0/node_modules/@zag-js/toggle/dist/toggle.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -115,7 +109,6 @@ var machine = createMachine({
 
 // components/toggle.ts
 var Toggle = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -142,15 +135,17 @@ function pressedChangePayload(el, pressed) {
     pressed
   };
 }
-var ToggleHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var ToggleHook = createZagLiveHook({
+  key: "toggle",
+  controlledKeys: ["pressed"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const controlled = getBoolean(el, "controlled");
     const pressedFromDataset = getBooleanValue(el, "pressed");
     const defaultPressedFromDataset = getBooleanValue(el, "defaultPressed");
-    const zagToggle = new Toggle(el, {
+    const toggle = new Toggle(el, {
       id: el.id,
       ...controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true },
       disabled: getBoolean(el, "disabled"),
@@ -166,59 +161,42 @@ var ToggleHook = {
         });
       }
     });
-    zagToggle.init();
-    this.zagToggle = zagToggle;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:toggle:set-pressed", (event) => {
+    dom.add("corex:toggle:set-pressed", (event) => {
       const p = event.detail?.pressed;
-      if (typeof p === "boolean") zagToggle.api.setPressed(p);
+      if (typeof p === "boolean") toggle.api.setPressed(p);
     });
-    domRegistry.add("corex:toggle:toggle-pressed", () => {
-      zagToggle.api.setPressed(!zagToggle.api.pressed);
+    dom.add("corex:toggle:toggle-pressed", () => {
+      toggle.api.setPressed(!toggle.api.pressed);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("toggle_set_pressed", (payload) => {
+    server.add("toggle_set_pressed", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const pressed = readPayloadPressed(payload);
-      if (typeof pressed === "boolean") zagToggle.api.setPressed(pressed);
+      if (typeof pressed === "boolean") toggle.api.setPressed(pressed);
     });
-    registry.add("toggle_toggle_pressed", (payload) => {
+    server.add("toggle_toggle_pressed", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      zagToggle.api.setPressed(!zagToggle.api.pressed);
+      toggle.api.setPressed(!toggle.api.pressed);
     });
-    registry.add("toggle_pressed", (payload) => {
+    server.add("toggle_pressed", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("toggle_pressed_response", {
+      hook.pushEvent("toggle_pressed_response", {
         id: el.id,
-        value: zagToggle.api.pressed
+        value: toggle.api.pressed
       });
     });
+    return toggle;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["pressed"]);
-  },
-  updated() {
-    try {
-      const pressedPatch = readPressedControlledZagUpdate(this.el, this.beforeAttrs);
-      this.zagToggle?.updateProps({
-        id: this.el.id,
-        ...pressedPatch,
-        disabled: getBoolean(this.el, "disabled"),
-        dir: getDir(this.el)
-      });
-    } finally {
-      this.beforeAttrs = void 0;
-    }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.zagToggle?.destroy();
+  update(hook, toggle) {
+    const pressedPatch = readPressedControlledZagUpdate(hook.el, hook.beforeAttrs);
+    toggle.updateProps({
+      id: hook.el.id,
+      ...pressedPatch,
+      disabled: getBoolean(hook.el, "disabled"),
+      dir: getDir(hook.el)
+    });
   }
-};
+});
 export {
   ToggleHook as Toggle,
   pressedChangePayload

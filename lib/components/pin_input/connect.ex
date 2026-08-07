@@ -1,10 +1,16 @@
 defmodule Corex.PinInput.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, [:connect, :api]
+
   alias Corex.FormField
+
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
+
   alias Corex.Selectors
+
   alias Corex.ValueBinding
-  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
 
   alias Phoenix.LiveView.JS
 
@@ -18,7 +24,7 @@ defmodule Corex.PinInput.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    value_list = if is_list(assigns.value), do: validate_value!(assigns.value), else: []
+    value_list = if is_list(assigns.value), do: coerce_string_list(assigns.value), else: []
     count = assigns.count
     padded = padded_value_list(value_list, count)
     controlled = Map.get(assigns, :controlled, false)
@@ -27,18 +33,18 @@ defmodule Corex.PinInput.Connect do
 
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(controlled),
+      "data-controlled" => presence_attr(controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-count" => to_string(assigns.count),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-required" => get_boolean(assigns.required),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-mask" => get_boolean(assigns.mask),
-      "data-otp" => get_boolean(assigns.otp),
-      "data-blur-on-complete" => get_boolean(assigns.blur_on_complete),
-      "data-select-on-focus" => get_boolean(assigns.select_on_focus),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-required" => presence_attr(assigns.required),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-mask" => presence_attr(assigns.mask),
+      "data-otp" => presence_attr(assigns.otp),
+      "data-blur-on-complete" => presence_attr(assigns.blur_on_complete),
+      "data-select-on-focus" => presence_attr(assigns.select_on_focus),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
@@ -81,10 +87,10 @@ defmodule Corex.PinInput.Connect do
     )
   end
 
-  def ignore_input(assigns) do
-    JS.ignore_attributes(Input.ignored_attrs(),
-      to: Selectors.css_id("pin-input:#{assigns.id}:input:#{assigns.index}")
-    )
+  # Apply to the mounted element itself (no :to) so ignore sticks after Zag
+  # rewrites the cell id to pin-input:<id>:<index>.
+  def ignore_input(_assigns) do
+    JS.ignore_attributes(Input.ignored_attrs())
   end
 
   @spec root(Root.t()) :: map()
@@ -95,7 +101,7 @@ defmodule Corex.PinInput.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
       "id" => "pin-input:#{assigns.id}",
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -143,7 +149,8 @@ defmodule Corex.PinInput.Connect do
       "data-scope" => "pin-input",
       "data-part" => "input",
       "data-index" => to_string(assigns.index),
-      "id" => "pin-input:#{assigns.id}:input:#{assigns.index}",
+      # Match Zag getInputId (`pin-input:<id>:<index>`) so LV morph keeps the cell.
+      "id" => "pin-input:#{assigns.id}:#{assigns.index}",
       "aria-label" => assigns.aria_label,
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns)

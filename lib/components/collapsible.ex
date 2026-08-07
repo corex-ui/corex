@@ -358,7 +358,7 @@ defmodule Corex.Collapsible do
   def collapsible(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "collapsible-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("collapsible")
       |> assign(:slot_assigns, %{open: assigns.open, disabled: assigns.disabled})
 
     closed_part = %Closed{
@@ -384,8 +384,7 @@ defmodule Corex.Collapsible do
     <div
       id={@id}
       phx-hook="Collapsible"
-      data-loading 
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -398,27 +397,25 @@ defmodule Corex.Collapsible do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, open: @open, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, open: @open, orientation: @orientation})}>
-        <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, open: @open, orientation: @orientation})}>
+        <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled, orientation: @orientation})}>
           {render_slot(@trigger, @slot_assigns)}
           <span
             :if={@closed != []}
-            phx-mounted={Connect.ignore_closed_part(@closed_part)}
-            {Connect.closed_part(@closed_part)}
+            {Connect.mounted_closed_part(@closed_part)}
             class={@closed |> List.first() |> Map.get(:class)}
           >
             {render_slot(@closed, @slot_assigns)}
           </span>
           <span
             :if={@opened != []}
-            phx-mounted={Connect.ignore_opened_part(@opened_part)}
-            {Connect.opened_part(@opened_part)}
+            {Connect.mounted_opened_part(@opened_part)}
             class={@opened |> List.first() |> Map.get(:class)}
           >
             {render_slot(@opened, @slot_assigns)}
           </span>
         </button>
-        <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled, orientation: @orientation})}>
+        <div {Connect.mounted_content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled, orientation: @orientation})}>
           {render_slot(@content, @slot_assigns)}
         </div>
       </div>
@@ -489,6 +486,9 @@ defmodule Corex.Collapsible do
   ```
   """)
 
+  @spec set_open(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def set_open(collapsible_id, open) when is_binary(collapsible_id) and is_boolean(open) do
     RespondTo.dispatch_set_open(collapsible_id, open, "corex:collapsible:set-open")
   end

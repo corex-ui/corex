@@ -1,12 +1,13 @@
 defmodule Corex.Design.Options do
   @moduledoc false
 
-  alias Corex.Design.Axes
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Accessibility
+  alias Corex.Design.Components
   alias Corex.Design.Config
   alias Corex.Design.Filter
+  alias Corex.Design.Scales
   alias Corex.Design.Theme
-  alias Corex.Design.Theme.Options, as: ThemeOptions
+  alias Corex.Design.Theme.Validator, as: ThemeValidator
 
   @doc false
   def report do
@@ -17,29 +18,37 @@ defmodule Corex.Design.Options do
       indent_lines(Config.options_docs()),
       "",
       "Allowed components: (components:)",
-      format_atoms(ComponentLayout.ids()),
+      format_atoms(Components.ids()),
       "Current components: #{format_current_components(Filter.components())}",
       "",
       "Allowed semantics: (semantics:)",
       format_atoms(Filter.default_semantics()),
-      "Current semantics: #{format_list(Filter.semantics())}",
+      "Current semantics: #{format_list(Filter.semantic_strings())}",
       "",
       "Allowed themes: (themes:, default_theme:)",
-      format_atoms(ThemeOptions.preset_ids()),
+      format_atoms(ThemeValidator.preset_ids()),
       "Current default_theme: #{Theme.default_theme()}",
       "",
-      "Allowed modes: (default_mode:)",
-      format_atoms(Theme.modes()),
+      "Allowed modes: (modes:, default_mode:)",
+      format_atoms([:light, :dark]),
+      "Current modes: #{format_atoms(Theme.modes())}",
       "Current default_mode: #{Theme.default_mode()}",
       "",
+      "Allowed accessibility axes: (accessibility:)",
+      format_atoms(Accessibility.known_axes()),
+      "Current accessibility: #{format_accessibility(Accessibility.axes())}",
+      "",
       "Size steps: (scales / ui-size-*)",
-      format_list(Axes.sizes()),
+      format_list(Scales.steps(:size)),
       "",
       "Radius steps: (scales / ui-rounded-*)",
-      format_list(Axes.radii())
+      format_list(Scales.steps(:radius))
     ]
     |> Enum.join("\n")
   end
+
+  defp format_accessibility([]), do: "off"
+  defp format_accessibility(axes), do: format_atoms(axes)
 
   defp format_current_components(nil), do: "all"
   defp format_current_components(list), do: format_list(list)

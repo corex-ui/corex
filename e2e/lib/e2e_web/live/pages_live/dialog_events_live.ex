@@ -76,7 +76,7 @@ defmodule E2eWeb.DialogEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.dialog
                 id={@id_server}
                 class="dialog"
@@ -119,7 +119,7 @@ defmodule E2eWeb.DialogEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.dialog
                 id={@id_client}
                 class="dialog"

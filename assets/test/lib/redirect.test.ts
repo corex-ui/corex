@@ -4,6 +4,7 @@ import {
   isAllowedRedirectDestination,
   performRedirect,
   readDomItemRedirect,
+  sanitizeRedirectDestination,
 } from "../../lib/redirect";
 
 describe("isAllowedRedirectDestination", () => {
@@ -17,7 +18,15 @@ describe("isAllowedRedirectDestination", () => {
     ["//evil.example", false],
     ["data:text/html,hi", false],
     ["vbscript:msgbox", false],
-  ])("%s -> %s", (destination, allowed) => {
+    ["\0javascript:alert(1)", false],
+    ["\x01javascript:alert(1)", false],
+    ["\x1Fjavascript:alert(1)", false],
+    [" javascript:alert(1)", false],
+    ["\x01data:text/html,hi", false],
+    ["\x01//evil.example", false],
+    ["\x01/items", true],
+    [" /safe", true],
+  ])("%j -> %s", (destination, allowed) => {
     expect(isAllowedRedirectDestination(destination)).toBe(allowed);
   });
 });
@@ -39,6 +48,23 @@ describe("readDomItemRedirect", () => {
     const el = document.createElement("div");
     el.setAttribute("data-to", "javascript:alert(1)");
     expect(readDomItemRedirect(el)).toBeNull();
+  });
+
+  it("returns null for C0-prefixed javascript data-to", () => {
+    const el = document.createElement("div");
+    el.setAttribute("data-to", "\x01javascript:alert(1)");
+    expect(readDomItemRedirect(el)).toBeNull();
+  });
+
+  it("sanitizes leading C0 before returning destination", () => {
+    const el = document.createElement("div");
+    el.setAttribute("data-to", "\x01/items");
+    expect(readDomItemRedirect(el)).toEqual({
+      destination: "/items",
+      mode: undefined,
+      newTab: false,
+    });
+    expect(sanitizeRedirectDestination("\x01/items")).toBe("/items");
   });
 
   it("opts out with data-redirect=false", () => {

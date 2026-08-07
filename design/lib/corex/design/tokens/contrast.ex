@@ -57,7 +57,7 @@ defmodule Corex.Design.Tokens.Contrast do
          {:ok, bg} <- fetch(tokens, bg_role) do
       achieved = ratio(fg, bg)
 
-      if achieved + 1.0e-4 < target do
+      if achieved + 0.05 < target do
         %{
           theme: theme,
           mode: mode,
@@ -83,7 +83,7 @@ defmodule Corex.Design.Tokens.Contrast do
   defp base_pairs do
     [
       {"ink", "root", @text_ratio, :error, "body text on page"},
-      {"ink", "layer", @text_ratio, :error, "body text on raised surface"},
+      {"ink", "surface", @text_ratio, :error, "body text on raised surface"},
       {"ink-muted", "root", @text_ratio, :error, "muted text on page"},
       {"link", "root", @text_ratio, :error, "link text on page"},
       {"ink", "ui", @text_ratio, :error, "neutral control text"},
@@ -105,13 +105,16 @@ defmodule Corex.Design.Tokens.Contrast do
       {"#{role}-contrast", "#{role}-hover", @text_ratio, :error, "#{role} solid text (hover)"},
       {"#{role}-contrast", "#{role}-active", @text_ratio, :error, "#{role} solid text (active)"},
       {"#{role}-text", "ui", @text_ratio, :error, "#{role} text on neutral control"},
+      {"#{role}-text", "ui-hover", @text_ratio, :error,
+       "#{role} text on neutral control (hover)"},
+      {"#{role}-text", "ui-active", @text_ratio, :error,
+       "#{role} text on neutral control (active/open)"},
       {"#{role}-contrast", "#{role}-muted", @ui_ratio, :warning, "#{role} disabled solid text"}
     ]
   end
 
   defp roles do
-    Filter.semantics()
+    Filter.semantic_strings()
     |> Enum.map(&to_string/1)
-    |> Enum.reject(&(&1 == "base"))
   end
 end

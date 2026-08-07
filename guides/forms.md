@@ -70,7 +70,7 @@ end
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>Accept terms</:label>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
@@ -87,12 +87,12 @@ end
     <:label>Country</:label>
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.select>
 
-  <.action type="submit" class="button button--accent">Submit</.action>
+  <.action type="submit" class="button ui-accent">Submit</.action>
 </.form>
 ```
 
@@ -140,7 +140,7 @@ end
   >
     <:label>Accept terms</:label>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
@@ -158,12 +158,12 @@ end
     <:label>Country</:label>
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.select>
 
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button ui-accent">Save</.action>
 </.form>
 ```
 
@@ -192,7 +192,7 @@ Use `name` on the component when you are not using `to_form/2`. Checkbox values 
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
   </.select>
 
-  <.action type="submit" class="button button--accent">Submit</.action>
+  <.action type="submit" class="button ui-accent">Submit</.action>
 </form>
 ```
 
@@ -255,7 +255,7 @@ Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
 <.checkbox field={@form[:terms]} auto_invalid class="checkbox">
   <:label>Accept terms</:label>
   <:error :let={msg}>
-    <.heroicon name="hero-exclamation-circle" class="icon" />
+    <.heroicon name="hero-exclamation-circle" />
     {msg}
   </:error>
 </.checkbox>
@@ -274,7 +274,7 @@ Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
   <:label>Country</:label>
   <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
   <:error :let={msg}>
-    <.heroicon name="hero-exclamation-circle" class="icon" />
+    <.heroicon name="hero-exclamation-circle" />
     {msg}
   </:error>
 </.select>
@@ -286,7 +286,7 @@ Static demos without a changeset can pass `invalid` directly on the component.
 
 Corex form hooks sync values into named inputs and notify LiveView so `used_input?/1` and `_unused_*` omission stay correct. Use `phoenix_live_view` `~> 1.1`.
 
-Pass `field={@form[:name]}` (or an explicit stable `id`) so morphdom patches keep the same input nodes across LiveView updates. Without a stable id, remounts can drop client-side used state until the next interaction. Form components raise at render time when neither `field` nor a non-empty `id` is provided (including styling demos and Hexdocs samples you copy into LiveView).
+Pass `field={@form[:name]}` (or an explicit stable `id`) so LiveView updates keep the same input nodes across patches. Without a stable id, remounts can drop client-side used state until the next interaction. Form components raise at render time when neither `field` nor a non-empty `id` is provided (including styling demos and Hexdocs samples you copy into LiveView).
 
 ## Custom error presentation
 
@@ -296,7 +296,7 @@ Omit `auto_invalid` (the default) if you only want a custom affordance (for exam
 <.select field={@form[:country]} class="select relative" controlled>
   <:label>Country</:label>
   <:error :let={msg} class="absolute top-0 end-0">
-    <.tooltip class="tooltip tooltip--sm" positioning={%Corex.Positioning{placement: "top-end"}}>
+    <.tooltip class="tooltip ui-size-sm" positioning={%Corex.Positioning{placement: "top-end"}}>
       <:trigger>
         <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
       </:trigger>

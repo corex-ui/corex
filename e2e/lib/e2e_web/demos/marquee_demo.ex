@@ -142,6 +142,158 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     """
   end
 
+  def api_controls_client_binding_code do
+    """
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click={Corex.Marquee.pause("api-controls-client")} class="button ui-size-sm">Pause</.action>
+      <.action phx-click={Corex.Marquee.resume("api-controls-client")} class="button ui-size-sm">Resume</.action>
+      <.action phx-click={Corex.Marquee.toggle_pause("api-controls-client")} class="button ui-size-sm">Toggle</.action>
+    </div>
+
+    #{api_marquee_snippet("api-controls-client")}
+    """
+  end
+
+  def api_controls_client_binding_example(assigns) do
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click={Corex.Marquee.pause("api-controls-client")} class="button ui-size-sm">
+          Pause
+        </.action>
+        <.action phx-click={Corex.Marquee.resume("api-controls-client")} class="button ui-size-sm">
+          Resume
+        </.action>
+        <.action
+          phx-click={Corex.Marquee.toggle_pause("api-controls-client")}
+          class="button ui-size-sm"
+        >
+          Toggle
+        </.action>
+      </div>
+      <.marquee_api_fixture id="api-controls-client" items={api_demo_items()} />
+    </div>
+    """
+  end
+
+  def api_controls_client_js_heex do
+    """
+    <div class="flex flex-wrap items-center gap-space">
+      <.action
+        phx-click={JS.dispatch("corex:marquee:pause", to: "#api-controls-js", bubbles: false)}
+        class="button ui-size-sm"
+      >
+        Pause
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:marquee:resume", to: "#api-controls-js", bubbles: false)}
+        class="button ui-size-sm"
+      >
+        Resume
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:marquee:toggle-pause", to: "#api-controls-js", bubbles: false)}
+        class="button ui-size-sm"
+      >
+        Toggle
+      </.action>
+    </div>
+
+    #{api_marquee_snippet("api-controls-js")}
+    """
+  end
+
+  def api_controls_client_js_js do
+    """
+    const el = document.getElementById("api-controls-js");
+    el?.dispatchEvent(new CustomEvent("corex:marquee:pause", { bubbles: false }));
+    el?.dispatchEvent(new CustomEvent("corex:marquee:resume", { bubbles: false }));
+    el?.dispatchEvent(new CustomEvent("corex:marquee:toggle-pause", { bubbles: false }));
+    """
+  end
+
+  def api_controls_client_js_ts do
+    """
+    const el: HTMLElement | null = document.getElementById("api-controls-js");
+    el?.dispatchEvent(new CustomEvent("corex:marquee:pause", { bubbles: false }));
+    el?.dispatchEvent(new CustomEvent("corex:marquee:resume", { bubbles: false }));
+    el?.dispatchEvent(new CustomEvent("corex:marquee:toggle-pause", { bubbles: false }));
+    """
+  end
+
+  def api_controls_client_js_example(assigns) do
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action
+          phx-click={JS.dispatch("corex:marquee:pause", to: "#api-controls-js", bubbles: false)}
+          class="button ui-size-sm"
+        >
+          Pause
+        </.action>
+        <.action
+          phx-click={JS.dispatch("corex:marquee:resume", to: "#api-controls-js", bubbles: false)}
+          class="button ui-size-sm"
+        >
+          Resume
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:marquee:toggle-pause", to: "#api-controls-js", bubbles: false)
+          }
+          class="button ui-size-sm"
+        >
+          Toggle
+        </.action>
+      </div>
+      <.marquee_api_fixture id="api-controls-js" items={api_demo_items()} />
+    </div>
+    """
+  end
+
+  def api_controls_server_heex do
+    """
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click="marquee_api_server_pause" class="button ui-size-sm">Pause</.action>
+      <.action phx-click="marquee_api_server_resume" class="button ui-size-sm">Resume</.action>
+      <.action phx-click="marquee_api_server_toggle_pause" class="button ui-size-sm">Toggle</.action>
+    </div>
+
+    #{api_marquee_snippet("api-controls-server")}
+    """
+  end
+
+  def api_controls_server_elixir do
+    ~S"""
+    def handle_event("marquee_api_server_pause", _, socket) do
+      {:noreply, Corex.Marquee.pause(socket, "api-controls-server")}
+    end
+
+    def handle_event("marquee_api_server_resume", _, socket) do
+      {:noreply, Corex.Marquee.resume(socket, "api-controls-server")}
+    end
+
+    def handle_event("marquee_api_server_toggle_pause", _, socket) do
+      {:noreply, Corex.Marquee.toggle_pause(socket, "api-controls-server")}
+    end
+    """
+  end
+
+  def api_controls_server_example(assigns) do
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click="marquee_api_server_pause" class="button ui-size-sm">Pause</.action>
+        <.action phx-click="marquee_api_server_resume" class="button ui-size-sm">Resume</.action>
+        <.action phx-click="marquee_api_server_toggle_pause" class="button ui-size-sm">
+          Toggle
+        </.action>
+      </div>
+      <.marquee_api_fixture id="api-controls-server" items={api_demo_items()} />
+    </div>
+    """
+  end
+
   def api_pause_client_binding_code do
     """
     <div class="flex flex-wrap items-center gap-space">
@@ -632,7 +784,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     assigns = assign(assigns, :items, styling_marquee_items())
 
     ~H"""
-    <div class="flex flex-col gap-6 items-start w-full">
+    <div class="flex flex-col gap-space-xl items-start w-full">
       <.marquee
         id="marquee-style-size-sm"
         class="marquee ui-size-sm"
@@ -716,7 +868,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.marquee
           id={"marquee-style-max-#{variant.id}"}

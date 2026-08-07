@@ -13,9 +13,9 @@ Defaults: Corex Design, `corex_mcp` + MCP plug in `:dev`/`:test` only.
 
 | Flag | Effect |
 |------|--------|
-| `--no-design` | Skip corex_design dependency and design CSS |
-| `--no-mcp` | Skip `corex_mcp` dep and MCP plug |
-| `--mode` / `--theme` / `--lang` | Mode, theme, localization |
+| `--no-design` | Skip `corex_design` dep; ship static neo/light `assets/corex/` (not compatible with `--mode`/`--theme`/`--a11y`) |
+| `--no-mcp` | Skip `corex_mcp` dep, MCP plug, and `.cursor/mcp.json` |
+| `--mode` / `--theme` / `--lang` / `--a11y` | Mode, theme, localization, accessibility (mode/theme/a11y need Design) |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
 
@@ -33,7 +33,7 @@ Replace `my_app` with your OTP app name.
 
 ```elixir
 config :esbuild,
-  version: "0.25.4",
+  version: "0.25.12",
   my_app: [
     args:
       ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
@@ -128,6 +128,14 @@ end
 ```
 
 After `Plug.Static`, before code reloader. See `corex:mcp`.
+
+### Logger parameter filtering
+
+Phoenix only filters params containing `"password"` by default. Expand the filter for tokens and secrets in generated apps:
+
+```elixir
+config :phoenix, :filter_parameters, ["password", "secret", "token", "otp", "_key", "api_key"]
+```
 
 ## Troubleshooting
 

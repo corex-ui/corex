@@ -12,11 +12,13 @@ defmodule Mix.Tasks.Corex.Tableau.New do
 
   ## Corex-only options
 
-  * **`--no-design`** - skip the `corex_design` dependency, token config, and Corex design `@import` blocks in `site.css`. Default is **`--design`** (design on).
+  * **`--no-design`** - skip the `corex_design` dependency and live design build. Ships a static neo/light `assets/corex/` export (all components) you can edit or delete. Cannot combine with `--mode`, `--theme`, or `--a11y`. Default is **`--design`** (design on).
   * **`--mode`** - theme/mode toggle head scripts for light/dark. Implies **`--design`**.
   * **`--theme`** - themes (Neo/Uno/Duo/Leo), theme toggle, layout bridge. Implies **`--design`**.
-  * **`--lang`** - not available yet for Tableau (use the [soonex_i18n](https://github.com/corex-ui/soonex_i18n) showcase). Phoenix apps: `mix corex.new --lang`.
-  * **`--mcp`** / **`--no-mcp`** - when **`--mcp`** (default), a Bandit MCP server starts in dev.
+  * **`--a11y`** - preference axes, head script, panel UI. Default **off**. Implies **`--design`**.
+  * **`--lang`** - Gettext, Localize, per-locale pages (`en` / `fr` / `ar`), language `<.select>`. Implies **`--design`**.
+  * **`--mcp`** / **`--no-mcp`** - when **`--mcp`** (default), a Bandit MCP server starts in dev on port **4004**, and `.cursor/mcp.json` is written for `http://localhost:4004/corex/mcp`. Use **`--no-mcp`** to skip. Never enable remote access casually.
+  * **`--usage-rules`** / **`--no-usage-rules`** - when **`--usage-rules`** (default), adds `{:usage_rules, "~> 1.1", only: :dev}` and skills sync config.
   * **`--dev PATH`** - `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
   * **`--install`** / **`--no-install`** - whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted).
 
@@ -24,6 +26,8 @@ defmodule Mix.Tasks.Corex.Tableau.New do
 
       mix corex.tableau.new my_blog
       mix corex.tableau.new my_blog --mode --theme
+      mix corex.tableau.new my_blog --mode --theme --a11y
+      mix corex.tableau.new my_blog --lang
       mix corex.tableau.new my_blog --no-design
       mix corex.tableau.new my_blog --dev ../corex
 
@@ -47,9 +51,11 @@ defmodule Mix.Tasks.Corex.Tableau.New do
     design: :boolean,
     mode: :boolean,
     theme: :boolean,
+    a11y: :boolean,
     lang: :boolean,
     install: :boolean,
-    mcp: :boolean
+    mcp: :boolean,
+    usage_rules: :boolean
   ]
 
   @reserved_app_names ~W(server table)
@@ -67,19 +73,13 @@ defmodule Mix.Tasks.Corex.Tableau.New do
     opts =
       opts
       |> Keyword.put_new(:mcp, true)
+      |> Keyword.put_new(:usage_rules, true)
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:mode, false)
+      |> Keyword.put_new(:a11y, false)
       |> Keyword.put_new(:lang, false)
-      |> Keyword.put_new(:design, true)
       |> Cli.maybe_auto_enable_design()
-
-    if Keyword.get(opts, :lang) do
-      Mix.raise("""
-      mix corex.tableau.new --lang is not available yet.
-
-      Use the soonex_i18n showcase for a localized Tableau site, or mix corex.new --lang for Phoenix.
-      """)
-    end
+      |> Keyword.put_new(:design, true)
 
     Cli.validate_corex_flags!(opts)
 

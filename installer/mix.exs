@@ -7,7 +7,7 @@ defmodule Corex.New.MixProject do
   use Mix.Project
 
   @version "0.2.0"
-  @phoenix_version "1.8.4"
+  @phoenix_version "1.8.7"
   @scm_url "https://github.com/corex-ui/corex"
 
   @elixir_requirement "~> 1.17"
@@ -23,21 +23,21 @@ defmodule Corex.New.MixProject do
       elixir: @elixir_requirement,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       package: [
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
         links: %{"GitHub" => @scm_url},
-        files: ~w(lib priv templates mix.exs README.md)
+        files: ~w(lib priv/gettext priv/static templates mix.exs README.md LICENSE)
       ],
       source_url: @scm_url,
       docs: docs(),
       homepage_url: "https://corex.gigalixirapp.com/en",
       description: """
-      Corex greenfield helper archive.
+      Mix archive for scaffolding Corex into new Phoenix apps and Tableau sites.
 
-      Provides `mix corex.new`, which runs `mix phx.new --no-install` with
-      forwarded Phoenix flags and renders Corex-owned files from templates
-      directly into the generated app. Install the `phx_new` archive first.
+      Install with `mix archive.install hex corex_new`, then run `mix corex.new`
+      or `mix corex.tableau.new`. Requires the `phx_new` archive for Phoenix apps.
       """
     ]
   end
@@ -54,16 +54,37 @@ defmodule Corex.New.MixProject do
 
   def deps do
     [
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:corex_design, path: "../design", only: :test, runtime: false}
+    ] ++ maybe_ex_slop()
+  end
+
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
+    else
+      []
+    end
+  end
+
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
     ]
   end
 
   defp docs do
     [
+      main: "readme",
+      extras: ["README.md"],
+      source_ref: "v#{@version}",
       source_url_pattern: "#{@scm_url}/blob/v#{@version}/installer/%{path}#L%{line}"
     ]
   end

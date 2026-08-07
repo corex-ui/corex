@@ -6,6 +6,19 @@ defmodule Corex.Tree do
   - [TreeView](Corex.TreeView.html)
 
   Use `Corex.Tree.new/1` to build a list of items from a list of maps.
+
+  ## What the `items` attr accepts
+
+  Menu and TreeView accept `Corex.Tree.Item` structs only, and this is the whole
+  contract. A plain map raises with the `new/1` call that would have built it,
+  unlike `Corex.List`, which coerces: a tree is authored in a template rather than
+  mapped from a query result, so a wrong shape is a developer mistake to surface
+  rather than a bad row to skip.
+
+  Each item requires `:label`. `:value` is generated when absent, `:children`
+  nests further items, and `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`
+  and `:meta` are optional. See `Corex.Item` for the fields shared with
+  `Corex.List.Item`.
   '''
 
   defmodule Item do
@@ -175,43 +188,14 @@ defmodule Corex.Tree do
   @spec validate_items_assigns!(map(), keyword()) :: map()
   def validate_items_assigns!(assigns, opts) do
     component = Keyword.fetch!(opts, :component)
-    required? = Keyword.get(opts, :required, false)
-    example = Keyword.get(opts, :example, default_tree_example(component))
 
-    case assigns do
-      %{items: nil} when required? ->
-        raise ArgumentError, """
-        #{component} requires :items to be a list of %Corex.Tree.Item{} structs.
-
-        Example:
-
-        #{example}
-        """
-
-      %{items: nil} = assigns ->
-        assigns
-
-      %{items: items} = assigns when is_list(items) ->
-        validate_item_structs!(items, example)
-        assigns
-
-      assigns ->
-        assigns
-    end
-  end
-
-  defp validate_item_structs!(items, example) do
-    Enum.each(items, fn item ->
-      unless is_struct(item, Item) do
-        raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.Tree.Item{} struct, got: #{inspect(item)}
-
-        Please use Corex.Tree.new/1:
-
-        #{example}
-        """
-      end
-    end)
+    Corex.Item.assert_items!(
+      assigns,
+      Item,
+      opts
+      |> Keyword.put_new(:example, default_tree_example(component))
+      |> Keyword.put_new(:required, false)
+    )
   end
 
   defp default_tree_example("tree_view") do

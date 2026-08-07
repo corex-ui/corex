@@ -9,24 +9,34 @@ defmodule <%= @app_module %>.NotFoundPage do
 
   use Phoenix.Component
   use Corex
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
 
+  alias <%= @app_module %>.Locale
+<% end %>
   def template(assigns) do
+<%= if @lang do %>    home_path = Locale.swap_path("/", Locale.default_locale_string())
+    assigns = Map.put(assigns, :home_path, home_path)
+<% else %>    assigns = Map.put(assigns, :home_path, "/")
+<% end %>
     ~H"""
     <section
-      class="flex min-h-[60dvh] flex-col items-center justify-center gap-space-lg px-space py-size-xl text-center"
+      class="flex min-h-dvh flex-col items-center justify-center gap-space-lg px-space py-size-xl text-center"
       aria-labelledby="not-found-heading"
     >
       <div class="flex max-w-md flex-col gap-space-lg">
         <p class="m-0 text-ink-muted">404</p>
         <h1 id="not-found-heading" class="m-0 text-4xl font-bold tracking-tight">
-          Page not found
-        </h1>
+<%= if @lang do %>          {~t"Page not found"}
+<% else %>          Page not found
+<% end %>        </h1>
         <p class="m-0 leading-relaxed text-ink-muted">
-          The URL may be mistyped, or the page may have moved. Try the home page.
-        </p>
-        <.navigate to="/" class="button w-fit self-center">
-          Back to home
-        </.navigate>
+<%= if @lang do %>          {~t"The URL may be mistyped, or the page may have moved. Try the home page."}
+<% else %>          The URL may be mistyped, or the page may have moved. Try the home page.
+<% end %>        </p>
+        <.navigate to={@home_path} class="button ui-accent ui-solid w-fit self-center">
+<%= if @lang do %>          {~t"Back to home"}
+<% else %>          Back to home
+<% end %>        </.navigate>
       </div>
     </section>
     """

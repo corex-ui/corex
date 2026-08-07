@@ -1,0 +1,32 @@
+# Dependabot for Hex and npm supply-chain updates (EEF Security WG guidance).
+version: 2
+updates:
+  - package-ecosystem: mix
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: mix
+    directory: "/mcp"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: mix
+    directory: "/design"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: mix
+    directory: "/installer"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

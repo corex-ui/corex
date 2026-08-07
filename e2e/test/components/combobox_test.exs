@@ -98,6 +98,29 @@ defmodule E2eWeb.ComboboxTest do
       |> Combobox.wait_combobox_content_open("combobox-playground", timeout: 8_000)
       |> Combobox.assert_positioner_anchored("combobox-playground")
     end
+
+    feature "disabling an item keeps custom item slots", %{session: session} do
+      host = "combobox-playground"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :playground)
+      |> Combobox.prepare_live_form()
+      |> Combobox.wait_playground_combobox_ready()
+      |> Combobox.disable_playground_close_on_select()
+      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.disable_playground_item("bel")
+      |> Combobox.wait_root_combobox_ready(host)
+      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "deu")
+      |> Combobox.click_item_by_host_id(host, "deu", timeout: 8_000)
+      |> Combobox.wait_hidden_value_by_host_id(host, "deu", timeout: 8_000)
+      |> Combobox.wait_combobox_content_open(host, timeout: 8_000)
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "deu")
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "nld")
+    end
   end
 
   describe "patterns" do
@@ -106,6 +129,130 @@ defmodule E2eWeb.ComboboxTest do
       |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :patterns)
       |> Combobox.wait_patterns_page()
       |> Combobox.wait_root_combobox_ready("combobox-patterns-server-filter-field")
+    end
+
+    feature "server filter  -  open shows content", %{session: session} do
+      host = "combobox-patterns-server-filter-field"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :patterns)
+      |> Combobox.wait_patterns_page()
+      |> Combobox.wait_root_combobox_ready(host)
+      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.wait_combobox_content_open(host, timeout: 8_000)
+    end
+  end
+
+  describe "events" do
+    feature "server  -  select appends log row with value", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :events)
+        |> Combobox.wait_root_combobox_ready("combobox-events-server-field")
+
+      refute Combobox.events_server_log_has_row?(session)
+
+      before = Combobox.log_row_count(session, "combobox-events-log-server")
+
+      session =
+        session
+        |> Combobox.open_combobox_by_host_id("combobox-events-server-field", timeout: 8_000)
+        |> Combobox.click_item_by_host_id("combobox-events-server-field", "bel", timeout: 8_000)
+        |> Combobox.wait_log_rows_grew("combobox-events-log-server", before, timeout: 10_000)
+
+      Combobox.assert_events_log_mentions(session, "combobox-events-log-server", "bel")
+    end
+
+    feature "client  -  select appends client log row with value", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :events)
+        |> Combobox.wait_root_combobox_ready("combobox-events-client-field")
+
+      refute Combobox.events_client_log_has_row?(session)
+
+      before = Combobox.log_row_count(session, "combobox-events-log-client")
+
+      session
+      |> Combobox.open_combobox_by_host_id("combobox-events-client-field", timeout: 8_000)
+      |> Combobox.click_item_by_host_id("combobox-events-client-field", "fra", timeout: 8_000)
+      |> Combobox.wait_log_rows_grew("combobox-events-log-client", before, timeout: 10_000)
+      |> Combobox.assert_events_log_mentions("combobox-events-log-client", "fra")
+    end
+  end
+
+  describe "keyboard focus and aria" do
+    feature "space opens the combobox trigger on anatomy minimal", %{session: session} do
+      section = "combobox-anatomy-minimal"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :anatomy)
+        |> Combobox.wait_section_combobox_ready(section)
+        |> Combobox.focus_trigger_in_section(section)
+
+      refute Combobox.content_open_in_section?(session, section)
+
+      session = Combobox.press_key_on_active(session, :space)
+
+      assert Combobox.content_open_in_section?(session, section)
+    end
+
+    feature "enter opens the combobox trigger on anatomy minimal", %{session: session} do
+      section = "combobox-anatomy-minimal"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :anatomy)
+        |> Combobox.wait_section_combobox_ready(section)
+        |> Combobox.focus_trigger_in_section(section)
+
+      session = Combobox.press_key_on_active(session, :enter)
+
+      assert Combobox.content_open_in_section?(session, section)
+    end
+
+    feature "arrows move highlight through items on anatomy minimal", %{session: session} do
+      section = "combobox-anatomy-minimal"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :anatomy)
+        |> Combobox.wait_section_combobox_ready(section)
+        |> Combobox.focus_trigger_in_section(section)
+        |> Combobox.press_key_on_active(:space)
+
+      Combobox.wait_for_has(
+        session,
+        css(
+          ~s|section##{section} [data-scope="combobox"][data-part="content"][data-state="open"]|,
+          visible: :any
+        ),
+        timeout: 5_000
+      )
+
+      session
+      |> Combobox.press_key_on_active(:down_arrow)
+      |> Combobox.assert_highlighted_item_in_section(section, "fra")
+      |> Combobox.press_key_on_active(:down_arrow)
+      |> Combobox.assert_highlighted_item_in_section(section, "bel")
+    end
+
+    feature "escape closes open combobox on anatomy minimal", %{session: session} do
+      section = "combobox-anatomy-minimal"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :anatomy)
+        |> Combobox.wait_section_combobox_ready(section)
+        |> Combobox.focus_trigger_in_section(section)
+        |> Combobox.press_key_on_active(:space)
+
+      assert Combobox.content_open_in_section?(session, section)
+
+      session = Combobox.press_key_on_active(session, :escape)
+
+      refute Combobox.content_open_in_section?(session, section)
     end
   end
 

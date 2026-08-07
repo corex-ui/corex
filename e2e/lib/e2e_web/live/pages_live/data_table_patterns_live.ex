@@ -320,8 +320,8 @@ defmodule E2eWeb.DataTablePatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
-              <div class="flex gap-2 flex-wrap">
+            <div class="flex flex-col gap-space-lg w-full">
+              <div class="flex gap-space-sm flex-wrap">
                 <.action phx-click="pattern_stream_add" class="button ui-size-sm ui-accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>
@@ -393,7 +393,7 @@ defmodule E2eWeb.DataTablePatternsLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.patterns_select_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full">
+            <div class="flex flex-col gap-space w-full">
               <.action phx-click="pattern_check_selected" class="button ui-size-sm">
                 Check selected
               </.action>
@@ -427,7 +427,7 @@ defmodule E2eWeb.DataTablePatternsLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.patterns_full_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full">
+            <div class="flex flex-col gap-space w-full">
               <.action phx-click="pattern_full_check" class="button ui-size-sm">
                 Check selected
               </.action>
@@ -481,7 +481,7 @@ defmodule E2eWeb.DataTablePatternsLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.patterns_database_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-space-lg w-full">
               <.data_table
                 id="pattern-db-table"
                 class="data-table max-w-none"
@@ -512,8 +512,8 @@ defmodule E2eWeb.DataTablePatternsLive do
                 controlled
                 on_page_change="pattern_db_page"
               >
-                <:prev><.heroicon name="hero-chevron-left" /></:prev>
-                <:next><.heroicon name="hero-chevron-right" /></:next>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
                 <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
               </.pagination>
             </div>

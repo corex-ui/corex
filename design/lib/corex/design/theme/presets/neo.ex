@@ -1,139 +1,138 @@
 defmodule Corex.Design.Theme.Presets.Neo do
   @moduledoc false
 
+  alias Corex.Design.Theme.Presets.Shared
+
   def spec do
     %{
-      palette: palette(),
+      seeds: seeds(),
       colors: %{
         light: light_colors(),
         dark: dark_colors()
       },
-      dimensions: dimensions()
+      dimensions: dimensions(),
+      typography: typography()
     }
   end
 
-  defp palette do
+  defp seeds do
     %{
-      base: "#F0F0F0",
-      accent: "#4B4B4B",
-      alert: "#A43C3C",
+      neutral: "#E5E5E5",
+      accent: "#171717",
       brand: "#32479C",
-      info: "#1F77D4",
-      success: "#059669"
+      alert: "#B42318",
+      info: "#0F766E",
+      success: "#166534"
     }
   end
 
   defp light_colors do
-    %{
-      surface: %{
-        page: %{palette: :base, lightness: 98},
-        raised: %{palette: :base, lightness: 97},
-        control: %{
-          palette: :base,
-          lightness: 94,
-          states: %{muted: 97, default: 95, hover: 95, active: 93}
-        }
-      },
-      roles: light_roles(),
-      on: %{
-        page: %{palette: :base, against: :page, ratio: 8},
-        muted: %{palette: :base, against: :page, ratio: 5.15},
-        link: %{palette: :info, against: :page, ratio: 6},
-        control: %{palette: :base, against: :control, ratio: 8}
-      },
-      border: %{palette: :base, against: :control, ratio: 1.16},
-      focus: %{palette: :base, against: :control, ratio: 2.2},
-      shadow: %{palette: :base, against: :page, ratio: 1.05}
-    }
+    Shared.mode(%{
+      root: Shared.l(0.99),
+      surface: Shared.l(0.97),
+      ui: Shared.fill(0.94),
+      accent: Shared.fill(0.26, seed: :accent),
+      brand: Shared.fill(0.42, seed: :brand),
+      alert: Shared.fill(0.44, seed: :alert),
+      info: Shared.fill(0.40, seed: :info),
+      success: Shared.fill(0.38, seed: :success),
+      ink: Shared.contrast(seed: :accent, against: :root, target: 12),
+      "ink-muted": Shared.contrast(seed: :accent, against: :root, target: 5.8),
+      link: Shared.contrast(seed: :brand, against: :root, target: 5.5),
+      "accent-contrast": Shared.contrast(seed: :neutral, against: :accent, target: 9.5),
+      "brand-contrast": Shared.contrast(seed: :neutral, against: :brand, target: 9.5),
+      "alert-contrast": Shared.contrast(seed: :neutral, against: :alert, target: 9.5),
+      "info-contrast": Shared.contrast(seed: :neutral, against: :info, target: 9.5),
+      "success-contrast": Shared.contrast(seed: :neutral, against: :success, target: 9.5),
+      border: Shared.contrast(seed: :neutral, against: :ui, target: 1.22),
+      focus: Shared.contrast(seed: :brand, against: :ui, target: 2.2),
+      shadow: Shared.contrast(seed: :accent, against: :root, target: 1.08)
+    })
   end
 
   defp dark_colors do
-    %{
-      surface: %{
-        page: %{palette: :base, lightness: 8},
-        raised: %{palette: :base, lightness: 15},
-        control: %{
-          palette: :base,
-          lightness: 24,
-          states: %{muted: 27, default: 25, hover: 20, active: 18}
-        }
-      },
-      roles: dark_roles(),
-      on: %{
-        page: %{palette: :base, against: :page, ratio: 12},
-        muted: %{palette: :base, against: :page, ratio: 6},
-        link: %{palette: :info, against: :page, ratio: 7.5},
-        control: %{palette: :base, against: :control, ratio: 12}
-      },
-      border: %{palette: :base, against: :control, ratio: 1.22},
-      focus: %{palette: :base, against: :control, ratio: 2.4},
-      shadow: %{palette: :base, against: :page, ratio: 1.2}
-    }
-  end
-
-  defp light_roles do
-    fill = %{
-      lightness: 40,
-      states: %{muted: 43, default: 40, hover: 36, active: 33},
-      component: true
-    }
-
-    %{
-      base: %{
-        palette: :base,
-        lightness: 94,
-        states: %{muted: 97, default: 94, hover: 90, active: 87},
-        component: true
-      },
-      accent: Map.merge(fill, %{palette: :accent}),
-      alert: Map.merge(fill, %{palette: :alert}),
-      brand: Map.merge(fill, %{palette: :brand}),
-      info: Map.merge(fill, %{palette: :info}),
-      success: Map.merge(fill, %{palette: :success})
-    }
-  end
-
-  defp dark_roles do
-    fill = %{
-      lightness: 48,
-      states: %{muted: 51, default: 48, hover: 44, active: 41},
-      component: true
-    }
-
-    %{
-      base: %{
-        palette: :base,
-        lightness: 24,
-        states: %{muted: 27, default: 25, hover: 20, active: 18},
-        component: true
-      },
-      accent: Map.merge(fill, %{palette: :accent}),
-      alert: Map.merge(fill, %{palette: :alert}),
-      brand: Map.merge(fill, %{palette: :brand}),
-      info: Map.merge(fill, %{palette: :info}),
-      success: Map.merge(fill, %{palette: :success})
-    }
+    Shared.mode(%{
+      root: Shared.l(0.06, seed: :accent),
+      surface: Shared.l(0.10, seed: :accent),
+      ui: Shared.fill(0.16, seed: :accent, delta: 0.04),
+      accent: Shared.fill(0.48, seed: :accent),
+      brand: Shared.fill(0.52, seed: :brand),
+      alert: Shared.fill(0.50, seed: :alert),
+      info: Shared.fill(0.50, seed: :info),
+      success: Shared.fill(0.48, seed: :success),
+      ink: Shared.contrast(seed: :neutral, against: :root, target: 13),
+      "ink-muted": Shared.contrast(seed: :neutral, against: :root, target: 6.5),
+      link: Shared.contrast(seed: :brand, against: :root, target: 6.2),
+      "accent-contrast": Shared.contrast(seed: :neutral, against: :accent, target: 9.5),
+      "brand-contrast": Shared.contrast(seed: :neutral, against: :brand, target: 9.5),
+      "alert-contrast": Shared.contrast(seed: :neutral, against: :alert, target: 9.5),
+      "info-contrast": Shared.contrast(seed: :neutral, against: :info, target: 9.5),
+      "success-contrast": Shared.contrast(seed: :neutral, against: :success, target: 9.5),
+      border: Shared.contrast(seed: :neutral, against: :ui, target: 1.3),
+      focus: Shared.contrast(seed: :brand, against: :ui, target: 2.35),
+      shadow: Shared.contrast(seed: :accent, against: :root, target: 1.2)
+    })
   end
 
   defp dimensions do
-    %{
-      space_scale: 1.0,
-      size_scale: 1.0,
-      text_scale: 1.0,
-      radius_scale: 1.0,
-      container_scale: 1.0,
-      shadow_scale: 1.0,
-      radius: %{
-        xs: 0.125,
-        sm: 0.25,
-        md: 0.375,
-        lg: 0.5,
-        xl: 0.75,
-        "2xl": 1.0,
-        "3xl": 1.5,
-        "4xl": 2.0,
+    Shared.dimensions(
+      %{
+        space_scale: 1.0,
+        size_scale: 1.0,
+        text_scale: 1.02,
+        radius_scale: 1.2,
+        container_scale: 1.0,
+        shadow_scale: 0.85,
+        blur_scale: 1.1,
+        ring_width: 2,
+        ring_offset: 0,
+        border_width: 1,
+        duration_fast: 80,
+        duration_normal: 120,
+        duration_slow: 200,
+        opacity_disabled: 0.7,
+        opacity_backdrop: 0.4
+      },
+      %{
+        xs: 0.3,
+        sm: 0.45,
+        md: 0.7,
+        lg: 0.95,
+        xl: 1.2,
+        "2xl": 1.55,
+        "3xl": 2.0,
+        "4xl": 2.6,
         full: 9999
-      }
+      },
+      Shared.font_stack(%{
+        sans: ["Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Outfit", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+        code: ["JetBrains Mono", "ui-monospace", "monospace"],
+        serif: ["ui-serif", "Georgia", "serif"]
+      })
+    )
+  end
+
+  defp typography do
+    %{
+      "h1" => %{
+        font_family: {:font, :display},
+        font_weight: {:weight, :bold},
+        letter_spacing: {:tracking, :tighter}
+      },
+      "h2" => %{
+        font_family: {:font, :display},
+        font_weight: {:weight, :bold},
+        letter_spacing: {:tracking, :tight}
+      },
+      "h3" => %{font_family: {:font, :display}, font_weight: {:weight, :semibold}},
+      "p.display" => %{
+        font_family: {:font, :display},
+        font_weight: {:weight, :bold},
+        letter_spacing: {:tracking, :tighter}
+      },
+      "kbd" => %{font_family: {:font, :mono}}
     }
   end
 end

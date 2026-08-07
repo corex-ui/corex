@@ -136,9 +136,12 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   use Mix.Task
 
   alias Mix.Corex, as: Corex
+  alias Mix.Corex.DesignComponents
   alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
+
+  @typep schema :: %Schema{}
 
   @impl Mix.Task
   def run(args) do
@@ -183,7 +186,8 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       scope: schema.scope,
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
-      layout_locale: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_paths: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_assigns: Mix.Corex.layout_locale_assigns?(layout_opts),
       inputs: inputs(schema),
       socket_scope: socket_scope,
       context_scope_prefix: context_scope_prefix,
@@ -202,6 +206,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
     context
     |> copy_new_files(binding)
+    |> tap(fn _ -> DesignComponents.ensure_for_live!(build: false) end)
     |> print_shell_instructions()
   end
 
@@ -261,14 +266,19 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       )
 
     template_dirs = Mix.Corex.generator_template_dirs("corex.gen.live")
-    Mix.Corex.copy_from(template_dirs, "", binding, files)
-
-    if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
-
-    Mix.Corex.format_generated_files(files)
+    _ = Mix.Corex.copy_from(template_dirs, "", binding, files)
+    copy_context_files(context, binding)
+    _ = Mix.Corex.format_generated_files(files)
 
     context
   end
+
+  defp copy_context_files(%Context{generate?: true} = context, binding) do
+    _ = Mix.Corex.Gen.Context.copy_new_files(context, binding)
+    :ok
+  end
+
+  defp copy_context_files(%Context{}, _binding), do: :ok
 
   defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
     layout_opts = Corex.layout_generators_opts()
@@ -278,7 +288,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
     scope_instruction =
       if locale_scoped do
-        "Add the live routes inside the existing scope \"/:locale\" block in #{web_path}/router.ex:"
+        "Add the live routes inside the existing scope \"/:locale\" block in #{web_path}/router.ex (not scope \"/\"):"
       else
         "Add the live routes to your browser scope in #{web_path}/router.ex:"
       end
@@ -301,6 +311,12 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       #{scope_instruction}
 
       #{for line <- live_route_instructions(schema), do: "    #{line}"}
+      """)
+    end
+
+    if locale_scoped do
+      Mix.shell().info("""
+      With verified route path_prefixes, ~p"/#{schema.plural}" resolves to /<locale>/#{schema.plural}.
       """)
     end
 
@@ -367,6 +383,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
+  @spec inputs(schema()) :: [String.t() | nil]
   def inputs(%Schema{} = schema) do
     Inputs.inputs(schema, "@form")
   end

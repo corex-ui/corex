@@ -36,6 +36,7 @@ corex-*.tar
 
 /priv/corex_design/
 /priv/design/
+/priv/plts/
 
 /playground/
 
@@ -65,3 +66,8 @@ corex-*.tar
 /.cursor/
 
 /.vscode/
+
+# Declaration files emitted by `npm run build:types` (packed by prepack).
+/priv/static/types/
+
+.pnpm-store

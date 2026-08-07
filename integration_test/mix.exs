@@ -69,9 +69,16 @@ defmodule Corex.Integration.MixProject do
       {:req, "~> 0.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
-    ]
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
+    ] ++ maybe_ex_slop()
+  end
+
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
+    else
+      []
+    end
   end
 
   defp aliases do

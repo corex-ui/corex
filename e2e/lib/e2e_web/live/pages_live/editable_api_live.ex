@@ -11,12 +11,16 @@ defmodule E2eWeb.EditableApiLive do
   end
 
   @impl true
-  def handle_event("editable_api_alpha", _params, socket) do
-    {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Alpha")}
+  def handle_event("editable_api_lorem", _params, socket) do
+    {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Lorem")}
   end
 
-  def handle_event("editable_api_beta", _params, socket) do
-    {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Beta")}
+  def handle_event("editable_api_duis", _params, socket) do
+    {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Duis")}
+  end
+
+  def handle_event("editable_api_donec", _params, socket) do
+    {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Donec")}
   end
 
   @impl true

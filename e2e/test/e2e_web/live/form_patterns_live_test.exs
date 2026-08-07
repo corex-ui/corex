@@ -3,12 +3,41 @@ defmodule E2eWeb.FormPatternsLiveTest do
   import Phoenix.LiveViewTest
 
   @invalid_params %{
+    "name" => "",
     "country" => "",
     "currency" => "",
     "tags" => [],
+    "birth_date" => "",
+    "signature" => [],
+    "level" => "",
     "terms" => "false",
     "notifications" => "false",
-    "password" => ""
+    "password" => "",
+    "role" => "",
+    "pin" => "",
+    "accent_color" => "",
+    "heading_angle" => "",
+    "title" => "",
+    "avatar" => ""
+  }
+
+  @valid_params %{
+    "name" => "Ada",
+    "country" => "fra",
+    "currency" => "eur",
+    "tags" => ["alpha"],
+    "birth_date" => "1990-01-15",
+    "signature" => ["M0,0L1,1Z"],
+    "level" => "3",
+    "terms" => "true",
+    "notifications" => "true",
+    "password" => "secret123",
+    "role" => "editor",
+    "pin" => "1234",
+    "accent_color" => "#3b82f6",
+    "heading_angle" => "90",
+    "title" => "Lead",
+    "avatar" => "avatar.png"
   }
 
   test "page renders both pattern sections", %{conn: conn} do
@@ -17,6 +46,12 @@ defmodule E2eWeb.FormPatternsLiveTest do
     assert html =~ "Invalid on error"
     assert html =~ "Preferred currency"
     assert html =~ "Email notifications"
+    assert html =~ "Accent color"
+    assert html =~ "Avatar"
+    assert html =~ "Profile"
+    assert html =~ "Account"
+    assert html =~ "Preferences"
+    assert html =~ "Media"
   end
 
   test "custom error shows tooltips without data-invalid on controls", %{conn: conn} do
@@ -25,12 +60,14 @@ defmodule E2eWeb.FormPatternsLiveTest do
     html =
       view
       |> form("#form-patterns-custom-error")
-      |> render_change(%{"patterns_custom" => @invalid_params})
+      |> render_change(%{"patterns_custom" => Map.put(@invalid_params, "level", "1")})
 
     assert html =~ "can&#39;t be blank"
     assert html =~ "must be accepted to continue"
     assert html =~ ~S|id="form-patterns-custom-error-currency-tip"|
     assert html =~ ~S|id="form-patterns-custom-error-notifications-tip"|
+    assert html =~ ~S|id="form-patterns-custom-error-avatar-tip"|
+    assert html =~ ~S|id="form-patterns-custom-error-level-tip"|
     refute html =~ ~r/id="form-patterns-custom-error-currency"[^>]*data-invalid=""/
   end
 
@@ -54,17 +91,28 @@ defmodule E2eWeb.FormPatternsLiveTest do
       view
       |> form("#form-patterns-invalid-on-error")
       |> render_change(%{
-        "patterns_invalid" => %{
-          "country" => "fra",
-          "currency" => "eur",
-          "tags" => ["alpha"],
-          "terms" => "true",
-          "notifications" => "false",
-          "password" => "secret123"
-        }
+        "patterns_invalid" => Map.put(@valid_params, "notifications", "false")
       })
 
     assert html =~ "must be accepted to continue"
+  end
+
+  test "default color and angle are treated as blank", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/forms/patterns")
+
+    html =
+      view
+      |> form("#form-patterns-invalid-on-error")
+      |> render_change(%{
+        "patterns_invalid" =>
+          @valid_params
+          |> Map.put("accent_color", "rgba(0, 0, 0, 1)")
+          |> Map.put("heading_angle", "0")
+      })
+
+    assert html =~ "can&#39;t be blank"
+    assert html =~ ~S(id="form-patterns-invalid-on-error_accent_color")
+    assert html =~ ~S(id="form-patterns-invalid-on-error_heading_angle")
   end
 
   test "invalid form save with valid params pushes toast", %{conn: conn} do
@@ -72,21 +120,12 @@ defmodule E2eWeb.FormPatternsLiveTest do
 
     view
     |> form("#form-patterns-invalid-on-error")
-    |> render_submit(%{
-      "patterns_invalid" => %{
-        "country" => "fra",
-        "currency" => "eur",
-        "tags" => ["alpha"],
-        "terms" => "true",
-        "notifications" => "true",
-        "password" => "secret123"
-      }
-    })
+    |> render_submit(%{"patterns_invalid" => @valid_params})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description:
-        "country=fra currency=eur tags=[\"alpha\"] terms=true notifications=true password=***",
-      groupId: "layout-toast",
+        "name=Ada country=fra currency=eur tags=[\"alpha\"] birth_date=1990-01-15 level=3 terms=true notifications=true role=editor pin=*** accent_color=#3b82f6 heading_angle=90.0 title=Lead avatar=avatar.png password=***",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

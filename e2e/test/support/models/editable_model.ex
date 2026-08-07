@@ -6,6 +6,7 @@ defmodule E2eWeb.EditableModel do
   @anatomy_sections ~W(
     editable-anatomy-minimal
     editable-anatomy-triggers
+    editable-anatomy-without-trigger
   )
 
   def anatomy_section_ids, do: @anatomy_sections

@@ -1,5 +1,9 @@
 defmodule Corex.Combobox.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, [:connect, :api]
+
   alias Corex.Selectors
 
   alias Corex.Combobox.Anatomy.{
@@ -22,21 +26,16 @@ defmodule Corex.Combobox.Connect do
   }
 
   alias Corex.Combobox.Translation, as: ComboboxTranslation
+
   alias Corex.Connect.ItemNav
+
   alias Phoenix.LiveView.JS
 
   alias Corex.ValueBinding
 
-  import Corex.Helpers,
-    only: [
-      get_boolean: 1,
-      validate_value!: 1,
-      maybe_put: 3
-    ]
-
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    vlist = validate_value!(assigns.value)
+    vlist = coerce_string_list(assigns.value)
     controlled = Map.get(assigns, :controlled, false)
     {value_str, default_value_str} = ValueBinding.list_pair(vlist, controlled)
 
@@ -46,22 +45,22 @@ defmodule Corex.Combobox.Connect do
     base = %{
       "id" => assigns.id,
       "data-items" => items_json,
-      "data-controlled" => get_boolean(controlled),
+      "data-controlled" => presence_attr(controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder,
-      "data-close-on-select" => get_boolean(assigns.close_on_select),
-      "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
-      "data-auto-focus" => get_boolean(assigns.auto_focus),
+      "data-close-on-select" => presence_attr(assigns.close_on_select),
+      "data-always-submit-on-enter" => presence_attr(assigns.always_submit_on_enter),
+      "data-auto-focus" => presence_attr(assigns.auto_focus),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-input-behavior" => assigns.input_behavior,
-      "data-loop-focus" => get_boolean(assigns.loop_focus),
-      "data-multiple" => get_boolean(assigns.multiple),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-required" => get_boolean(assigns.required),
+      "data-loop-focus" => presence_attr(assigns.loop_focus),
+      "data-multiple" => presence_attr(assigns.multiple),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-required" => presence_attr(assigns.required),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-on-input-value-change" => assigns.on_input_value_change,
@@ -72,11 +71,11 @@ defmodule Corex.Combobox.Connect do
       "data-on-highlight-change-client" => assigns.on_highlight_change_client,
       "data-on-select" => assigns.on_select,
       "data-on-select-client" => assigns.on_select_client,
-      "data-filter" => get_boolean(assigns.filter),
-      "data-redirect" => get_boolean(assigns.redirect),
-      "data-allow-custom-value" => get_boolean(assigns.allow_custom_value),
+      "data-filter" => presence_attr(assigns.filter),
+      "data-redirect" => presence_attr(assigns.redirect),
+      "data-allow-custom-value" => presence_attr(assigns.allow_custom_value),
       "data-selection-behavior" => assigns.selection_behavior,
-      "data-clear-on-empty" => get_boolean(assigns.clear_on_empty),
+      "data-clear-on-empty" => presence_attr(assigns.clear_on_empty),
       "data-translation" => translation_json(assigns)
     }
 
@@ -94,7 +93,7 @@ defmodule Corex.Combobox.Connect do
   defp maybe_put_optional_boolean(attrs, _key, nil), do: attrs
 
   defp maybe_put_optional_boolean(attrs, key, value) when is_boolean(value),
-    do: Map.put(attrs, key, get_boolean(value))
+    do: Map.put(attrs, key, presence_attr(value))
 
   defp maybe_put_name_form(attrs, assigns) do
     if Map.get(assigns, :form_field, false) do
@@ -134,8 +133,8 @@ defmodule Corex.Combobox.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}",
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -155,10 +154,10 @@ defmodule Corex.Combobox.Connect do
       "id" => "combobox:#{assigns.id}:label",
       "htmlFor" => "combobox:#{assigns.id}:input",
       "for" => "combobox:#{assigns.id}:input",
-      "data-required" => get_boolean(assigns.required),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-required" => presence_attr(assigns.required),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -176,8 +175,8 @@ defmodule Corex.Combobox.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:control",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid)
     }
   end
 
@@ -201,11 +200,11 @@ defmodule Corex.Combobox.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:input",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
       "aria-controls" => "combobox:#{assigns.id}:content",
       "placeholder" => assigns.placeholder,
-      "autoFocus" => get_boolean(assigns.auto_focus),
+      "autoFocus" => presence_attr(assigns.auto_focus),
       "aria-expanded" => "false"
     }
   end
@@ -225,8 +224,8 @@ defmodule Corex.Combobox.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:toggle-btn",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid)
     }
   end
 
@@ -245,8 +244,8 @@ defmodule Corex.Combobox.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:clear-btn",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid)
     }
   end
 

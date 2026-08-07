@@ -1,9 +1,9 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { AngleSlider } from "../components/angle-slider";
 import type { Props, ValueChangeDetails } from "@zag-js/angle-slider";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { mountNumberBinding } from "../lib/read-props";
+import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
+import { createZagLiveHook } from "../lib/zag-live-hook";
+import { notifyPhoenixFormChange } from "../lib/phoenix-form-bridge";
 import {
   parseRespondTo,
   emitResponse,
@@ -12,13 +12,10 @@ import {
   notifyChange,
   type RespondTo,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 
 type AngleSliderHookState = {
   angleSlider?: AngleSlider;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  fieldTouched?: boolean;
 };
 
 export function valueChangePayload(
@@ -32,30 +29,67 @@ export function valueChangePayload(
   };
 }
 
+function formSubmitName(el: HTMLElement): string | undefined {
+  return getString(el, "submitName") ?? getString(el, "name");
+}
+
+function hiddenInput(el: HTMLElement): HTMLInputElement | null {
+  return el.querySelector<HTMLInputElement>(
+    '[data-scope="angle-slider"][data-part="hidden-input"]'
+  );
+}
+
+function ensureHiddenInputName(el: HTMLElement): HTMLInputElement | null {
+  const input = hiddenInput(el);
+  if (!input) return null;
+  const name = formSubmitName(el);
+  if (name && !input.getAttribute("name")) {
+    input.setAttribute("name", name);
+  }
+  return input;
+}
+
+function stripHiddenInputName(el: HTMLElement): void {
+  const input = hiddenInput(el);
+  if (!input) return;
+  input.removeAttribute("name");
+  input.removeAttribute("form");
+}
+
+function zagNameForForm(el: HTMLElement): string | undefined {
+  return hiddenInput(el)?.getAttribute("name") ?? undefined;
+}
+
 function queueFormBubblingInputForPhoenix(
   el: HTMLElement,
-  getZag: () => InstanceType<typeof AngleSlider>
+  getZag: () => InstanceType<typeof AngleSlider>,
+  opts: { markUsed?: boolean } = {}
 ): void {
   queueMicrotask(() => {
     const zag = getZag();
-    const input = el.querySelector<HTMLInputElement>(
-      '[data-scope="angle-slider"][data-part="hidden-input"]'
-    );
+    const input = ensureHiddenInputName(el);
     if (!input) return;
-    const v = zag.api.value;
-    if (String(input.value) !== String(v)) {
-      input.value = String(v);
-    }
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
+    notifyPhoenixFormChange(input, String(zag.api.value), {
+      force: true,
+      markUsed: opts.markUsed,
+    });
   });
 }
 
-const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+function shouldGateHiddenName(el: HTMLElement): boolean {
+  // data-submit-name is always the form name; data-name is set only when the
+  // server intends the field to participate (default/used value).
+  return Boolean(formSubmitName(el)) && getString(el, "name") === undefined;
+}
+
+const AngleSliderHook = createZagLiveHook<AngleSliderHookState, AngleSlider>({
+  key: "angleSlider",
+  controlledKeys: ["value", "defaultValue"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
 
     const zag = new AngleSlider(el, {
       id: el.id,
@@ -63,12 +97,13 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
+      name: zagNameForForm(el),
       dir: getDir(el),
       "aria-label": getString(el, "aria-label"),
       "aria-labelledby": getString(el, "aria-labelledby"),
 
       onValueChange: (details: ValueChangeDetails) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -79,6 +114,7 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
         });
       },
       onValueChangeEnd: (details: ValueChangeDetails) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -90,8 +126,6 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
         queueFormBubblingInputForPhoenix(el, () => zag);
       },
     } as Props);
-    zag.init();
-    this.angleSlider = zag;
 
     const emitValue = (respondTo: RespondTo) => {
       emitResponse({
@@ -116,52 +150,68 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
       });
     };
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: number }>>("corex:angle-slider:set-value", (event) => {
+    dom.add<CustomEvent<{ value: number }>>("corex:angle-slider:set-value", (event) => {
+      hook.fieldTouched = true;
       zag.api.setValue(event.detail.value);
       queueFormBubblingInputForPhoenix(el, () => zag);
     });
 
-    domRegistry.add<CustomEvent>("corex:angle-slider:value", (event) => {
+    dom.add<CustomEvent>("corex:angle-slider:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("angle_slider_set_value", (payload: { id?: string; value: number }) => {
+    server.add("angle_slider_set_value", (payload: { id?: string; value: number }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(payload.value);
-      queueFormBubblingInputForPhoenix(el, () => zag);
+      queueFormBubblingInputForPhoenix(el, () => zag, { markUsed: false });
     });
 
-    registry.add("angle_slider_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("angle_slider_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    const el = this.el;
-    const zag = this.angleSlider;
+  afterInit(hook, zag) {
+    if (!hook.fieldTouched && shouldGateHiddenName(hook.el)) {
+      stripHiddenInputName(hook.el);
+      zag.updateProps({ name: undefined } as Partial<Props>);
+      zag.render();
+    }
+  },
 
-    zag?.updateProps({
+  update(hook, zag) {
+    const el = hook.el;
+    const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+    }
+
+    const name = hook.fieldTouched
+      ? formSubmitName(el)
+      : shouldGateHiddenName(el)
+        ? undefined
+        : (getString(el, "name") ?? formSubmitName(el));
+
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
+      name,
       dir: getDir(el),
+      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
     } as Partial<Props>);
-  },
 
-  destroyed(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.angleSlider?.destroy();
+    zag.render();
+
+    if (!hook.fieldTouched && shouldGateHiddenName(el)) {
+      stripHiddenInputName(el);
+    }
   },
-};
+});
 
 export { AngleSliderHook as AngleSlider };

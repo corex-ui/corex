@@ -3,10 +3,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
-  @items [
-    %{value: "a", label: "Option A"},
-    %{value: "b", label: "Option B"}
-  ]
+  @items E2eWeb.Demos.DocExamples.radio_items()
 
   @server_heex E2eWeb.Demos.RadioGroupDemo.events_server_heex()
   @server_elixir E2eWeb.Demos.RadioGroupDemo.events_server_elixir()
@@ -75,7 +72,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.radio_group
                 id="radio-group-events-server"
                 name="rg-events-server"
@@ -113,7 +110,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.radio_group
                 id="radio-group-events-client"
                 name="rg-events-client"

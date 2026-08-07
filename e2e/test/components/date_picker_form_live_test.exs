@@ -12,17 +12,17 @@ defmodule E2eWeb.DatePickerFormLiveTest do
     end
   end
 
-  test "save_phoenix submits iso date and pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits iso date and pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/date-picker/live-form")
 
     view
     |> form("#date-picker-live-form-phoenix")
     |> render_submit(%{"date_picker_phoenix" => %{"date" => "2024-06-01"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: date=2024-06-01",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -39,17 +39,17 @@ defmodule E2eWeb.DatePickerFormLiveTest do
     assert html =~ "can&#39;t be blank"
   end
 
-  test "save_validate submits date and pushes toast-create", %{conn: conn} do
+  test "save_validate submits date and pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/date-picker/live-form")
 
     view
     |> form("#date-picker-validate-form-live")
     |> render_submit(%{"date_picker_validate" => %{"date" => "2025-12-25"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: date=2025-12-25",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

@@ -129,6 +129,99 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
     end)
   end
 
+  test "run/1 with locale layout prints locale-scoped route instructions and current_path" do
+    with_test_output(fn tmp ->
+      prev = Application.get_env(:corex, :generators)
+      Application.put_env(:corex, :generators, layout: [locale: true, mode: true, theme: true])
+
+      try do
+        n = System.unique_integer([:positive])
+        schema = "GenLocale#{n}"
+        singular = Phoenix.Naming.underscore(schema)
+        plural = singular <> "s"
+
+        output =
+          run_generator(
+            "corex.gen.live",
+            ["Notes", schema, plural, "body:string", "--no-context"],
+            loud: true
+          )
+
+        assert output =~ ~S(scope "/:locale")
+        assert output =~ ~S(not scope "/")
+        assert output =~ ~s(~p"/#{plural}")
+        assert output =~ "/<locale>/#{plural}"
+
+        index = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "index.ex"]))
+        assert index =~ "current_path={@current_path}"
+        assert index =~ ~s(~p"/\#{@locale}/#{plural}/new")
+      after
+        case prev do
+          nil -> Application.delete_env(:corex, :generators)
+          val -> Application.put_env(:corex, :generators, val)
+        end
+      end
+    end)
+  end
+
+  test "run/1 with path_prefixes omits manual locale path segment" do
+    with_test_output(fn tmp ->
+      web_ex = Path.join(File.cwd!(), "lib/corex_web.ex")
+      prev_generators = Application.get_env(:corex, :generators)
+
+      prev_web =
+        case File.read(web_ex) do
+          {:ok, contents} -> contents
+          {:error, _} -> nil
+        end
+
+      Application.put_env(:corex, :generators, layout: [locale: true, mode: true, theme: true])
+
+      File.write!(web_ex, """
+      defmodule CorexWeb do
+        def verified_routes do
+          quote do
+            use Phoenix.VerifiedRoutes,
+              path_prefixes: [{CorexWeb.Locale, :current, []}]
+          end
+        end
+      end
+      """)
+
+      try do
+        n = System.unique_integer([:positive])
+        schema = "GenPrefixed#{n}"
+        singular = Phoenix.Naming.underscore(schema)
+        plural = singular <> "s"
+
+        output =
+          run_generator(
+            "corex.gen.live",
+            ["Notes", schema, plural, "body:string", "--no-context"],
+            loud: true
+          )
+
+        assert output =~ ~S(scope "/:locale")
+        assert output =~ ~S(not scope "/")
+
+        index = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "index.ex"]))
+        assert index =~ "current_path={@current_path}"
+        assert index =~ ~s(~p"/#{plural}/new")
+        refute index =~ ~s(/\#{@locale}/#{plural})
+      after
+        case prev_generators do
+          nil -> Application.delete_env(:corex, :generators)
+          val -> Application.put_env(:corex, :generators, val)
+        end
+
+        case prev_web do
+          nil -> File.rm(web_ex)
+          body -> File.write!(web_ex, body)
+        end
+      end
+    end)
+  end
+
   defp live_paths(tmp, singular, web_path) do
     live_dir =
       if web_path do

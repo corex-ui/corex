@@ -5,7 +5,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def minimal_example(assigns) do
     ~H"""
-    <.accordion class="accordion" items={items_basic()} />
+    <.accordion class="accordion" items={E2eWeb.Demos.DocExamples.content_items_with_values()} />
     """
   end
 
@@ -176,9 +176,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       class="accordion"
       items={
         Corex.Content.new([
-          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
-          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
-          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
         ])
       }
     />
@@ -345,7 +345,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Accordion.set_value(@id, "lorem")} class="button ui-size-sm">
         Open Lorem
       </.action>
@@ -369,7 +369,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:accordion:set-value",
@@ -417,7 +417,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event} value="lorem" class="button ui-size-sm">Open Lorem</.action>
       <.action phx-click={@event} value="lorem,donec" class="button ui-size-sm">
         Lorem and Donec
@@ -451,7 +451,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
               document.querySelector("#layout-toast")?.dispatchEvent(
                 new CustomEvent("corex:toast:create", {
                   bubbles: true,
-                  detail: { title, description, type: "info", duration: 5000 },
+                  detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
                 })
               );
             };
@@ -476,7 +476,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Accordion.value(@id)} class="button ui-size-sm">Value</.action>
       <.action
         phx-click={Corex.Accordion.value(@id, respond_to: :client)}
@@ -496,7 +496,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:accordion:value", to: "##{@id}", detail: %{}, bubbles: false)}
         class="button ui-size-sm"
@@ -527,7 +527,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_value} class="button ui-size-sm">Value</.action>
       <.action phx-click={@event_value_client_only} class="button ui-size-sm">
         Value (client only)
@@ -544,7 +544,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_focused_client_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
@@ -561,7 +561,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_focused_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
@@ -578,7 +578,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_focused_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
@@ -595,7 +595,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_item_state_client_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
       <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
       <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
@@ -610,7 +610,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_item_state_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
       <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
       <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
@@ -625,7 +625,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_item_state_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
       <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
       <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
@@ -794,7 +794,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -822,7 +822,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -859,7 +859,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -887,7 +887,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -942,7 +942,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -961,7 +961,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -996,7 +996,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -1028,7 +1028,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -1067,7 +1067,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -1095,7 +1095,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -1132,7 +1132,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -1151,7 +1151,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           document.querySelector("#layout-toast")?.dispatchEvent(
             new CustomEvent("corex:toast:create", {
               bubbles: true,
-              detail: { title, description, type: "info", duration: 5000 },
+              detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
             })
           );
         };
@@ -1328,6 +1328,28 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ])
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.accordion class="accordion" value="item-1" items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.accordion class="accordion" value="item-1" items={styling_items()}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    """
+  end
+
   def styling_color_example(assigns) do
     ~H"""
     <.accordion class="accordion" value="item-1" items={styling_items()}>
@@ -1357,6 +1379,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion ui-solid" value="item-1" items={styling_items()}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion ui-ghost" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     """
@@ -1439,7 +1464,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.accordion
           id={"accordion-style-max-#{variant.id}"}
@@ -1510,6 +1535,13 @@ defmodule E2eWeb.Demos.AccordionDemo do
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion ui-solid" value="item-1" items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion ui-ghost" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -1631,6 +1663,89 @@ defmodule E2eWeb.Demos.AccordionDemo do
     |> DemoScales.join_code()
   end
 
+  @styling_max_height_paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Praesent vel sapien at lacus efficitur volutpat. Mauris vitae urna eu nibh fermentum faucibus. Donec condimentum ex mi, congue molestie ipsum gravida a. Sed ac eros luctus, finibus libero non, laoreet lectus."
+
+  def styling_max_height_items do
+    Corex.Content.new([
+      %{
+        value: "item-1",
+        label: "Lorem ipsum dolor sit amet",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-2",
+        label: "Duis dictum gravida odio ac pharetra?",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-3",
+        label: "Donec condimentum ex mi",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-4",
+        label: "Praesent fermentum sapien",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-5",
+        label: "Mauris vitae urna eu nibh",
+        content: @styling_max_height_paragraph
+      }
+    ])
+  end
+
+  defp styling_max_height_accordion_items_heex do
+    paragraph = @styling_max_height_paragraph
+
+    ~S"""
+    items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-4", label: "Praesent fermentum sapien", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-5", label: "Mauris vitae urna eu nibh", content: "PARAGRAPH_PLACEHOLDER"}
+    ])}
+    """
+    |> String.replace("PARAGRAPH_PLACEHOLDER", paragraph)
+  end
+
+  def styling_max_height_code do
+    items = styling_max_height_accordion_items_heex()
+
+    DemoScales.max_height_variants("accordion")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("accordion", modifier)
+
+      """
+      <.accordion class="#{class}" value="item-1" #{items}>
+        <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+      </.accordion>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns = assign(assigns, :max_height_variants, DemoScales.max_height_variants("accordion"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.accordion
+          id={"accordion-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("accordion", variant.modifier)}
+          value="item-1"
+          items={styling_max_height_items()}
+        >
+          <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+        </.accordion>
+      </div>
+    </div>
+    """
+  end
+
   defp styling_accordion_items_heex do
     ~S"""
     items={Corex.Content.new([
@@ -1738,10 +1853,10 @@ defmodule E2eWeb.Demos.AccordionDemo do
     """
   end
 
-  def patterns_stream_demo_heex do
+  def patterns_dynamic_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
@@ -1749,16 +1864,16 @@ defmodule E2eWeb.Demos.AccordionDemo do
           Reset
         </.action>
       </div>
-      <.accordion class="accordion" items={Corex.Content.new(@items_list)}>
+      <.accordion class="accordion" items={Corex.Content.new(@items)}>
         <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
       </.accordion>
     </div>
     """
   end
 
-  def patterns_stream_elixir do
+  def patterns_dynamic_elixir do
     ~S'''
-    defmodule MyAppWeb.AccordionStreamDemoLive do
+    defmodule MyAppWeb.AccordionDynamicDemoLive do
       use MyAppWeb, :live_view
 
       @initial_items [
@@ -1769,42 +1884,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
       @impl true
       def mount(_params, _session, socket) do
-        socket =
-          socket
-          |> stream_configure(:items, dom_id: &("accordion:stream-accordion:item:" <> to_string(&1.value)))
-          |> stream(:items, @initial_items)
-          |> assign(:items_list, @initial_items)
-          |> assign(:next_id, 4)
-
-        if connected?(socket) do
-          Process.send_after(self(), :add_timestamp_item, 3_000)
-        end
-
-        {:ok, socket}
-      end
-
-      @impl true
-      def handle_info(:add_timestamp_item, socket) do
-        Process.send_after(self(), :add_timestamp_item, 10_000)
-        id = to_string(socket.assigns.next_id)
-
-        time =
-          DateTime.utc_now()
-          |> DateTime.truncate(:second)
-          |> DateTime.to_time()
-          |> Time.to_string()
-
-        item = %{
-          value: id,
-          label: "Item " <> id <> " @ " <> time,
-          content: "Content for item " <> id <> "."
-        }
-
-        {:noreply,
-         socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
-         |> assign(:next_id, socket.assigns.next_id + 1)}
+        {:ok, socket |> assign(:items, @initial_items) |> assign(:next_id, 4)}
       end
 
       @impl true
@@ -1814,25 +1894,20 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:items, socket.assigns.items ++ [item])
          |> assign(:next_id, socket.assigns.next_id + 1)}
       end
 
       @impl true
       def handle_event("reset", _params, socket) do
-        {:noreply,
-         socket
-         |> stream(:items, @initial_items, reset: true)
-         |> assign(:items_list, @initial_items)
-         |> assign(:next_id, 4)}
+        {:noreply, socket |> assign(:items, @initial_items) |> assign(:next_id, 4)}
       end
 
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-            <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+            <div class="flex flex-wrap gap-space-sm">
               <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
@@ -1840,7 +1915,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
                 Reset
               </.action>
             </div>
-            <.accordion id="stream-accordion" class="accordion" items={Corex.Content.new(@items_list)}>
+            <.accordion id="patterns-dynamic" class="accordion" items={Corex.Content.new(@items)}>
               <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
             </.accordion>
           </div>

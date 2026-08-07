@@ -5,18 +5,20 @@ defmodule E2eWeb.ModeToggle do
   Provides dark vs light mode toggle using toggle.
   """
 
-  attr :mode, :string,
+  attr(:mode, :string,
     default: "light",
     values: ["light", "dark"],
     doc: "the mode (dark or light) from cookie/session"
+  )
 
-  attr :id, :string, default: "mode-switcher"
+  attr(:id, :string, default: "mode-switcher")
+  attr(:class, :string, default: nil)
 
   def mode_toggle(assigns) do
     ~H"""
     <.toggle
       id={@id}
-      class="toggle ui-size-sm"
+      class={["toggle ui-ghost ui-size-sm ui-trigger--circle", @class]}
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"

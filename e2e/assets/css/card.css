@@ -4,7 +4,7 @@
   .card {
     width: 100%;
     max-width: var(--container-md);
-    background: var(--color-layer);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow: hidden;
@@ -13,7 +13,7 @@
   .card__header,
   .card__footer {
     padding: --spacing(6);
-    background: var(--color-layer);
+    background: var(--color-surface);
   }
 
   .card__header {
@@ -22,7 +22,7 @@
 
   .card__content {
     padding: --spacing(6);
-    background: var(--color-layer);
+    background: var(--color-surface);
   }
 
   .card__footer {
@@ -51,7 +51,7 @@
     align-items: stretch;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
-    background-color: var(--color-layer);
+    background-color: var(--color-surface);
     overflow: hidden;
   }
 
@@ -72,10 +72,10 @@
     align-items: center;
     justify-content: flex-start;
     gap: --spacing(6);
-    background-color: var(--color-layer);
+    background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
     padding-block: --spacing(11);
-    padding-inline: var(--spacing-space);
+    padding-inline: var(--spacing-space-sm);
   }
 
   @media (min-width: 64rem) {
@@ -93,7 +93,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--spacing-size);
-    padding: var(--spacing-space);
+    padding-block: var(--spacing-space);
+    padding-inline: var(--spacing-space-sm);
     
     overflow-x: auto;
     width: 100%;
@@ -106,7 +107,8 @@
       overflow-x: visible;
       width: 18rem;
       flex-shrink: 0;
-      padding: --spacing(11);
+      padding-block: --spacing(11);
+      padding-inline: --spacing(6);
       gap: var(--spacing-space);
     }
   }

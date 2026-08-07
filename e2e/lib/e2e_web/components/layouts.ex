@@ -43,34 +43,36 @@ defmodule E2eWeb.Layouts do
     <div class={Shell.wrapper()}>
       <.aside path={@path} theme={@theme} mode={@mode} />
       <main id="main-content" class={Shell.main()}>
-        <.docs_pagination path={@path} />
-        <div class={Shell.content()}>
-          <div class={Shell.article()}>
-            {render_slot(@inner_block)}
+        <div class={Shell.docs_body()}>
+          <.docs_pagination path={@path} />
+          <div class={Shell.content()}>
+            <div class={Shell.article()}>
+              {render_slot(@inner_block)}
+            </div>
           </div>
-        </div>
-        <.docs_pagination_bottom path={@path} />
+          <.docs_pagination_bottom path={@path} />
 
-        <.toast_group
-          id="layout-toast"
-          class="toast"
-          phx-update="ignore"
-          flash={@flash}
-        >
-          <:loading>
-            <.heroicon name="hero-arrow-path" class="icon" />
-          </:loading>
-        </.toast_group>
-        <.toast_client_error
-          toast_group_id="layout-toast"
-          title={~t"We lost the connection"}
-          description={~t"We're trying to reconnect you..."}
-          type={:error}
-          duration={:infinity}
-        />
+          <.toast_group
+            id="layout-toast"
+            class="toast"
+            phx-update="ignore"
+            flash={@flash}
+          >
+            <:loading>
+              <.heroicon name="hero-arrow-path" class="icon" />
+            </:loading>
+          </.toast_group>
+          <.toast_client_error
+            toast_group_id="layout-toast"
+            title={~t"We lost the connection"}
+            description={~t"We're trying to reconnect you..."}
+            type={:error}
+            duration={:infinity}
+          />
+        </div>
+        <.footer path={@path} />
       </main>
     </div>
-    <.footer path={@path} />
     """
   end
 
@@ -123,10 +125,10 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
+    <.header id="home-header" path={@path} theme={@theme} mode={@mode} />
     <div class={Shell.wrapper()}>
       <main id="main-content" class={Shell.main() <> " w-full"}>
-        <div class={Shell.content_marketing() <> " items-stretch"}>
+        <div class={Shell.content_marketing()}>
           {render_slot(@inner_block)}
         </div>
         <.toast_group
@@ -148,7 +150,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer path={@path} />
+    <.footer id="home-footer" path={@path} />
     """
   end
 
@@ -158,4 +160,12 @@ defmodule E2eWeb.Layouts do
     do: E2eWeb.Path.strip_after_locale(c.request_path)
 
   defp path_resolved(_), do: ""
+
+  defp a11y_data_attrs(nil), do: a11y_data_attrs(%{})
+
+  defp a11y_data_attrs(a11y) when is_map(a11y) do
+    a11y
+    |> Corex.Design.Accessibility.sanitize()
+    |> Map.new(fn {key, value} -> {"data-#{key}", value} end)
+  end
 end

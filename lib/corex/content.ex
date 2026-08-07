@@ -3,9 +3,22 @@ defmodule Corex.Content do
   Content items for components with trigger/content patterns to be used with:
 
   - [Accordion](Corex.Accordion.html)
+  - [DataList](Corex.DataList.html)
   - [Tabs](Corex.Tabs.html)
 
   Use `Corex.Content.new/1` to build a list of items from maps or keyword lists.
+
+  ## What the `items` attr accepts
+
+  Accordion, DataList and Tabs accept `Corex.Content.Item` structs only, and this
+  is the whole contract. A plain map raises with the `new/1` call that would have
+  built it, unlike `Corex.List`, which coerces: content panels are authored in a
+  template rather than mapped from a query result, so a wrong shape is a developer
+  mistake to surface rather than a bad row to skip.
+
+  Each item requires `:value`, `:label` and `:content`, with `:disabled` and
+  `:meta` optional. See `Corex.Item` for the fields shared with `Corex.List.Item`
+  and `Corex.Tree.Item`.
   '''
 
   defmodule Item do
@@ -13,6 +26,7 @@ defmodule Corex.Content do
     Content item structure.
     Use it to create content items for components with trigger/content patterns:
     - [Accordion](Corex.Accordion.html)
+    - [DataList](Corex.DataList.html)
     - [Tabs](Corex.Tabs.html)
 
     ## Examples
@@ -26,8 +40,8 @@ defmodule Corex.Content do
       :value,
       :label,
       :content,
-      :meta,
-      disabled: false
+      disabled: false,
+      meta: %{}
     ]
 
     @type t :: %__MODULE__{
@@ -56,6 +70,7 @@ defmodule Corex.Content do
       """
     end
 
+    @spec new(map(), keyword()) :: t()
     def new(attrs, opts) when is_map(attrs) do
       Corex.ItemBuilder.build_item(
         __MODULE__,
@@ -139,6 +154,34 @@ defmodule Corex.Content do
         %{label: "Duis", content: "Nullam eget vestibulum ligula."},
         %{label: "Donec", content: "Congue molestie ipsum gravida a."}
       ])
+    """
+  end
+
+  @doc """
+  Asserts that a component's `:items` assign holds `Item` structs.
+
+  See `Corex.Item.assert_items!/3` for why this raises where `Corex.Value`
+  coerces.
+  """
+  @spec assert_content_items!(map(), String.t(), keyword()) :: map()
+  def assert_content_items!(assigns, component, opts \\ []) when is_binary(component) do
+    Corex.Item.assert_items!(
+      assigns,
+      Item,
+      opts
+      |> Keyword.put(:component, component)
+      |> Keyword.put_new(:required, true)
+      |> Keyword.put_new(:example, usage_example(component))
+    )
+  end
+
+  defp usage_example(component) do
+    """
+        items = Corex.Content.new([
+          [label: "Trigger text", content: "Content text"],
+          [label: "Another trigger", content: "More content", disabled: true]
+        ])
+        <.#{String.downcase(component)} items={items} />
     """
   end
 

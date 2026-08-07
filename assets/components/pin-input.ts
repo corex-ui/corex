@@ -1,13 +1,14 @@
 import { connect, machine, type Props, type Api } from "@zag-js/pin-input";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { stripZagSubmitNames } from "../lib/form-field-array-submit";
 import { getString } from "../lib/util";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
-export class PinInput extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class PinInput extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -42,18 +43,30 @@ export class PinInput extends Component<Props, Api> {
       }
     }
 
-    stripZagSubmitNames(this.el, "pin-input");
+    stripZagSubmitNames(this.el, "pin-input", ["hidden-input", "input"]);
 
     const controlEl = this.el.querySelector<HTMLElement>(
       '[data-scope="pin-input"][data-part="control"]'
     );
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
 
-    this.api.items.forEach((i) => {
-      const inputEl = this.el.querySelector<HTMLElement>(
-        `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
-      );
-      if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
-    });
+    // Prefer DOM order over data-index lookup so props (incl. data-ownedby) are
+    // always applied — Zag focus advance queries inputs by [data-ownedby].
+    const inputEls = Array.from(
+      this.el.querySelectorAll<HTMLElement>('[data-scope="pin-input"][data-part="input"]')
+    );
+    const count = Math.max(this.api.items?.length ?? 0, inputEls.length);
+    for (let i = 0; i < count; i += 1) {
+      const inputEl =
+        inputEls[i] ??
+        this.el.querySelector<HTMLElement>(
+          `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
+        );
+      if (!inputEl) continue;
+      this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
+      // Cells must not participate in <form phx-change> — hiddens submit instead.
+      inputEl.removeAttribute("name");
+      inputEl.setAttribute("form", "");
+    }
   }
 }

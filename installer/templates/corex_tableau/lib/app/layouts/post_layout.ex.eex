@@ -5,10 +5,11 @@ defmodule <%= @app_module %>.PostLayout do
 <%= if @lang do %>  use <%= @app_module %>.GettextSigil
 
   alias <%= @app_module %>.Locale
-<% end %>
+<% end %>  alias <%= @app_module %>.Layouts.Shell
+
   def template(assigns) do
     page = assigns.page
-    title = page[:title] || "Post"
+    title = page[:title] || <%= if @lang do %>~t"Post"<% else %>"Post"<% end %>
     description = page[:description]
     date = page[:date]
 
@@ -17,42 +18,73 @@ defmodule <%= @app_module %>.PostLayout do
         %DateTime{} -> Calendar.strftime(date, "%Y-%m-%d")
         _ -> nil
       end
-
+<%= unless @lang do %>
     tags =
       page
       |> Map.get(:tags, [])
       |> List.wrap()
       |> Enum.filter(&is_binary/1)
 
+    site_tags = Map.get(assigns, :tags, %{})
+<% end %>
     assigns =
       assigns
       |> Map.put(:post_title, title)
       |> Map.put(:post_description, description)
       |> Map.put(:post_date_label, date_label)
-      |> Map.put(:post_tags, tags)
 <%= if @lang do %>      |> Map.put(:blog_path, Locale.swap_path("/blog", Locale.current(page)))
+<% else %>      |> Map.put(:post_tags, tags)
+      |> Map.put(:site_tags, site_tags)
+      |> Map.put(:blog_path, "/blog")
+      |> Map.put(:tags_path, "/tags")
 <% end %>
     ~H"""
-    <article class="flex w-full max-w-3xl flex-col gap-space-lg">
-      <header class="flex flex-col gap-space border-b border-border pb-space-lg">
-        <.navigate to={<%= if @lang do %>@blog_path<% else %>"/blog"<% end %>} class="link w-fit">
+    <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
+      <nav class="blog__nav" aria-label=<%= if @lang do %>{~t"Blog"}<% else %>"Blog"<% end %>>
+        <.navigate to={@blog_path} class="link ui-nav w-fit">
           <.heroicon name="hero-arrow-left" /><%= if @lang do %> {~t"Back to blog"}<% else %> Back to blog<% end %>
         </.navigate>
-        <div :if={@post_date_label} class="text-sm text-ink-muted">{@post_date_label}</div>
-        <h1 class="m-0 text-4xl font-bold tracking-tight">{@post_title}</h1>
-        <p :if={@post_description} class="m-0 max-w-prose leading-relaxed text-ink-muted">
-          {@post_description}
-        </p>
-        <ul :if={@post_tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0">
-          <li :for={tag <- @post_tags}>
-            <span class="badge">{tag}</span>
-          </li>
-        </ul>
+<%= unless @lang do %>        <.navigate to={@tags_path} class="link ui-nav w-fit">
+          Browse tags
+        </.navigate>
+<% end %>      </nav>
+      <header class="blog__hero blog__hero--post" aria-labelledby="post-heading">
+        <div class="blog__head">
+          <p :if={@post_date_label} class="blog__eyebrow">{@post_date_label}</p>
+          <h1 id="post-heading" class="blog__display">{@post_title}</h1>
+          <p :if={@post_description} class="blog__lede">{@post_description}</p>
+<%= unless @lang do %>          <ul :if={@post_tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0">
+            <li :for={tag <- @post_tags}>
+              <.navigate
+                to={tag_permalink(tag, @site_tags)}
+                class="badge ui-brand ui-size-sm no-underline"
+              >
+                {tag}
+              </.navigate>
+            </li>
+          </ul>
+<% end %>        </div>
       </header>
-      <div class="typo prose max-w-none">
+      <div class="typo markdown prose max-w-none">
         {{:safe, render(@inner_content)}}
       </div>
     </article>
     """
   end
-end
+<%= unless @lang do %>
+  defp tag_permalink(tag, site_tags) when is_map(site_tags) do
+    case Enum.find(site_tags, fn {meta, _} -> meta.tag == tag end) do
+      {meta, _} -> meta.permalink
+      nil -> "/tags/" <> slugify_tag(tag)
+    end
+  end
+
+  defp tag_permalink(tag, _), do: "/tags/" <> slugify_tag(tag)
+
+  defp slugify_tag(tag) do
+    tag
+    |> String.downcase()
+    |> String.replace(~r/[^a-z0-9]+/u, "-")
+    |> String.trim("-")
+  end
+<% end %>end

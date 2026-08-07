@@ -1,4 +1,3 @@
-import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import type { ExpandedChangeDetails, SelectionChangeDetails } from "@zag-js/tree-view";
 import { TreeView, type TreeNode } from "../components/tree-view";
@@ -16,6 +15,7 @@ import {
   runHeightOpenTransition,
 } from "../lib/animation";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
   parseRespondTo,
   createValueEmitter,
@@ -23,8 +23,6 @@ import {
   readPayloadId,
   notifyChange,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 import {
   type TreeViewExpandedChangedDetail,
   type TreeViewSelectionChangedDetail,
@@ -33,8 +31,6 @@ import {
 
 type TreeViewHookState = {
   treeView?: TreeView;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastDataTree?: string;
   lastExpanded?: string[];
   lastSelected?: string[];
@@ -70,14 +66,15 @@ export function readTreeViewInteractionProps(el: HTMLElement) {
   };
 }
 
-const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
-    const el = this.el;
-    const self = this as object & HookInterface<HTMLElement> & TreeViewHookState;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const TreeViewHook = createZagLiveHook<TreeViewHookState, TreeView>({
+  key: "treeView",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const self = hook as object & HookInterface<HTMLElement> & TreeViewHookState;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const rootNode = parseRootNode(el);
-    this.lastDataTree = el.dataset.tree;
+    hook.lastDataTree = el.dataset.tree;
 
     self.lastExpanded = getStringList(el, "defaultExpandedValue") ?? [];
     self.lastSelected = getStringList(el, "defaultSelectedValue") ?? [];
@@ -103,7 +100,7 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
         const isItem = !!itemEl;
 
         if (redirectOn && isItem) {
-          performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
+          performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: hook.liveSocket });
         }
 
         const next = details.selectedValue ?? [];
@@ -163,8 +160,6 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
         });
       },
     });
-    treeView.init();
-    this.treeView = treeView;
 
     prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
 
@@ -182,35 +177,23 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
       domEventName: "tree-view-expanded-value",
     });
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
+    dom.add<CustomEvent<{ value: string[] }>>("corex:tree-view:set-expanded-value", (event) => {
+      treeView.api.setExpandedValue(event.detail.value);
+    });
 
-    domRegistry.add<CustomEvent<{ value: string[] }>>(
-      "corex:tree-view:set-expanded-value",
-      (event) => {
-        treeView.api.setExpandedValue(event.detail.value);
-      }
-    );
+    dom.add<CustomEvent<{ value: string[] }>>("corex:tree-view:set-selected-value", (event) => {
+      treeView.api.setSelectedValue(event.detail.value);
+    });
 
-    domRegistry.add<CustomEvent<{ value: string[] }>>(
-      "corex:tree-view:set-selected-value",
-      (event) => {
-        treeView.api.setSelectedValue(event.detail.value);
-      }
-    );
-
-    domRegistry.add<CustomEvent>("corex:tree-view:value", (event) => {
+    dom.add<CustomEvent>("corex:tree-view:value", (event) => {
       emitSelectedValue(parseRespondTo(event.detail));
     });
 
-    domRegistry.add<CustomEvent>("corex:tree-view:expanded-value", (event) => {
+    dom.add<CustomEvent>("corex:tree-view:expanded-value", (event) => {
       emitExpandedValue(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add(
+    server.add(
       "tree_view_set_expanded_value",
       (payload: { tree_view_id?: string; value: string[] }) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -218,7 +201,7 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
       }
     );
 
-    registry.add(
+    server.add(
       "tree_view_set_selected_value",
       (payload: { tree_view_id?: string; value: string[] }) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -226,25 +209,27 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
       }
     );
 
-    registry.add("tree_view_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("tree_view_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitSelectedValue(parseRespondTo(payload));
     });
 
-    registry.add("tree_view_expanded_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("tree_view_expanded_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitExpandedValue(parseRespondTo(payload));
     });
+
+    return treeView;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
-    const { el } = this;
-    const tv = this.treeView;
+  update(hook, treeView) {
+    const { el } = hook;
+    const tv = treeView;
     if (!tv) return;
 
     const rawTree = el.dataset.tree;
-    if (rawTree != null && rawTree !== this.lastDataTree) {
-      this.lastDataTree = rawTree;
+    if (rawTree != null && rawTree !== hook.lastDataTree) {
+      hook.lastDataTree = rawTree;
       tv.replaceRootNode(parseRootNode(el));
     }
 
@@ -254,21 +239,15 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
 
     const expandedAttr = readExpandedAttr(el);
     const selectedAttr = readSelectedAttr(el);
-    const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
-    const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
-    this.lastExpandedAttr = expandedAttr;
-    this.lastSelectedAttr = selectedAttr;
+    const expandedAttrChanged = expandedAttr !== hook.lastExpandedAttr;
+    const selectedAttrChanged = selectedAttr !== hook.lastSelectedAttr;
+    hook.lastExpandedAttr = expandedAttr;
+    hook.lastSelectedAttr = selectedAttr;
 
     tv.updateProps(interaction);
     if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
     if (selectedAttrChanged) tv.api.setSelectedValue(selected);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.treeView?.destroy();
-  },
-};
+});
 
 export { TreeViewHook as TreeView };

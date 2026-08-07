@@ -187,14 +187,19 @@ defmodule Corex.Avatar do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, :api
+
   import Corex.Api.Doc
 
   alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
-  alias Corex.Avatar.Connect
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [respond_to_fields: 1]
+  alias Corex.Avatar.Connect
+
+  alias Corex.Selectors
+
+  alias Phoenix.LiveView
+
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false, doc: "The id of the avatar")
   attr(:src, :string, default: nil, doc: "Image source URL")
@@ -241,7 +246,7 @@ defmodule Corex.Avatar do
   def avatar(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "avatar-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("avatar")
       |> assign_new(:dir, fn -> nil end)
 
     ~H"""
@@ -258,8 +263,7 @@ defmodule Corex.Avatar do
       phx-hook="Avatar"
       dir={@dir}
       data-src={@src}
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -269,12 +273,10 @@ defmodule Corex.Avatar do
       })}
     >
       <div
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})}
-        {Connect.root(%Root{id: @id, dir: @dir})}
+        {Connect.mounted_root(%Root{id: @id, dir: @dir})}
       >
         <span
-          phx-mounted={Connect.ignore_fallback(%Fallback{id: @id, dir: @dir})}
-          {Connect.fallback(%Fallback{id: @id, dir: @dir})}
+          {Connect.mounted_fallback(%Fallback{id: @id, dir: @dir})}
         >
           {if @value != [], do: render_slot(@value, @src), else: render_slot(@fallback)}
         </span>
@@ -286,8 +288,7 @@ defmodule Corex.Avatar do
         />
         <span
           :if={@src}
-          phx-mounted={Connect.ignore_skeleton(%Skeleton{id: @id})}
-          {Connect.skeleton(%Skeleton{id: @id})}
+          {Connect.mounted_skeleton(%Skeleton{id: @id})}
         />
       </div>
     </div>
@@ -330,9 +331,12 @@ defmodule Corex.Avatar do
   ```
   """)
 
+  @spec set_src(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_src(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def set_src(avatar_id, src) when is_binary(avatar_id) and is_binary(src) do
     JS.dispatch("corex:avatar:set-src",
-      to: "##{avatar_id}",
+      to: Selectors.css_id(avatar_id),
       detail: %{src: src},
       bubbles: false
     )
@@ -359,6 +363,9 @@ defmodule Corex.Avatar do
   end
 
   @doc false
+  @spec loaded(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec loaded(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec loaded(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def loaded(avatar_id) when is_binary(avatar_id), do: loaded(avatar_id, [])
 
   api_doc(~S"""
@@ -381,7 +388,7 @@ defmodule Corex.Avatar do
 
   def loaded(avatar_id, opts) when is_binary(avatar_id) and is_list(opts) do
     JS.dispatch("corex:avatar:loaded",
-      to: "##{avatar_id}",
+      to: Selectors.css_id(avatar_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )

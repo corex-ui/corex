@@ -1,18 +1,14 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Menu } from "../components/menu";
 import type { SelectionDetails, OpenChangeDetails, Props } from "@zag-js/menu";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { notifyChange, readPayloadId } from "../lib/respond-to";
-import { performRedirect, readDomItemRedirect } from "../lib/redirect";
+import { redirectCollectionItem } from "../lib/collection-hook";
 import { readPositioningOptions } from "../lib/positioning";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type MenuHookState = {
   menu?: Menu;
-  handlers?: Array<CallbackRef>;
-  onSetOpen?: (event: Event) => void;
-  onSubmenuItemClick?: (event: Event) => void;
   submenuWireTimer?: ReturnType<typeof setTimeout>;
 };
 
@@ -71,23 +67,21 @@ export function menuSetOpenMatches(elId: string, payload: unknown): boolean {
   return elId === targetId || elId === `menu:${targetId}`;
 }
 
-const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & MenuHookState) {
-    const el = this.el;
+const MenuHook = createZagLiveHook<MenuHookState, Menu>({
+  key: "menu",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
 
     if (el.hasAttribute("data-nested")) {
       return;
     }
 
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const liveSocket = hook.liveSocket;
 
     const buildOnSelect = () => (details: SelectionDetails) => {
       if (getBoolean(el, "redirect") && details.value) {
-        const itemEl = el.querySelector<HTMLElement>(
-          `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
-        );
-        performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+        redirectCollectionItem(el, "menu", details.value, liveSocket);
       }
 
       notifyChange({
@@ -127,8 +121,6 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
         });
       },
     });
-    menu.init();
-    this.menu = menu;
 
     const nestedMenuElements = el.querySelectorAll<HTMLElement>(
       '[data-scope="menu"][data-nested="menu"]'
@@ -157,9 +149,9 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       nestedMenuInstances.push(nestedMenu);
     });
 
-    this.submenuWireTimer = setTimeout(() => {
-      this.submenuWireTimer = undefined;
-      const rootMenu = this.menu;
+    hook.submenuWireTimer = setTimeout(() => {
+      hook.submenuWireTimer = undefined;
+      const rootMenu = hook.menu;
       if (!rootMenu) return;
 
       nestedMenuInstances.forEach((nestedMenu) => {
@@ -179,68 +171,44 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       }
     }, 0);
 
-    this.onSetOpen = (event: Event) => {
-      const { open } = (event as CustomEvent<{ open: boolean }>).detail;
+    dom.add<CustomEvent<{ open: boolean }>>("corex:menu:set-open", (event) => {
+      const { open } = event.detail;
       if (menu.api.open !== open) menu.api.setOpen(open);
-    };
-    el.addEventListener("corex:menu:set-open", this.onSetOpen);
+    });
 
-    this.handlers = [];
+    server.add("menu_set_open", (payload: { open: boolean }) => {
+      if (!menuSetOpenMatches(el.id, payload)) return;
+      menu.api.setOpen(payload.open);
+    });
 
-    this.handlers.push(
-      this.handleEvent("menu_set_open", (payload: { open: boolean }) => {
-        if (!menuSetOpenMatches(el.id, payload)) return;
-        menu.api.setOpen(payload.open);
-      })
-    );
+    server.add("menu_open", (payload: unknown) => {
+      if (!menuSetOpenMatches(el.id, payload)) return;
+      hook.pushEvent("menu_open_response", {
+        id: readPayloadId(payload),
+        open: menu.api.open,
+      });
+    });
 
-    this.handlers.push(
-      this.handleEvent("menu_open", (payload: unknown) => {
-        if (!menuSetOpenMatches(el.id, payload)) return;
-        this.pushEvent("menu_open_response", {
-          id: readPayloadId(payload),
-          open: menu.api.open,
-        });
-      })
-    );
+    return menu;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & MenuHookState) {
-    if (this.el.hasAttribute("data-nested")) return;
-    if (!this.menu) return;
+  update(_hook, menu) {
+    syncMenuPropsFromDom(menu);
+    renderMenuTree(menu);
 
-    syncMenuPropsFromDom(this.menu);
-    renderMenuTree(this.menu);
-
-    if (this.menu.children.length > 0) {
-      wireSubmenuTriggersDeep(this.menu);
+    if (menu.children.length > 0) {
+      wireSubmenuTriggersDeep(menu);
     }
   },
 
-  destroyed(this: object & HookInterface<HTMLElement> & MenuHookState) {
-    if (this.el.hasAttribute("data-nested")) return;
-
-    if (this.submenuWireTimer !== undefined) {
-      clearTimeout(this.submenuWireTimer);
-      this.submenuWireTimer = undefined;
+  destroy(hook, menu) {
+    if (hook.submenuWireTimer !== undefined) {
+      clearTimeout(hook.submenuWireTimer);
+      hook.submenuWireTimer = undefined;
     }
 
-    if (this.onSetOpen) {
-      this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
-    }
-
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
-    if (this.menu) {
-      destroyDescendantMenus(this.menu);
-      this.menu.destroy();
-      this.menu = undefined;
-    }
+    destroyDescendantMenus(menu);
   },
-};
+});
 
 export { MenuHook as Menu };

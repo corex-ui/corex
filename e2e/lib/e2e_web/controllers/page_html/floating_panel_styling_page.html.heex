@@ -9,9 +9,19 @@
     id="floating-panel-styling-page"
     title={~t"Floating Panel · Style"}
     subtitle={
-      ~t"Semantic colors, density, and corner radius via modifier classes on the floating panel root."
+      ~t"Semantic colors, visual variants, density, and corner radius via modifier classes on the floating panel root. Host semantics tint title and header chrome; the open trigger stays subtle."
     }
   >
+    <.demo_section
+      id="floating-panel-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="floating-panel-styling-color"
       title={~t"Semantic"}
@@ -70,6 +80,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.FloatingPanelDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="floating-panel-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="floating-panel" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

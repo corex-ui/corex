@@ -47,10 +47,11 @@ In `config/config.exs`, keys under `config :corex_design` control the **build-ti
 | Key | Default | Effect |
 |-----|---------|--------|
 | `components` | `nil` (all) | Emit only listed component recipe files |
-| `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included); trims unused `ui-{role}` utilities |
+| `semantics` | `nil` (all) | Emit only listed palette roles (roles filtered by semantics); trims unused `ui-{role}` utilities |
 | `themes` | `nil` (all presets) | Emit only listed theme CSS (`neo`, `uno`, `duo`, `leo`) |
-| `default_theme` | `:neo` | Build default theme id (compile-time; picker default is separate) |
+| `default_theme` | `:uno` if omitted | Theme id used when CSS loads with no `data-theme`. New apps from `mix corex.new` set `default_theme: :neo` (and `themes: [:neo]`). Pass `--theme` to scaffold every preset. |
 | `default_mode` | `:light` | Build default mode (`:light` / `:dark`) |
+| `accessibility` | `false` | Preference CSS: `false`, `true` (all six axes), or `[:text, :contrast, …]` |
 
 Run `mix corex.design.options` to print allowed values and your current resolved config.
 
@@ -62,9 +63,9 @@ default_theme: :neo,
 default_mode: :light
 ```
 
-Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; prefer `semantics:` for new apps.
+Use top-level `semantics:` to filter palette roles. `scales:` is only for numeric step overrides.
 
-Runtime pickers use `config :my_app, :themes` (and cookies / localStorage). Keep that list a subset of what you emit here. See [Theming](theming.html), [Dark mode](dark_mode.html), and [Configuration](configuration.html).
+Runtime pickers use `config :my_app, :themes` (and cookies / localStorage). Keep that list a subset of what you emit here. See [Theming](theming.html), [Dark mode](dark_mode.html), [Accessibility](accessibility.html), and [Configuration](configuration.html).
 
 4. Point Tailwind at the generated tree (Phoenix 1.8+ example):
 
@@ -76,7 +77,7 @@ Runtime pickers use `config :my_app, :themes` (and cookies / localStorage). Keep
 
 ```heex
 <html lang="en" data-theme="neo" data-mode="light">
-  <body class="typo layout">
+  <body class="typo">
     {@inner_content}
   </body>
 </html>
@@ -86,7 +87,7 @@ Use a `data-theme` value that matches a theme file you imported (`neo`, `uno`, `
 
 ### Fonts (optional)
 
-Corex Design does not ship `@font-face` files. Theme CSS sets stacks (`--theme-font-*`); `tokens/semantic/font.css` maps them to `--font-*` used by `.typo` and components.
+Corex Design does not ship `@font-face` files. Theme CSS sets stacks (`--font-*`) under `[data-theme]`; `@theme` registration makes them available to `.typo` and components.
 
 - **neo** uses system fonts; no web font import is required.
 - For **uno**, **duo**, **leo**, or a picker that switches among all four themes, load web fonts in `app.css` **before** Tailwind / Corex:
@@ -141,7 +142,7 @@ See the [modifier guide](modifiers.html) for the full axis system. Stack modifie
 
 After `mix corex.design.build`, CSS and tokens live under `assets/corex/`. Theme files switch palettes when both `data-theme` and `data-mode` are set on `<html>`.
 
-Prefer **modifier classes** on Corex components and Tailwind utilities that map to the same tokens (`text-ink`, `bg-layer`, `gap-space-lg`, `rounded-xl`) in layout markup. Avoid overriding CSS variables in templates.
+Prefer **modifier classes** on Corex components and Tailwind utilities that map to the same tokens (`text-ink`, `bg-surface`, `gap-space-lg`, `rounded-xl`) in layout markup. Avoid overriding CSS variables in templates.
 
 ## Icons
 
@@ -155,11 +156,16 @@ Avoid extra `class` on `<.heroicon>` when it sits inside another Corex component
 
 ## Without Corex Design
 
-Use `mix corex.new my_app --no-design`, or skip the `corex_design` dependency in manual installs. Style with your own CSS targeting `data-scope` / `data-part`, or another system. Component behavior and the LiveView/JS API are unchanged.
+Use `mix corex.new my_app --no-design`, or skip the `corex_design` dependency in manual installs. Generated apps copy a static neo/light Design export into `assets/corex/` (same layout as a live build: `corex.css`, tokens, components) and import it from `app.css` (or Tableau `site.css`). Edit or delete that folder to bring your own CSS. Component behavior and the LiveView/JS API are unchanged.
+
+`--mode`, `--theme`, and `--a11y` require Design (`corex_design`); they cannot combine with `--no-design`. `--lang` is allowed with `--no-design`.
+
+For a manual install without Design, either use `mix corex.new --no-design` or add `corex_design` and run `mix corex.design.build` with a neo/light config, then import `../corex/corex.css`. The static snapshot is installer-only (not shipped in the `:corex` Hex package).
 
 ## See also
 
 - [Manual installation](manual_installation.html) — Esbuild, hooks, optional toast layout
 - [Theming](theming.html) — `data-theme` and theme picker
 - [Dark mode](dark_mode.html) — `data-mode` and mode toggle
+- [Accessibility](accessibility.html): optional preference axes and panel wiring
 - Component Hexdocs — anatomy, API, and per-component Design examples

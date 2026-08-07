@@ -1,0 +1,41 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme inline {
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+  --shadow-ui: var(--shadow-ui);
+  --shadow-surface: var(--shadow-surface);
+  --inset-shadow-2xs: var(--inset-shadow-2xs);
+  --inset-shadow-xs: var(--inset-shadow-xs);
+  --inset-shadow-sm: var(--inset-shadow-sm);
+  --drop-shadow-xs: var(--drop-shadow-xs);
+  --drop-shadow-sm: var(--drop-shadow-sm);
+  --drop-shadow-md: var(--drop-shadow-md);
+  --drop-shadow-lg: var(--drop-shadow-lg);
+  --drop-shadow-xl: var(--drop-shadow-xl);
+  --drop-shadow-2xl: var(--drop-shadow-2xl);
+  --text-shadow-2xs: var(--text-shadow-2xs);
+  --text-shadow-xs: var(--text-shadow-xs);
+  --text-shadow-sm: var(--text-shadow-sm);
+  --text-shadow-md: var(--text-shadow-md);
+  --text-shadow-lg: var(--text-shadow-lg);
+  --blur-xs: var(--blur-xs);
+  --blur-sm: var(--blur-sm);
+  --blur-md: var(--blur-md);
+  --blur-lg: var(--blur-lg);
+  --blur-xl: var(--blur-xl);
+  --blur-2xl: var(--blur-2xl);
+  --blur-3xl: var(--blur-3xl);
+  --duration-fast: var(--duration-fast);
+  --duration-normal: var(--duration-normal);
+  --duration-slow: var(--duration-slow);
+  --opacity-disabled: var(--opacity-disabled);
+  --opacity-backdrop: var(--opacity-backdrop);
+}

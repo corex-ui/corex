@@ -1,11 +1,33 @@
 defmodule Corex.New.Patches do
   @moduledoc false
 
+  alias Corex.New.Shared
+
+  @spec patch_failed!(String.t(), String.t(), String.t()) :: no_return()
+  defp patch_failed!(what, path, expected) do
+    Mix.raise("""
+    Corex could not #{what} in #{Path.relative_to_cwd(path)}.
+
+    Expected to find #{expected}.
+
+    The generator output does not match what this version of corex_new knows how
+    to patch. Update the archive and generate again:
+
+        mix archive.install hex corex_new --force
+
+    If the problem persists, open an issue at https://github.com/corex-ui/corex/issues
+    with your Phoenix and corex_new versions.
+    """)
+  end
+
   @doc """
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
-  to the `deps/0` list in `mix.exs`. When `--lang` or `--design` and Erlang
-  `:json` is not loaded, adds `{:json_polyfill, ...}` like `localize_web`.
-  When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`. Idempotent.
+  to the `deps/0` list in `mix.exs`.
+  When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`.
+  When `--usage-rules` (default), adds `{:usage_rules, "~> 1.1", only: :dev}`
+  and `usage_rules: usage_rules()` in `project/0`.
+  When `--design`, ensures `compilers: Mix.compilers() ++ [:corex_design]`.
+  Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
     path = Path.join(install_dir, "mix.exs")
@@ -18,15 +40,69 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_gettext_sigils_dep(opts)
       |> maybe_ensure_design_dep(opts)
       |> maybe_ensure_mcp_dep(opts)
+      |> maybe_ensure_usage_rules_dep(opts)
       |> maybe_add_design_aliases(opts)
-      |> maybe_ensure_json_polyfill_dep(opts)
+      |> maybe_ensure_design_compilers(opts)
+      |> maybe_ensure_usage_rules_project(opts)
+      |> strip_daisyui_dep()
 
     write_if_changed!(path, content, updated)
+    Shared.format_elixir_source!(path)
+  end
+
+  def remove_daisyui_vendor!(install_dir) do
+    for name <- ["daisyui.js", "daisyui-theme.js"] do
+      path = Path.join([install_dir, "assets", "vendor", name])
+
+      if File.exists?(path) do
+        Mix.shell().info([:green, "* removing ", :reset, Path.relative_to_cwd(path)])
+        File.rm!(path)
+      end
+    end
+
+    :ok
   end
 
   @doc """
-  Inserts `use Corex` inside the `html_helpers/0` quote block of `<app>_web.ex`.
-  When `:lang` is true, also adds `path_prefixes` on `Phoenix.VerifiedRoutes`. Idempotent.
+  Rewrites AGENTS.md daisyUI guidance to Corex Design / corex.gen. Idempotent.
+  """
+  def patch_agents_md(install_dir) do
+    path = Path.join(install_dir, "AGENTS.md")
+
+    if File.exists?(path) do
+      content = File.read!(path)
+      updated = rewrite_agents_daisy_guidance(content)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
+  Deletes Phoenix `core_components.ex` when present. Idempotent.
+  """
+  def remove_core_components!(install_dir, web_module, opts \\ []) do
+    path =
+      Path.join([
+        install_dir,
+        "lib",
+        web_lib_dir(web_module, opts),
+        "components",
+        "core_components.ex"
+      ])
+
+    if File.exists?(path) do
+      Mix.shell().info([:green, "* removing ", :reset, Path.relative_to_cwd(path)])
+      File.rm!(path)
+    end
+
+    :ok
+  end
+
+  @doc """
+  Inserts `use Corex` inside the `html_helpers/0` quote block of `<app>_web.ex`,
+  removes `import <Web>.CoreComponents`, and when `:lang` is true adds
+  `path_prefixes` on `Phoenix.VerifiedRoutes`. Idempotent.
   """
   def patch_web_module(install_dir, web_module, opts \\ []) do
     path = web_module_path(install_dir, web_module, opts)
@@ -34,21 +110,27 @@ defmodule Corex.New.Patches do
 
     updated =
       content
-      |> ensure_use_corex_in_html_helpers()
+      |> ensure_use_corex_in_html_helpers(path)
+      |> remove_core_components_import(web_module)
       |> maybe_patch_verified_routes_for_lang(web_module, opts)
 
     write_if_changed!(path, content, updated)
   end
 
   @doc """
-  When `:lang` is true, inserts `on_mount Web.Hooks.Layout` on the line after the first bare `use Phoenix.LiveView`.
-  Normalizes `use Phoenix.LiveView, on_mount: [Web.Hooks.Layout]` to that shape. Idempotent.
+  When `:lang` or `:a11y` is true, inserts matching `on_mount` hooks after the first bare
+  `use Phoenix.LiveView`. Idempotent.
   """
-  def patch_live_view_for_lang(install_dir, web_module, opts) do
-    if Keyword.get(opts, :lang, false) do
+  def patch_live_view_hooks(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) or Keyword.get(opts, :a11y, false) do
       path = web_module_path(install_dir, web_module, opts)
       content = File.read!(path)
-      updated = maybe_insert_hooks_layout_on_mount(content, web_module)
+
+      updated =
+        content
+        |> maybe_insert_on_mount(web_module, :Hooks, :Layout, opts[:lang])
+        |> maybe_insert_on_mount(web_module, :Hooks, :Accessibility, opts[:a11y])
+
       write_if_changed!(path, content, updated)
     else
       :ok
@@ -114,11 +196,15 @@ defmodule Corex.New.Patches do
     updated =
       content
       |> maybe_insert_localize_routes_use(web_module, opts)
-      |> maybe_insert_localize_plugs(web_module, opts)
-      |> maybe_insert_mode_plug(web_module, opts)
-      |> maybe_insert_theme_plug(web_module, opts)
+      |> maybe_insert_localize_plugs(web_module, opts, path)
+      |> maybe_insert_mode_plug(web_module, opts, path)
+      |> maybe_insert_theme_plug(web_module, opts, path)
+      |> maybe_insert_accessibility_plug(web_module, opts, path)
       |> maybe_duplicate_locale_scope(web_module, opts)
+      |> normalize_router_whitespace()
 
+    # Match phx_new / phx.gen.auth: inject plugs without Code.format_string!,
+    # which would add parentheses and fail the app's Phoenix formatter check.
     write_if_changed!(path, content, updated)
   end
 
@@ -131,6 +217,33 @@ defmodule Corex.New.Patches do
     content = File.read!(path)
     updated = maybe_insert_corex_mcp_plug(content, opts)
     write_if_changed!(path, content, updated)
+  end
+
+  @doc """
+  Writes `.cursor/mcp.json` when `:mcp` is true. Port defaults to `4000` (Phoenix);
+  pass `:mcp_port` (e.g. `4004` for Tableau Bandit). Idempotent overwrite.
+  """
+  def write_cursor_mcp_json!(install_dir, opts) do
+    if Keyword.get(opts, :mcp, true) do
+      port = Keyword.get(opts, :mcp_port, 4000)
+      path = Path.join([install_dir, ".cursor", "mcp.json"])
+      url = "http://localhost:#{port}/corex/mcp"
+
+      contents = """
+      {
+        "mcpServers": {
+          "corex": {
+            "url": "#{url}"
+          }
+        }
+      }
+      """
+
+      Shared.write!(path, contents)
+      Mix.shell().info([:green, "* creating ", :reset, Path.relative_to_cwd(path)])
+    else
+      :ok
+    end
   end
 
   @doc """
@@ -167,10 +280,11 @@ defmodule Corex.New.Patches do
       |> maybe_add_localize_config(opts)
       |> maybe_add_corex_generators_config(opts)
       |> maybe_add_design_config(opts)
-      |> patch_esbuild_for_esm()
+      |> patch_esbuild_for_esm(path)
       |> patch_env_path_lists()
 
     write_if_changed!(path, content, updated)
+    Shared.format_elixir_source!(path)
   end
 
   @doc """
@@ -200,6 +314,7 @@ defmodule Corex.New.Patches do
         content = File.read!(path)
         updated = inject_locales_into_gettext_backend(content)
         write_if_changed!(path, content, updated)
+        Shared.format_elixir_source!(path)
       end
     end
 
@@ -219,12 +334,47 @@ defmodule Corex.New.Patches do
     if File.exists?(path) do
       content = File.read!(path)
       old = "Peace of mind from prototype to production"
-      new = "Corex for Phoenix"
+      new = "The Phoenix UI"
 
       updated =
         if String.contains?(content, old), do: String.replace(content, old, new), else: content
 
       write_if_changed!(path, content, updated)
+    end
+
+    :ok
+  end
+
+  @doc """
+  When `--lang` installs a custom `404.html.heex`, update the stock ErrorHTML test
+  to assert on the page heading instead of the plain status message. Idempotent.
+  """
+  def patch_error_html_test(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path =
+        Path.join([
+          install_dir,
+          "test",
+          underscore(web_module),
+          "controllers",
+          "error_html_test.exs"
+        ])
+
+      if File.exists?(path) do
+        content = File.read!(path)
+
+        updated =
+          Regex.replace(
+            ~r/assert render_to_string\(([\w.]+)\.ErrorHTML, "404", "html", \[\]\) == "Not Found"/,
+            content,
+            fn _, mod ->
+              ~s|assert render_to_string(#{mod}.ErrorHTML, "404", "html", []) =~ "Page not found"|
+            end
+          )
+
+        write_if_changed!(path, content, updated)
+        Shared.format_elixir_source!(path)
+      end
     end
 
     :ok
@@ -292,26 +442,171 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_ensure_json_polyfill_dep(content, opts) do
-    needs_json? =
-      Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false) or
-        Keyword.get(opts, :mcp, true)
-
-    if not needs_json? do
+  defp maybe_ensure_usage_rules_dep(content, opts) do
+    if Keyword.get(opts, :usage_rules, true) == false do
       content
     else
-      cond do
-        Regex.match?(~r/\{:json_polyfill\s*,/u, content) ->
-          content
+      if Regex.match?(~r/\{:usage_rules\s*,/u, content) do
+        content
+      else
+        insert_before_closing_deps(
+          content,
+          "      {:usage_rules, \"~> 1.1\", only: :dev}\n"
+        )
+      end
+    end
+  end
 
-        Code.ensure_loaded?(:json) ->
-          content
+  defp maybe_ensure_design_compilers(content, opts) do
+    cond do
+      not Keyword.get(opts, :design, false) ->
+        content
 
-        true ->
-          insert_before_closing_deps(
-            content,
-            "      {:json_polyfill, \"~> 0.2 or ~> 1.0\"},\n"
-          )
+      Regex.match?(~r/\bcompilers:[\s\S]*?:corex_design\b/u, content) ->
+        content
+
+      Regex.match?(~r/\bcompilers:\s*/u, content) ->
+        prepend_corex_design_compiler(content)
+
+      true ->
+        insert_design_compilers_into_project(content)
+    end
+  end
+
+  defp prepend_corex_design_compiler(content) do
+    replaced =
+      Regex.replace(
+        ~r/(compilers:\s*)\[/u,
+        content,
+        "\\1[:corex_design, ",
+        global: false
+      )
+
+    if replaced != content do
+      replaced
+    else
+      Regex.replace(
+        ~r/(compilers:\s*)(Mix\.compilers\(\))/u,
+        content,
+        "\\1\\2 ++ [:corex_design]",
+        global: false
+      )
+    end
+  end
+
+  defp insert_design_compilers_into_project(content) do
+    line = "      compilers: Mix.compilers() ++ [:corex_design],\n"
+
+    replaced =
+      Regex.replace(
+        ~r/(start_permanent:\s*Mix\.env\(\)\s*==\s*:prod,?\s*\n)/u,
+        content,
+        "\\1" <> line,
+        global: false
+      )
+
+    cond do
+      replaced != content ->
+        replaced
+
+      Regex.match?(~r/def project do\s*\n\s*\[\s*\n/u, content) ->
+        Regex.replace(
+          ~r/(def project do\s*\n\s*\[\s*\n)/u,
+          content,
+          "\\1" <> line,
+          global: false
+        )
+
+      true ->
+        Regex.replace(
+          ~r/(def project do\s*\n\s*\[)/u,
+          content,
+          "\\1compilers: Mix.compilers() ++ [:corex_design], ",
+          global: false
+        )
+    end
+  end
+
+  defp maybe_ensure_usage_rules_project(content, opts) do
+    if Keyword.get(opts, :usage_rules, true) == false do
+      content
+    else
+      content
+      |> ensure_usage_rules_project_key()
+      |> ensure_usage_rules_helper()
+    end
+  end
+
+  defp ensure_usage_rules_project_key(content) do
+    cond do
+      Regex.match?(~r/\busage_rules:\s*usage_rules\(\)/u, content) ->
+        content
+
+      Regex.match?(~r/\busage_rules:/u, content) ->
+        content
+
+      true ->
+        insert_usage_rules_into_project(content)
+    end
+  end
+
+  defp insert_usage_rules_into_project(content) do
+    multiline =
+      Regex.replace(
+        ~r/(deps:\s*deps\(\))(,?)(\s*\n)/u,
+        content,
+        fn _, deps, comma, nl ->
+          "#{deps}#{if comma == "", do: ",", else: comma}#{nl}      usage_rules: usage_rules(),\n"
+        end,
+        global: false
+      )
+
+    cond do
+      multiline != content ->
+        multiline
+
+      Regex.match?(~r/deps:\s*deps\(\)\s*\]/u, content) ->
+        Regex.replace(
+          ~r/(deps:\s*deps\(\))\s*\]/u,
+          content,
+          "\\1, usage_rules: usage_rules()]",
+          global: false
+        )
+
+      true ->
+        Regex.replace(
+          ~r/(def project do\s*\n\s*\[\s*\n)/u,
+          content,
+          "\\1      usage_rules: usage_rules(),\n",
+          global: false
+        )
+    end
+  end
+
+  defp ensure_usage_rules_helper(content) do
+    if Regex.match?(~r/defp\s+usage_rules\s+do/u, content) do
+      content
+    else
+      helper = """
+
+        defp usage_rules do
+          [
+            skills: [
+              location: ".cursor/skills",
+              package_skills: [:corex]
+            ]
+          ]
+        end
+      """
+
+      case Regex.run(~r/\nend\s*\z/u, content, return: :index) do
+        [{s, _l}] ->
+          before = binary_part(content, 0, s)
+          rest = binary_part(content, s, byte_size(content) - s)
+          before <> helper <> rest
+
+        nil ->
+          String.trim_trailing(content) <> helper <> "\n"
       end
     end
   end
@@ -443,15 +738,22 @@ defmodule Corex.New.Patches do
         content
 
       true ->
+        themes = Keyword.get(opts, :themes, ["neo"])
+        default_theme = Keyword.get(opts, :default_theme, List.first(themes) || "neo")
+
+        themes_inline =
+          "[" <> Enum.map_join(themes, ", ", &":#{&1}") <> "]"
+
         block = """
         config :corex_design,
           output: "assets/corex",
-          default_theme: :neo,
+          default_theme: :#{default_theme},
           default_mode: :light,
-          themes: nil,
+          themes: #{themes_inline},
+          modes: [:light, :dark],
           scales: [],
           components: #{inspect(installer_components(opts))},
-          semantics: nil
+          semantics: [:accent, :brand, :alert]#{if Keyword.get(opts, :a11y, false), do: ",\n          accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]", else: ""}
 
         """
 
@@ -486,85 +788,15 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp corex_design_dep_source(opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
+  defp corex_design_dep_source(opts), do: Shared.corex_design_dep_source(opts)
 
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          design_path = Path.join(trimmed, "design")
-          "[path: #{inspect(design_path)}, runtime: false, only: :dev]"
-        else
-          corex_design_dep_constraint()
-        end
-
-      _ ->
-        corex_design_dep_constraint()
-    end
-  end
-
-  defp corex_design_dep_constraint do
-    "\"~> 0.2\", runtime: false, only: :dev"
-  end
-
-  defp corex_mcp_dep_source(opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          mcp_path = Path.join(trimmed, "mcp")
-          "[path: #{inspect(mcp_path)}, only: [:dev, :test]]"
-        else
-          corex_mcp_dep_constraint()
-        end
-
-      _ ->
-        corex_mcp_dep_constraint()
-    end
-  end
-
-  defp corex_mcp_dep_constraint do
-    "\"~> 0.2\", only: [:dev, :test]"
-  end
+  defp corex_mcp_dep_source(opts), do: Shared.corex_mcp_dep_source(opts)
 
   defp installer_components(opts) do
-    base =
-      ~w(
-        toast layout-heading typo icon link button dialog password-input scrollbar
-        checkbox data-list data-table date-picker native-input number-input select
-      )a
-
-    if Keyword.get(opts, :mode, false) do
-      base ++ [:toggle]
-    else
-      base
-    end
+    Corex.New.Components.installer_components(opts)
   end
 
-  defp corex_dep_source(opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          "[path: #{inspect(trimmed)}, override: true]"
-        else
-          corex_dep_constraint()
-        end
-
-      _ ->
-        corex_dep_constraint()
-    end
-  end
-
-  defp corex_dep_constraint do
-    version = Mix.Project.config()[:version] || "0.1.2"
-    "\"~> #{version}\""
-  end
+  defp corex_dep_source(opts), do: Shared.corex_dep_source(opts)
 
   defp insert_before_closing_deps(content, extra_line) do
     case Regex.run(
@@ -579,14 +811,11 @@ defmodule Corex.New.Patches do
         before_with_comma <> "\n" <> extra_line <> String.trim_leading(rest, "\n")
 
       _ ->
-        Mix.shell().info([
-          :yellow,
-          "! ",
-          :reset,
-          "Could not locate `defp deps do [ ... ]` in mix.exs. Add the Corex dependency manually."
-        ])
-
-        content
+        patch_failed!(
+          "add a dependency",
+          "mix.exs",
+          "a `defp deps do [ ... ] end` list. Corex and its companion packages cannot be added without it"
+        )
     end
   end
 
@@ -601,8 +830,8 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_insert_hooks_layout_on_mount(content, web_module) do
-    hook_mod = Module.concat([web_module, :Hooks, :Layout])
+  defp maybe_insert_on_mount(content, web_module, namespace, name, true) do
+    hook_mod = Module.concat([web_module, namespace, name])
     mod_txt = inspect(hook_mod)
     standalone = "on_mount #{mod_txt}"
 
@@ -626,16 +855,69 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp ensure_use_corex_in_html_helpers(content) do
-    if Regex.match?(~r/^\s*use\s+Corex\b/m, content) do
-      content
-    else
-      Regex.replace(
-        ~r/(defp\s+html_helpers\s+do\s*\n\s*quote\s+do\s*\n)/u,
-        content,
-        "\\1      use Corex\n",
-        global: false
-      )
+  defp maybe_insert_on_mount(content, _web_module, _namespace, _name, _), do: content
+
+  defp ensure_use_corex_in_html_helpers(content, path) do
+    cond do
+      Regex.match?(~r/^\s*use\s+Corex\b/m, content) ->
+        content
+
+      Regex.match?(~r/defp\s+html_helpers\s+do\s*\n\s*quote\s+do\s*\n/u, content) ->
+        Regex.replace(
+          ~r/(defp\s+html_helpers\s+do\s*\n\s*quote\s+do\s*\n)/u,
+          content,
+          "\\1      use Corex\n",
+          global: false
+        )
+
+      true ->
+        patch_failed!(
+          "add `use Corex`",
+          path,
+          "a `defp html_helpers do quote do` block. Without it no Corex component is imported into your templates"
+        )
+    end
+  end
+
+  defp remove_core_components_import(content, web_module) do
+    web = Regex.escape(inspect(web_module))
+
+    content
+    |> String.replace(~r/^\s*#\s*Core UI components\s*\n/m, "")
+    |> String.replace(~r/^\s*import\s+#{web}\.CoreComponents\s*\n/m, "")
+  end
+
+  defp strip_daisyui_dep(content) do
+    Regex.replace(
+      ~r/\n[ \t]*\{:daisyui,\n(?:[ \t]+[^\n]+\n)*?[ \t]+[^\n]+\},?/u,
+      content,
+      "\n"
+    )
+  end
+
+  defp rewrite_agents_daisy_guidance(content) do
+    daisy_bullet =
+      "**Always** manually write your own tailwind-based components instead of using daisyUI for a unique, world-class design"
+
+    corex_bullet =
+      "**Prefer Corex components and Corex Design tokens** (`use Corex`, `ui-*` modifiers). Scaffold with `mix corex.gen.html` / `mix corex.gen.live` instead of `mix phx.gen.*`"
+
+    cond do
+      String.contains?(content, corex_bullet) ->
+        content
+
+      String.contains?(content, daisy_bullet) ->
+        String.replace(content, daisy_bullet, corex_bullet)
+
+      String.contains?(content, "daisyUI") ->
+        String.replace(
+          content,
+          ~r/^- \*\*Always\*\*.*daisyUI.*$/m,
+          "- #{corex_bullet}"
+        )
+
+      true ->
+        content
     end
   end
 
@@ -656,7 +938,7 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_insert_localize_plugs(content, web_module, opts) do
+  defp maybe_insert_localize_plugs(content, web_module, opts, path) do
     if Keyword.get(opts, :lang, false) and
          not String.contains?(content, "Localize.Plug.PutLocale") do
       plugs = """
@@ -668,53 +950,95 @@ defmodule Corex.New.Patches do
           plug Localize.Plug.PutSession, as: :string
       """
 
-      insert_after_fetch_live_flash(content, plugs)
+      insert_after_fetch_live_flash(content, plugs, path, "wire up the Localize plugs")
     else
       content
     end
   end
 
-  defp maybe_insert_mode_plug(content, web_module, opts) do
-    line = "    plug " <> inspect(web_module) <> ".Plugs.Mode\n"
+  defp maybe_insert_mode_plug(content, web_module, opts, path) do
+    plug_mod = inspect(web_module) <> ".Plugs.Mode"
+    line = "    plug " <> plug_mod <> "\n"
 
     cond do
-      not Keyword.get(opts, :mode, false) -> content
-      String.contains?(content, String.trim_trailing(line)) -> content
-      true -> insert_after_localize_or_flash(content, line)
-    end
-  end
+      not Keyword.get(opts, :mode, false) ->
+        content
 
-  defp maybe_insert_theme_plug(content, web_module, opts) do
-    line = "    plug " <> inspect(web_module) <> ".Plugs.Theme\n"
-
-    cond do
-      not Keyword.get(opts, :theme, false) -> content
-      String.contains?(content, String.trim_trailing(line)) -> content
-      true -> insert_after_localize_or_flash(content, line)
-    end
-  end
-
-  defp insert_after_fetch_live_flash(content, addition) do
-    Regex.replace(
-      ~r/(plug :fetch_live_flash\s*\n)/u,
-      content,
-      "\\1" <> addition,
-      global: false
-    )
-  end
-
-  defp insert_after_localize_or_flash(content, addition) do
-    cond do
-      Regex.match?(~r/plug Localize\.Plug\.PutSession[^\n]*\n/u, content) ->
-        Regex.replace(
-          ~r/(plug Localize\.Plug\.PutSession[^\n]*\n)/u,
-          content,
-          "\\1" <> addition,
-          global: false
-        )
+      router_plug_present?(content, plug_mod) ->
+        content
 
       true ->
-        insert_after_fetch_live_flash(content, addition)
+        insert_after_localize_or_flash(content, line, path, "wire up the dark mode plug")
+    end
+  end
+
+  defp maybe_insert_theme_plug(content, web_module, opts, path) do
+    plug_mod = inspect(web_module) <> ".Plugs.Theme"
+    line = "    plug " <> plug_mod <> "\n"
+
+    cond do
+      not Keyword.get(opts, :theme, false) ->
+        content
+
+      router_plug_present?(content, plug_mod) ->
+        content
+
+      true ->
+        insert_after_localize_or_flash(content, line, path, "wire up the theme plug")
+    end
+  end
+
+  defp maybe_insert_accessibility_plug(content, web_module, opts, path) do
+    plug_mod = inspect(web_module) <> ".Plugs.Accessibility"
+    line = "    plug " <> plug_mod <> "\n"
+
+    cond do
+      not Keyword.get(opts, :a11y, false) ->
+        content
+
+      router_plug_present?(content, plug_mod) ->
+        content
+
+      true ->
+        insert_after_localize_or_flash(content, line, path, "wire up the accessibility plug")
+    end
+  end
+
+  # Matches both `plug Mod` and formatter output `plug(Mod)`.
+  defp router_plug_present?(content, plug_ref) do
+    Regex.match?(~r/plug\s*\(?\s*#{Regex.escape(plug_ref)}\b/u, content)
+  end
+
+  # Drop blank lines immediately after `do` (e.g. phx.new --no-dashboard
+  # leaves an empty line before `scope "/dev"`). Avoids bare Code.format_string!
+  # which parenthesizes plugs and breaks `mix format --check-formatted`.
+  defp normalize_router_whitespace(content) do
+    Regex.replace(~r/ do\n\n(\s+\S)/u, content, " do\n\\1")
+  end
+
+  defp insert_after_fetch_live_flash(content, addition, path, what) do
+    if Regex.match?(~r/plug\s*\(?\s*:fetch_live_flash\s*\)?\s*\n/u, content) do
+      Regex.replace(
+        ~r/(plug\s*\(?\s*:fetch_live_flash\s*\)?\s*\n)/u,
+        content,
+        "\\1" <> addition,
+        global: false
+      )
+    else
+      patch_failed!(what, path, "`plug :fetch_live_flash` in the `:browser` pipeline")
+    end
+  end
+
+  defp insert_after_localize_or_flash(content, addition, path, what) do
+    if Regex.match?(~r/plug\s*\(?\s*Localize\.Plug\.PutSession[^\n]*\n/u, content) do
+      Regex.replace(
+        ~r/(plug\s*\(?\s*Localize\.Plug\.PutSession[^\n]*\n)/u,
+        content,
+        "\\1" <> addition,
+        global: false
+      )
+    else
+      insert_after_fetch_live_flash(content, addition, path, what)
     end
   end
 
@@ -723,7 +1047,7 @@ defmodule Corex.New.Patches do
       web_str = inspect(web_module)
 
       pattern =
-        ~r/scope\s+"\/",\s+#{Regex.escape(web_str)}\s+do\s*\n\s*pipe_through\s+:browser\s*\n[\s\S]*?\n\s*end/u
+        ~r/scope\s+"\/",\s+#{Regex.escape(web_str)}\s+do\s*\n\s*pipe_through\s*\(?\s*:browser\s*\)?\s*\n[\s\S]*?\n\s*end/u
 
       case Regex.run(pattern, content) do
         [full] ->
@@ -772,7 +1096,8 @@ defmodule Corex.New.Patches do
   @generators_layout_keys [
     {:locale, :lang},
     {:mode, :mode},
-    {:theme, :theme}
+    {:theme, :theme},
+    {:a11y, :a11y}
   ]
 
   defp maybe_add_corex_generators_config(content, opts) do
@@ -875,45 +1200,40 @@ defmodule Corex.New.Patches do
     )
   end
 
-  defp patch_esbuild_for_esm(content) do
+  defp patch_esbuild_for_esm(content, path) do
     cond do
+      not String.contains?(content, "config :esbuild") ->
+        content
+
       String.contains?(content, "--format=esm") ->
         content
 
       String.contains?(content, "js/app.js --bundle") ->
-        replacement =
-          if String.contains?(content, "--target=es2022") do
-            "\\1 --bundle --format=esm --splitting"
-          else
-            "\\1 --bundle --format=esm --splitting --target=es2022"
-          end
-
-        replaced =
-          Regex.replace(
-            ~r/(js\/app\.js)\s+--bundle/u,
-            content,
-            replacement,
-            global: false
-          )
-
-        patch_esbuild_outdir(replaced)
+        ~r/(js\/app\.js)\s+--bundle/u
+        |> Regex.replace(content, esm_args(content), global: false)
+        |> patch_esbuild_outdir()
 
       true ->
-        content
+        patch_failed!(
+          "switch esbuild to ESM output",
+          path,
+          "an esbuild target whose args start with `js/app.js --bundle`. Corex hooks are code-split ES modules and cannot load from an IIFE bundle"
+        )
+    end
+  end
+
+  defp esm_args(content) do
+    if String.contains?(content, "--target=es2022") do
+      "\\1 --bundle --format=esm --splitting"
+    else
+      "\\1 --bundle --format=esm --splitting --target=es2022"
     end
   end
 
   defp patch_esbuild_outdir(content) do
-    cond do
-      String.contains?(content, "--outdir=../priv/static/assets/js") ->
-        content
-
-      match = Regex.run(~r/--outdir=\.\.\/priv\/static\/assets(?!\/js)/u, content) ->
-        [old] = match
-        String.replace(content, old, "--outdir=../priv/static/assets/js", global: false)
-
-      true ->
-        content
+    case Regex.run(~r/--outdir=\.\.\/priv\/static\/assets(?!\/js)/u, content) do
+      [old] -> String.replace(content, old, "--outdir=../priv/static/assets/js", global: false)
+      nil -> content
     end
   end
 
@@ -937,26 +1257,14 @@ defmodule Corex.New.Patches do
   end
 
   defp inject_gettext_locales_after_backend_use(content) do
-    cond do
-      Regex.match?(~r/default_locale:\s*"[^"]+"/m, content) ->
-        Regex.replace(
-          ~r/(use\s+Gettext\.Backend\s*,\s*[\s\S]*?default_locale:\s*"[^"]+")/m,
-          content,
-          "\\1,\n    locales: ~w(en fr ar)",
-          global: false
-        )
-
-      Regex.match?(~r/use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+/m, content) ->
-        Regex.replace(
-          ~r/(use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+)/m,
-          content,
-          "\\1,\n    default_locale: \"en\",\n    locales: ~w(en fr ar)",
-          global: false
-        )
-
-      true ->
-        content
-    end
+    Regex.replace(
+      ~r/use\s+Gettext\.Backend\s*,\s*otp_app:\s*(:[a-z_0-9]+)(?:\s*,\s*default_locale:\s*"[^"]+")?/m,
+      content,
+      fn _, otp_app ->
+        "use Gettext.Backend,\n    otp_app: #{otp_app},\n    default_locale: \"en\",\n    locales: ~w(en fr ar)"
+      end,
+      global: false
+    )
   end
 
   defp replace_gettext_with_sigils(content, web_module) do

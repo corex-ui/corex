@@ -69,7 +69,7 @@ defmodule E2eWeb.EditableEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.editable
                 id="editable-events-server"
                 class="editable"
@@ -108,7 +108,7 @@ defmodule E2eWeb.EditableEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.editable
                 id="editable-events-client"
                 class="editable"

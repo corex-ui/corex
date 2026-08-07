@@ -15,7 +15,7 @@ defmodule E2eWeb.NativeInputFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Native Input · Form")
+     |> assign(:page_title, "Native Input · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -122,7 +122,7 @@ defmodule E2eWeb.NativeInputFormLive do
       <.demo_page
         path={@path}
         id="native-input-form-live-page"
-        title="Native Input · Form"
+        title="Native Input · Live Form"
       >
         <.demo_section
           id="native-input-live-form-phoenix-section"

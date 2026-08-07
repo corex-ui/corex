@@ -14,13 +14,13 @@ defmodule E2eWeb.App.Pagination do
     ~H"""
     <nav
       :if={@prev || @next}
-      class="w-full flex justify-end items-center px-4 py-4 gap-0"
+      class="sticky top-size-lg z-10 w-full flex justify-end items-center px-space-lg py-space-lg gap-0 border-b border-border bg-surface/95 backdrop-blur-sm"
       aria-label="Adjacent doc pages"
     >
       <.navigate
         :if={@prev}
         to={@prev.to}
-        class="button ui-size-sm flex items-center gap-2 rounded-e-none max-w-[min(100%,18rem)] min-w-0"
+        class="button ui-size-sm flex items-center gap-space-sm rounded-e-none max-w-[min(100%,18rem)] min-w-0"
       >
         <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
       </.navigate>
@@ -28,7 +28,7 @@ defmodule E2eWeb.App.Pagination do
       <.navigate
         :if={@next}
         to={@next.to}
-        class="button ui-size-sm flex items-center gap-2 not-only:border-s-0 rounded-s-none max-w-[min(100%,18rem)] min-w-0"
+        class="button ui-size-sm flex items-center gap-space-sm not-only:border-s-0 rounded-s-none max-w-[min(100%,18rem)] min-w-0"
       >
         <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />
       </.navigate>
@@ -45,14 +45,14 @@ defmodule E2eWeb.App.Pagination do
     ~H"""
     <nav
       :if={@prev || @next}
-      class="w-full flex items-center px-4 py-4 gap-3"
+      class="w-full flex items-center px-space-lg py-space-lg gap-space"
       aria-label="Doc page navigation"
     >
       <div class="flex min-w-0 flex-1 justify-start">
         <.navigate
           :if={@prev}
           to={@prev.to}
-          class="button ui-size-sm flex items-center gap-2 max-w-full min-w-0"
+          class="button ui-size-sm flex items-center gap-space-sm max-w-full min-w-0"
         >
           <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
           <span class="truncate text-start">{@prev.label}</span>
@@ -63,7 +63,7 @@ defmodule E2eWeb.App.Pagination do
         <.navigate
           :if={@next}
           to={@next.to}
-          class="button ui-size-sm flex items-center gap-2 max-w-full min-w-0"
+          class="button ui-size-sm flex items-center gap-space-sm max-w-full min-w-0"
         >
           <span class="truncate text-end">{@next.label}</span>
           <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />

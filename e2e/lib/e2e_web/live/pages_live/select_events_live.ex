@@ -78,7 +78,7 @@ defmodule E2eWeb.SelectEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.select
                 id="select-events-server"
                 class="select"
@@ -115,7 +115,7 @@ defmodule E2eWeb.SelectEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.select
                 id="select-events-client"
                 class="select"

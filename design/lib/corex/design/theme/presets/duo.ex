@@ -5,7 +5,7 @@ defmodule Corex.Design.Theme.Presets.Duo do
 
   def spec do
     %{
-      palette: palette(),
+      seeds: seeds(),
       colors: %{
         light: light_colors(),
         dark: dark_colors()
@@ -15,96 +15,97 @@ defmodule Corex.Design.Theme.Presets.Duo do
     }
   end
 
-  defp palette do
+  defp seeds do
     %{
-      base: "#F2F1EF",
-      accent: "#57534E",
-      alert: "#8F4040",
-      brand: "#524D6E",
-      info: "#3E5080",
-      success: "#3D6B52"
+      neutral: "#E9E7E4",
+      accent: "#2C2925",
+      brand: "#1D4E89",
+      alert: "#9B3A3A",
+      info: "#3D5278",
+      success: "#3F6B4E"
     }
   end
 
   defp light_colors do
-    %{
-      surface:
-        Shared.surface_light(99, 96, 93, %{
-          muted: 96,
-          default: 94,
-          hover: 91,
-          active: 89
-        }),
-      roles:
-        Shared.light_roles(94, %{
-          accent: 40,
-          alert: 40,
-          brand: 40,
-          info: 40,
-          success: 40
-        }),
-      on: Shared.light_on(),
-      border: %{palette: :base, against: :control, ratio: 1.08},
-      focus: %{palette: :base, against: :control, ratio: 2.5},
-      shadow: %{palette: :base, against: :page, ratio: 1.16}
-    }
+    Shared.mode(%{
+      root: Shared.l(0.99),
+      surface: Shared.l(0.97),
+      ui: Shared.fill(0.94),
+      accent: Shared.fill(0.34, seed: :accent),
+      brand: Shared.fill(0.40, seed: :brand),
+      alert: Shared.fill(0.44, seed: :alert),
+      info: Shared.fill(0.40, seed: :info),
+      success: Shared.fill(0.38, seed: :success),
+      ink: Shared.contrast(seed: :accent, against: :root, target: 9),
+      "ink-muted": Shared.contrast(seed: :accent, against: :root, target: 5.0),
+      link: Shared.contrast(seed: :brand, against: :root, target: 5.6),
+      border: Shared.contrast(seed: :neutral, against: :ui, target: 1.1),
+      focus: Shared.contrast(seed: :brand, against: :ui, target: 2.1),
+      shadow: Shared.contrast(seed: :accent, against: :root, target: 1.25)
+    })
   end
 
   defp dark_colors do
-    %{
-      surface:
-        Shared.surface_dark(8, 15, 24, %{
-          muted: 27,
-          default: 25,
-          hover: 20,
-          active: 18
-        }),
-      roles:
-        Shared.dark_roles(24, %{
-          accent: 48,
-          alert: 48,
-          brand: 48,
-          info: 48,
-          success: 48
-        }),
-      on: Shared.dark_on(),
-      border: %{palette: :base, against: :control, ratio: 1.20},
-      focus: %{palette: :base, against: :control, ratio: 2.6},
-      shadow: %{palette: :base, against: :page, ratio: 1.22}
-    }
+    Shared.mode(%{
+      root: Shared.l(0.08, seed: :accent),
+      surface: Shared.l(0.13, seed: :accent),
+      ui: Shared.fill(0.20, seed: :accent, delta: 0.04),
+      accent: Shared.fill(0.50, seed: :accent),
+      brand: Shared.fill(0.54, seed: :brand),
+      alert: Shared.fill(0.48, seed: :alert),
+      info: Shared.fill(0.50, seed: :info),
+      success: Shared.fill(0.48, seed: :success),
+      ink: Shared.contrast(seed: :neutral, against: :root, target: 12),
+      "ink-muted": Shared.contrast(seed: :neutral, against: :root, target: 6),
+      link: Shared.contrast(seed: :brand, against: :root, target: 7.0),
+      border: Shared.contrast(seed: :neutral, against: :ui, target: 1.16),
+      focus: Shared.contrast(seed: :brand, against: :ui, target: 2.25),
+      shadow: Shared.contrast(seed: :accent, against: :root, target: 1.3)
+    })
   end
 
   defp dimensions do
-    %{
-      space_scale: 1.12,
-      size_scale: 1.14,
-      text_scale: 1.08,
-      radius_scale: 1.24,
-      container_scale: 1.10,
-      shadow_scale: 1.35,
-      radius: %{
-        xs: 0.20,
-        sm: 0.36,
-        md: 0.50,
-        lg: 0.76,
-        xl: 1.05,
-        "2xl": 1.45,
-        "3xl": 2.05,
-        "4xl": 2.70,
+    Shared.dimensions(
+      %{
+        space_scale: 1.35,
+        size_scale: 1.2,
+        text_scale: 1.18,
+        radius_scale: 1.9,
+        container_scale: 1.22,
+        shadow_scale: 2.2,
+        blur_scale: 1.85,
+        ring_width: 2.5,
+        ring_offset: 1,
+        border_width: 1.5,
+        duration_fast: 110,
+        duration_normal: 180,
+        duration_slow: 280,
+        opacity_disabled: 0.72,
+        opacity_backdrop: 0.48
+      },
+      %{
+        xs: 0.28,
+        sm: 0.48,
+        md: 0.72,
+        lg: 1.0,
+        xl: 1.35,
+        "2xl": 1.85,
+        "3xl": 2.5,
+        "4xl": 3.3,
         full: 9999
       },
-      font: %{
+      Shared.font_stack(%{
         sans: ["Work Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["Playfair Display", "Georgia", "serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
         code: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
         serif: ["Playfair Display", "Georgia", "serif"]
-      }
-    }
+      })
+    )
   end
 
   defp typography do
-    Shared.typography(%{
+    %{
       "h1" => %{
         font_family: {:font, :display},
         font_weight: {:weight, :bold},
@@ -125,6 +126,6 @@ defmodule Corex.Design.Theme.Presets.Duo do
         font_family: {:font, :display},
         font_style: :italic
       }
-    })
+    }
   end
 end

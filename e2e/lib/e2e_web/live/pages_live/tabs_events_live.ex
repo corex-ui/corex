@@ -75,7 +75,7 @@ defmodule E2eWeb.TabsEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.tabs
                 id={@id_server}
                 class="tabs w-full"
@@ -110,7 +110,7 @@ defmodule E2eWeb.TabsEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.tabs
                 id={@id_client}
                 class="tabs w-full"

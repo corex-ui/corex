@@ -1,73 +1,425 @@
 ## "msgid"s in this file come from POT (.pot) files.
-###
-### Do not add, change, or remove "msgid"s manually here as
-### they're tied to the ones in the corresponding POT file
-### (with the same domain).
-###
-### Use "mix gettext.extract --merge" or "mix gettext.merge"
-### to merge POT files into PO files.
 msgid ""
 msgstr ""
 "Language: ar\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
-#: lib/app_web/components/layouts.ex
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Accessible and unstyled Phoenix components"
-msgstr "مكوّنات Phoenix يمكن الوصول إليها وبدون تنسيق مسبق"
+msgid " · Phoenix Framework"
+msgstr " · Phoenix Framework"
 
-#: lib/app_web/components/layouts.ex
 #, elixir-autogen, elixir-format
-msgid "Corex documentation on HexDocs"
-msgstr "توثيق Corex على HexDocs"
+msgid "%{name} - Corex for Tableau"
+msgstr "%{name} - Corex لـ Tableau"
 
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Corex for Phoenix"
-msgstr "Corex لـ Phoenix"
+msgid "%{name}: a Phoenix app powered by Corex."
+msgstr "%{name}: تطبيق Phoenix مدعوم بـ Corex."
 
-#: lib/app_web/components/layouts.ex
 #, elixir-autogen, elixir-format
-msgid "Corex on GitHub"
-msgstr "Corex على GitHub"
+msgid "%{name}: a Tableau static site powered by Corex, Phoenix components, and design tokens."
+msgstr "%{name}: موقع Tableau ثابت مدعوم بـ Corex ومكونات Phoenix ورموز التصميم."
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "%{tag} - Tags - %{name}"
+msgstr "%{tag} - الوسوم - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "A Tableau static site powered by Corex."
+msgstr "موقع Tableau ثابت مدعوم بـ Corex."
+
+#, elixir-autogen, elixir-format
+msgid "Accessibility"
+msgstr "إمكانية الوصول"
+
+#, elixir-autogen, elixir-format
+msgid "Accessible by default."
+msgstr "يمكن الوصول إليه افتراضيًا."
+
+#, elixir-autogen, elixir-format
+msgid "Accessible Phoenix UI with a real server-and-client API."
+msgstr "واجهة Phoenix سهلة الوصول مع واجهة برمجية حقيقية للخادم والعميل."
+
+#, elixir-autogen, elixir-format
+msgid "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
+msgstr "مكونات Phoenix سهلة الوصول وغير منمّقة مع واجهة برمجية كاملة للخادم والعميل، مدعومة بـ"
+
+#, elixir-autogen, elixir-format
+msgid "Accordion"
+msgstr "أكورديون"
+
+#, elixir-autogen, elixir-format
+msgid "All"
+msgstr "الكل"
+
+#, elixir-autogen, elixir-format
+msgid "All tags"
+msgstr "كل الوسوم"
+
+#, elixir-autogen, elixir-format
+msgid "Anatomy & slots"
+msgstr "البنية والفتحات"
+
+#, elixir-autogen, elixir-format
+msgid "API"
+msgstr "API"
+
+#, elixir-autogen, elixir-format
+msgid "Back to blog"
+msgstr "العودة إلى المدونة"
+
+#, elixir-autogen, elixir-format
+msgid "Back to home"
+msgstr "العودة إلى الرئيسية"
+
+#, elixir-autogen, elixir-format
+msgid "Blog"
+msgstr "المدونة"
+
+#, elixir-autogen, elixir-format
+msgid "Blog - %{name}"
+msgstr "المدونة - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "Blog posts on the %{name} static site."
+msgstr "مقالات المدونة على موقع %{name} الثابت."
+
+#, elixir-autogen, elixir-format
+msgid "Bring your own CSS or opt into Corex Design tokens, themes and modes."
+msgstr "استخدم CSS الخاص بك أو فعّل رموز Corex Design والسمات والأوضاع."
+
+#, elixir-autogen, elixir-format
+msgid "Browse"
+msgstr "تصفح"
+
+#, elixir-autogen, elixir-format
+msgid "Browse post tags on the %{name} static site."
+msgstr "تصفح وسوم المقالات على موقع %{name} الثابت."
+
+#, elixir-autogen, elixir-format
+msgid "Browse tags"
+msgstr "تصفح الوسوم"
+
+#, elixir-autogen, elixir-format
+msgid "Browse topics across your posts. Every tag is a static Tableau page."
+msgstr "تصفح المواضيع عبر مقالاتك. كل وسم هو صفحة Tableau ثابتة."
+
+#, elixir-autogen, elixir-format
+msgid "Close all"
+msgstr "إغلاق الكل"
+
+#, elixir-autogen, elixir-format
+msgid "Components"
+msgstr "المكوّنات"
+
+#, elixir-autogen, elixir-format
+msgid "Contrast"
+msgstr "التباين"
+
+#, elixir-autogen, elixir-format
+msgid "Copy code"
+msgstr "نسخ الرمز"
+
+#, elixir-autogen, elixir-format
+msgid "Cursor"
+msgstr "المؤشر"
+
 #, elixir-autogen, elixir-format
 msgid "Dark mode"
 msgstr "الوضع الداكن"
 
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Demo Site"
-msgstr "موقع تجريبي"
+msgid "Default"
+msgstr "افتراضي"
 
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Hex Doc"
-msgstr "وثائق Hex"
+msgid "Demo site"
+msgstr "موقع العرض"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Design"
+msgstr "التصميم"
+
+#, elixir-autogen, elixir-format
+msgid "directory."
+msgstr "المجلد."
+
+#, elixir-autogen, elixir-format
+msgid "Docs"
+msgstr "المستندات"
+
+#, elixir-autogen, elixir-format
+msgid "documentation"
+msgstr "التوثيق"
+
+#, elixir-autogen, elixir-format
+msgid "Drive every component from LiveView or JavaScript and listen back from either side."
+msgstr "تحكّم بكل مكوّن من LiveView أو JavaScript واستمع من أي جانب."
+
+#, elixir-autogen, elixir-format
+msgid "Explore"
+msgstr "استكشف"
+
+#, elixir-autogen, elixir-format
+msgid "Focus"
+msgstr "التركيز"
+
+#, elixir-autogen, elixir-format
+msgid "Full"
+msgstr "كامل"
+
+#, elixir-autogen, elixir-format
+msgid "GitHub"
+msgstr "GitHub"
+
+#, elixir-autogen, elixir-format
+msgid "Hexdocs"
+msgstr "Hexdocs"
+
+#, elixir-autogen, elixir-format
+msgid "High"
+msgstr "مرتفع"
+
+#, elixir-autogen, elixir-format
+msgid "Highlights"
+msgstr "أبرز الميزات"
+
+#, elixir-autogen, elixir-format
+msgid "Home"
+msgstr "الرئيسية"
+
+#, elixir-autogen, elixir-format
+msgid "Installation"
+msgstr "التثبيت"
+
+#, elixir-autogen, elixir-format
+msgid "Interactive preview"
+msgstr "معاينة تفاعلية"
+
+#, elixir-autogen, elixir-format
+msgid "Journal"
+msgstr "يوميات"
+
+#, elixir-autogen, elixir-format
+msgid "Keep the shell (header, footer, Design tokens) and ship your product UI."
+msgstr "احتفظ بالهيكل (الرأس والتذييل ورموز Design) وابنِ واجهة منتجك."
+
+#, elixir-autogen, elixir-format
+msgid "Keyboard, focus and ARIA wired in by Zag.js state machines."
+msgstr "لوحة المفاتيح والتركيز وARIA مربوطة بآلات حالة Zag.js."
+
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "اللغة"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Large"
+msgstr "كبير"
+
+#, elixir-autogen, elixir-format
+msgid "Larger"
+msgstr "أكبر"
+
 #, elixir-autogen, elixir-format
 msgid "Light mode"
 msgstr "الوضع الفاتح"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Links"
+msgstr "الروابط"
+
+#, elixir-autogen, elixir-format
+msgid "list to post front matter."
+msgstr "قائمة في مقدمة المقال."
+
+#, elixir-autogen, elixir-format
+msgid "LiveView-native."
+msgstr "أصلي في LiveView."
+
+#, elixir-autogen, elixir-format
+msgid "Motion"
+msgstr "Motion"
+
+#, elixir-autogen, elixir-format
+msgid "No posts yet. Add Markdown files to"
+msgstr "لا منشورات بعد. أضف ملفات Markdown إلى"
+
+#, elixir-autogen, elixir-format
+msgid "No tags yet. Add a"
+msgstr "لا توجد وسوم بعد. أضف"
+
+#, elixir-autogen, elixir-format
+msgid "Open all"
+msgstr "فتح الكل"
+
+#, elixir-autogen, elixir-format
+msgid "Open first"
+msgstr "افتح أولاً"
+
+#, elixir-autogen, elixir-format
+msgid "Open menu"
+msgstr "فتح القائمة"
+
+#, elixir-autogen, elixir-format
+msgid "Open source. MIT License."
+msgstr "مفتوح المصدر. رخصة MIT."
+
+#, elixir-autogen, elixir-format
+msgid "Page not found"
+msgstr "الصفحة غير موجودة"
+
+#, elixir-autogen, elixir-format
+msgid "Page not found - %{name}"
+msgstr "الصفحة غير موجودة - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "Post"
+msgstr "مقال"
+
+#, elixir-autogen, elixir-format
+msgid "post"
+msgstr "مقال"
+
+#, elixir-autogen, elixir-format
+msgid "posts"
+msgstr "مقالات"
+
+#, elixir-autogen, elixir-format
+msgid "Posts are Markdown files in the"
+msgstr "المنشورات ملفات Markdown في"
+
+#, elixir-autogen, elixir-format
+msgid "Posts tagged %{tag} on the %{name} static site."
+msgstr "مقالات موسومة بـ %{tag} على موقع %{name} الثابت."
+
+#, elixir-autogen, elixir-format
+msgid "Primary"
+msgstr "رئيسي"
+
+#, elixir-autogen, elixir-format
+msgid "real API"
+msgstr "واجهة برمجية حقيقية"
+
+#, elixir-autogen, elixir-format
+msgid "Reduced"
+msgstr "مخفّض"
+
+#, elixir-autogen, elixir-format
+msgid "Replace this page"
+msgstr "استبدل هذه الصفحة"
+
+#, elixir-autogen, elixir-format
+msgid "Reset"
+msgstr "إعادة ضبط"
+
+#, elixir-autogen, elixir-format
+msgid "Server & client API."
+msgstr "واجهة برمجية للخادم والعميل."
+
+#, elixir-autogen, elixir-format
+msgid "Site"
+msgstr "الموقع"
+
+#, elixir-autogen, elixir-format
+msgid "Standard"
+msgstr "قياسي"
+
+#, elixir-autogen, elixir-format
+msgid "State machines"
+msgstr "آلات الحالة"
+
+#, elixir-autogen, elixir-format
+msgid "state machines."
+msgstr "آلات الحالة"
+
+#, elixir-autogen, elixir-format
+msgid "Strong"
+msgstr "قوي"
+
+#, elixir-autogen, elixir-format
+msgid "Structure, custom slots, and compound mode for full control."
+msgstr "البنية والفتحات المخصصة والوضع المركّب للتحكم الكامل."
+
+#, elixir-autogen, elixir-format
+msgid "Tag"
+msgstr "وسم"
+
+#, elixir-autogen, elixir-format
+msgid "Tags"
+msgstr "الوسوم"
+
+#, elixir-autogen, elixir-format
+msgid "tags"
+msgstr "وسوم"
+
+#, elixir-autogen, elixir-format
+msgid "Tags - %{name}"
+msgstr "الوسوم - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "The Phoenix UI with a"
+msgstr "واجهة Phoenix مع"
+
+#, elixir-autogen, elixir-format
+msgid "The URL may be mistyped, or the page may have moved. Try the home page."
+msgstr "قد يكون الرابط خاطئًا أو انتقلت الصفحة. جرّب الصفحة الرئيسية."
+
 #, elixir-autogen, elixir-format
 msgid "Theme"
-msgstr "المظهر"
+msgstr "السمة"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Theming"
+msgstr "السمات"
+
+#, elixir-autogen, elixir-format
+msgid "This URL is not available on the %{name} static site."
+msgstr "هذا الرابط غير متاح على موقع %{name} الثابت."
+
+#, elixir-autogen, elixir-format
+msgid "To enable Corex Accessibility, see the"
+msgstr "لتمكين Corex Accessibility، راجع"
+
+#, elixir-autogen, elixir-format
+msgid "to get started."
+msgstr "للبدء."
+
+#, elixir-autogen, elixir-format
+msgid "Truly unstyled."
+msgstr "بلا تنسيق فعلياً."
+
+#, elixir-autogen, elixir-format
+msgid "Underline"
+msgstr "تسطير"
+
+#, elixir-autogen, elixir-format
+msgid "Untitled"
+msgstr "بدون عنوان"
+
+#, elixir-autogen, elixir-format
+msgid "Update props at runtime without resetting component state."
+msgstr "تحديث الخصائص أثناء التشغيل دون إعادة تعيين حالة المكوّن."
+
+#, elixir-autogen, elixir-format
+msgid "View all posts tagged with"
+msgstr "عرض كل المقالات الموسومة بـ"
+
+#, elixir-autogen, elixir-format
+msgid "Visit Hexdocs"
+msgstr "زيارة Hexdocs"
+
 #, elixir-autogen, elixir-format
 msgid "We lost the connection"
 msgstr "فُقد الاتصال"
 
-#: lib/app_web/components/layouts.ex
 #, elixir-autogen, elixir-format
 msgid "We're trying to reconnect you..."
 msgstr "نحاول إعادة الاتصال بك..."
+
+#, elixir-autogen, elixir-format
+msgid "Zag.js powers accessibility, keyboard, and focus."
+msgstr "Zag.js يدير إمكانية الوصول ولوحة المفاتيح والتركيز."
+
+#, elixir-autogen, elixir-format
+msgid "Zoom"
+msgstr "تكبير"

@@ -8,14 +8,30 @@
     path={@path}
     id="number-input-anatomy-page"
     title={~t"Number Input Anatomy"}
-    subtitle={~t"Label, required trigger slots, bounds, and default value."}
+    subtitle={~t"Label, optional trigger slots, bounds, and default value."}
   >
     <.demo_section
       id="number-input-anatomy-minimal"
-      title={~t"Minimal (with triggers)"}
+      title={~t"Minimal"}
       code={E2eWeb.Demos.NumberInputDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.NumberInputDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-anatomy-label"
+      title={~t"With label"}
+      code={E2eWeb.Demos.NumberInputDemo.with_label_code()}
+    >
+      <:preview><E2eWeb.Demos.NumberInputDemo.with_label_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-anatomy-triggers"
+      title={~t"With triggers"}
+      code={E2eWeb.Demos.NumberInputDemo.with_triggers_code()}
+    >
+      <:preview><E2eWeb.Demos.NumberInputDemo.with_triggers_example /></:preview>
     </.demo_section>
 
     <.demo_section

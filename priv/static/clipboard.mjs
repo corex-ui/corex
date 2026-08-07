@@ -1,33 +1,30 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-6MIECCPA.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-V2LDXRRO.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getNumber,
   getString,
   getWindow,
   setElementValue
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.42.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.42.0/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `clip:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `clip:${ctx.id}:input`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `clip:${ctx.id}:label`;
@@ -74,7 +71,7 @@ function copyText(doc, text) {
   return Promise.resolve();
 }
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.42.0/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, scope, prop } = service;
   const copied = state.matches("copied");
@@ -145,7 +142,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.42.0/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -240,7 +237,6 @@ var machine = createMachine({
 
 // components/clipboard.ts
 var Clipboard = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -293,11 +289,12 @@ var Clipboard = class extends Component {
 function copyPayload(el, value) {
   return { id: el.id, value };
 }
-var ClipboardHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var ClipboardHook = createZagLiveHook({
+  key: "clipboard",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const clipboard = new Clipboard(el, {
       id: el.id,
       timeout: getNumber(el, "timeout"),
@@ -315,43 +312,33 @@ var ClipboardHook = {
         });
       }
     });
-    clipboard.init();
-    this.clipboard = clipboard;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:clipboard:copy", () => {
+    dom.add("corex:clipboard:copy", () => {
       clipboard.api.copy();
     });
-    domRegistry.add("corex:clipboard:set-value", (event) => {
+    dom.add("corex:clipboard:set-value", (event) => {
       const v = event.detail?.value;
       if (typeof v === "string") clipboard.api.setValue(v);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("clipboard_copy", (payload) => {
+    server.add("clipboard_copy", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       clipboard.api.copy();
     });
-    registry.add("clipboard_set_value", (payload) => {
+    server.add("clipboard_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!payload || typeof payload !== "object") return;
       const o = payload;
       const v = o.value ?? o["value"];
       if (typeof v === "string") clipboard.api.setValue(v);
     });
+    return clipboard;
   },
-  updated() {
-    this.clipboard?.updateProps({
-      id: this.el.id,
-      timeout: getNumber(this.el, "timeout")
+  update(hook, clipboard) {
+    clipboard.updateProps({
+      id: hook.el.id,
+      timeout: getNumber(hook.el, "timeout")
     });
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.clipboard?.destroy();
   }
-};
+});
 export {
   ClipboardHook as Clipboard,
   copyPayload

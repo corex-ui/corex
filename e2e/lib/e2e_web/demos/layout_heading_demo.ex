@@ -65,6 +65,24 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
     """
   end
 
+  def heading_tags_code do
+    ~S"""
+    <.layout_heading class="layout-heading" title_tag="h2" subtitle_tag="p">
+      <:title>Playground</:title>
+      <:subtitle>Optional controls summary</:subtitle>
+    </.layout_heading>
+    """
+  end
+
+  def heading_tags_example(assigns) do
+    ~H"""
+    <.layout_heading class="layout-heading" title_tag="h2" subtitle_tag="p">
+      <:title>Playground</:title>
+      <:subtitle>Optional controls summary</:subtitle>
+    </.layout_heading>
+    """
+  end
+
   def styling_color_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-size w-full">
@@ -179,7 +197,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.layout_heading class={DemoScales.join_modifiers("layout-heading", variant.modifier)}>
           <:title>Layout heading</:title>

@@ -10,9 +10,9 @@ defmodule Corex.DataTable do
   @doc type: :component
   use Phoenix.Component
 
-  require Logger
-
   alias Corex.DataTable.Translation
+
+  require Logger
 
   @doc ~S'''
   Renders a table with data.
@@ -290,7 +290,6 @@ defmodule Corex.DataTable do
   [data-scope="data-table"][data-part="action-cell"] {}
   [data-scope="data-table"][data-part="actions"] {}
   [data-scope="data-table"][data-part="empty-row"] {}
-  [data-scope="data-table"][data-part="empty-cell"] {}
   [data-scope="data-table"][data-part="empty"] {}
   ```
 
@@ -303,9 +302,7 @@ defmodule Corex.DataTable do
   - `data-table ui-size-sm|md|lg|xl` — font size and padding on header and body cells; selection checkbox control size
   - `data-table ui-accent|brand|alert|success|info` — header ink (`--ctl-ink-text`) on column titles and action header; selection checkbox ink
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
-
-  Variant modifiers control sort trigger surface treatment. Default is subtle; add `data-table ui-solid` for filled sort controls. Selection checkboxes inherit the host semantic and size tokens (pass `checkbox_class="checkbox"`; no need to repeat `ui-*` on the checkbox). The `<:action>` slot does not inherit host semantic or size; style action controls with their own `ui-*` classes.
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 
@@ -400,15 +397,7 @@ defmodule Corex.DataTable do
       )
       |> resolve_row_id()
 
-    col_count =
-      length(assigns.col) +
-        if(assigns.selectable, do: 1, else: 0) +
-        if assigns.action != [], do: 1, else: 0
-
-    assigns =
-      assigns
-      |> assign(:empty_col_count, col_count)
-      |> assign(:selected_set, MapSet.new(List.wrap(assigns.selected)))
+    assigns = assign(assigns, :selected_set, MapSet.new(List.wrap(assigns.selected)))
 
     ~H"""
     <div tabindex="0" dir={@dir} {@rest}>
@@ -469,15 +458,21 @@ defmodule Corex.DataTable do
         </thead>
         <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
           <tr :if={@empty != []} id={"#{@id}-empty"} data-scope="data-table" data-part="empty-row">
-            <td colspan={@empty_col_count} data-scope="data-table" data-part="empty-cell">
-              <div data-scope="data-table" data-part="empty">
+            <td :if={@selectable} data-scope="data-table" data-part="selection-cell"></td>
+            <td
+              :for={{_col, index} <- Enum.with_index(@col)}
+              data-scope="data-table"
+              data-part={cell_data_part(index, length(@col))}
+            >
+              <div :if={index == 0} data-scope="data-table" data-part="empty">
                 {render_slot(@empty)}
               </div>
             </td>
+            <td :if={@action != []} data-scope="data-table" data-part="action-cell"></td>
           </tr>
           <%= for row <- @rows do %>
             <% row_id = @row_id && @row_id.(row) %>
-            <tr id={row_id} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
+            <tr id={row_id} data-scope="data-table" data-part="row" data-clickable={!!@row_click || nil}>
               <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
                 <Corex.Checkbox.checkbox
                   id={"#{@id}-select-#{row_id}"}

@@ -16,18 +16,16 @@ defmodule E2eWeb.ToggleApiLive do
       client_js_ts: Demo.api_client_js_ts()
     }
 
-    {:ok, socket |> assign(:codes, codes) |> assign(:api_srv_pressed, false)}
+    {:ok, socket |> assign(:codes, codes)}
   end
 
   @impl true
   def handle_event("toggle_api_on", _, socket) do
-    socket = assign(socket, :api_srv_pressed, true)
     {:noreply, Corex.Toggle.set_pressed(socket, "toggle-api-srv", true)}
   end
 
   @impl true
   def handle_event("toggle_api_off", _, socket) do
-    socket = assign(socket, :api_srv_pressed, false)
     {:noreply, Corex.Toggle.set_pressed(socket, "toggle-api-srv", false)}
   end
 
@@ -47,8 +45,8 @@ defmodule E2eWeb.ToggleApiLive do
           code={@codes.client_binding}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-lg items-center">
                 <.action
                   class="button ui-size-sm"
                   phx-click={Corex.Toggle.set_pressed("toggle-api-bind", true)}
@@ -78,8 +76,8 @@ defmodule E2eWeb.ToggleApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-lg items-center">
                 <.action
                   class="button ui-size-sm"
                   phx-click={
@@ -120,12 +118,12 @@ defmodule E2eWeb.ToggleApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-lg items-center">
                 <.action class="button ui-size-sm" phx-click="toggle_api_on">Pressed</.action>
                 <.action class="button ui-size-sm" phx-click="toggle_api_off">Not pressed</.action>
               </div>
-              <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
+              <.toggle id="toggle-api-srv" class="toggle">
                 duis
               </.toggle>
             </div>

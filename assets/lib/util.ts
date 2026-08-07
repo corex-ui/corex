@@ -163,12 +163,6 @@ export function associateInputWithFormIfOutside(input: HTMLElement, hookEl: HTML
   input.setAttribute("form", formId);
 }
 
-export function clearFormAssociationWhenNested(input: HTMLElement, hookEl: HTMLElement): void {
-  if (hookEl.closest("form") !== null) {
-    input.removeAttribute("form");
-  }
-}
-
 export function syncInputFormAssociation(input: HTMLElement | null, hookEl: HTMLElement): void {
   if (!input) return;
   if (hookEl.closest("form") !== null) {
@@ -176,6 +170,18 @@ export function syncInputFormAssociation(input: HTMLElement | null, hookEl: HTML
   } else {
     associateInputWithFormIfOutside(input, hookEl);
   }
+}
+
+/**
+ * The Zag api getter for a part, e.g. `clear-trigger` to `getClearTriggerProps`.
+ */
+export function partPropsMethod(part: string): string {
+  const camel = part
+    .split("-")
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join("");
+
+  return `get${camel}Props`;
 }
 
 export function safeParseJson<T>(raw: string | null | undefined, fallback: T): T {
@@ -186,4 +192,10 @@ export function safeParseJson<T>(raw: string | null | undefined, fallback: T): T
     console.error("Failed to parse JSON", error);
     return fallback;
   }
+}
+
+export function parseJsonStringList(raw: string | null | undefined): string[] {
+  const parsed = safeParseJson<unknown>(raw, []);
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter((item): item is string => typeof item === "string");
 }

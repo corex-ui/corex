@@ -331,7 +331,7 @@ defmodule Corex.DatePickerTest do
       }
 
       result = Connect.props(Map.merge(default_props(), assigns))
-      decoded = Jason.decode!(result["data-translation"])
+      decoded = Corex.Json.decode!(result["data-translation"])
       assert decoded["openCalendar"] == "Pick a date"
       assert decoded["closeCalendar"] == "Pick a date"
       assert decoded["input"] == "Event date"

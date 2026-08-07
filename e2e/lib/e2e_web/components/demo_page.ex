@@ -13,7 +13,8 @@ defmodule E2eWeb.DemoPage do
 
   - **Anatomy**  -  `… Anatomy` (or `… · Anatomy` where the product name already contains a dot phrase).
   - **Style**  -  `… Style` for static styling guides.
-  - **Form**  -  `… Form` for controller-rendered form demos.
+  - **Controller Form**  -  `… Controller Form` for controller-rendered form demos.
+  - **Form**  -  legacy suffix; prefer **Controller Form** or **Live Form**.
   - **Playground**  -  `… Playground` for the interactive LiveView.
   - **API**  -  `… API` for imperative `Corex.*` and binding demos.
   - **Events**  -  `… Events` for server and client event logs.
@@ -38,7 +39,7 @@ defmodule E2eWeb.DemoPage do
   ## Shell contract (page types)
 
   - **Anatomy**  -  `<.demo_page path={@path}>>` + one `<.demo_section>` per variant; stable `id` on each section.
-  - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout. On Style pages, only `:fit` host components (see `Corex.Design.ComponentLayout`) get a `Width` section with three rows: intrinsic default, `w-full`, and `w-fit`. `:fill` and `:auto` hosts demonstrate sizing via `Max width` only. Named container steps (`9xs` … `9xl`) appear on the Max width section, not Width. Atomic fit hosts (button, switch, toggle, timer, clipboard, color-picker, date-picker) demo max-width with `w-full`, wide content, and `max-w-*` via `DemoScales.join_block_modifiers/2`.
+  - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout. On Style pages, only `:fit` host components (see `Corex.Design.Components`) get a `Width` section with three rows: intrinsic default, `w-full`, and `w-fit`. `:fill` and `:auto` hosts demonstrate sizing via `Max width` only. Named container steps (`9xs` … `9xl`) appear on the Max width section, not Width. Atomic fit hosts (button, switch, toggle, timer, clipboard, color-picker, date-picker) demo max-width with `w-full`, wide content, and `max-w-*` via `DemoScales.join_block_modifiers/2`.
   - **Form**  -  static submit flow; real field names and assigns.
   - **Playground**  -  `Layouts.app` + `<.demo_playground>>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
   - **API**  -  LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
@@ -59,6 +60,8 @@ defmodule E2eWeb.DemoPage do
 
   use E2eWeb, :html
 
+  import E2eWeb.ListingPage, only: [listing_index_hero: 1]
+
   attr(:id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:subtitle, :any, default: nil)
@@ -69,13 +72,28 @@ defmodule E2eWeb.DemoPage do
   slot(:inner_block, required: true)
 
   def demo_page(assigns) do
+    _ = assigns.heading_class
+    {component, page_type} = split_display_title(assigns.title)
+
+    assigns =
+      assigns
+      |> assign(:component, component)
+      |> assign(:page_type, page_type)
+      |> assign(:heading_id, "#{assigns.id}-heading")
+
     ~H"""
     <article id={@id} class={@class} {@rest}>
-      <.layout_heading class={@heading_class}>
-        <:title>{@title}</:title>
-        <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
-      </.layout_heading>
-      <.component_source_bar :if={@path} path={@path} />
+      <.listing_index_hero
+        eyebrow={@component}
+        title={@page_type}
+        lede={if(is_binary(@subtitle), do: @subtitle)}
+        heading_id={@heading_id}
+        class="blog__hero py-size"
+      >
+        <:actions :if={is_binary(@path)}>
+          <.component_source_bar path={@path} />
+        </:actions>
+      </.listing_index_hero>
       {render_slot(@inner_block)}
     </article>
     """
@@ -228,7 +246,7 @@ defmodule E2eWeb.DemoPage do
   end
 
   defp intrinsic_width_note(name, axis) when axis in [:max_width, :width] do
-    if component_layout_registered?(name) do
+    if design_component_registered?(name) do
       max_label = E2eWeb.DemoScales.default_max_width_label(name)
       width_label = E2eWeb.DemoScales.default_width_label(name)
 
@@ -240,8 +258,8 @@ defmodule E2eWeb.DemoPage do
 
   defp intrinsic_width_note(_name, _axis), do: nil
 
-  defp component_layout_registered?(name) do
-    name in Corex.Design.ComponentLayout.ids()
+  defp design_component_registered?(name) do
+    name in Corex.Design.Components.ids()
   rescue
     ArgumentError -> false
   end
@@ -272,7 +290,7 @@ defmodule E2eWeb.DemoPage do
       <.navigate
         :for={link <- @links}
         to={link.to}
-        class="button ui-size-sm"
+        class="button ui-ghost ui-size-sm"
         external
       >
         <img :if={link.icon} src={link.icon} alt="" class="icon object-contain shrink-0" />
@@ -295,17 +313,37 @@ defmodule E2eWeb.DemoPage do
   slot(:canvas, required: true)
 
   def demo_playground(assigns) do
+    _ = {assigns.heading_class, assigns.title_tag, assigns.subtitle_tag}
+
+    {component, page_type} =
+      if is_binary(assigns.title), do: split_display_title(assigns.title), else: {nil, nil}
+
+    heading_id =
+      case assigns.id do
+        id when is_binary(id) and id != "" -> "#{id}-heading"
+        _ -> "demo-playground-heading"
+      end
+
+    assigns =
+      assigns
+      |> assign(:component, component)
+      |> assign(:page_type, page_type)
+      |> assign(:heading_id, heading_id)
+
     ~H"""
     <div id={@id} class="w-full flex flex-col">
-      <.layout_heading
-        :if={is_binary(@title)}
-        class={@heading_class}
-        title_tag={@title_tag}
-        subtitle_tag={@subtitle_tag}
+      <.listing_index_hero
+        :if={is_binary(@page_type)}
+        eyebrow={@component}
+        title={@page_type}
+        lede={if(is_binary(@subtitle), do: @subtitle)}
+        heading_id={@heading_id}
+        class="blog__hero py-size"
       >
-        <:title>{@title}</:title>
-        <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
-      </.layout_heading>
+        <:actions :if={is_binary(@path)}>
+          <.component_source_bar path={@path} />
+        </:actions>
+      </.listing_index_hero>
       <div class="preview">
         <div class="preview__frame">
           <div :if={@controls_strip} class="preview__sidebar preview__sidebar--wrap">
@@ -349,7 +387,7 @@ defmodule E2eWeb.DemoPage do
   attr(:default_value, :string, default: "preview")
   attr(:trigger_class, :string, default: nil)
   attr(:tabs_id, :string, default: nil)
-  attr(:class, :string, default: "flex flex-col gap-4 items-start w-full")
+  attr(:class, :string, default: "flex flex-col gap-space-lg items-start w-full")
 
   attr(:tabs_class, :string,
     default:
@@ -452,7 +490,7 @@ defmodule E2eWeb.DemoPage do
   attr(:id, :string, required: true)
   attr(:events, :list, required: true)
   attr(:empty_label, :string, default: "Interact with the component to see events here.")
-  attr(:class, :string, default: "flex flex-col w-full max-w-6xl gap-2")
+  attr(:class, :string, default: "flex flex-col w-full max-w-6xl gap-space-sm")
 
   def demo_event_log(assigns) do
     ~H"""
@@ -460,9 +498,9 @@ defmodule E2eWeb.DemoPage do
       <h4 class="text-sm font-medium text-ink-muted">Event log</h4>
       <ol
         :if={@events != []}
-        class="flex flex-col gap-1 max-h-64 overflow-auto rounded-md border border-border bg-ui p-2 text-sm font-mono"
+        class="flex flex-col gap-space-xs max-h-64 overflow-auto rounded-md border border-border bg-ui p-space-sm text-sm font-mono"
       >
-        <li :for={event <- @events} class="flex gap-2 items-start">
+        <li :for={event <- @events} class="flex gap-space-sm items-start">
           <span class="text-ink-muted">{event.name}</span>
           <span class="text-ink">{inspect(event.payload)}</span>
         </li>
@@ -478,7 +516,7 @@ defmodule E2eWeb.DemoPage do
   attr(:id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:class, :string, default: "flex flex-col gap-2")
+  attr(:class, :string, default: "flex flex-col gap-space-sm")
   slot(:actions, required: true)
   slot(:result)
 
@@ -487,7 +525,7 @@ defmodule E2eWeb.DemoPage do
     <div id={@id} class={@class}>
       <h4 class="text-sm font-medium">{@title}</h4>
       <p :if={@description} class="text-sm text-ink-muted">{@description}</p>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-space-sm">
         {render_slot(@actions)}
       </div>
       <div :if={@result != []} class="text-sm font-mono text-ink-muted">
@@ -506,7 +544,7 @@ defmodule E2eWeb.DemoPage do
   """
   attr(:id, :string, required: true)
   attr(:loading, :boolean, default: false)
-  attr(:class, :string, default: "flex flex-col gap-2 w-full")
+  attr(:class, :string, default: "flex flex-col gap-space-sm w-full")
   slot(:inner_block, required: true)
 
   def demo_pattern_async(assigns) do
@@ -522,7 +560,7 @@ defmodule E2eWeb.DemoPage do
   toolbar actions, then the live component.
   """
   attr(:id, :string, required: true)
-  attr(:class, :string, default: "flex flex-col gap-3 w-full max-w-6xl")
+  attr(:class, :string, default: "flex flex-col gap-space w-full max-w-6xl")
 
   slot(:state)
   slot(:toolbar)
@@ -531,14 +569,55 @@ defmodule E2eWeb.DemoPage do
   def demo_pattern_controlled(assigns) do
     ~H"""
     <div id={@id} class={@class}>
-      <div :if={@state != []} class="flex flex-wrap items-center gap-2 text-sm">
+      <div :if={@state != []} class="flex flex-wrap items-center gap-space-sm text-sm">
         {render_slot(@state)}
       </div>
-      <div :if={@toolbar != []} class="flex flex-wrap gap-2">
+      <div :if={@toolbar != []} class="flex flex-wrap gap-space-sm">
         {render_slot(@toolbar)}
       </div>
       {render_slot(@inner_block)}
     </div>
     """
+  end
+
+  @page_type_suffixes [
+    "Live Form",
+    "Patterns",
+    "Pattern",
+    "Playground",
+    "Anatomy",
+    "Style",
+    "Controller Form",
+    "Form",
+    "Events",
+    "Event",
+    "API",
+    "Controlled",
+    "Animation"
+  ]
+
+  defp split_display_title(title) when is_binary(title) do
+    case String.split(title, " · ", parts: 2) do
+      [component, page_type] ->
+        {String.trim(component), String.trim(page_type)}
+
+      [whole] ->
+        split_space_suffix(String.trim(whole))
+    end
+  end
+
+  defp split_space_suffix(title) do
+    Enum.find_value(@page_type_suffixes, {nil, title}, fn suffix ->
+      marker = " " <> suffix
+
+      if String.ends_with?(title, marker) do
+        component =
+          title
+          |> String.slice(0, String.length(title) - String.length(marker))
+          |> String.trim()
+
+        if component != "", do: {component, suffix}
+      end
+    end)
   end
 end

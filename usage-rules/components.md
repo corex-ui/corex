@@ -3,9 +3,9 @@
 ## MCP-first workflow
 
 1. `list_components` — valid ids
-2. `get_component { id: "<id>" }` — attrs, slots, events, docs, hook name
+2. `get_component { id: "<id>" }` — attrs, slots, hook, events, api, data_builders, form (pass `include_docs: true` for full moduledoc)
 
-Never guess. Fallback: `mix usage_rules.search_docs "<id>" -p corex`.
+Never guess. Fallback: `mix usage_rules.search_docs "<id>" -p corex` or MCP `search_docs`.
 
 ## Wiring checklist
 
@@ -15,13 +15,17 @@ Never guess. Fallback: `mix usage_rules.search_docs "<id>" -p corex`.
 | Hook | `assets/js/app.js` | Register if component uses `phx-hook` |
 | HEEx | `lib/*_web/` | `<.<id> id="stable-id" class="<id> …">` |
 
+## Attr vocabulary
+
+Selection components use `value` / `on_value_change` by default. Boolean Zag widgets (checkbox, switch, toggle) use `checked` / `pressed` and matching `on_*_change` handlers instead. Data table selection uses `selected`. Prefer MCP `get_component` when unsure which attr a host expects.
+
 ## Data builders
 
 | Builder | Use for |
 |---------|---------|
-| `Corex.Content.new/1` | accordion, tabs, data-list |
-| `Corex.List.new/1` | select, combobox, listbox, menu |
-| `Corex.Tree.new/1` | tree-view |
+| `Corex.Content.new/1` | accordion, tabs, data_list |
+| `Corex.List.new/1` | select, combobox, listbox |
+| `Corex.Tree.new/1` | menu, tree_view |
 | `Corex.Image.new/2` | carousel |
 
 ```heex
@@ -88,4 +92,4 @@ use Corex, only: [:accordion, :dialog], prefix: "ui"
 
 ## References
 
-- https://hexdocs.pm/corex/mcp.html
+- https://hexdocs.pm/corex/MCP.html

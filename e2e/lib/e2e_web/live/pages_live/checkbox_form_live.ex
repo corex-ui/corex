@@ -15,7 +15,7 @@ defmodule E2eWeb.CheckboxFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Checkbox · Form")
+     |> assign(:page_title, "Checkbox · Live Form")
      |> assign(:form_ecto, CheckboxDemo.form_ecto())
      |> assign(:live_phoenix_heex, CheckboxDemo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, CheckboxDemo.form_doc_live_phoenix_elixir())
@@ -241,7 +241,7 @@ defmodule E2eWeb.CheckboxFormLive do
       <.demo_page
         path={@path}
         id="checkbox-form-live-page"
-        title={~t"Checkbox · Form"}
+        title={~t"Checkbox · Live Form"}
       >
         <.demo_section
           id="checkbox-live-form-phoenix-section"

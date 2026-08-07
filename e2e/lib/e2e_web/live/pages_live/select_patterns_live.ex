@@ -11,15 +11,17 @@ defmodule E2eWeb.SelectPatternsLive do
     %{value: "donec", label: "Donec condimentum ex mi"}
   ]
 
+  @dynamic_id "patterns-dynamic"
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> stream_configure(:items, dom_id: &"select:stream-select:item:#{&1.value}")
-     |> stream(:items, @initial_items)
-     |> assign(:items_list, @initial_items)
+     |> assign(:dynamic_id, @dynamic_id)
+     |> assign(:dynamic_items, @initial_items)
      |> assign(:next_id, 1)
      |> assign(:value, [])
+     |> assign(:dynamic_value, [])
      |> assign(:items, Demo.patterns_items_flat())
      |> assign(:controlled_heex, Demo.patterns_controlled_heex())
      |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())}
@@ -34,23 +36,31 @@ defmodule E2eWeb.SelectPatternsLive do
     {:noreply, socket}
   end
 
+  def handle_event("dynamic_value_changed", %{"value" => value}, socket) when is_list(value) do
+    {:noreply, assign(socket, :dynamic_value, value)}
+  end
+
+  def handle_event("dynamic_value_changed", _params, socket) do
+    {:noreply, socket}
+  end
+
   def handle_event("add_item", _params, socket) do
     id = "item-#{socket.assigns.next_id}"
     item = %{value: id, label: "Item #{socket.assigns.next_id}"}
 
     {:noreply,
      socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
+     |> assign(:dynamic_items, socket.assigns.dynamic_items ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
   def handle_event("reset", _params, socket) do
     {:noreply,
      socket
-     |> stream(:items, @initial_items, reset: true)
-     |> assign(:items_list, @initial_items)
-     |> assign(:next_id, 1)}
+     |> assign(:dynamic_items, @initial_items)
+     |> assign(:next_id, 1)
+     |> assign(:dynamic_value, [])
+     |> Corex.Select.set_value(@dynamic_id, [])}
   end
 
   @impl true
@@ -66,7 +76,7 @@ defmodule E2eWeb.SelectPatternsLive do
         path={@path}
         id="select-patterns-page"
         title="Select · Pattern"
-        subtitle="Controlled selection and stream-driven items."
+        subtitle="Controlled selection and dynamic items."
       >
         <.demo_section
           id="select-patterns-controlled-section"
@@ -94,21 +104,21 @@ defmodule E2eWeb.SelectPatternsLive do
         </.demo_section>
 
         <.demo_section
-          id="select-patterns-stream-section"
-          title="Stream"
+          id="select-patterns-dynamic-section"
+          title="Dynamic items"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_stream_demo_heex()},
+            %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_dynamic_demo_heex()},
             %{
               value: "elixir",
               label: "Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_elixir()
+              code: Demo.patterns_dynamic_elixir()
             }
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-xl">
-              <div class="flex flex-wrap gap-2">
+            <div class="flex flex-col gap-space w-full max-w-xl">
+              <div class="flex flex-wrap gap-space-sm">
                 <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>
@@ -116,7 +126,13 @@ defmodule E2eWeb.SelectPatternsLive do
                   Reset
                 </.action>
               </div>
-              <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+              <.select
+                id={@dynamic_id}
+                class="select"
+                items={Corex.List.new(@dynamic_items)}
+                value={@dynamic_value}
+                on_value_change="dynamic_value_changed"
+              >
                 <:label>Country</:label>
                 <:trigger>
                   <.heroicon name="hero-chevron-down" class="icon" />

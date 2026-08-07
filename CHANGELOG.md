@@ -1,24 +1,47 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-08-07
 
-### Breaking changes
+Design and MCP ship as separate Hex packages. Theming is config-driven through an Elixir CSS pipeline.
 
-- **`mix corex.code` renamed to `mix corex.design.code`.** Update scripts and docs that call the old task name.
-- **Multi-value datasets use JSON** (`["a","b"]`) for `data-value` / `data-default-value` (and tree expanded/selected defaults). Comma-separated lists are no longer emitted.
-- **`FormField.assign_form_field/2` leaves `invalid` off by default.** Pass `auto_invalid` to derive alert borders from visible changeset errors (`used_input?/1`), or set `invalid={true}` / `invalid={false}` explicitly (explicit wins).
-- **`form_field` / `field_used` are no longer public attrs** on select/combobox; they remain private assigns set by `field={...}`.
-- **MCP moved to Hex package `corex_mcp`.** Add `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and keep `plug Corex.MCP` (mounted in `:dev` / `:test`). Config keys are under `config :corex_mcp` (`mcp_root`, `mcp_verbose_errors`, `debug`). Tools expanded: enriched `get_component` (attrs/slots/modifiers), plus `list_modifiers`, `get_component_style`, `list_themes`, `design_guide`.
-- **Form components require `:id` when no `:field`:** form controls no longer auto-generate random ids via `System.unique_integer`. Pass `id` explicitly, or use `field={@form[:name]}` so Phoenix `FormField.id` is used (Ecto changesets with `to_form/1` provide stable ids). Non-form components (accordion, dialog, tabs, etc.) still auto-generate ids when omitted. Random default `name-*` values on form controls were also removed (`name` defaults to `nil`).
-See the [update guide](guides/update.html) for migration notes.
+### Packages
 
-### Internal
+- **`corex_design`** — optional Design package (`runtime: false`, **MIT**): tokens, themes, modes, and component CSS from `config :corex_design`. Hex only (CSS is built in the app with `mix corex.design.build`).
+- **`corex_mcp`** — optional MCP package (`only: [:dev, :test]`, **Apache-2.0**) for AI component and design discovery. Never enable in production. License differs from the MIT siblings because the HTTP MCP stack follows Tidewave’s Apache-2.0 lineage.
+- **`corex`** — unstyled Phoenix components and Zag.js hooks (**MIT**); npm package ships built hooks under `priv/static` only.
+- **`mix corex.new`** — Design and MCP on by default (`--no-design` / `--no-mcp` to skip). Scaffolds `.cursor/mcp.json` when MCP is enabled; optional **`--a11y`** wires accessibility preference CSS.
 
-- **JSON via OTP `:json`:** `corex`, `corex_design`, and `corex_mcp` no longer depend on Jason. Use OTP 27+ or add `json_polyfill` on OTP 26.
-- Shared `Corex.Connect.ItemNav` for item `to` / redirect / new_tab dataset attrs.
-- Split `Corex.Helpers` into `Corex.Attrs`, `Corex.List.Normalize`, and `Corex.ValueBinding` (Helpers re-exports).
-- DocParity anatomy mapping uses explicit markers (`Corex.DocParity.Markers` and optional `# @parity anatomy:` comments on demos).
-- Demo id guard test ensures form `*_example` openings pass `id` or `field`.
+### Security
+
+- Strip leading C0/space before URL scheme checks in `Corex.Url` and the JS redirect helper so prefixed `javascript:` / `data:` cannot bypass allowlists (same class as LiveView CVE-2026-58228). See [SECURITY.md](SECURITY.md).
+- Require Phoenix LiveView **≥ 1.2.7** and Phoenix **≥ 1.8.9** for upstream link/navigation fixes.
+
+### Design
+
+- Config-driven Elixir pipeline: declare themes, semantics, and modes, then generate CSS with `mix corex.design.build`.
+- Shared `ui-*` modifiers for roles and variants (subtle / `ui-solid` / `ui-ghost`). `ui-outline` and per-component BEM modifiers are gone.
+- Notable renames: `layer` → `surface`; public token names only (no `--theme-*` indirection).
+- Optional accessibility preference CSS (`--a11y` / design accessibility emit). `accessibility: true` enables all six axes; `Corex.Design.Accessibility` is documented on Hexdocs.
+
+### Components
+
+- Several LiveView event and slot names are normalized (toast, toggle group, pagination, color picker, file upload, marquee). See the [update guide](guides/update.md) rename table.
+- Form controls need an explicit `id` when you do not pass `field`. Opt into `auto_invalid` for alert borders on used invalid fields.
+- Multi-value datasets use JSON in the DOM (`Corex.Dataset.encode_json/1`).
+- `button_group` removed; compose buttons with shared `ui-*` modifiers.
+- Marquee: push payload uses `id` (was `marquee_id`); `auto_fill` defaults for clone settling.
+
+### MCP
+
+- Design and guides tools (`list_modifiers`, `get_component_style`, `list_themes`, `design_guide`, installation/guides helpers).
+- Cursor protocol negotiation; richer component discovery prompts.
+
+### Requirements
+
+- Elixir `~> 1.17`.
+- Phoenix LiveView `>= 1.2.7`, Phoenix `>= 1.8.9` recommended.
+
+See the [update guide](guides/update.md) when upgrading from 0.1.x.
 
 ## 0.1.2
 
@@ -55,7 +78,7 @@ See the [update guide](guides/update.html) for migration notes.
 - [docs] Restore `mix corex.new` on Hexdocs
 - [mcp] Security hardening
 
-Run `mix corex.design --force` in your app to refresh `assets/corex/` (CSS and tokens).
+After upgrading within 0.1.x, refresh design CSS with `mix corex.design.build` (the old `mix corex.design` task is retired in 0.2.0).
 
 ## 0.1.0
 

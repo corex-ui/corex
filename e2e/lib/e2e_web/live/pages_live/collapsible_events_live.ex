@@ -76,7 +76,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.collapsible
                 id={@id_server}
                 class="collapsible"
@@ -115,7 +115,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.collapsible
                 id={@id_client}
                 class="collapsible"

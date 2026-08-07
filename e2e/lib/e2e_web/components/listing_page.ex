@@ -3,24 +3,29 @@ defmodule E2eWeb.ListingPage do
 
   use E2eWeb, :html
 
-  attr(:eyebrow, :string, required: true)
+  attr(:eyebrow, :string, default: nil)
   attr(:title, :string, required: true)
   attr(:accent, :string, default: nil)
-  attr(:lede, :string, required: true)
+  attr(:lede, :string, default: nil)
   attr(:meta, :string, default: nil)
   attr(:heading_id, :string, default: "listing-index-heading")
+  attr(:class, :string, default: "blog__hero")
+  slot(:actions)
 
   def listing_index_hero(assigns) do
     ~H"""
-    <header class="blog__hero" aria-labelledby={@heading_id}>
+    <header class={@class} aria-labelledby={@heading_id}>
       <div class="blog__head">
-        <p class="blog__eyebrow">{@eyebrow}</p>
+        <p :if={is_binary(@eyebrow)} class="blog__eyebrow">{@eyebrow}</p>
         <h1 id={@heading_id} class="blog__display">
           {@title}
           <span :if={@accent} class="blog__display__accent">{@accent}</span>
         </h1>
-        <p class="blog__lede">{@lede}</p>
+        <p :if={is_binary(@lede)} class="blog__lede">{@lede}</p>
         <p :if={@meta} class="blog__meta">{@meta}</p>
+        <div :if={@actions != []} class="flex flex-wrap gap-space-sm">
+          {render_slot(@actions)}
+        </div>
       </div>
     </header>
     """

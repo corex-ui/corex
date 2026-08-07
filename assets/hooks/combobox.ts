@@ -1,4 +1,3 @@
-import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import {
   Combobox,
@@ -20,20 +19,23 @@ import {
   getDir,
   canPushEvent,
   getBooleanValue,
-  safeParseJson,
 } from "../lib/util";
-import { mountStringListBinding } from "../lib/read-props";
-import { performRedirect, readDomItemRedirect } from "../lib/redirect";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 import { readPositioningOptions } from "../lib/positioning";
 import { markUsed, setArrayValues, syncFormInput } from "../lib/phoenix-form-bridge";
+import {
+  firstSelectedValue,
+  initCollectionItems,
+  itemsMembershipKey,
+  parseItemsJson,
+  redirectCollectionItem,
+  refreshItemsIfChanged,
+} from "../lib/collection-hook";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type ComboboxHookState = {
   combobox?: Combobox;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastItemsJson?: string;
   fieldTouched?: boolean;
 };
@@ -180,12 +182,8 @@ function buildComboboxProps(
       });
     },
     onValueChange: (details: ValueChangeDetails) => {
-      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-      if (redirectOn && firstValue) {
-        const itemEl = el.querySelector<HTMLElement>(
-          `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-        );
-        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      if (redirectOn) {
+        redirectCollectionItem(el, "combobox", firstSelectedValue(details.value), liveSocket);
       }
       syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
       getCombobox()?.restoreFilteredOptions();
@@ -252,20 +250,19 @@ function comboboxMachineDomPropsForUpdate(
   return rest as Partial<Props>;
 }
 
-const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    const hook = this as object & ComboboxHookState;
+const ComboboxHook = createZagLiveHook<ComboboxHookState, Combobox>({
+  key: "combobox",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     hook.fieldTouched = false;
     const markFieldTouched = () => {
       hook.fieldTouched = true;
     };
 
-    const itemsJson = el.getAttribute("data-items") ?? "[]";
-    const allItems = safeParseJson<ComboboxItem[]>(itemsJson, []);
-    const hasGroups = allItems.some((item) => Boolean(item.group));
+    const { items: allItems, hasGroups } = initCollectionItems<ComboboxItem>(el, hook);
 
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
@@ -279,7 +276,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         el,
         pushEvent,
         canPush,
-        this.liveSocket,
+        hook.liveSocket,
         () => comboboxRef,
         markFieldTouched
       ),
@@ -288,81 +285,71 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
     const combobox = new Combobox(el, props, allItems, hasGroups);
     comboboxRef = combobox;
-    combobox.init();
 
-    this.combobox = combobox;
-    this.lastItemsJson = itemsJson;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: string[] }>>("corex:combobox:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string[] }>>("corex:combobox:set-value", (event) => {
       combobox.api.setValue(event.detail.value);
     });
 
-    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:combobox:set-open", (event) => {
+    dom.add<CustomEvent<{ open: boolean }>>("corex:combobox:set-open", (event) => {
       combobox.api.setOpen(event.detail.open);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("combobox_set_value", (payload: { id?: string; value: string[] }) => {
+    server.add("combobox_set_value", (payload: { id?: string; value: string[] }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       combobox.api.setValue(payload.value);
     });
 
-    registry.add("combobox_set_open", (payload: { id?: string; open?: boolean }) => {
+    server.add("combobox_set_open", (payload: { id?: string; open?: boolean }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.open !== "boolean") return;
       combobox.api.setOpen(payload.open);
     });
+
+    return combobox;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
-    if (!this.combobox) return;
+  update(hook, combobox) {
+    const prevMembership = itemsMembershipKey(
+      parseItemsJson(hook.lastItemsJson ?? hook.el.getAttribute("data-items") ?? "[]")
+    );
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
+    const nextMembership = itemsMembershipKey(parseItemsJson(hook.lastItemsJson ?? "[]"));
+    const membershipChanged = itemsChanged && prevMembership !== nextMembership;
 
-    const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
-    let itemsChanged = false;
-    if (newItemsJson !== this.lastItemsJson) {
-      this.lastItemsJson = newItemsJson;
-      itemsChanged = true;
-      const newCollection = safeParseJson<ComboboxItem[]>(newItemsJson, []);
-      const hasGroups = newCollection.some((item) => Boolean(item.group));
-      this.combobox.hasGroups = hasGroups;
-      this.combobox.setAllOptions(newCollection);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
+
+    const propsApplied = combobox.updateProps(
+      {
+        ...comboboxMachineDomPropsForUpdate(
+          hook.el,
+          pushEvent,
+          canPush,
+          hook.liveSocket,
+          () => combobox,
+          () => {
+            hook.fieldTouched = true;
+          }
+        ),
+        ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      } as Props,
+      { force: itemsChanged }
+    );
+
+    if (combobox.api.open) {
+      combobox.api.reposition();
     }
 
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-
-    this.combobox.updateProps({
-      ...comboboxMachineDomPropsForUpdate(
-        this.el,
-        pushEvent,
-        canPush,
-        this.liveSocket,
-        () => this.combobox,
-        () => {
-          this.fieldTouched = true;
-        }
-      ),
-    } as Props);
-
-    if (this.combobox.api.open) {
-      this.combobox.api.reposition();
-    }
-
-    if (itemsChanged) {
-      this.combobox.renderItems();
-      this.combobox.applyItemProps();
+    if (!propsApplied || itemsChanged) {
+      // Membership change → rebuild; metadata-only → applyItemProps + filter visibility.
+      // Zag subscribe already calls render() with syncList false after updateProps.
+      combobox.render({ syncList: membershipChanged });
+    } else {
+      combobox.applyFilterVisibility();
+      combobox.applyItemProps();
     }
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.combobox?.destroy();
-  },
-};
+});
 
 export { ComboboxHook as Combobox };

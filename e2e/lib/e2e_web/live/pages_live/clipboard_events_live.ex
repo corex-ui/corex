@@ -61,7 +61,7 @@ defmodule E2eWeb.ClipboardEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.action phx-click={Corex.Clipboard.copy("clipboard-events")} class="button ui-size-sm">
                 Copy
               </.action>

@@ -154,4 +154,82 @@ defmodule E2eWeb.ListboxModel do
 
     session
   end
+
+  defp safe_dom_token?(token), do: String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def focus_item(session, listbox_dom_id, value)
+      when is_binary(listbox_dom_id) and is_binary(value) do
+    if not safe_dom_token?(listbox_dom_id) or not safe_dom_token?(value),
+      do: raise(ArgumentError, "invalid listbox or value id")
+
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{listbox_dom_id}');
+      const item = root && root.querySelector(
+        '[data-scope="listbox"][data-part="item"][data-value="#{value}"]'
+      );
+      if (item) item.focus();
+      return !!(item && document.activeElement === item);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on item #{value} in ##{listbox_dom_id}" end
+    )
+
+    session
+  end
+
+  def assert_highlighted_item(session, listbox_dom_id, value)
+      when is_binary(listbox_dom_id) and is_binary(value) do
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{listbox_dom_id}');
+      if (!root) return false;
+      const item = root.querySelector(
+        '[data-scope="listbox"][data-part="item"][data-value="#{value}"][data-highlighted]'
+      );
+      return !!item;
+      """,
+      [],
+      fn v -> assert v == true, "expected highlighted item #{value} in ##{listbox_dom_id}" end
+    )
+
+    session
+  end
+
+  def assert_item_role(session, listbox_dom_id, value, expected_role)
+      when is_binary(listbox_dom_id) and is_binary(value) do
+    item =
+      find(
+        session,
+        css(
+          ~s|##{listbox_dom_id} [data-scope="listbox"][data-part="item"][data-value="#{value}"]|,
+          visible: :any
+        )
+      )
+
+    role = Wallaby.Element.attr(item, "role")
+    assert role == expected_role
+    session
+  end
+
+  def assert_root_role_listbox(session, listbox_dom_id) do
+    root =
+      find(
+        session,
+        css(
+          ~s|##{listbox_dom_id} [data-scope="listbox"][data-part="root"]|,
+          visible: :any
+        )
+      )
+
+    role = Wallaby.Element.attr(root, "role")
+    assert role == "listbox"
+    session
+  end
 end

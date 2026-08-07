@@ -62,6 +62,19 @@ defmodule E2eWeb.TooltipTest do
       |> Tooltip.wait_open_content_in_host(host, timeout: 8_000)
     end
 
+    feature "client js  -  Open shows tooltip", %{session: session} do
+      host = "tooltip-api-cjs"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Tooltip, :tooltip, :api)
+        |> Tooltip.wait_host_tooltip_ready(host)
+
+      session
+      |> Tooltip.click_in_section("tooltip-api-set-open-client-js", "Open")
+      |> Tooltip.wait_open_content_in_host(host, timeout: 8_000)
+    end
+
     feature "server  -  Open shows tooltip", %{session: session} do
       host = "tooltip-api-srv"
 

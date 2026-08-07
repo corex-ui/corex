@@ -83,7 +83,7 @@ defmodule E2eWeb.CarouselApiLive do
           code={@codes.binding}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-space-sm mb-space-lg">
               <.action phx-click={Corex.Carousel.play(@id_client)} class="button ui-size-sm">
                 Play
               </.action>

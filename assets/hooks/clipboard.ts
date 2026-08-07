@@ -1,11 +1,8 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Clipboard } from "../components/clipboard";
 
 import { getString, getNumber, canPushEvent } from "../lib/util";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 export function copyPayload(el: HTMLElement, value: string | undefined): Record<string, unknown> {
   return { id: el.id, value };
@@ -13,15 +10,14 @@ export function copyPayload(el: HTMLElement, value: string | undefined): Record<
 
 type ClipboardHookState = {
   clipboard?: Clipboard;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & ClipboardHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const ClipboardHook = createZagLiveHook<ClipboardHookState, Clipboard>({
+  key: "clipboard",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const clipboard = new Clipboard(el, {
       id: el.id,
@@ -43,50 +39,37 @@ const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
       },
     });
 
-    clipboard.init();
-    this.clipboard = clipboard;
-
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add("corex:clipboard:copy", () => {
+    dom.add("corex:clipboard:copy", () => {
       clipboard.api.copy();
     });
 
-    domRegistry.add<CustomEvent<{ value: string }>>("corex:clipboard:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string }>>("corex:clipboard:set-value", (event) => {
       const v = event.detail?.value;
       if (typeof v === "string") clipboard.api.setValue(v);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("clipboard_copy", (payload: unknown) => {
+    server.add("clipboard_copy", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       clipboard.api.copy();
     });
 
-    registry.add("clipboard_set_value", (payload: unknown) => {
+    server.add("clipboard_set_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!payload || typeof payload !== "object") return;
       const o = payload as Record<string, unknown>;
       const v = o.value ?? o["value"];
       if (typeof v === "string") clipboard.api.setValue(v);
     });
+
+    return clipboard;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & ClipboardHookState) {
-    this.clipboard?.updateProps({
-      id: this.el.id,
-      timeout: getNumber(this.el, "timeout"),
+  update(hook, clipboard) {
+    clipboard.updateProps({
+      id: hook.el.id,
+      timeout: getNumber(hook.el, "timeout"),
     });
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & ClipboardHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.clipboard?.destroy();
-  },
-};
+});
 
 export { ClipboardHook as Clipboard };

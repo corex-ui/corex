@@ -1,27 +1,19 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Collapsible } from "../components/collapsible";
 import type { OpenChangeDetails } from "@zag-js/collapsible";
 
 import { getBoolean, getDir, getString, canPushEvent } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readBooleanControlledZagProps, readBooleanControlledZagUpdate } from "../lib/read-props";
 import {
-  emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId,
-  type RespondTo,
+  createValueEmitter,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type CollapsibleHookState = {
   collapsible?: Collapsible;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
 };
 
 export function openChangePayload(
@@ -34,11 +26,13 @@ export function openChangePayload(
   };
 }
 
-const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const CollapsibleHook = createZagLiveHook<CollapsibleHookState, Collapsible>({
+  key: "collapsible",
+  controlledKeys: ["open"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const collapsible = new Collapsible(el, {
       id: el.id,
@@ -57,85 +51,55 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
       },
     });
 
-    collapsible.init();
-    this.collapsible = collapsible;
-
-    const emitOpen = (respondTo: RespondTo) => {
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
+    const emitOpen = createValueEmitter(
+      { el, pushEvent, canPushServer: canPush },
+      {
+        getPayload: () => ({
+          id: el.id,
+          open: collapsible.api.open,
+          disabled: collapsible.api.disabled,
+        }),
         serverEventName: "collapsible_open_response",
-        serverPayload: {
-          id: el.id,
-          open: collapsible.api.open,
-          disabled: collapsible.api.disabled,
-        } as Record<string, unknown>,
-        el,
         domEventName: "collapsible-open",
-        domDetail: {
-          id: el.id,
-          open: collapsible.api.open,
-          disabled: collapsible.api.disabled,
-        } as Record<string, unknown>,
-      });
-    };
+      }
+    );
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:collapsible:set-open", (event) => {
-      const { open } = event.detail;
-      collapsible.api.setOpen(open);
+    dom.add<CustomEvent<{ open: boolean }>>("corex:collapsible:set-open", (event) => {
+      collapsible.api.setOpen(event.detail.open);
     });
 
-    domRegistry.add<CustomEvent>("corex:collapsible:open", (event) => {
+    dom.add<CustomEvent>("corex:collapsible:open", (event) => {
       emitOpen(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("collapsible_set_open", (payload: { id?: string; open: boolean }) => {
+    server.add("collapsible_set_open", (payload: { id?: string; open: boolean }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       collapsible.api.setOpen(payload.open);
     });
 
-    registry.add("collapsible_open", (payload: unknown) => {
+    server.add("collapsible_open", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitOpen(parseRespondTo(payload));
     });
+
+    return collapsible;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["open"]);
-  },
+  update(hook, collapsible) {
+    const openPatch = readBooleanControlledZagUpdate(
+      hook.el,
+      "open",
+      "defaultOpen",
+      hook.beforeAttrs
+    );
 
-  updated(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
-    try {
-      const openPatch = readBooleanControlledZagUpdate(
-        this.el,
-        "open",
-        "defaultOpen",
-        this.beforeAttrs
-      );
-
-      this.collapsible?.updateProps({
-        id: this.el.id,
-        ...openPatch,
-        disabled: getBoolean(this.el, "disabled"),
-        dir: getDir(this.el),
-      });
-    } finally {
-      this.beforeAttrs = undefined;
-    }
+    collapsible.updateProps({
+      id: hook.el.id,
+      ...openPatch,
+      disabled: getBoolean(hook.el, "disabled"),
+      dir: getDir(hook.el),
+    });
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.collapsible?.destroy();
-  },
-};
+});
 
 export { CollapsibleHook as Collapsible };

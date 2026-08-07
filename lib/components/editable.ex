@@ -167,6 +167,7 @@ defmodule Corex.Editable do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
 
@@ -191,23 +192,21 @@ defmodule Corex.Editable do
 
   alias Corex.Editable.Connect
   alias Corex.Editable.Translation
+  alias Corex.Selectors
 
-  attr(:id, :string, required: false, doc: "The id of the editable component")
+  form_control_attrs(
+    except: [:controlled],
+    docs: [
+      id: "The id of the editable component",
+      field: "A form field struct, e.g. f[:text] or @form[:text]",
+      name: "The name attribute for form submission",
+      form: "The id of the form this input belongs to",
+      read_only: "Whether the editable is read-only"
+    ]
+  )
 
   attr(:value, :string, default: "", doc: "Initial preview text (Zag defaultValue)")
 
-  attr(:disabled, :boolean, default: false, doc: "Whether the editable is disabled")
-  attr(:read_only, :boolean, default: false, doc: "Whether the editable is read-only")
-  attr(:required, :boolean, default: false, doc: "Whether the input is required")
-  attr(:invalid, :boolean, default: nil, doc: "Whether the editable is in invalid state")
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:name, :string, default: nil, doc: "The name attribute for form submission")
-  attr(:form, :string, default: nil, doc: "The id of the form this input belongs to")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:default_edit, :boolean, default: false, doc: "Initial edit state")
@@ -230,11 +229,6 @@ defmodule Corex.Editable do
   attr(:translation, Corex.Editable.Translation,
     default: nil,
     doc: "Override translatable strings"
-  )
-
-  attr(:field, Phoenix.HTML.FormField,
-    default: nil,
-    doc: "A form field struct, e.g. f[:text] or @form[:text]"
   )
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
@@ -272,21 +266,21 @@ defmodule Corex.Editable do
     translation = Translation.resolve(assigns.translation)
 
     value_s = value_to_string(Form.normalize_value("text", assigns[:value]))
-    content_value = value_s || ""
 
-    empty = String.trim(content_value) == ""
+    empty = String.trim(value_s) == ""
     editing = assigns[:default_edit] || false
-    value_text = if(empty, do: assigns[:placeholder] || "", else: content_value)
+    value_text = if(empty, do: assigns[:placeholder] || "", else: value_s)
 
     assigns =
       assigns
       |> Corex.FormField.require_id!("Corex component (editable)")
       |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:field_used, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
       |> assign(:value, value_s)
-      |> assign(:content_value, content_value)
+      |> assign(:content_value, value_s)
       |> assign(:empty, empty)
       |> assign(:editing, editing)
       |> assign(:value_text, value_text)
@@ -295,12 +289,12 @@ defmodule Corex.Editable do
     <div
       id={@id}
       phx-hook="Editable"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
+        field_used: @field_used,
         value: @value,
         disabled: @disabled,
         read_only: @read_only,
@@ -320,41 +314,37 @@ defmodule Corex.Editable do
     >
       <input
         :if={@name}
-        phx-mounted={Connect.ignore_form_value(%FormValue{id: @id, name: @name, value: @content_value, form: @form})}
-        {Connect.form_value(%FormValue{id: @id, name: @name, value: @content_value, form: @form})}
+        {Connect.mounted_form_value(%FormValue{id: @id, name: @name, value: @content_value, form: @form})}
       />
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
       <label
         class={Map.get(Enum.at(@label, 0), :class, nil)}
-        phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})}
-        {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.mounted_label(%Label{id: @id, dir: @dir, orientation: @orientation})}
       >
         {render_slot(@label)}
       </label>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <div phx-mounted={Connect.ignore_area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})} {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})}>
-            <input type="text" phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: if(@name, do: nil, else: @name), form: if(@name, do: nil, else: @form), required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: if(@name, do: nil, else: @name), form: if(@name, do: nil, else: @form), required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} />
-            <span phx-mounted={Connect.ignore_preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})} {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
+          <div {Connect.mounted_area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})}>
+            <input type="text" {Connect.mounted_input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: if(@name, do: nil, else: @name), form: if(@name, do: nil, else: @form), required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} />
+            <span {Connect.mounted_preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
               {@value_text}
             </span>
           </div>
           <div {Connect.triggers(%Triggers{})}>
-            <button type="button" phx-mounted={Connect.ignore_edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit, orientation: @orientation})} {Connect.edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
+            <button type="button" {Connect.mounted_edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
               {render_slot(@edit_trigger)}
             </button>
-            <button type="button" phx-mounted={Connect.ignore_submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit, orientation: @orientation})} {Connect.submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit, orientation: @orientation})}>
+            <button type="button" {Connect.mounted_submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit, orientation: @orientation})}>
               {render_slot(@submit_trigger)}
             </button>
-            <button type="button" phx-mounted={Connect.ignore_cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel, orientation: @orientation})} {Connect.cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel, orientation: @orientation})}>
+            <button type="button" {Connect.mounted_cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel, orientation: @orientation})}>
               {render_slot(@cancel_trigger)}
             </button>
         </div>
         </div>
 
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="editable" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="editable" errors={@errors} error={@error} />
     </div>
     """
   end
@@ -386,10 +376,13 @@ defmodule Corex.Editable do
   ```
   """)
 
+  @spec set_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(editable_id, value)
       when is_binary(editable_id) and is_binary(value) do
     JS.dispatch("corex:editable:set-value",
-      to: "##{editable_id}",
+      to: Selectors.css_id(editable_id),
       detail: %{value: value},
       bubbles: false
     )

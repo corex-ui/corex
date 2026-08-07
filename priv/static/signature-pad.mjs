@@ -1,29 +1,26 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-OZ2OVCG5.mjs";
-import {
-  setArrayValues,
-  syncFormInput
-} from "./chunks/chunk-2H6YHTHG.mjs";
+} from "./chunks/chunk-3IY2CPWD.mjs";
 import {
   bindArrayFieldSubmitIntent,
-  isFormFieldUsed
-} from "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
+  isFormFieldUsed,
+  setArrayValues,
+  syncFormInput
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getDataUrl,
@@ -36,9 +33,9 @@ import {
   isModifierKey,
   query,
   trackPointerMove
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
   "root",
   "control",
@@ -50,7 +47,7 @@ var anatomy = createAnatomy("signature-pad").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
 var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
@@ -61,7 +58,7 @@ var getDataUrl2 = (ctx, options) => {
   return getDataUrl(getSegmentEl(ctx), options);
 };
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, computed, context, scope } = service;
   const drawing = state.matches("drawing");
@@ -85,6 +82,7 @@ function connect(service, normalize) {
     getLabelProps() {
       return normalize.label({
         ...parts.label.attrs,
+        dir: prop("dir"),
         id: getLabelId(scope),
         "data-disabled": dataAttr(disabled),
         "data-required": dataAttr(required),
@@ -100,6 +98,7 @@ function connect(service, normalize) {
     getRootProps() {
       return normalize.element({
         ...parts.root.attrs,
+        dir: prop("dir"),
         "data-disabled": dataAttr(disabled),
         id: getRootId(scope)
       });
@@ -107,6 +106,7 @@ function connect(service, normalize) {
     getControlProps() {
       return normalize.element({
         ...parts.control.attrs,
+        dir: prop("dir"),
         tabIndex: disabled ? void 0 : 0,
         id: getControlId(scope),
         role: "application",
@@ -164,12 +164,14 @@ function connect(service, normalize) {
     getGuideProps() {
       return normalize.element({
         ...parts.guide.attrs,
+        dir: prop("dir"),
         "data-disabled": dataAttr(disabled)
       });
     },
     getClearTriggerProps() {
       return normalize.button({
         ...parts.clearTrigger.attrs,
+        dir: prop("dir"),
         type: "button",
         "aria-label": translations.clearTrigger,
         hidden: !context.get("paths").length || drawing,
@@ -374,7 +376,7 @@ function R(e2, t2 = {}) {
 }
 var z = R;
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
 var average = (a2, b2) => (a2 + b2) / 2;
 function getSvgPathFromStroke(points, closed = true) {
   const len = points.length;
@@ -399,7 +401,7 @@ function getSvgPathFromStroke(points, closed = true) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -535,7 +537,6 @@ var SignaturePad = class extends Component {
   imageURL = "";
   paths = [];
   name;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     this.name = props.name;
     return new VanillaMachine(machine, props);
@@ -699,11 +700,11 @@ function syncSignatureFormForPhoenix(el, paths, opts) {
   }
   syncFormInput(input, () => paths.length > 0 ? paths.join("\n") : "", opts.onPadTouched);
 }
-var SignaturePadHook = {
-  mounted() {
-    const el = this.el;
-    const hook = this;
-    const pushEvent = this.pushEvent.bind(this);
+var SignaturePadHook = createZagLiveHook({
+  key: "signaturePad",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
     hook.padTouched = false;
     const markTouched = () => {
       hook.padTouched = true;
@@ -725,7 +726,7 @@ var SignaturePadHook = {
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
-          if (eventName && this.liveSocket.main.isConnected()) {
+          if (eventName && hook.liveSocket.main.isConnected()) {
             pushEvent(eventName, {
               id: el.id,
               paths: details.paths,
@@ -748,8 +749,6 @@ var SignaturePadHook = {
         });
       }
     });
-    signaturePad.init();
-    this.signaturePad = signaturePad;
     const syncForm = (paths, opts) => {
       syncSignatureFormForPhoenix(el, paths, {
         onPadTouched: () => {
@@ -766,9 +765,7 @@ var SignaturePadHook = {
       const paths = signaturePad.api.paths ?? [];
       syncForm(paths.length > 0 ? paths : [], { notifyLiveView: false, fieldTouched: true });
     });
-    this.onClear = (event) => {
-      const { id: targetId } = event.detail;
-      if (targetId && targetId !== el.id) return;
+    const clearPad = () => {
       signaturePad.api.clear();
       syncSignatureFormForPhoenix(el, [], {
         onPadTouched: markTouched,
@@ -776,52 +773,40 @@ var SignaturePadHook = {
         fieldTouched: true
       });
     };
-    el.addEventListener("corex:signature-pad:clear", this.onClear);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("signature_pad_clear", (payload) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        signaturePad.api.clear();
-        syncSignatureFormForPhoenix(el, [], {
-          onPadTouched: markTouched,
-          notifyLiveView: true,
-          fieldTouched: true
-        });
-      })
-    );
+    dom.add("corex:signature-pad:clear", (event) => {
+      const { id: targetId } = event.detail;
+      if (targetId && targetId !== el.id) return;
+      clearPad();
+    });
+    server.add("signature_pad_clear", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      clearPad();
+    });
+    return signaturePad;
   },
-  updated() {
-    const el = this.el;
-    this.signaturePad?.updateProps({
+  update(hook, signaturePad) {
+    const el = hook.el;
+    signaturePad.updateProps({
       id: el.id,
       name: zagNameForForm(el),
       dir: getDir(el),
       drawing: buildDrawingOptions(el)
     });
     const serverPaths = readFormFieldServerPaths(el);
-    if (serverPaths !== void 0 && !this.padTouched) {
-      this.signaturePad?.setPaths(serverPaths);
+    if (serverPaths !== void 0 && !hook.padTouched) {
+      signaturePad.setPaths(serverPaths);
       syncSignatureFormForPhoenix(el, serverPaths, {
         onPadTouched: () => {
         },
         notifyLiveView: false,
-        fieldTouched: isFormFieldUsed(el, this.padTouched)
+        fieldTouched: isFormFieldUsed(el, hook.padTouched)
       });
     }
   },
-  destroyed() {
-    this.unbindSubmitIntent?.();
-    if (this.onClear) {
-      this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    this.signaturePad?.destroy();
+  destroy(hook) {
+    hook.unbindSubmitIntent?.();
   }
-};
+});
 export {
   SignaturePadHook as SignaturePad,
   buildDrawingOptions,

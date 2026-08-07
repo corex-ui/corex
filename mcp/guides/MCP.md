@@ -12,9 +12,9 @@ Do not enable MCP in production. The tools are read-only, but the endpoint still
 
 | Requirement | Notes |
 | ----------- | ----- |
+| Elixir `~> 1.17` | Required by Corex packages (and `corex_design` / Hex `color`) |
 | `{:corex, "~> 0.2"}` | Host app dependency (MCP soft-loads it; not a dep of `corex_mcp`) |
 | `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` | This package (`plug` only; uses OTP `:json`) |
-| OTP 27+ (or `json_polyfill` on OTP 26) | Stdlib `:json` on OTP 27+; on OTP 26 add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to the host app |
 | `{:corex_design, "~> 0.2", runtime: false, only: :dev}` | Optional host dep; enables design tools and richer `get_component` fields |
 | Running HTTP server | Phoenix endpoint or Tableau Bandit child |
 
@@ -46,25 +46,30 @@ Default URL: `http://localhost:4004`.
 
 Point any client that supports streamable HTTP MCP at the running URL above.
 
+Phoenix serves MCP on the **app port** (`http://localhost:4000/corex/mcp`). Tableau serves MCP on a **dedicated Bandit** (`http://localhost:4004/corex/mcp` by default). Path is always `/corex/mcp`.
+
+Scaffolds write a **project** `.cursor/mcp.json` with the single URL for that app (`mix corex.new` → 4000, `mix corex.tableau.new` → 4004). If you use a **user-level / shared** client config and work on both Phoenix and Tableau apps, register **both** servers (examples below). Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: true` casually.
+
 ### Cursor
 
-Create or edit `.cursor/mcp.json` in your project:
+Project file (written by the installer when `--mcp` is on), or user-level `~/.cursor/mcp.json` with both entries:
 
 ```json
 {
   "mcpServers": {
     "corex": {
       "url": "http://localhost:4000/corex/mcp"
+    },
+    "corex-tableau": {
+      "url": "http://localhost:4004/corex/mcp"
     }
   }
 }
 ```
 
-For Tableau Bandit, use `http://localhost:4004` (or your configured port) instead.
-
 ### Claude Desktop
 
-Add an entry to `claude_desktop_config.json`:
+Add both servers to `claude_desktop_config.json` when you use Phoenix and Tableau:
 
 ```json
 {
@@ -74,6 +79,12 @@ Add an entry to `claude_desktop_config.json`:
         "type": "http",
         "url": "http://localhost:4000/corex/mcp"
       }
+    },
+    "corex-tableau": {
+      "transport": {
+        "type": "http",
+        "url": "http://localhost:4004/corex/mcp"
+      }
     }
   }
 }
@@ -81,7 +92,7 @@ Add an entry to `claude_desktop_config.json`:
 
 ### VS Code and other HTTP MCP clients
 
-Use the same URL (`http://localhost:4000/corex/mcp` for Phoenix, or your Tableau Bandit URL). Configure the client for streamable HTTP MCP and omit an `Origin` header on requests (see Security).
+Configure streamable HTTP MCP twice if needed — Phoenix at `http://localhost:4000/corex/mcp`, Tableau at `http://localhost:4004/corex/mcp` (or your configured `:mcp_port`). Omit an `Origin` header on requests (see Security).
 
 ## Tools
 
@@ -89,13 +100,17 @@ All tools are read-only.
 
 | Tool | Purpose |
 | ---- | ------- |
-| `list_components` | All component ids (`accordion`, `date_picker`, …) |
-| `get_component` | Module, attrs/slots, docs, design modifiers when available, `source_path` |
+| `list_components` | All component ids plus `form_capable` summary |
+| `get_component` | Hook, events, api, data_builders, form, attrs/slots; optional `include_docs`; snake or kebab `id` |
+| `search_docs` | Search usage-rules / guide markdown (`query`) |
+| `navigation_guide` | Links, actions, redirect-on-select patterns |
 | `list_modifiers` | Shared `ui-*` vocabulary (optional `axis` filter) |
 | `get_component_style` | CSS id, axes, examples, layout for one id (needs `corex_design`) |
 | `list_themes` | Theme presets and modes (needs `corex_design`) |
 | `design_guide` | Setup / modifiers / theming / dark mode copy-paste (`topic`) |
 | `installation_guide` | Install steps (`scenario`: `new_project`, `existing_project`, `tableau_new`, or omit for `all`) |
+
+Prompts: `corex_form`, `corex_controlled`, `corex_style` (via `prompts/list` / `prompts/get`).
 
 Call `list_components` before `get_component` when you need a valid `id`. Invalid tool arguments return an MCP error instead of being silently ignored.
 
@@ -126,7 +141,7 @@ Optional application config:
 config :corex_mcp, mcp_root: "/path/to/project"
 ```
 
-`mcp_root` sets the directory used to relativize `source_path` in `get_component` (defaults to `File.cwd!()`).
+`mcp_root` is the project root used when resolving paths for tooling (defaults to `File.cwd!()`).
 
 Verbose MCP logging:
 

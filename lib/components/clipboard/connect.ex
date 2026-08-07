@@ -1,5 +1,6 @@
 defmodule Corex.Clipboard.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
   alias Corex.Clipboard.Anatomy.{Control, Copied, Copy, Input, Label, Props, Root, Trigger}
   alias Corex.Selectors
 

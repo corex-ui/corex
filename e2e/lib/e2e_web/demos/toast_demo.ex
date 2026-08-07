@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.ToastDemo do
   use E2eWeb, :html
 
-  alias Phoenix.LiveView.JS
-
   def layout_flash_code do
     ~S"""
     <.toast_group id="layout-toast" flash={@flash} class="toast">
@@ -103,28 +101,28 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', group_id: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
       >
         Info
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', group_id: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
       >
         Success
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', group_id: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
       >
         Error
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', group_id: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
       >
         Loading
       </button>
@@ -137,7 +135,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     const el = document.getElementById("layout-toast");
     const dispatch = (detail) =>
       el?.dispatchEvent(
-        new CustomEvent("corex:toast:create", { bubbles: false, detail: { groupId: "layout-toast", ...detail } })
+        new CustomEvent("corex:toast:create", { bubbles: false, detail: { group_id: "layout-toast", ...detail } })
       );
 
     dispatch({
@@ -180,7 +178,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     const el: HTMLElement | null = document.getElementById("layout-toast");
     const dispatch = (detail: Record<string, unknown>) =>
       el?.dispatchEvent(
-        new CustomEvent("corex:toast:create", { bubbles: false, detail: { groupId: "layout-toast", ...detail } })
+        new CustomEvent("corex:toast:create", { bubbles: false, detail: { group_id: "layout-toast", ...detail } })
       );
 
     dispatch({
@@ -226,28 +224,28 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', group_id: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
       >
         Info
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', group_id: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
       >
         Success
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', group_id: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
       >
         Error
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', group_id: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
       >
         Loading
       </button>
@@ -377,14 +375,14 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', group_id: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
       >
         Create demo toast
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via corex:toast:update', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', group_id: 'layout-toast', title: 'After update', description: 'Updated via corex:toast:update', type: 'success', duration: '5000' } }))"
       >
         Update
       </button>
@@ -400,7 +398,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
-          groupId: "layout-toast",
+          group_id: "layout-toast",
           title: "Before update",
           description: "Create once then call update.",
           type: "info",
@@ -414,7 +412,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
-          groupId: "layout-toast",
+          group_id: "layout-toast",
           title: "After update",
           description: "Updated via corex:toast:update",
           type: "success",
@@ -433,7 +431,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
-          groupId: "layout-toast",
+          group_id: "layout-toast",
           title: "Before update",
           description: "Create once then call update.",
           type: "info",
@@ -447,7 +445,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
-          groupId: "layout-toast",
+          group_id: "layout-toast",
           title: "After update",
           description: "Updated via corex:toast:update",
           type: "success",
@@ -466,14 +464,14 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', group_id: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
       >
         Create demo toast
       </button>
       <button
         type="button"
         class="button ui-size-sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via corex:toast:update', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', group_id: 'layout-toast', title: 'After update', description: 'Updated via corex:toast:update', type: 'success', duration: '5000' } }))"
       >
         Update
       </button>
@@ -695,45 +693,33 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_trigger_redirect_code do
     ~S"""
-    <.action
-      phx-click={
-        Corex.Toast.create("layout-toast", "Saved", "Action redirects to this anatomy page.", :success,
-          id: "toast-anatomy-redirect",
-          duration: 30_000,
-          action: %{
-            label: "Same page",
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_redirect" class="button ui-size-sm">
       Toast with redirect
     </.action>
+
+    def handle_event("toast_anatomy_redirect", _params, socket) do
+      {:noreply,
+       Corex.Toast.create(
+         socket,
+         "layout-toast",
+         "Saved",
+         "Action redirects to this anatomy page.",
+         :success,
+         id: "toast-anatomy-redirect",
+         duration: 30_000,
+         action: %{
+           label: "Same page",
+           class: "button ui-accent ui-size-sm",
+           js: JS.patch(~p"/toast/anatomy")
+         }
+       )}
+    end
     """
   end
 
   def anatomy_trigger_redirect_example(assigns) do
     ~H"""
-    <.action
-      phx-click={
-        Corex.Toast.create(
-          "layout-toast",
-          "Saved",
-          "Action redirects to this anatomy page.",
-          :success,
-          id: "toast-anatomy-redirect",
-          duration: 30_000,
-          action: %{
-            label: "Same page",
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_redirect" class="button ui-size-sm">
       Toast with redirect
     </.action>
     """
@@ -741,97 +727,74 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_trigger_live_view_js_code do
     ~S"""
-    <.action
-      phx-click={
-        Corex.Toast.create("layout-toast", "Dismiss me", "Action runs a Phoenix.LiveView.JS command.", :info,
-          id: "toast-anatomy-dismiss",
-          duration: :infinity,
-          action: %{
-            label: "Dismiss",
-            class: "button ui-accent ui-size-sm",
-            js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_dismiss" class="button ui-size-sm">
       Toast with Live View JS
     </.action>
+
+    def handle_event("toast_anatomy_dismiss", _params, socket) do
+      {:noreply,
+       Corex.Toast.create(
+         socket,
+         "layout-toast",
+         "Dismiss me",
+         "Action runs a Phoenix.LiveView.JS command.",
+         :info,
+         id: "toast-anatomy-dismiss",
+         duration: :infinity,
+         action: %{
+           label: "Dismiss",
+           class: "button ui-accent ui-size-sm",
+           js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
+         }
+       )}
+    end
     """
   end
 
   def anatomy_trigger_live_view_js_example(assigns) do
     ~H"""
-    <.action
-      phx-click={
-        Corex.Toast.create(
-          "layout-toast",
-          "Dismiss me",
-          "Action runs a Phoenix.LiveView.JS command.",
-          :info,
-          id: "toast-anatomy-dismiss",
-          duration: :infinity,
-          action: %{
-            label: "Dismiss",
-            class: "button ui-accent ui-size-sm",
-            js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_dismiss" class="button ui-size-sm">
       Toast with Live View JS
     </.action>
     """
   end
 
   def anatomy_trigger_custom_label_code do
-    ~S"""
-    <.action
-      phx-click={
-        Corex.Toast.create("layout-toast", "Open docs", "Label is rendered from ~H with a heroicon.", :info,
-          id: "toast-anatomy-custom-label",
-          duration: 30_000,
-          action: %{
-            label: ~H{
-              <.heroicon name="hero-arrow-top-right-on-square" />
-              Open
-            },
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    ~S'''
+    <.action phx-click="toast_anatomy_custom_label" class="button ui-size-sm">
       Toast with custom label
     </.action>
-    """
+
+    def handle_event("toast_anatomy_custom_label", _params, socket) do
+      assigns = %{}
+
+      label = ~H"""
+      <.heroicon name="hero-arrow-top-right-on-square" />
+      Open
+      """
+
+      {:noreply,
+       Corex.Toast.create(
+         socket,
+         "layout-toast",
+         "Open docs",
+         "Label is rendered from ~H with a heroicon.",
+         :info,
+         id: "toast-anatomy-custom-label",
+         duration: 30_000,
+         action: %{
+           label: label,
+           class: "button ui-accent ui-size-sm",
+           js: JS.patch(~p"/toast/anatomy")
+         }
+       )}
+    end
+    '''
   end
 
   def anatomy_trigger_custom_label_example(assigns) do
     ~H"""
-    <.action
-      phx-click={
-        Corex.Toast.create(
-          "layout-toast",
-          "Open docs",
-          "Label is rendered from ~H with a heroicon.",
-          :info,
-          id: "toast-anatomy-custom-label",
-          duration: 30_000,
-          action: %{
-            label: ~H{
-              <.heroicon name="hero-arrow-top-right-on-square" />
-              Open
-            },
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_custom_label" class="button ui-size-sm">
       Toast with custom label
     </.action>
     """

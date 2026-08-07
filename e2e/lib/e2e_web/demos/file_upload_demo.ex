@@ -53,7 +53,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_minimal_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
@@ -65,7 +65,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_with_label_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
         <:label>Files</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -112,7 +112,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_custom_slots_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
         <:dropzone>
           <span>Custom dropzone</span>
         </:dropzone>
@@ -148,8 +148,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def live_form_with_submit_code do
     ~S"""
-    <form phx-change="validate" phx-submit="save">
-      <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
+    <form phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.file_upload_live upload={@uploads.attachment} upload_name={:attachment} class="file-upload">
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -198,7 +200,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_doc_controller_phoenix_heex do
     ~S"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -233,7 +237,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix" multipart>
+    <.form for={@form} phx-submit="save_phoenix" multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -253,7 +259,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_changeset_heex do
     ~S"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
@@ -279,7 +287,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_validate_heex do
     ~S"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="file_upload_validate[_sent]" value="1" />
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
@@ -305,7 +315,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/file-upload/form"} method="post" enctype="multipart/form-data" class="w-full max-w-2xs flex flex-col gap-space">
+    <form action={~p"/file-upload/form"} method="post" enctype="multipart/form-data" class="flex flex-col gap-space-lg w-full max-w-xl">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <input type="hidden" name="_file_upload_form" value="native" />
       <.file_upload name="user[avatar]" class="file-upload">
@@ -343,6 +353,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       action={~p"/file-upload/form"}
       method="post"
       multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
       <.file_upload id="file-upload-cs-field" field={@form[:attachment]} class="file-upload">
@@ -371,6 +382,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       action={~p"/file-upload/form"}
       method="post"
       multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_file_upload_form" value="ecto" />
       <input type="hidden" name="file_upload_ecto[_sent]" value="1" />
@@ -400,6 +412,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       method="post"
       id="file-upload-plain-form"
       enctype="multipart/form-data"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <input type="hidden" name="_file_upload_form" value="native" />
@@ -467,7 +480,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg items-center w-full justify-center">
       <.action
         phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")}
         class="button ui-size-sm"
@@ -488,7 +501,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg items-center w-full justify-center">
       <.action
         phx-click="api_fu_open_server"
         phx-value-id="file-upload-api-server"
@@ -510,7 +523,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg items-center w-full justify-center">
       <.action
         type="button"
         class="button ui-size-sm"
@@ -581,8 +594,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_live_upload_heex do
     ~S"""
-    <form phx-change="validate" phx-submit="save">
-      <.file_upload_live upload={@uploads.attachment} field={:attachment}>
+    <form phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.file_upload_live upload={@uploads.attachment} upload_name={:attachment}>
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -669,7 +684,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_preview_controller_phoenix(assigns) do
     ~H"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+    <.form
+      for={@form}
+      action={~p"/file-upload/form"}
+      method="post"
+      multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_file_upload_form" value="phoenix" />
       <input type="hidden" name="file_upload_phoenix[_sent]" value="1" />
       <.file_upload field={@form[:attachment]} class="file-upload">
@@ -694,7 +715,12 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix" multipart>
+    <.form
+      for={@form}
+      phx-submit="save_phoenix"
+      multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.file_upload
         id="file-upload-live-phoenix-field"
         field={@form[:attachment]}
@@ -717,7 +743,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate" phx-submit="save" multipart>
+    <.form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      multipart
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="file_upload_ecto[_sent]" value="1" />
       <.file_upload
         id="file-upload-live-ecto-field"
@@ -860,7 +892,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload id="file-upload-style-color-default" name="document" class="file-upload w-full">
         <:label>Default</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -929,7 +961,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload id="file-upload-style-variant-subtle" name="document" class="file-upload w-full">
         <:label>Subtle (default)</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1015,7 +1047,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload
         id="file-upload-style-sm"
         name="document"
@@ -1087,7 +1119,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload
         id="file-upload-style-rounded-none"
         name="document"
@@ -1162,7 +1194,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.file_upload
           id={"file-upload-style-max-#{variant.id}"}

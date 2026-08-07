@@ -4,25 +4,20 @@ import {
   readScaleAnimationOptions,
   runScaleAnimation,
   stripHiddenFromProps
-} from "./chunks/chunk-4AOGROPJ.mjs";
+} from "./chunks/chunk-PWP4CBA7.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CBUVYVIR.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readBooleanControlledZagProps,
   readControlledOrDefaultBoolean
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -31,6 +26,7 @@ import {
   compact,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   findControlledElements,
   getActiveElement,
@@ -58,9 +54,9 @@ import {
   raf,
   setStyle,
   setStyleProperty
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
 var anatomy = createAnatomy("dialog").parts(
   "trigger",
   "backdrop",
@@ -72,7 +68,7 @@ var anatomy = createAnatomy("dialog").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.dom.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.dom.mjs
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `dialog:${ctx.id}:positioner`;
 var getBackdropId = (ctx) => ctx.ids?.backdrop ?? `dialog:${ctx.id}:backdrop`;
 var getContentId = (ctx) => ctx.ids?.content ?? `dialog:${ctx.id}:content`;
@@ -87,15 +83,19 @@ var getCloseTriggerId = (ctx) => ctx.ids?.closeTrigger ?? `dialog:${ctx.id}:clos
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
 var getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
 var getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
 var getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
-var getTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+var getTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
 var getActiveTriggerEl = (ctx, value) => {
-  return value == null ? getTriggerEls(ctx)[0] : ctx.getById(getTriggerId(ctx, value));
+  if (value == null) {
+    return getTriggerEl(ctx) ?? getTriggerEls(ctx)[0];
+  }
+  return ctx.getById(getTriggerId(ctx, value));
 };
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.connect.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const ariaLabel = prop("aria-label");
@@ -202,7 +202,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.40.0/node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.42.0/node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
 var counterMap = /* @__PURE__ */ new WeakMap();
 var uncontrolledNodes = /* @__PURE__ */ new WeakMap();
 var markerMap = {};
@@ -306,7 +306,7 @@ var walkTreeOutside = (originalTarget, props) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.40.0/node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.42.0/node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
 var getParentNode = (originalTarget) => {
   const target = Array.isArray(originalTarget) ? originalTarget[0] : originalTarget;
   return target.ownerDocument.body;
@@ -322,7 +322,7 @@ var hideOthers = (originalTarget, parentNode = getParentNode(originalTarget), ma
   });
 };
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.40.0/node_modules/@zag-js/aria-hidden/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.42.0/node_modules/@zag-js/aria-hidden/dist/index.mjs
 var raf2 = (fn) => {
   const frameId = requestAnimationFrame(() => fn());
   return () => cancelAnimationFrame(frameId);
@@ -344,12 +344,12 @@ function ariaHidden(targetsOrFn, options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.40.0/node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.42.0/node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.40.0/node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.42.0/node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
 var activeFocusTraps = {
   activateTrap(trapStack, trap) {
     if (trapStack.length > 0) {
@@ -922,7 +922,7 @@ var isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
 var delay = (fn) => setTimeout(fn, 0);
 var isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.40.0/node_modules/@zag-js/focus-trap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.42.0/node_modules/@zag-js/focus-trap/dist/index.mjs
 function trapFocus(el, options = {}) {
   let trap;
   const cleanup = raf(() => {
@@ -951,8 +951,9 @@ function trapFocus(el, options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+remove-scroll@1.40.0/node_modules/@zag-js/remove-scroll/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+remove-scroll@1.42.0/node_modules/@zag-js/remove-scroll/dist/index.mjs
 var LOCK_CLASSNAME = "data-scroll-lock";
+var lockMap = /* @__PURE__ */ new WeakMap();
 function getPaddingProperty(documentElement) {
   const documentLeft = documentElement.getBoundingClientRect().left;
   const scrollbarX = Math.round(documentLeft) + documentElement.scrollLeft;
@@ -963,12 +964,9 @@ function hasStableScrollbarGutter(element) {
   const scrollbarGutter = styles?.scrollbarGutter;
   return scrollbarGutter === "stable" || scrollbarGutter?.startsWith("stable ") === true;
 }
-function preventBodyScroll(_document) {
-  const doc = _document ?? document;
+function applyLock(doc) {
   const win = doc.defaultView ?? window;
   const { documentElement, body } = doc;
-  const locked = body.hasAttribute(LOCK_CLASSNAME);
-  if (locked) return;
   const hasStableGutter = hasStableScrollbarGutter(documentElement) || hasStableScrollbarGutter(body);
   const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
   body.setAttribute(LOCK_CLASSNAME, "");
@@ -1009,8 +1007,28 @@ function preventBodyScroll(_document) {
     body.removeAttribute(LOCK_CLASSNAME);
   };
 }
+function preventBodyScroll(_document) {
+  const doc = _document ?? document;
+  let state = lockMap.get(doc);
+  if (!state) {
+    state = { count: 0, cleanup: applyLock(doc) };
+    lockMap.set(doc, state);
+  }
+  state.count++;
+  const lockState = state;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    lockState.count--;
+    if (lockState.count === 0) {
+      lockState.cleanup();
+      lockMap.delete(doc);
+    }
+  };
+}
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.machine.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.machine.mjs
 var machine = createMachine({
   props({ props, scope }) {
     const alertDialog = props.role === "alertdialog";
@@ -1056,7 +1074,7 @@ var machine = createMachine({
   },
   states: {
     open: {
-      entry: ["checkRenderedElements", "syncZIndex", "setInitialFocus"],
+      entry: ["checkRenderedElements", "setInitialFocus"],
       effects: ["trackDismissableElement", "trapFocus", "preventScroll", "hideContentBelow"],
       on: {
         "CONTROLLED.CLOSE": {
@@ -1129,7 +1147,8 @@ var machine = createMachine({
           type: "dialog",
           defer: true,
           pointerBlocking: prop("modal"),
-          exclude: getTriggerEls(scope),
+          layerStyleTargets: [() => getBackdropEl(scope), () => getPositionerEl(scope)],
+          exclude: [getTriggerEl(scope), ...getTriggerEls(scope)].filter(Boolean),
           onInteractOutside(event) {
             prop("onInteractOutside")?.(event);
             if (!prop("closeOnInteractOutside")) {
@@ -1202,18 +1221,6 @@ var machine = createMachine({
           });
         });
       },
-      syncZIndex({ scope }) {
-        raf(() => {
-          const contentEl = getContentEl(scope);
-          if (!contentEl) return;
-          const styles = getComputedStyle(contentEl);
-          const elems = [getPositionerEl(scope), getBackdropEl(scope)];
-          elems.forEach((node) => {
-            node?.style.setProperty("--z-index", styles.zIndex);
-            node?.style.setProperty("--layer-index", styles.getPropertyValue("--layer-index"));
-          });
-        });
-      },
       invokeOnClose({ prop }) {
         prop("onOpenChange")?.({ open: false });
       },
@@ -1263,7 +1270,6 @@ function syncDialogContentAriaRefs(rootEl, contentEl) {
   }
 }
 var Dialog = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1363,12 +1369,13 @@ function runDialogScaleIfJs(el, isOpen) {
   if (!isJsAnimation(el)) return;
   runDialogScaleTransitions(el, isOpen);
 }
-var DialogHook = {
-  mounted() {
-    const el = this.el;
-    const self = this;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var DialogHook = createZagLiveHook({
+  key: "dialog",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const self = hook;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
     const dialog = new Dialog(el, {
       ...readDialogLayoutProps(el),
@@ -1398,62 +1405,52 @@ var DialogHook = {
         }
       }
     });
-    dialog.init();
-    this.dialog = dialog;
     prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
       if (sub.dataset.part === "backdrop") return { scale: false };
     });
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:dialog:set-open", (event) => {
+    dom.add("corex:dialog:set-open", (event) => {
       const { open } = event.detail;
       dialog.api.setOpen(open);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("dialog_set_open", (payload) => {
+    server.add("dialog_set_open", (payload) => {
       if (!payload || typeof payload !== "object") return;
       const o = payload;
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof o.open === "boolean") dialog.api.setOpen(o.open);
     });
-    registry.add("dialog_open", (payload) => {
+    server.add("dialog_open", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("dialog_open_response", {
+      hook.pushEvent("dialog_open_response", {
         id: el.id,
         value: dialog.api.open
       });
     });
+    return dialog;
   },
-  beforeUpdate() {
-    const { el } = this;
+  beforeUpdate(hook) {
+    const { el } = hook;
     if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-      this.previousOpen = getBoolean(el, "open");
+      hook.previousOpen = getBoolean(el, "open");
     }
   },
-  updated() {
-    const { el } = this;
+  update(hook, dialog) {
+    const { el } = hook;
     const layout = readDialogLayoutProps(el);
     if (!getBoolean(el, "controlled")) {
-      this.dialog?.updateProps(layout);
+      dialog.updateProps(layout);
       return;
     }
     const nextOpen = getBoolean(el, "open") ?? false;
-    const prevOpen = this.previousOpen ?? this.lastOpen ?? false;
-    this.previousOpen = void 0;
-    this.lastOpen = nextOpen;
-    this.dialog?.updateProps({ ...layout, open: nextOpen });
+    const prevOpen = hook.previousOpen ?? hook.lastOpen ?? false;
+    hook.previousOpen = void 0;
+    hook.lastOpen = nextOpen;
+    dialog.updateProps({ ...layout, open: nextOpen });
     if (nextOpen !== prevOpen) {
       runDialogScaleIfJs(el, nextOpen);
     }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.dialog?.destroy();
   }
-};
+});
 export {
   DialogHook as Dialog,
   readDialogLayoutProps

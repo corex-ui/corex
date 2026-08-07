@@ -7,6 +7,10 @@ defmodule <%= @web_module %>.Layouts do
 
   embed_templates "layouts/*"
 
+  @hexdocs "https://hexdocs.pm/corex"
+  @demo "https://corex.gigalixirapp.com/"
+  @github "https://github.com/corex-ui/corex"
+
   @doc """
   Renders your app layout.
 
@@ -36,12 +40,73 @@ defmodule <%= @web_module %>.Layouts do
   slot :inner_block, required: true
 
   def app(assigns) do
+    assigns =
+      assigns
+      |> assign(:explore_links, explore_links())
+      |> assign(:docs_links, docs_links())
+      |> assign(:hexdocs, @hexdocs)
+      |> assign(:demo, @demo)
+      |> assign(:github, @github)
+
     ~H"""
-    <header class="sticky top-0 z-10 flex h-size-lg items-center border-b border-border bg-layer">
-      <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
-        <div class="flex flex-wrap items-center gap-space">
-          <.navigate to={~p"/"} class="link ui-brand ui-size-lg uppercase font-black">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon icon--lg">
+    <header class="sticky top-0 z-20 flex h-size-lg items-center border-b border-border bg-surface">
+      <div class="mx-auto flex h-size-lg w-full max-w-9xl items-center justify-between gap-space-lg px-space-xl">
+        <div class="flex min-w-0 items-center gap-space-xl">
+          <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden" modal>
+            <:trigger
+              class="button ui-ghost ui-size-sm ui-trigger--circle"
+<%= if @lang do %>              aria_label={~t"Open menu"}
+<% else %>              aria_label="Open menu"
+<% end %>            >
+              <.heroicon name="hero-bars-3" />
+            </:trigger>
+            <:content>
+              <div class="flex h-size-lg shrink-0 items-center gap-space-xl border-b border-border px-space-xl">
+                <.dialog_close_trigger
+                  id="site-nav-dialog"
+                  class="button ui-ghost ui-size-sm ui-trigger--circle m-0"
+                >
+                  <.heroicon name="hero-x-mark" />
+                </.dialog_close_trigger>
+                <.navigate
+                  to={~p"/"}
+                  class="link ui-nav ui-brand ui-size-xl flex flex-nowrap items-center gap-space font-semibold uppercase"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 136 136"
+                    class="icon ui-size-lg"
+                  >
+                    <path
+                      d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
+                      fill="currentColor"
+                    >
+                    </path>
+                  </svg>
+                  Corex
+                </.navigate>
+              </div>
+              <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto px-space-xl py-space">
+                <nav class="flex w-full flex-col gap-space-sm" <%= if @lang do %>aria-label={~t"Site"}<% else %>aria-label="Site"<% end %>>
+                  <.navigate class="link ui-nav ui-size-md" external to={@demo}>
+<%= if @lang do %>                    {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>                    Components <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>                  </.navigate>
+                </nav>
+              </div>
+<%= if @mode or @theme or @a11y do %>              <div class="mt-auto flex shrink-0 items-center gap-space border-t border-border px-space-xl py-space">
+<%= if @theme do %>                <.theme_toggle id="theme-select-mobile" theme={@theme} />
+<% end %><%= if @mode do %>                <.mode_toggle id="mode-switcher-mobile" mode={@mode} />
+<% end %><%= if @a11y do %>                <.accessibility_open_button />
+<% end %>              </div>
+<% end %>            </:content>
+          </.dialog>
+
+          <.navigate
+            to={~p"/"}
+            class="link ui-nav ui-brand ui-size-xl flex flex-nowrap items-center gap-space font-semibold uppercase"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-lg">
               <path
                 d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
                 fill="currentColor"
@@ -50,65 +115,86 @@ defmodule <%= @web_module %>.Layouts do
             </svg>
             Corex
           </.navigate>
+
+          <nav
+            class="hidden items-center gap-space-lg md:flex lg:gap-space-xl"
+            <%= if @lang do %>aria-label={~t"Primary"}<% else %>aria-label="Primary"<% end %>
+          >
+            <.navigate class="link ui-nav ui-size-md" external to={@demo}>
+<%= if @lang do %>              {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>              Components <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>            </.navigate>
+          </nav>
         </div>
-<%= if @mode or @theme do %>        <div class="flex shrink-0 items-center gap-space">
-<%= if @theme do %>          <.theme_toggle theme={@theme} />
-<% end %><%= if @mode do %>          <.mode_toggle mode={@mode} />
+<%= if @mode or @theme or @a11y do %>        <div class="flex shrink-0 items-center gap-space-sm">
+<%= if @mode or @theme do %>          <div class="hidden sm:flex items-center gap-space-sm">
+<%= if @theme do %>            <.theme_toggle id="theme-select" theme={@theme} />
+<% end %><%= if @mode do %>            <.mode_toggle id="mode-switcher" mode={@mode} />
+<% end %>          </div>
+<% end %><%= if @a11y do %>          <.accessibility_panel trigger_class="button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)] hidden sm:inline-flex" />
 <% end %>        </div>
 <% end %>      </div>
     </header>
 
-    <main class="relative mx-auto flex w-full min-w-0 flex-1 flex-col">
-      <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center gap-size px-space-xl py-size">
-        {render_slot(@inner_block)}
-      </div>
+    <main class="relative flex w-full min-w-0 flex-1 flex-col min-h-[calc(100dvh-var(--spacing-size-lg))] pt-space-xl">
+      {render_slot(@inner_block)}
     </main>
 
-    <footer class="flex min-h-size-lg items-center border-t border-border bg-layer">
-      <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
-        <div class="flex flex-wrap items-center gap-space">
-          <.navigate
-            class="button ui-size-sm ui-trigger--circle ui-brand"
-            external
-            to="https://github.com/corex-ui/corex"
-<%= if @lang do %>            aria_label={~t"Corex on GitHub"}
-<% else %>            aria_label="Corex on GitHub"
-<% end %>
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 102 102" fill="none" aria-hidden="true" class="icon">
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
-                fill="currentColor"
-              />
-            </svg>
-          </.navigate>
-          <.navigate
-            class="button ui-size-sm ui-trigger--circle"
-            external
-            to="https://hexdocs.pm/corex"
-<%= if @lang do %>            aria_label={~t"Corex documentation on HexDocs"}
-<% else %>            aria_label="Corex documentation on HexDocs"
-<% end %>
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 114 100" fill="none" aria-hidden="true" class="icon">
-              <path d="M47.7086 28.06H65.1941C66.3521 28.06 67.3942 28.4064 68.4364 28.8683L84.1849 0.923785C82.9112 0.346419 81.5216 0 80.0162 0H32.8865C31.1495 0 29.5283 0.461893 28.1388 1.2702L44.2347 28.8683C45.2769 28.2909 46.4348 28.06 47.7086 28.06Z" fill="#FFCC1D" />
-              <path d="M71.2156 31.5242L79.9005 46.5357C80.4794 47.575 80.8268 48.8452 80.8268 49.9999L113.019 50.0001C113.019 48.3834 112.44 46.7667 111.629 45.381L88.1221 4.61897C87.1957 3.00234 85.8061 1.73214 84.185 0.923828L68.4316 28.8608C69.5896 29.5536 70.5208 30.3695 71.2156 31.5242Z" fill="#57CC99" />
-              <path d="M80.827 50C80.827 51.1547 80.4796 52.4249 79.9006 53.4642L71.2158 68.4757C70.6368 69.515 69.7104 70.4387 68.784 71.0161L84.8799 98.6142C86.1537 97.8059 87.3117 96.6511 88.1222 95.3809L111.745 54.6189C112.556 53.2332 113.019 51.6166 113.019 50H80.827Z" fill="#1597E5" />
-              <path d="M65.1943 71.9394H47.7088C46.5508 71.9394 45.5045 71.7067 44.5781 71.2448L28.8325 99.0767C30.1063 99.654 31.3813 99.9994 32.7709 99.9994H80.0164C81.7534 99.9994 83.4993 99.532 84.8889 98.6082L68.784 71.0156C67.626 71.593 66.468 71.9394 65.1943 71.9394Z" fill="#AE4CCF" />
-              <path d="M33.0024 46.535L41.6872 31.5235C42.2662 30.4842 43.3099 29.435 44.2363 28.8577L28.1389 1.26953C26.8651 2.07784 25.7071 3.23257 24.8965 4.61825L1.27378 45.3803C0.463192 46.7659 0 48.3826 0 49.9992H32.076C32.076 48.8445 32.4234 47.5743 33.0024 46.535Z" fill="#FF8243" />
-              <path d="M41.6872 68.4757L33.0024 53.4642C32.4234 52.4249 32.076 51.1547 32.076 50H0C0 51.6166 0.463192 53.2332 1.27378 54.6189L24.8965 95.3809C25.8229 96.9976 27.2125 98.2678 28.8337 99.0761L44.5822 71.2471C43.3084 70.5542 42.382 69.6304 41.6872 68.4757Z" fill="#FF4848" />
-            </svg>
-          </.navigate>
+    <footer class="flex items-center border-t border-border bg-surface">
+      <div class="mx-auto flex w-full max-w-9xl flex-col gap-space-xl px-space-xl py-space-xl">
+        <div class="grid w-full gap-space-xl sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex min-w-0 flex-col gap-space-sm sm:col-span-2 lg:col-span-1">
+            <.navigate
+              to={~p"/"}
+              class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-lg">
+                <path
+                  d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
+                  fill="currentColor"
+                >
+                </path>
+              </svg>
+              Corex
+            </.navigate>
+            <p class="m-0 max-w-sm text-sm text-ink-muted">
+<%= if @lang do %>              {~t"Accessible Phoenix UI with a real server-and-client API."}
+<% else %>              Accessible Phoenix UI with a real server-and-client API.
+<% end %>            </p>
+            <p class="m-0 text-sm text-ink-muted"><%= if @lang do %>{~t"Open source. MIT License."}<% else %>Open source. MIT License.<% end %></p>
+<%= if @lang do %>            <.language_switch current_path={@current_path} />
+<% end %>          </div>
+
+          <div class="flex flex-col gap-space-sm">
+            <p class="m-0 text-sm font-semibold text-ink"><%= if @lang do %>{~t"Explore"}<% else %>Explore<% end %></p>
+            <.navigate
+              :for={link <- @explore_links}
+              class="link ui-nav ui-size-sm"
+              external
+              to={link.to}
+            >
+              {link.label} <.heroicon name="hero-arrow-top-right-on-square" />
+            </.navigate>
+          </div>
+
+          <div class="flex flex-col gap-space-sm">
+            <p class="m-0 text-sm font-semibold text-ink"><%= if @lang do %>{~t"Docs"}<% else %>Docs<% end %></p>
+            <.navigate
+              :for={link <- @docs_links}
+              class="link ui-nav ui-size-sm"
+              external
+              to={link.to}
+            >
+              {link.label} <.heroicon name="hero-arrow-top-right-on-square" />
+            </.navigate>
+          </div>
         </div>
-<%= if @lang do %>        <.language_switch current_path={@current_path} />
-<% end %>      </div>
+      </div>
     </footer>
 
     <.toast_group id="layout-toast" class="toast" flash={@flash}>
-      <:loading><.heroicon name="hero-arrow-path" class="icon" /></:loading>
-      <:close><.heroicon name="hero-x-mark" class="icon" /></:close>
+      <:loading><.heroicon name="hero-arrow-path" /></:loading>
+      <:close><.heroicon name="hero-x-mark" /></:close>
     </.toast_group>
     <.toast_client_error
       toast_group_id="layout-toast"
@@ -121,10 +207,32 @@ defmodule <%= @web_module %>.Layouts do
     />
     """
   end
+
+  defp explore_links do
+    [
+      %{label: <%= if @lang do %>~t"Components"<% else %>"Components"<% end %>, to: @demo},
+      %{label: <%= if @lang do %>~t"GitHub"<% else %>"GitHub"<% end %>, to: @github},
+      %{label: <%= if @lang do %>~t"Hexdocs"<% else %>"Hexdocs"<% end %>, to: @hexdocs}
+    ]
+  end
+
+  defp docs_links do
+    hex = @hexdocs
+
+    [
+      %{label: <%= if @lang do %>~t"Installation"<% else %>"Installation"<% end %>, to: "#{hex}/installation.html"},
+      %{label: <%= if @lang do %>~t"Design"<% else %>"Design"<% end %>, to: "#{hex}/design.html"},
+      %{label: <%= if @lang do %>~t"Theming"<% else %>"Theming"<% end %>, to: "#{hex}/theming.html"},
+      %{label: <%= if @lang do %>~t"Accessibility"<% else %>"Accessibility"<% end %>, to: "#{hex}/accessibility.html"}
+    ]
+  end
 <%= if @mode do %>
   @doc """
   Provides dark vs light mode toggle using toggle.
   """
+  attr :id, :string, default: "mode-switcher"
+  attr :class, :string, default: nil
+
   attr :mode, :string,
     default: "light",
     values: ["light", "dark"],
@@ -133,8 +241,8 @@ defmodule <%= @web_module %>.Layouts do
   def mode_toggle(assigns) do
     ~H"""
     <.toggle
-      id="mode-switcher"
-      class="toggle ui-size-sm shrink-0"
+      id={@id}
+      class={["toggle ui-ghost ui-size-sm ui-trigger--circle", @class]}
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"
@@ -154,21 +262,20 @@ defmodule <%= @web_module %>.Layouts do
   @doc """
   Provides theme selection using the select component.
   """
+  attr :id, :string, default: "theme-select"
+
   attr :theme, :string,
-    default: "neo",
-    values: ["neo", "uno", "duo", "leo"],
+    default: "<%= @default_theme %>",
+    values: <%= inspect(@themes) %>,
     doc: "the theme from cookie/session"
 
   def theme_toggle(assigns) do
     ~H"""
     <.select
-      id="theme-select"
+      id={@id}
       class="select ui-size-sm w-auto"
       items={[
-        %{value: "neo", label: "Neo"},
-        %{value: "uno", label: "Uno"},
-        %{value: "duo", label: "Duo"},
-        %{value: "leo", label: "Leo"}
+<%= Enum.map_join(@themes, ",\n", fn t -> ~s|        %{label: "#{String.capitalize(t)}", value: "#{t}"}| end) %>
       ]}
       value={[@theme]}
       positioning={%Corex.Positioning{same_width: false}}
@@ -182,10 +289,10 @@ defmodule <%= @web_module %>.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-swatch" class="icon" />
+        <.heroicon name="hero-swatch" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -234,4 +341,150 @@ defmodule <%= @web_module %>.Layouts do
     </.select>
     """
   end
+<% end %><%= if @a11y do %>
+  alias Corex.Design.Accessibility
+
+  @accessibility_dialog_id "a11y-dialog"
+
+  def accessibility_dialog_id, do: @accessibility_dialog_id
+
+  attr :trigger_class, :string,
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+
+  def accessibility_panel(assigns) do
+    assigns = assign(assigns, :axes, Accessibility.axes())
+
+    ~H"""
+    <.dialog
+      :if={@axes != []}
+      id={accessibility_dialog_id()}
+      class="dialog ui-rounded-xl"
+      modal
+      prevent_scroll
+      animation="instant"
+      final_focus={"dialog:#{accessibility_dialog_id()}:trigger"}
+    >
+      <:trigger
+        class={@trigger_class}
+<%= if @lang do %>        aria_label={~t"Accessibility"}
+<% else %>        aria_label="Accessibility"
+<% end %>      >
+        <.accessibility_icon />
+      </:trigger>
+      <:title><%= if @lang do %>{~t"Accessibility"}<% else %>Accessibility<% end %></:title>
+      <:description>
+<%= if @lang do %>        {~t"To enable Corex Accessibility, see the"}{" "}
+<% else %>        To enable Corex Accessibility, see the{" "}
+<% end %>        <.navigate
+          class="link ui-size-sm"
+          to="https://hexdocs.pm/corex/accessibility.html"
+          external
+        >
+<%= if @lang do %>          {~t"documentation"}
+<% else %>          documentation
+<% end %>          <.heroicon name="hero-arrow-top-right-on-square" />
+        </.navigate>.
+      </:description>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:close_trigger>
+      <:content>
+        <div class="flex w-full flex-col gap-space-lg">
+          <div class="grid w-full grid-cols-1 gap-space sm:grid-cols-2">
+            <div :for={axis <- @axes} class="flex min-w-0 flex-col gap-space-sm">
+              <.toggle_group
+                id={"a11y-#{axis}"}
+                class="toggle-group ui-size-sm ui-width-full"
+                multiple={false}
+                deselectable={false}
+                value={[]}
+                on_value_change_client={"phx:set-a11y-#{axis}"}
+              >
+                <:label>{a11y_axis_label(axis)}</:label>
+                <:item :for={value <- Accessibility.values(axis)} value={value}>
+                  {a11y_value_label(axis, value)}
+                </:item>
+              </.toggle_group>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <.action
+              type="button"
+              class="button ui-ghost ui-alert ui-size-sm ui-width-fit"
+              onclick="window.dispatchEvent(new CustomEvent('phx:set-a11y-reset'))"
+            >
+<%= if @lang do %>              {~t"Reset"}
+<% else %>              Reset
+<% end %>            </.action>
+          </div>
+        </div>
+      </:content>
+    </.dialog>
+    """
+  end
+
+  attr :class, :string,
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+
+  def accessibility_open_button(assigns) do
+    ~H"""
+    <.action
+      type="button"
+      class={@class}
+<%= if @lang do %>      aria-label={~t"Accessibility"}
+<% else %>      aria-label="Accessibility"
+<% end %>      phx-click={Corex.Dialog.set_open(accessibility_dialog_id(), true)}
+    >
+      <.accessibility_icon />
+    </.action>
+    """
+  end
+
+  def accessibility_icon(assigns) do
+    ~H"""
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      aria-hidden="true"
+    >
+      <path
+        fill="currentColor"
+        d="M256 48c114.953 0 208 93.029 208 208 0 114.953-93.029 208-208 208-114.953 0-208-93.029-208-208 0-114.953 93.029-208 208-208m0-40C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 56C149.961 64 64 149.961 64 256s85.961 192 192 192 192-85.961 192-192S362.039 64 256 64zm0 44c19.882 0 36 16.118 36 36s-16.118 36-36 36-36-16.118-36-36 16.118-36 36-36zm117.741 98.023c-28.712 6.779-55.511 12.748-82.14 15.807.851 101.023 12.306 123.052 25.037 155.621 3.617 9.26-.957 19.698-10.217 23.315-9.261 3.617-19.699-.957-23.316-10.217-8.705-22.308-17.086-40.636-22.261-78.549h-9.686c-5.167 37.851-13.534 56.208-22.262 78.549-3.615 9.255-14.05 13.836-23.315 10.217-9.26-3.617-13.834-14.056-10.217-23.315 12.713-32.541 24.185-54.541 25.037-155.621-26.629-3.058-53.428-9.027-82.141-15.807-8.6-2.031-13.926-10.648-11.895-19.249s10.647-13.926 19.249-11.895c96.686 22.829 124.283 22.783 220.775 0 8.599-2.03 17.218 3.294 19.249 11.895 2.029 8.601-3.297 17.219-11.897 19.249z"
+      />
+    </svg>
+    """
+  end
+
+  defp a11y_data_attrs(nil), do: a11y_data_attrs(%{})
+
+  defp a11y_data_attrs(a11y) when is_map(a11y) do
+    a11y
+    |> Accessibility.sanitize()
+    |> Map.new(fn {key, value} -> {"data-#{key}", value} end)
+  end
+
+  defp a11y_axis_label(:text), do: <%= if @lang do %>~t"Zoom"<% else %>"Zoom"<% end %>
+  defp a11y_axis_label(:contrast), do: <%= if @lang do %>~t"Contrast"<% else %>"Contrast"<% end %>
+  defp a11y_axis_label(:motion), do: <%= if @lang do %>~t"Motion"<% else %>"Motion"<% end %>
+  defp a11y_axis_label(:cursor), do: <%= if @lang do %>~t"Cursor"<% else %>"Cursor"<% end %>
+  defp a11y_axis_label(:focus), do: <%= if @lang do %>~t"Focus"<% else %>"Focus"<% end %>
+  defp a11y_axis_label(:links), do: <%= if @lang do %>~t"Links"<% else %>"Links"<% end %>
+  defp a11y_axis_label(axis), do: axis |> Atom.to_string() |> String.capitalize()
+
+  defp a11y_value_label(:text, "md"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp a11y_value_label(:text, "lg"), do: <%= if @lang do %>~t"Larger"<% else %>"Larger"<% end %>
+  defp a11y_value_label(:contrast, "normal"), do: <%= if @lang do %>~t"Standard"<% else %>"Standard"<% end %>
+  defp a11y_value_label(:contrast, "more"), do: <%= if @lang do %>~t"High"<% else %>"High"<% end %>
+  defp a11y_value_label(:motion, "system"), do: <%= if @lang do %>~t"Full"<% else %>"Full"<% end %>
+  defp a11y_value_label(:motion, "reduce"), do: <%= if @lang do %>~t"Reduced"<% else %>"Reduced"<% end %>
+  defp a11y_value_label(:cursor, "normal"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp a11y_value_label(:cursor, "large"), do: <%= if @lang do %>~t"Large"<% else %>"Large"<% end %>
+  defp a11y_value_label(:focus, "normal"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp a11y_value_label(:focus, "strong"), do: <%= if @lang do %>~t"Strong"<% else %>"Strong"<% end %>
+  defp a11y_value_label(:links, "normal"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp a11y_value_label(:links, "underline"), do: <%= if @lang do %>~t"Underline"<% else %>"Underline"<% end %>
+  defp a11y_value_label(_axis, value), do: value |> String.capitalize()
 <% end %>end

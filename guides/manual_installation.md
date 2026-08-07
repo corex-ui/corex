@@ -1,18 +1,19 @@
 # Manual installation
 
-This guide is the Phoenix **wiring home** for Corex in an existing app: dependency, ESM Esbuild, hooks, root layout module script, `use Corex`, plus optional **Design**, **Theme**, **Mode**, and **Locale** plumbing (plugs, config, bridge scripts, `lang`/`dir`, and related hooks).
+This guide is the Phoenix **wiring home** for Corex in an existing app: dependency, ESM Esbuild, hooks, root layout module script, `use Corex`, plus optional **Design**, **Theme**, **Mode**, **Accessibility**, and **Locale** plumbing (plugs, config, bridge scripts, `lang`/`dir`, and related hooks).
 
-Picker UI (theme select, mode toggle, language switcher) lives in the dedicated guides after you finish the wiring here:
+Picker UI (theme select, mode toggle, language switcher, accessibility panel) lives in the dedicated guides after you finish the wiring here:
 
 - [Theming](theming.html)
 - [Dark mode](dark_mode.html)
+- [Accessibility](accessibility.html)
 - [Localize](localize.html)
 
 If you are creating a new project instead, see the [Installation guide](installation.html).
 
 ## Requirements
 
-- **Elixir**
+- **Elixir** `~> 1.17`
 - **Phoenix** and **LiveView**
 - A standard **Esbuild** asset pipeline
 
@@ -42,7 +43,7 @@ This requires two Esbuild flags on your main app target: **`--format=esm`**, **`
 
 ```elixir
 config :esbuild,
-  version: "0.25.4",
+  version: "0.25.12",
   my_app: [
     args:
       ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
@@ -81,9 +82,60 @@ Merge with `colocatedHooks` when your app uses them:
 hooks: { ...colocatedHooks, ...corex },
 ```
 
+### Eager chrome + lazy extras {: #eager-chrome-lazy-extras}
+
+Static-import chrome that exists on every page (toast, theme/language select, mode toggle, accessibility panel). Keep page-local components lazy. Keep `longPollFallbackMs` for real LiveView apps; do not call `disableDebug()` (Tableau sites do that separately).
+
+```javascript
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
+import { hooks } from "corex/hooks"
+import { Toast } from "corex/toast"
+import { Select } from "corex/select"
+import { Toggle } from "corex/toggle"
+import { Dialog } from "corex/dialog"
+import { ToggleGroup } from "corex/toggle-group"
+
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
+
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: {
+    Toast,
+    Select,
+    Toggle,
+    Dialog,
+    ToggleGroup,
+    ...hooks({
+      Accordion: () => import("corex/accordion"),
+      Combobox: () => import("corex/combobox"),
+    }),
+  },
+})
+
+liveSocket.connect()
+```
+
+Omit chrome imports you do not render in the root layout. Merge with colocated hooks:
+
+```javascript
+hooks: {
+  ...colocatedHooks,
+  Toast,
+  Select,
+  Toggle,
+  ...hooks({
+    Accordion: () => import("corex/accordion"),
+  }),
+},
+```
+
 ### Lazy hooks only
 
-Import only the hooks you render. Keys must match `phx-hook` names (`Dialog`, `Accordion`, …):
+Import only the hooks you render. Keys must match `phx-hook` names (`Dialog`, `Accordion`, …). Prefer the eager-chrome tab above when theme, mode, language, accessibility, or toast live in the root layout; lazy chrome waits on a second chunk before those controls respond.
 
 ```javascript
 import { Socket } from "phoenix"
@@ -132,7 +184,6 @@ defp html_helpers do
   quote do
     use Gettext, backend: MyAppWeb.Gettext
     import Phoenix.HTML
-    import MyAppWeb.CoreComponents
     use Corex
     alias Phoenix.LiveView.JS
     alias MyAppWeb.Layouts
@@ -140,6 +191,8 @@ defp html_helpers do
   end
 end
 ```
+
+Do not keep Phoenix `CoreComponents` in a Corex app. Use Corex components and scaffold with `mix corex.gen.html` / `mix corex.gen.live` instead of `mix phx.gen.*`.
 
 By default this imports every Corex function component (`accordion/1`, `combobox/1`, `dialog/1`, …). If you want a smaller surface area or to avoid name collisions with other components, narrow it with `only:` / `except:` and an optional `prefix:`:
 
@@ -234,11 +287,11 @@ If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, rem
 
 Finally, set **`data-theme`** and **`data-mode`** on **`<html>`** so token files such as `theme/neo.css` and light/dark palettes apply. Use values that match your imports and toggles (for example `data-theme="neo"` when you import `../corex/theme/neo.css`, and `data-mode="light"` or `data-mode="dark"`). Sections [8](#8-optional-theme-wiring) and [9](#9-optional-mode-wiring) wire these from plugs and bridge scripts; the picker UI is in [Theming](theming.html) and [Dark mode](dark_mode.html).
 
-Give **`<body>`** the **`typo`** and **`layout`** classes so base typography and the layout shell apply:
+Give **`<body>`** the **`typo`** class so base typography applies (use Tailwind utilities for page layout):
 
 ```heex
 <html lang="en" data-theme="neo" data-mode="light">
-  <body class="typo layout">
+  <body class="typo">
     {@inner_content}
   </body>
 </html>
@@ -253,10 +306,10 @@ To render Phoenix flash (and LiveView flash) as Corex toasts instead of the defa
 ```heex
 <.toast_group id="layout-toast" class="toast" flash={@flash}>
   <:loading>
-    <.heroicon name="hero-arrow-path" class="icon" />
+    <.heroicon name="hero-arrow-path" />
   </:loading>
   <:close>
-    <.heroicon name="hero-x-mark" class="icon" />
+    <.heroicon name="hero-x-mark" />
   </:close>
 </.toast_group>
 ```
@@ -282,7 +335,7 @@ Optionally, add the connection-state toasts so users see feedback when the socke
 
 Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
-See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `action: %{label: "…", js: %Phoenix.LiveView.JS{}}` with `JS.push`, `JS.patch`, or `JS.navigate` composed in `js`.
+See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `action: %{label: "…", js: %Phoenix.LiveView.JS{}}` on **server** `create/6` / `update/4` only (client bindings ignore `:action`). Compose `js` with `JS.push`, `JS.patch`, or `JS.navigate`.
 
 ## Optional: Theme wiring {: #optional-theme-wiring}
 
@@ -294,385 +347,67 @@ config :my_app, :themes, ~w(neo uno duo leo)
 
 This list is for the picker and plug validation only. Trim emitted CSS with `config :corex_design, themes:` (build-time). Keep the picker list a subset of the themes you build.
 
-Create `lib/my_app_web/plugs/theme.ex`:
+Create `lib/my_app_web/plugs/theme.ex` that reads `phx_theme` cookie, validates against `:themes`, and assigns `:theme` / `:themes`. Put `plug MyAppWeb.Plugs.Theme` in the browser pipeline (after `:fetch_live_flash`; after locale plugs when you use `--lang`).
 
-```elixir
-defmodule MyAppWeb.Plugs.Theme do
-  import Plug.Conn
-
-  def init(opts), do: opts
-
-  def call(conn, _opts) do
-    themes = Application.get_env(:my_app, :themes, ["neo"])
-    default_theme = List.first(themes) || "neo"
-
-    theme =
-      conn.cookies["phx_theme"]
-      |> parse_theme(themes, default_theme)
-
-    conn
-    |> assign(:theme, theme)
-    |> assign(:themes, themes)
-    |> put_session(:theme, theme)
-  end
-
-  defp parse_theme(nil, _themes, default), do: default
-
-  defp parse_theme(theme, themes, default) do
-    if theme in themes, do: theme, else: default
-  end
-end
-```
-
-Browser pipeline (after `:fetch_live_flash`; with locale wiring, put Mode/Theme plugs after localize plugs):
-
-```elixir
-plug MyAppWeb.Plugs.Mode
-plug MyAppWeb.Plugs.Theme
-```
-
-On `<html>` in `root.html.heex`:
+On `<html>`:
 
 ```heex
 <html lang="en" data-theme={assigns[:theme] || "neo"} data-mode={assigns[:mode] || "light"}>
 ```
 
-Theme bridge in `<head>` (merge into the same IIFE as [Dark mode](dark_mode.html) / [section 9](#9-optional-mode-wiring) when you use both):
+Add the before-paint bridge and register the `Select` hook, then render the picker UI:
 
-```heex
-<script>
-  (() => {
-    const validThemes = ["neo", "uno", "duo", "leo"];
-
-    const setTheme = (theme) => {
-      const resolved = validThemes.includes(theme) ? theme : "neo";
-      localStorage.setItem("phx:theme", resolved);
-      document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
-      document.documentElement.setAttribute("data-theme", resolved);
-    };
-
-    setTheme(
-      localStorage.getItem("phx:theme") ||
-        document.documentElement.getAttribute("data-theme") ||
-        "neo"
-    );
-
-    window.addEventListener(
-      "storage",
-      (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue)
-    );
-
-    window.addEventListener("phx:set-theme", (e) => {
-      const value = e.detail?.value;
-      const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
-      setTheme(theme);
-    });
-  })();
-</script>
-```
-
-Keep `validThemes` and fallbacks in sync with `config :my_app, :themes` (and with the themes you emit from `:corex_design`).
-
-Ensure the **`Select`** hook is registered in `assets/js/app.js` (via `...corex` or a lazy `Select: () => import("corex/select")` entry). Include `select` in `config :corex_design, components:` when you use a theme picker.
-
-CSS: import the Design umbrella entry from section 6:
-
-```css
-@import "../corex/corex.css";
-```
-
-Then add the UI: [Theming](theming.html).
+- Bridge + checklist details: [Theming](theming.html#bridge)
+- Picker UI: [Theming](theming.html)
 
 ## Optional: Mode wiring {: #optional-mode-wiring}
 
-Create `lib/my_app_web/plugs/mode.ex`:
+Create `MyAppWeb.Plugs.Mode` that reads `phx_mode` cookie (`light` / `dark`) and assigns `:mode`. Put it in the browser pipeline with Theme (Mode before Theme is fine).
 
-```elixir
-defmodule MyAppWeb.Plugs.Mode do
-  import Plug.Conn
+Ensure root `<html>` has `data-mode={assigns[:mode] || "light"}`.
 
-  def init(opts), do: opts
+Add the before-paint bridge and register the `Toggle` hook, then render the toggle UI:
 
-  def call(conn, _opts) do
-    mode =
-      conn.cookies["phx_mode"]
-      |> parse_mode()
+- Bridge + checklist: [Dark mode](dark_mode.html#bridge)
+- Toggle UI: [Dark mode](dark_mode.html)
 
-    conn
-    |> assign(:mode, mode)
-    |> put_session(:mode, mode)
-  end
+Include `toggle` in `config :corex_design, components:` when you use a mode switcher.
 
-  defp parse_mode("dark"), do: "dark"
-  defp parse_mode(_), do: "light"
-end
+
+## Optional: Accessibility wiring {: #optional-accessibility-wiring}
+
+Enable preference CSS in Design, then wire the plug, LiveView assign, root `data-*` attrs, and FOUC bridge. Full steps (including the panel UI) are in [Accessibility](accessibility.html).
+
+Short path with the installer:
+
+```bash
+mix corex.new my_app --a11y
 ```
 
-In `router.ex`, mount **after** `:fetch_live_flash` (and after localize plugs when you use section 10):
+Or by hand:
 
-```elixir
-pipeline :browser do
-  plug :accepts, ["html"]
-  plug :fetch_session
-  plug :fetch_live_flash
-  plug MyAppWeb.Plugs.Mode
-  plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
-  plug :protect_from_forgery
-  plug :put_secure_browser_headers
-end
-```
+1. Set `config :corex_design, accessibility: true` (or an axis list) and rebuild with `mix corex.design.build`
+2. Add `MyAppWeb.Plugs.Accessibility` to the browser pipeline and a LiveView `on_mount` that assigns `:a11y`
+3. Apply `a11y_data_attrs/1` on `<html>` and merge the `phx:a11y` bridge into the same `<head>` IIFE as theme/mode
+4. Render an accessibility panel once in the root layout; register `Dialog` and `ToggleGroup` hooks
 
-On `<html>` in `root.html.heex`:
-
-```heex
-<html lang="en" data-mode={assigns[:mode] || "light"}>
-```
-
-Mode bridge in `<head>` (merge into the same IIFE as [Theming](theming.html) / [section 8](#8-optional-theme-wiring) when you use both):
-
-```heex
-<script>
-  (() => {
-    const getSystemMode = () =>
-      window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-    const setMode = (mode) => {
-      const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
-      localStorage.setItem("phx:mode", resolved);
-      document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
-      document.documentElement.setAttribute("data-mode", resolved);
-    };
-
-    setMode(
-      localStorage.getItem("phx:mode") ||
-        document.documentElement.getAttribute("data-mode") ||
-        getSystemMode()
-    );
-
-    window.addEventListener(
-      "storage",
-      (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue)
-    );
-
-    window.addEventListener("phx:set-mode", (e) => {
-      const detail = e.detail;
-      if (typeof detail?.pressed === "boolean") {
-        setMode(detail.pressed ? "dark" : "light");
-        return;
-      }
-      const value = detail?.value;
-      const mode = Array.isArray(value) && value[0] ? value[0] : "light";
-      setMode(mode);
-    });
-  })();
-</script>
-```
-
-Resolution order: `localStorage["phx:mode"]`, then `data-mode` from the server, then `prefers-color-scheme`.
-
-Ensure the **`Toggle`** hook is registered in `assets/js/app.js` (via `...corex` or a lazy `Toggle: () => import("corex/toggle")` entry). Include `toggle` in `config :corex_design, components:` when you use a mode switcher.
-
-Then add the UI: [Dark mode](dark_mode.html).
+Scaffolding is also available as `mix corex.new --a11y` (default off) and `mix corex.tableau.new --a11y`.
 
 ## Optional: Locale wiring {: #optional-locale-wiring}
 
-This section covers routing and layout wiring only. The language switcher UI is in [Localize](localize.html).
+Routing and layout wiring for Gettext + Localize. The language switcher UI is in [Localize](localize.html).
 
-### Deps
+1. Add `localize_web` and `gettext_sigils`; align Gettext `locales:` with `config :localize, supported_locales:`.
+2. Run `mix localize.download_locales` after changing locales.
+3. Set VerifiedRoutes `path_prefixes: [{MyAppWeb.Locale, :current, []}]`.
+4. `use Localize.Routes` in the router; put locale plugs **immediately after** `:fetch_live_flash` (Mode/Theme plugs after `Localize.Plug.PutSession`).
+5. Implement `MyAppWeb.Locale` helpers (`lang/0`, `dir/0`, `current/0`) and root `<html lang={…} dir={…}>`.
+6. For LiveViews, `on_mount` a layout hook so locale and `current_path` stay in sync.
 
-```elixir
-def deps do
-  [
-    {:corex, "~> 0.2.0"},
-    {:localize_web, "~> 0.5"},
-    {:gettext_sigils, "~> 0.5"}
-  ]
-end
-```
+`mix corex.new my_app --lang` scaffolds this shape. Full switcher markup: [Localize](localize.html).
 
-```bash
-mix deps.get
-```
 
-### Gettext and supported locales
-
-```elixir
-defmodule MyAppWeb.Gettext do
-  use Gettext.Backend,
-    otp_app: :my_app,
-    default_locale: "en",
-    locales: ~w(en fr ar)
-end
-```
-
-```elixir
-config :localize,
-  supported_locales: [:en, :fr, :ar]
-
-config :phoenix,
-  gettext_backend: MyAppWeb.Gettext
-```
-
-Keep Gettext `locales:` and `:supported_locales` aligned. Optionally patch `html_helpers` to `use GettextSigils` for `~t"..."` templates.
-
-Download CLDR locale data at least once after adding deps or changing locales:
-
-```bash
-mix localize.download_locales
-```
-
-### Verified routes `path_prefixes`
-
-In `lib/my_app_web.ex`:
-
-```elixir
-use Phoenix.VerifiedRoutes,
-  endpoint: MyAppWeb.Endpoint,
-  router: MyAppWeb.Router,
-  statics: MyAppWeb.static_paths(),
-  path_prefixes: [{MyAppWeb.Locale, :current, []}]
-```
-
-### Router
-
-After `use MyAppWeb, :router`:
-
-```elixir
-use Localize.Routes, gettext: MyAppWeb.Gettext, helpers: false
-```
-
-Locale plugs **immediately after** `:fetch_live_flash`. Place Mode/Theme plugs **after** `Localize.Plug.PutSession` when you use those features:
-
-```elixir
-pipeline :browser do
-  plug :accepts, ["html"]
-  plug :fetch_session
-  plug :fetch_live_flash
-
-  plug Localize.Plug.PutLocale,
-    from: [:path, :session, :accept_language],
-    gettext: MyAppWeb.Gettext
-
-  plug Localize.Plug.PutSession, as: :string
-
-  plug MyAppWeb.Plugs.Mode
-  plug MyAppWeb.Plugs.Theme
-
-  plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
-  plug :protect_from_forgery
-  plug :put_secure_browser_headers
-end
-```
-
-Wrap localized routes in `localize do` and mirror them under `scope "/:locale"` as needed:
-
-```elixir
-scope "/", MyAppWeb do
-  pipe_through :browser
-
-  localize do
-    get "/", PageController, :home
-  end
-end
-```
-
-### MyAppWeb.Locale
-
-Create `lib/my_app_web/locale.ex`:
-
-```elixir
-defmodule MyAppWeb.Locale do
-  def locales do
-    Localize.supported_locales() |> Enum.map(&Atom.to_string/1)
-  end
-
-  def current do
-    case Localize.get_locale() do
-      %{cldr_locale_id: id} when is_atom(id) -> Atom.to_string(id)
-      %{cldr_locale_id: id} when is_binary(id) -> id
-      _ -> "en"
-    end
-  end
-
-  def label(loc) when is_binary(loc) do
-    loc = to_string(loc)
-
-    case Localize.Locale.display_name(loc, locale: loc) do
-      {:ok, name} -> format_language_select_label(name)
-      _ -> String.upcase(loc)
-    end
-  end
-
-  def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
-
-  defp format_language_select_label(name) when is_binary(name) do
-    trimmed = String.trim(name)
-
-    if trimmed == "" do
-      trimmed
-    else
-      if String.match?(trimmed, ~r/^\p{Latin}/u) do
-        trimmed
-        |> String.split(~r/\s+/u, trim: true)
-        |> Enum.map_join(" ", &titlecase_word/1)
-      else
-        trimmed
-      end
-    end
-  end
-
-  defp titlecase_word(word) do
-    case String.next_grapheme(String.downcase(word)) do
-      {first, rest} -> String.upcase(first) <> rest
-      nil -> word
-    end
-  end
-
-  def lang do
-    Localize.get_locale()
-  end
-
-  def dir do
-    case Localize.Locale.get(Localize.get_locale(), [:layout, :character_order], fallback: true) do
-      {:ok, :rtl} -> "rtl"
-      {:ok, :ltr} -> "ltr"
-      _ -> "ltr"
-    end
-  end
-
-  def swap_path(request_path, target_locale) when is_binary(request_path) do
-    target = to_string(target_locale)
-    supported = locales()
-
-    rest =
-      case String.split(request_path, "/", trim: true) do
-        [first | rest] ->
-          if first in supported, do: rest, else: [first | rest]
-
-        [] ->
-          []
-      end
-
-    "/" <> Enum.join([target | rest], "/")
-  end
-end
-```
-
-### Root layout lang and dir
-
-```heex
-<html lang={MyAppWeb.Locale.lang()} dir={MyAppWeb.Locale.dir()}>
-```
-
-Add `data-theme` / `data-mode` when you also use sections 8 and 9.
-
-### LiveView on_mount
-
-With LiveViews, add `on_mount MyAppWeb.Hooks.Layout` immediately after `use Phoenix.LiveView` so locale context, session `mode` / `theme`, and `current_path` stay in sync for the layout. See [Localize](localize.html) for the hook and language switcher UI.
-
-Then add the UI: [Localize](localize.html).
-
-## 11. Add your first component
+## 8. Add your first component
 
 After the install, every Corex function component is available in your templates. The `id` attribute is required for any component you want to drive from the API.
 
@@ -718,12 +453,21 @@ Wiring done? Add the picker UI:
 
 - [Theming](theming.html) theme `<.select>`
 - [Dark mode](dark_mode.html) mode `<.toggle>`
+- [Accessibility](accessibility.html) preference panel (also `mix corex.new --a11y`)
 - [Localize](localize.html) language switcher
 
 Also:
 
 - [Design](design.html) modifiers, bundle filtering, and themes
 - [Forms](forms.html) `field`, validation, and `auto_invalid`
-- [MCP](https://hexdocs.pm/corex_mcp/MCP.html) AI tooling in development
+- [MCP](https://hexdocs.pm/corex_mcp/MCP.html) AI tooling in development (`mix corex.new` writes `.cursor/mcp.json`; use `--no-mcp` to skip)
 - [Production](production.html) prod build and run
 - [Updating Corex](update.html) migrate an existing app
+
+### Logger parameter filtering
+
+Phoenix only filters params containing `"password"` by default. Expand the filter for tokens and secrets:
+
+```elixir
+config :phoenix, :filter_parameters, ["password", "secret", "token", "otp", "_key", "api_key"]
+```

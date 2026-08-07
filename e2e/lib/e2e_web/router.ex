@@ -8,6 +8,7 @@ defmodule E2eWeb.Router do
     plug(:fetch_live_flash)
     plug(E2eWeb.Plugs.Mode)
     plug(E2eWeb.Plugs.Theme)
+    plug(E2eWeb.Plugs.Accessibility)
 
     plug(Localize.Plug.PutLocale,
       from: [:path, :session, :query],
@@ -29,7 +30,6 @@ defmodule E2eWeb.Router do
 
     get("/sitemap.xml", SitemapController, :index)
     get("/feed.xml", FeedController, :index)
-
     get("/", HomeController, :index)
   end
 
@@ -45,6 +45,7 @@ defmodule E2eWeb.Router do
       on_mount: [
         E2eWeb.ModeLive,
         E2eWeb.ThemeLive,
+        E2eWeb.AccessibilityLive,
         E2eWeb.PathLive,
         E2eWeb.MountTelemetry,
         E2eWeb.SEO.Live
@@ -55,6 +56,7 @@ defmodule E2eWeb.Router do
       live("/showcases/tetrex/:id/watch", TetrexLive, :watch)
       live("/showcases/tetrex/:id", TetrexLive, :show)
 
+      # Demo-only CRUD — no auth. Do not copy into production apps.
       live("/admins", AdminLive.Index, :index)
       live("/admins/new", AdminLive.Form, :new)
       live("/admins/:id", AdminLive.Show, :show)
@@ -223,6 +225,7 @@ defmodule E2eWeb.Router do
 
       live("/toast/playground", ToastPlayLive)
       live("/toast/api", ToastApiLive)
+      live("/toast/anatomy", ToastAnatomyLive)
 
       live("/toggle/playground", TogglePlayLive)
       live("/toggle/api", ToggleApiLive)
@@ -372,7 +375,6 @@ defmodule E2eWeb.Router do
     post("/radio-group/form", PageController, :radio_group_form_submit)
     get("/timer/anatomy", PageController, :timer_page)
     get("/timer/style", PageController, :timer_styling_page)
-    get("/toast/anatomy", PageController, :toast_anatomy_page)
     get("/tooltip/anatomy", PageController, :tooltip_page)
     get("/tooltip/style", PageController, :tooltip_styling_page)
     resources("/users", UserController)

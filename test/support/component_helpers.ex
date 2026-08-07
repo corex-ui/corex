@@ -233,7 +233,9 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_color_picker(assigns) do
     ~H"""
-    <.color_picker id={Map.get(assigns, :id, "cp-h")} label="Color" />
+    <.color_picker id={Map.get(assigns, :id, "cp-h")}>
+      <:label>Color</:label>
+    </.color_picker>
     """
   end
 
@@ -242,6 +244,15 @@ defmodule CorexTest.ComponentHelpers do
     <.dialog id="test-dialog">
       <:trigger>Open</:trigger>
       <:content>Dialog content</:content>
+    </.dialog>
+    """
+  end
+
+  def render_dialog_content_class(assigns) do
+    ~H"""
+    <.dialog id="test-dialog-class">
+      <:trigger>Open</:trigger>
+      <:content class="p-0!">Dialog content</:content>
     </.dialog>
     """
   end
@@ -661,8 +672,8 @@ defmodule CorexTest.ComponentHelpers do
 
     ~H"""
     <.pagination id="pagination-test" count={@count} page={@page} page_size={@page_size} class="pagination">
-      <:prev><span>Prev</span></:prev>
-      <:next><span>Next</span></:next>
+      <:prev_trigger><span>Prev</span></:prev_trigger>
+      <:next_trigger><span>Next</span></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -686,8 +697,8 @@ defmodule CorexTest.ComponentHelpers do
       to="/items"
       redirect={:patch}
     >
-      <:prev><span>Prev</span></:prev>
-      <:next><span>Next</span></:next>
+      <:prev_trigger><span>Prev</span></:prev_trigger>
+      <:next_trigger><span>Next</span></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -853,7 +864,7 @@ defmodule CorexTest.ComponentHelpers do
     assigns = assign(assigns, :upload, upload)
 
     ~H"""
-    <.file_upload_live upload={@upload} field={:attachment} id="file-upload-live-test">
+    <.file_upload_live upload={@upload} upload_name={:attachment} id="file-upload-live-test">
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />

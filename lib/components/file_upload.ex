@@ -108,10 +108,67 @@ defmodule Corex.FileUpload do
 
   For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide.
 
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `file-upload.css`, then set `class="file-upload"` on `<.file_upload>`.
+
+  ```css
+  [data-scope="file-upload"][data-part="root"] {}
+  [data-scope="file-upload"][data-part="trigger"] {}
+  [data-scope="file-upload"][data-part="dropzone"] {}
+  [data-scope="file-upload"][data-part="item-delete-trigger"] {}
+  ```
+
+  ```css
+  @import "../corex/corex.css";
+  ```
+
+  Stack modifiers on the host (`class` on `<.file_upload>`). Combine axes, for example `file-upload ui-accent ui-size-lg` or `file-upload ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger and dropzone chrome. Variant modifiers control trigger surface treatment. Default is subtle; add `file-upload ui-solid` for a filled trigger.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for trigger and dropzone ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `file-upload` |
+  | Accent | `file-upload ui-accent` |
+  | Brand | `file-upload ui-brand` |
+  | Alert | `file-upload ui-alert` |
+  | Info | `file-upload ui-info` |
+  | Success | `file-upload ui-success` |
+
+  ### Variant
+
+  Visual treatment of the open/trigger control. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `file-upload` or `file-upload ui-accent` |
+  | Solid | `file-upload ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `file-upload ui-size-sm` |
+  | MD | `file-upload ui-size-md` |
+  | LG | `file-upload ui-size-lg` |
+  | XL | `file-upload ui-size-xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
 
@@ -128,26 +185,21 @@ defmodule Corex.FileUpload do
 
   alias Corex.FileUpload.Connect
   alias Corex.FileUpload.Translation
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string,
-    required: false,
-    doc: "Stable id for the file upload root; set automatically when using field"
+  form_control_attrs(
+    except: [:controlled],
+    docs: [
+      id: "Stable id for the file upload root; set automatically when using field",
+      field: "Form field for id, name, form, invalid, and required wiring",
+      name: "The name attribute of the hidden file input",
+      form: "The id of the form this control belongs to",
+      read_only: "Whether the file upload is read-only",
+      required: "Whether at least one file is required"
+    ]
   )
-
-  attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
-  attr(:invalid, :boolean, default: nil, doc: "Whether the file upload is invalid")
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:read_only, :boolean, default: false, doc: "Whether the file upload is read-only")
-  attr(:required, :boolean, default: false, doc: "Whether at least one file is required")
-  attr(:name, :string, doc: "The name attribute of the hidden file input")
-  attr(:form, :string, doc: "The id of the form this control belongs to")
 
   attr(:dir, :string,
     default: nil,
@@ -230,10 +282,6 @@ defmodule Corex.FileUpload do
     doc: "List of error messages when not using field="
   )
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc: "Form field for id, name, form, invalid, and required wiring"
-  )
-
   attr(:rest, :global)
 
   slot(:label, required: false, doc: "Label above the dropzone") do
@@ -274,8 +322,7 @@ defmodule Corex.FileUpload do
       assigns
       |> Corex.FormField.require_id!("Corex component (file-upload)")
       |> assign_new(:form_field, fn -> false end)
-      |> assign_new(:name, fn -> nil end)
-      |> assign_new(:form, fn -> nil end)
+      |> assign_new(:field_used, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:max_files, fn -> 1 end)
       |> assign_new(:max_file_size, fn -> nil end)
@@ -287,21 +334,26 @@ defmodule Corex.FileUpload do
       |> assign_new(:errors, fn -> [] end)
       |> assign(:translation, translation)
 
+    sentinel_name = file_upload_sentinel_name(assigns)
+
+    assigns = assign(assigns, :sentinel_name, sentinel_name)
+
     ~H"""
     <div
       id={@id}
       phx-hook="FileUpload"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
+        field_used: @field_used,
         disabled: @disabled,
         invalid: @invalid,
         read_only: @read_only,
         required: @required,
-        name: @name,
+        name: @sentinel_name,
+        submit_name: @name,
         form: @form,
         dir: @dir,
         max_files: @max_files,
@@ -326,17 +378,17 @@ defmodule Corex.FileUpload do
       >
         {render_slot(@close)}
       </template>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}>
-        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, read_only: @read_only})}>
+        <label :if={@label != []} {Connect.mounted_label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
         <div data-scope="file-upload" data-part="region">
           <input
             :if={@name}
             phx-mounted={
-              Connect.ignore_input_sentinel(%InputSentinel{id: @id, name: @name, form: @form})
+              Connect.ignore_input_sentinel(%InputSentinel{id: @id, name: @sentinel_name, form: @form})
             }
-            {Connect.input_sentinel(%InputSentinel{id: @id, name: @name, form: @form})}
+            {Connect.input_sentinel(%InputSentinel{id: @id, name: @sentinel_name, form: @form})}
           />
           <input
             phx-mounted={
@@ -349,14 +401,14 @@ defmodule Corex.FileUpload do
             }
             {Connect.hidden_input(%HiddenInput{id: @id, disabled: @disabled, name: @name, form: @form})}
           />
-          <div phx-mounted={Connect.ignore_dropzone(%Dropzone{id: @id})} {Connect.dropzone(%Dropzone{id: @id})}>
+          <div {Connect.mounted_dropzone(%Dropzone{id: @id})}>
             <%= if @dropzone != [] do %>
               {render_slot(@dropzone)}
             <% else %>
               <span>{@translation.dropzone}</span>
             <% end %>
           </div>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir})} {Connect.trigger(%Trigger{id: @id, dir: @dir})}>
+          <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir})}>
             <%= if @open != [] do %>
               {render_slot(@open)}
             <% else %>
@@ -365,6 +417,7 @@ defmodule Corex.FileUpload do
           </button>
         </div>
         <ul
+          phx-update="ignore"
           phx-mounted={
             Connect.ignore_item_group(%ItemGroup{
               id: @id,
@@ -377,9 +430,7 @@ defmodule Corex.FileUpload do
         >
         </ul>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="file-upload" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="file-upload" errors={@errors} error={@error} />
     </div>
     """
   end
@@ -399,9 +450,11 @@ defmodule Corex.FileUpload do
   ```
   """)
 
+  @spec clear_files(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_files(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-files",
-      to: "##{file_upload_id}",
+      to: Selectors.css_id(file_upload_id),
       bubbles: false
     )
   end
@@ -432,9 +485,12 @@ defmodule Corex.FileUpload do
   ```
   """)
 
+  @spec clear_rejected_files(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_rejected_files(Phoenix.LiveView.Socket.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def clear_rejected_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-rejected",
-      to: "##{file_upload_id}",
+      to: Selectors.css_id(file_upload_id),
       bubbles: false
     )
   end
@@ -465,8 +521,10 @@ defmodule Corex.FileUpload do
   ```
   """)
 
+  @spec open_file_picker(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec open_file_picker(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def open_file_picker(file_upload_id) when is_binary(file_upload_id) do
-    JS.dispatch("corex:file-upload:open", to: "##{file_upload_id}", bubbles: false)
+    JS.dispatch("corex:file-upload:open", to: Selectors.css_id(file_upload_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -483,4 +541,11 @@ defmodule Corex.FileUpload do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_open", %{"id" => file_upload_id})
   end
+
+  # Gate the empty-file sentinel until the field is used so sibling validates
+  # do not mark avatar used. Submit-intent JS still names it on save.
+  defp file_upload_sentinel_name(%{field_used: used} = assigns) when used not in [nil, false],
+    do: assigns.name
+
+  defp file_upload_sentinel_name(_assigns), do: nil
 end

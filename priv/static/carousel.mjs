@@ -1,15 +1,11 @@
 import {
   clampValue
-} from "./chunks/chunk-PE34YET2.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -21,6 +17,7 @@ import {
   contains,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   ensureProps,
   getBoolean,
@@ -44,9 +41,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",
@@ -61,7 +58,7 @@ var anatomy = createAnatomy("carousel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
 var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
 var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
@@ -79,7 +76,7 @@ var syncTabIndex = (ctx) => {
   el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
 };
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
 function connect(service, normalize) {
   const { state, context, computed, send, scope, prop } = service;
   const isPlaying = state.matches("autoplay");
@@ -348,7 +345,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.40.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.42.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
 var convert = (raw, size) => {
   let n = parseFloat(raw);
@@ -514,7 +511,7 @@ function findSnapPoint(parent, axis, predicate) {
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
 var DRIFT_THRESHOLD = 1;
 var machine = createMachine({
   props({ props }) {
@@ -1043,7 +1040,6 @@ function getPageSnapPoints(totalSlides, slidesPerMove, slidesPerPage) {
 
 // components/carousel.ts
 var Carousel = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1051,8 +1047,9 @@ var Carousel = class extends Component {
     return this.zagConnect(connect);
   }
   updateProps(props) {
-    super.updateProps(props);
+    const applied = super.updateProps(props);
     this.machine.service.send({ type: "SNAP.REFRESH" });
+    return applied;
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="carousel"][data-part="root"]') ?? this.el;
@@ -1128,11 +1125,12 @@ function readInstant(detail) {
   }
   return false;
 }
-var CarouselHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var CarouselHook = createZagLiveHook({
+  key: "carousel",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const slideCount = getNumber(el, "slideCount");
     if (slideCount == null || slideCount < 1) {
       return;
@@ -1168,67 +1166,57 @@ var CarouselHook = {
         });
       }
     });
-    zag.init();
-    this.carousel = zag;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:carousel:play", () => {
+    dom.add("corex:carousel:play", () => {
       zag.api.play();
     });
-    domRegistry.add("corex:carousel:pause", () => {
+    dom.add("corex:carousel:pause", () => {
       zag.api.pause();
     });
-    domRegistry.add("corex:carousel:scroll-next", (event) => {
+    dom.add("corex:carousel:scroll-next", (event) => {
       zag.api.scrollNext(readInstant(event.detail));
     });
-    domRegistry.add("corex:carousel:scroll-prev", (event) => {
+    dom.add("corex:carousel:scroll-prev", (event) => {
       zag.api.scrollPrev(readInstant(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("carousel_play", (payload) => {
+    server.add("carousel_play", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.play();
     });
-    registry.add("carousel_pause", (payload) => {
+    server.add("carousel_pause", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.pause();
     });
-    registry.add("carousel_scroll_next", (payload) => {
+    server.add("carousel_scroll_next", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.scrollNext(readInstant(payload));
     });
-    registry.add("carousel_scroll_prev", (payload) => {
+    server.add("carousel_scroll_prev", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.scrollPrev(readInstant(payload));
     });
+    return zag;
   },
-  updated() {
-    const slideCount = getNumber(this.el, "slideCount");
+  update(hook, zag) {
+    const slideCount = getNumber(hook.el, "slideCount");
     if (slideCount == null || slideCount < 1) return;
-    this.carousel?.updateProps({
-      id: this.el.id,
+    zag.updateProps({
+      id: hook.el.id,
       slideCount,
-      dir: getDir(this.el),
-      orientation: getString(this.el, "orientation"),
-      slidesPerPage: getNumber(this.el, "slidesPerPage"),
-      slidesPerMove: getString(this.el, "slidesPerMove") === "auto" ? "auto" : getNumber(this.el, "slidesPerMove"),
-      loop: getBoolean(this.el, "loop"),
-      autoplay: getBoolean(this.el, "autoplay") ? { delay: getNumber(this.el, "autoplayDelay") } : false,
-      allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
-      spacing: getString(this.el, "spacing"),
-      padding: getString(this.el, "padding"),
-      inViewThreshold: getNumber(this.el, "inViewThreshold"),
-      snapType: getString(this.el, "snapType"),
-      autoSize: getBoolean(this.el, "autoSize")
+      dir: getDir(hook.el),
+      orientation: getString(hook.el, "orientation"),
+      slidesPerPage: getNumber(hook.el, "slidesPerPage"),
+      slidesPerMove: getString(hook.el, "slidesPerMove") === "auto" ? "auto" : getNumber(hook.el, "slidesPerMove"),
+      loop: getBoolean(hook.el, "loop"),
+      autoplay: getBoolean(hook.el, "autoplay") ? { delay: getNumber(hook.el, "autoplayDelay") } : false,
+      allowMouseDrag: getBoolean(hook.el, "allowMouseDrag"),
+      spacing: getString(hook.el, "spacing"),
+      padding: getString(hook.el, "padding"),
+      inViewThreshold: getNumber(hook.el, "inViewThreshold"),
+      snapType: getString(hook.el, "snapType"),
+      autoSize: getBoolean(hook.el, "autoSize")
     });
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.carousel?.destroy();
   }
-};
+});
 export {
   CarouselHook as Carousel,
   fromZagPage,

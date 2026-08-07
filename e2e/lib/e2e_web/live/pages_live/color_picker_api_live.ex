@@ -45,7 +45,7 @@ defmodule E2eWeb.ColorPickerApiLive do
       >
         <.demo_section
           id="color-picker-api-set-value-c"
-          title="set_value (Client binding)"
+          title="Set Value (Client Binding)"
           code={@codes.binding}
         >
           <:preview>
@@ -55,14 +55,14 @@ defmodule E2eWeb.ColorPickerApiLive do
 
         <.demo_section
           id="color-picker-api-set-value-s"
-          title="set_value (Server)"
+          title="Set Value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
             %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap items-center gap-space mb-4">
+            <div class="flex flex-wrap items-center gap-space mb-space-lg">
               <.action phx-click="cp_api_s_value" phx-value-color="#ff0000" class="button ui-size-sm">
                 Set red
               </.action>
@@ -73,10 +73,11 @@ defmodule E2eWeb.ColorPickerApiLive do
             <.color_picker
               id="color-picker-api-value-s"
               value="#3b82f6"
-              label="Set the color (Server)"
               presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
               class="color-picker"
-            />
+            >
+              <:label>Set the color (Server)</:label>
+            </.color_picker>
           </:preview>
         </.demo_section>
       </.demo_page>

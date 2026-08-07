@@ -58,11 +58,11 @@ defmodule Corex.Positioning do
       "data-position-overflow-padding" => to_string(p.overflow_padding),
       "data-position-arrow-padding" => to_string(p.arrow_padding),
       "data-position-flip" => encode_flip(p.flip),
-      "data-position-slide" => bool_str(p.slide),
-      "data-position-overlap" => bool_str(p.overlap),
-      "data-position-same-width" => bool_str(p.same_width),
-      "data-position-fit-viewport" => bool_str(p.fit_viewport),
-      "data-position-hide-when-detached" => bool_str(p.hide_when_detached)
+      "data-position-slide" => Dataset.optional_bool_str(p.slide),
+      "data-position-overlap" => Dataset.optional_bool_str(p.overlap),
+      "data-position-same-width" => Dataset.optional_bool_str(p.same_width),
+      "data-position-fit-viewport" => Dataset.optional_bool_str(p.fit_viewport),
+      "data-position-hide-when-detached" => Dataset.optional_bool_str(p.hide_when_detached)
     }
 
     Map.merge(base, offset_to_dataset(p.offset))
@@ -84,8 +84,4 @@ defmodule Corex.Positioning do
   defp encode_flip(value) when is_boolean(value), do: Dataset.bool_str(value)
   defp encode_flip(value) when is_list(value), do: Enum.join(value, ",")
   defp encode_flip(_), do: nil
-
-  defp bool_str(true), do: "true"
-  defp bool_str(false), do: "false"
-  defp bool_str(_), do: nil
 end

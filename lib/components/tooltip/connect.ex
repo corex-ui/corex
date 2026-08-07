@@ -1,10 +1,14 @@
 defmodule Corex.Tooltip.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
+
   alias Corex.Tooltip.Anatomy.{Arrow, ArrowTip, Content, Positioner, Props, Trigger}
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [data_state: 3, get_boolean: 1, maybe_put: 3]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -12,16 +16,16 @@ defmodule Corex.Tooltip.Connect do
 
     base = %{
       "id" => assigns.id,
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
-      "data-close-on-escape" => get_boolean(assigns.close_on_escape),
-      "data-close-on-click" => get_boolean(assigns.close_on_click),
-      "data-close-on-pointer-down" => get_boolean(assigns.close_on_pointer_down),
-      "data-close-on-scroll" => get_boolean(assigns.close_on_scroll),
-      "data-interactive" => get_boolean(assigns.interactive)
+      "data-close-on-escape" => presence_attr(assigns.close_on_escape),
+      "data-close-on-click" => presence_attr(assigns.close_on_click),
+      "data-close-on-pointer-down" => presence_attr(assigns.close_on_pointer_down),
+      "data-close-on-scroll" => presence_attr(assigns.close_on_scroll),
+      "data-interactive" => presence_attr(assigns.interactive)
     }
 
     base
@@ -95,6 +99,8 @@ defmodule Corex.Tooltip.Connect do
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
+    closed? = assigns.open != true
+
     %{
       "data-scope" => "tooltip",
       "data-part" => "content",
@@ -103,6 +109,9 @@ defmodule Corex.Tooltip.Connect do
       "data-state" => data_state(assigns.open, "open", "closed"),
       "id" => "tooltip:#{assigns.id}:content"
     }
+    |> then(fn attrs ->
+      if closed?, do: Map.put(attrs, "hidden", true), else: attrs
+    end)
   end
 
   def ignore_content(assigns) do

@@ -63,6 +63,19 @@ defmodule E2eWeb.FloatingPanelTest do
       |> FloatingPanel.wait_trigger_open_in_host(host, timeout: 8_000)
     end
 
+    feature "client js  -  Open expands panel", %{session: session} do
+      host = "floating-panel-api-js"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(FloatingPanel, :floating_panel, :api)
+        |> FloatingPanel.wait_host_floating_panel_ready(host)
+
+      session
+      |> FloatingPanel.click_by_id("floating-panel-api-js-open")
+      |> FloatingPanel.wait_trigger_open_in_host(host, timeout: 8_000)
+    end
+
     feature "server  -  Open expands panel", %{session: session} do
       host = "floating-panel-api-server"
 
@@ -79,7 +92,7 @@ defmodule E2eWeb.FloatingPanelTest do
   end
 
   describe "events" do
-    feature "open change  -  trigger appends log row", %{session: session} do
+    feature "server  -  open change appends log row", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(FloatingPanel, :floating_panel, :events)
@@ -96,6 +109,25 @@ defmodule E2eWeb.FloatingPanelTest do
       )
 
       assert FloatingPanel.floating_panel_events_log_has_row?(session)
+    end
+
+    feature "client  -  open change appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(FloatingPanel, :floating_panel, :events)
+        |> FloatingPanel.prepare_live_form()
+        |> FloatingPanel.wait_host_floating_panel_ready("fp-events-client")
+
+      refute FloatingPanel.floating_panel_events_client_log_has_row?(session)
+
+      session
+      |> FloatingPanel.click_trigger_in_host("fp-events-client")
+      |> FloatingPanel.wait_for_has(
+        css("#floating-panel-events-log-client tr[data-part='row']"),
+        timeout: 10_000
+      )
+
+      assert FloatingPanel.floating_panel_events_client_log_has_row?(session)
     end
   end
 end

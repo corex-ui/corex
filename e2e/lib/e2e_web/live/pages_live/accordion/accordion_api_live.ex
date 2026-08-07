@@ -223,7 +223,7 @@ defmodule E2eWeb.AccordionApiLive do
           code={@codes.set_value_binding}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-space-sm mb-space-lg">
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, "lorem")}
                 class="button ui-size-sm"
@@ -444,7 +444,7 @@ defmodule E2eWeb.AccordionApiLive do
               event_focused="api_focused_client"
               event_focused_client_only="api_focused_client_client_only"
             />
-            <p class="text-sm text-zinc-600 mt-2">
+            <p class="text-sm text-zinc-600 mt-space-sm">
               Each trigger waits 5 seconds, then runs the focused read.
             </p>
           </:preview>
@@ -481,7 +481,7 @@ defmodule E2eWeb.AccordionApiLive do
               event_focused="api_focused_js"
               event_focused_client_only="api_focused_js_client_only"
             />
-            <p class="text-sm text-zinc-600 mt-2">
+            <p class="text-sm text-zinc-600 mt-space-sm">
               Each trigger waits 5 seconds, then runs the focused read.
             </p>
           </:preview>
@@ -524,7 +524,7 @@ defmodule E2eWeb.AccordionApiLive do
               event_focused="api_focused_server"
               event_focused_client_only="api_focused_server_client_only"
             />
-            <p class="text-sm text-zinc-600 mt-2">
+            <p class="text-sm text-zinc-600 mt-space-sm">
               Each trigger waits 5 seconds, then runs the focused read.
             </p>
           </:preview>

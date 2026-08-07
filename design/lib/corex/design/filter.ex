@@ -1,70 +1,228 @@
 defmodule Corex.Design.Filter do
   @moduledoc false
 
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components
+  alias Corex.Design.Config
+  alias Corex.Design.Theme
 
-  @default_semantics ~w(base accent brand alert info success)a
+  @default_semantics ~w(accent brand alert info success)a
 
-  @installer_components ~w(
-    toast layout-heading typo icon link button dialog password-input scrollbar
-    checkbox data-list data-table date-picker native-input number-input select
-    toggle
-  )a
+  @structural_strings ~w(root surface ui ink ink-muted link border focus shadow)
+
+  @structural_bridge_strings ~w(root surface ink ink-muted link border focus shadow ui ui-hover ui-active ui-muted)
+
+  @derived_suffixes ~w(-text -contrast)
+
+  @semantic_atoms Map.new(@default_semantics, &{Atom.to_string(&1), &1})
 
   def default_semantics, do: @default_semantics
-  def default_installer_components, do: @installer_components
 
-  def components do
-    Corex.Design.design_config()
-    |> Map.get(:components)
-    |> normalize_component_list()
-  end
+  def default_semantic_strings, do: Enum.map(@default_semantics, &Atom.to_string/1)
 
-  def semantics do
-    Corex.Design.design_config()
-    |> resolved_semantics()
-    |> Enum.uniq()
-  end
+  def structural_strings, do: @structural_strings
 
-  def all_components?, do: is_nil(components())
-  def all_semantics?, do: semantics() == Enum.map(@default_semantics, &Atom.to_string/1)
+  def structural_bridge_strings, do: @structural_bridge_strings
 
-  def validate_component_ids!(ids) when is_list(ids) do
-    allowed = MapSet.new(ComponentLayout.ids())
+  def derived_suffixes, do: @derived_suffixes
 
-    invalid =
-      ids
-      |> Enum.map(&to_string/1)
-      |> Enum.reject(&MapSet.member?(allowed, &1))
+  @doc """
+  Maps a semantic role name to its atom through an allowlist.
 
-    case invalid do
-      [] ->
-        :ok
+  Role names reach this from `config :corex_design, semantics:`, so the lookup is
+  a fixed map rather than `String.to_atom/1`: an unknown role is a config typo,
+  not a new role to intern.
+  """
+  def semantic_atom(role) when is_atom(role), do: role
 
-      _ ->
-        raise ArgumentError,
-              "config :corex_design, components: unknown ids #{inspect(invalid)}; allowed: #{inspect(ComponentLayout.ids())}"
+  def semantic_atom(role) when is_binary(role) do
+    case Map.fetch(@semantic_atoms, role) do
+      {:ok, atom} -> atom
+      :error -> raise ArgumentError, semantic_atom_error(role)
     end
   end
 
-  def validate_semantics!(roles) when is_list(roles) do
-    allowed =
-      @default_semantics
-      |> Enum.map(&Atom.to_string/1)
-      |> MapSet.new()
+  defp semantic_atom_error(role) do
+    "unknown semantic role #{inspect(role)}, expected one of #{inspect(default_semantic_strings())}"
+  end
 
-    invalid =
-      roles
-      |> Enum.map(&to_string/1)
-      |> Enum.reject(&MapSet.member?(allowed, &1))
+  def components do
+    Config.resolved().components
+    |> normalize_component_list()
+  end
 
-    case invalid do
+  @doc """
+  The configured semantic roles as strings.
+
+  Strings, not atoms, because every consumer matches them against the role names
+  parsed out of CSS. `default_semantics/0` is the atom-typed counterpart, used
+  where roles index a scale.
+  """
+  def semantic_strings do
+    Config.resolved().semantics
+    |> resolve_semantic_roles()
+    |> Enum.uniq()
+  end
+
+  @doc false
+  def theme_semantic_roles do
+    Theme.resolved_themes()
+    |> Map.values()
+    |> Enum.flat_map(&theme_component_roles/1)
+    |> Enum.uniq()
+    |> Enum.sort()
+  end
+
+  defp theme_component_roles(spec) do
+    for mode <- Theme.modes(),
+        tokens = mode_tokens(spec, mode),
+        role <- @default_semantics,
+        role_s = Atom.to_string(role),
+        Map.has_key?(tokens, role_s) do
+      role
+    end
+  end
+
+  defp mode_tokens(spec, mode) do
+    case Map.get(spec.colors, mode) do
+      %{tokens: tokens} when is_map(tokens) -> tokens
+      other when is_map(other) -> other
+      _ -> %{}
+    end
+  end
+
+  @doc """
+  Validates configured component ids, returning the message a caller reports.
+  """
+  @spec validate_component_ids([term()]) :: :ok | {:error, String.t()}
+  def validate_component_ids(ids) when is_list(ids) do
+    case unknown_entries(ids, Components.ids()) do
       [] ->
         :ok
 
+      invalid ->
+        {:error,
+         "config :corex_design, components: unknown ids #{inspect(invalid)}; allowed: #{inspect(Components.ids())}"}
+    end
+  end
+
+  @spec validate_component_ids!([term()]) :: :ok
+  def validate_component_ids!(ids) when is_list(ids) do
+    raise_on_error(validate_component_ids(ids))
+  end
+
+  @doc """
+  Validates configured semantic roles, returning the message a caller reports.
+  """
+  @spec validate_semantics([term()]) :: :ok | {:error, String.t()}
+  def validate_semantics(roles) when is_list(roles) do
+    allowed = default_semantic_strings()
+
+    case unknown_entries(roles, allowed) do
+      [] ->
+        :ok
+
+      invalid ->
+        {:error,
+         "config :corex_design, semantics: unknown roles #{inspect(invalid)}; allowed: #{inspect(allowed)}"}
+    end
+  end
+
+  @spec validate_semantics!([term()]) :: :ok
+  def validate_semantics!(roles) when is_list(roles) do
+    raise_on_error(validate_semantics(roles))
+  end
+
+  @doc """
+  Removes the `@utility ui-<role>` blocks for roles the config does not emit.
+
+  Returns `css` unchanged when every default role is configured, so a project
+  that has not narrowed `semantics:` gets the file as authored.
+  """
+  @spec apply_utilities_semantics(String.t(), [atom() | String.t()]) :: String.t()
+  def apply_utilities_semantics(css, roles) do
+    if semantics_filtered?(roles) do
+      allowed =
+        roles
+        |> Enum.map(&to_string/1)
+        |> MapSet.new()
+
+      default_semantic_strings()
+      |> Enum.reject(&MapSet.member?(allowed, &1))
+      |> Enum.reduce(css, fn role, acc ->
+        remove_matching_utility_blocks(acc, ~r/^ui-#{role}$/)
+      end)
+    else
+      css
+    end
+  end
+
+  defp unknown_entries(entries, allowed) do
+    allowed = MapSet.new(allowed)
+
+    entries
+    |> Enum.map(&to_string/1)
+    |> Enum.reject(&MapSet.member?(allowed, &1))
+  end
+
+  defp raise_on_error(:ok), do: :ok
+  defp raise_on_error({:error, message}), do: raise(ArgumentError, message)
+
+  defp semantics_filtered?(roles) do
+    Enum.sort(roles) != Enum.sort(default_semantic_strings())
+  end
+
+  defp remove_matching_utility_blocks(css, name_pattern) do
+    Regex.scan(~r/@utility\s+([\w-]+)\s*\{/s, css)
+    |> Enum.reduce(css, fn [full, name], acc ->
+      if Regex.match?(name_pattern, name) do
+        case extract_block(acc, full) do
+          nil -> acc
+          %{full: block_full} -> String.replace(acc, block_full, "", global: false)
+        end
+      else
+        acc
+      end
+    end)
+  end
+
+  defp extract_block(css, header) do
+    case :binary.match(css, header) do
+      {start, _} ->
+        rest =
+          binary_part(css, start + byte_size(header), byte_size(css) - start - byte_size(header))
+
+        {body, _} = take_brace_body(rest, 1)
+
+        %{
+          full: header <> body <> "}",
+          body: body
+        }
+
+      :nomatch ->
+        nil
+    end
+  end
+
+  defp take_brace_body(content, depth) do
+    do_take_brace_body(content, depth, "")
+  end
+
+  defp do_take_brace_body(<<>>, _depth, acc), do: {acc, 0}
+
+  defp do_take_brace_body(<<char, rest::binary>>, depth, acc) do
+    case char do
+      ?{ ->
+        do_take_brace_body(rest, depth + 1, acc <> <<char>>)
+
+      ?} ->
+        if depth == 1 do
+          {acc, byte_size(rest)}
+        else
+          do_take_brace_body(rest, depth - 1, acc <> <<char>>)
+        end
+
       _ ->
-        raise ArgumentError,
-              "config :corex_design, semantics: unknown roles #{inspect(invalid)}; allowed: #{inspect(MapSet.to_list(allowed))}"
+        do_take_brace_body(rest, depth, acc <> <<char>>)
     end
   end
 
@@ -76,42 +234,15 @@ defmodule Corex.Design.Filter do
     |> Enum.uniq()
   end
 
-  defp resolved_semantics(config) when is_map(config) do
-    cond do
-      roles = Map.get(config, :semantics) ->
-        roles
-        |> normalize_semantic_list()
-        |> ensure_base()
+  defp resolve_semantic_roles(roles) when is_list(roles),
+    do: normalize_semantic_list(roles)
 
-      scales_semantic(config) ->
-        scales_semantic(config)
-        |> normalize_semantic_list()
-        |> ensure_base()
-
-      true ->
-        Enum.map(@default_semantics, &Atom.to_string/1)
-    end
-  end
-
-  defp scales_semantic(config) do
-    config
-    |> Map.get(:scales, [])
-    |> normalize_scales()
-    |> Keyword.get(:semantic)
-  end
-
-  defp normalize_scales(list) when is_list(list), do: list
-  defp normalize_scales(map) when is_map(map), do: Map.to_list(map)
-  defp normalize_scales(_), do: []
+  defp resolve_semantic_roles(_roles), do: default_semantic_strings()
 
   defp normalize_semantic_list(list) when is_list(list) do
     Enum.map(list, fn
       role when is_atom(role) -> Atom.to_string(role)
       role when is_binary(role) -> role
     end)
-  end
-
-  defp ensure_base(roles) do
-    if "base" in roles, do: roles, else: ["base" | roles]
   end
 end

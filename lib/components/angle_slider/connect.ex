@@ -1,5 +1,9 @@
 defmodule Corex.AngleSlider.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FormField
@@ -19,7 +23,6 @@ defmodule Corex.AngleSlider.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
@@ -34,6 +37,13 @@ defmodule Corex.AngleSlider.Connect do
     end
   end
 
+  defp format_optional_number(nil), do: nil
+  defp format_optional_number(value), do: format_number(value)
+
+  defp effective_angle_value(nil), do: 0.0
+  defp effective_angle_value(value) when is_float(value), do: value
+  defp effective_angle_value(value) when is_integer(value), do: value * 1.0
+
   defp display_angle(value, assigns) do
     dir = Map.get(assigns, :dir)
 
@@ -46,7 +56,7 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    formatted = format_number(assigns.value)
+    formatted = format_optional_number(assigns.value)
     value_dataset = FormField.default_value_dataset(assigns, formatted)
 
     %{
@@ -54,9 +64,9 @@ defmodule Corex.AngleSlider.Connect do
       "data-default-value" => value_dataset,
       "data-value" => nil,
       "data-step" => format_number(assigns.step),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-name" => assigns.name,
       "data-dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
@@ -66,12 +76,16 @@ defmodule Corex.AngleSlider.Connect do
       "data-on-value-change-end-client" => assigns.on_value_change_end_client,
       "data-value-text-as" => assigns.value_text_as
     }
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
     |> FormField.put_form_field_attrs(assigns)
   end
 
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
+
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    value = assigns.value
+    value = effective_angle_value(assigns.value)
     angle = "#{format_number(display_angle(value, assigns))}deg"
 
     %{
@@ -81,9 +95,9 @@ defmodule Corex.AngleSlider.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
       "style" => "--value:#{format_number(value)};--angle:#{angle};",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -102,9 +116,9 @@ defmodule Corex.AngleSlider.Connect do
       "for" => "angle-slider:#{assigns.id}:input",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -116,16 +130,25 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec hidden_input(HiddenInput.t()) :: map()
   def hidden_input(assigns) do
-    %{
+    base = %{
       "data-scope" => "angle-slider",
       "data-part" => "hidden-input",
       "type" => "hidden",
-      "name" => assigns.name,
-      "value" => to_string(assigns.value),
-      "disabled" => get_boolean(assigns.disabled),
+      "disabled" => presence_attr(assigns.disabled),
       "id" => "angle-slider:#{assigns.id}:input",
       "dir" => assigns.dir
     }
+
+    base =
+      case assigns.name do
+        name when is_binary(name) and name != "" -> Map.put(base, "name", name)
+        _ -> base
+      end
+
+    case assigns.value do
+      nil -> base
+      value -> Map.put(base, "value", to_string(value))
+    end
   end
 
   def ignore_hidden_input(assigns) do
@@ -143,9 +166,9 @@ defmodule Corex.AngleSlider.Connect do
       "id" => "angle-slider:#{assigns.id}:control",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -163,9 +186,9 @@ defmodule Corex.AngleSlider.Connect do
       "id" => "angle-slider:#{assigns.id}:thumb",
       "dir" => assigns.dir,
       "style" => "rotate:var(--angle);",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -225,10 +248,12 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec marker(Marker.t()) :: map()
   def marker(assigns) do
+    slider_value = effective_angle_value(assigns.slider_value)
+
     state =
       cond do
-        assigns.value < assigns.slider_value -> "under-value"
-        assigns.value > assigns.slider_value -> "over-value"
+        assigns.value < slider_value -> "under-value"
+        assigns.value > slider_value -> "over-value"
         true -> "at-value"
       end
 
@@ -243,7 +268,7 @@ defmodule Corex.AngleSlider.Connect do
       "dir" => assigns.dir,
       "style" =>
         "--marker-value:#{format_number(assigns.value)};--marker-display-value:#{format_number(marker_display)};rotate:calc(var(--marker-display-value) * 1deg);",
-      "data-disabled" => get_boolean(assigns.disabled)
+      "data-disabled" => presence_attr(assigns.disabled)
     }
   end
 

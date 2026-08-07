@@ -162,6 +162,14 @@ defmodule E2eWeb.DatePickerModel do
     has?(session, css("#date-picker-events-log-sv tr[data-part='row']"))
   end
 
+  def date_picker_events_client_open_log_has_row?(session) do
+    has?(session, css("#date-picker-events-log-co tr[data-part='row']"))
+  end
+
+  def date_picker_events_client_value_log_has_row?(session) do
+    has?(session, css("#date-picker-events-log-cv tr[data-part='row']"))
+  end
+
   def goto_form(session, mode) do
     {path, page_id} =
       case mode do

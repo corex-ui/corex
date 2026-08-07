@@ -116,7 +116,9 @@ defmodule E2eWeb.ComboboxPatternsLive do
             <.combobox
               id="combobox-patterns-server-filter-field"
               class="combobox"
-              placeholder={~t"Search…"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Search…", empty: ~t"No results"}
+              }
               items={Corex.List.new(@airports)}
               filter={false}
               on_input_value_change="search_airports"
@@ -150,7 +152,9 @@ defmodule E2eWeb.ComboboxPatternsLive do
             <.combobox
               id="combobox-patterns-server-filter-grouped-field"
               class="combobox"
-              placeholder={~t"Search…"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Search…", empty: ~t"No results"}
+              }
               items={Corex.List.new(@airports_grouped)}
               filter={false}
               on_input_value_change="search_airports_grouped"
@@ -171,7 +175,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     <.combobox
       id="airport-combobox"
       class="combobox"
-      placeholder={~t"Search…"}
+      translation={%Corex.Combobox.Translation{placeholder: ~t"Search…", empty: ~t"No results"}}
       items={@items}
       filter={false}
       on_input_value_change="filter_airports"
@@ -226,7 +230,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         <.combobox
           id="airport-combobox"
           class="combobox"
-          placeholder={~t"Search…"}
+          translation={%Corex.Combobox.Translation{placeholder: ~t"Search…", empty: ~t"No results"}}
           items={@items}
           filter={false}
           on_input_value_change="filter_airports"
@@ -246,7 +250,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     <.combobox
       id="airport-combobox-grouped"
       class="combobox"
-      placeholder={~t"Search…"}
+      translation={%Corex.Combobox.Translation{placeholder: ~t"Search…", empty: ~t"No results"}}
       items={@items}
       filter={false}
       on_input_value_change="filter_airports_grouped"
@@ -308,7 +312,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         <.combobox
           id="airport-combobox-grouped"
           class="combobox"
-          placeholder={~t"Search…"}
+          translation={%Corex.Combobox.Translation{placeholder: ~t"Search…", empty: ~t"No results"}}
           items={@items}
           filter={false}
           on_input_value_change="filter_airports_grouped"

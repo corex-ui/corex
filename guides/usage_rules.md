@@ -4,7 +4,7 @@ Corex ships eight agent skills that sync into your project via [usage_rules](htt
 
 ## Setup
 
-Add the dependency:
+`mix corex.new` and `mix corex.tableau.new` enable usage rules by default (`--usage-rules`). Pass `--no-usage-rules` to skip. For an existing app, add the dependency:
 
 ```sh
 mix igniter.install usage_rules

@@ -24,7 +24,7 @@ end
 
 user_attrs = %{
   birth_date: ~D[1990-01-15],
-  country: "some country",
+  country: "fra",
   name: "some name",
   signature: signature,
   terms: true,
@@ -33,7 +33,12 @@ user_attrs = %{
   tags: ["alpha", "beta"],
   password: "password1",
   notifications: true,
-  role: "editor"
+  role: "editor",
+  pin: "1234",
+  accent_color: "#3b82f6",
+  heading_angle: 90.0,
+  title: "some title",
+  avatar: "avatar.png"
 }
 
 admin_attrs = %{
@@ -47,7 +52,12 @@ admin_attrs = %{
   tags: ["alpha", "beta"],
   password: "password1",
   notifications: true,
-  role: "admin"
+  role: "admin",
+  pin: "1234",
+  accent_color: "#3b82f6",
+  heading_angle: 90.0,
+  title: "some title",
+  avatar: "avatar.png"
 }
 
 {:ok, _} = Accounts.create_user(user_attrs)

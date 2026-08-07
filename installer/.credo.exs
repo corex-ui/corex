@@ -64,7 +64,7 @@
           {ExSlop.Check.Warning.QueryInEnumMap, []},
           {ExSlop.Check.Warning.GenserverAsKvStore, []},
           {ExSlop.Check.Warning.PathExpandPriv,
-           [files: %{excluded: ["lib/corex_new/generate.ex"]}]},
+           [files: %{excluded: ["lib/corex_new/generate.ex", "lib/corex_new/shared.ex"]}]},
           {ExSlop.Check.Warning.DualKeyAccess, []},
           {ExSlop.Check.Refactor.FilterNil, []},
           {ExSlop.Check.Refactor.RejectNil, []},
@@ -193,6 +193,12 @@
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
           {Credo.Check.Warning.WrongTestFilename, []},
+          {Credo.Check.Warning.UnsafeToAtom,
+           [
+             files: %{
+               excluded: ["test/**/*", "lib/mix/**/*", "lib/corex_new/patches.ex"]
+             }
+           ]},
           # Error Handling
           {OeditusCredo.Check.Warning.MissingErrorHandling, []},
           {OeditusCredo.Check.Warning.SilentErrorCase, []},
@@ -250,6 +256,7 @@
            [files: %{excluded: ["lib/corex_new/", "test/"]}]}
         ],
         disabled: [
+          {Credo.Check.Readability.Specs, []},
           #
           # Checks scheduled for next check update (opt-in for now)
           {Credo.Check.Refactor.UtcNowTruncate, []},
@@ -272,7 +279,6 @@
           {Credo.Check.Readability.SeparateAliasRequire, []},
           {Credo.Check.Readability.SingleFunctionToBlockPipe, []},
           {Credo.Check.Readability.SinglePipe, []},
-          {Credo.Check.Readability.Specs, []},
           {Credo.Check.Readability.StrictModuleLayout, []},
           {Credo.Check.Readability.WithCustomTaggedTuple, []},
           {Credo.Check.Refactor.ABCSize, []},
@@ -292,7 +298,6 @@
           {Credo.Check.Warning.LeakyEnvironment, []},
           {Credo.Check.Warning.MapGetUnsafePass, []},
           {Credo.Check.Warning.MixEnv, []},
-          {Credo.Check.Warning.UnsafeToAtom, []}
           # {Credo.Check.Warning.UnusedOperation, [{MyMagicModule, [:fun1, :fun2]}]}
 
           # {Credo.Check.Refactor.MapInto, []},

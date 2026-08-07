@@ -34,9 +34,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     ~S"""
     <.editable
       class="editable"
-      value="Double click to edit"
-      activation_mode="dblclick"
-      select_on_focus
+      value="Click the pencil to edit"
     >
       <:label>Name</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -51,12 +49,43 @@ defmodule E2eWeb.Demos.EditableDemo do
     <.editable
       id="editable-anatomy-triggers"
       class="editable"
+      value="Click the pencil to edit"
+    >
+      <:label>Name</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def without_trigger_code do
+    ~S"""
+    <.editable
+      class="editable"
       value="Double click to edit"
       activation_mode="dblclick"
       select_on_focus
     >
       <:label>Name</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:edit_trigger><span class="sr-only">Edit</span></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def without_trigger_example(assigns) do
+    ~H"""
+    <.editable
+      id="editable-anatomy-without-trigger"
+      class="editable"
+      value="Double click to edit"
+      activation_mode="dblclick"
+      select_on_focus
+    >
+      <:label>Name</:label>
+      <:edit_trigger><span class="sr-only">Edit</span></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
     </.editable>
@@ -69,6 +98,29 @@ defmodule E2eWeb.Demos.EditableDemo do
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    """
+  end
+
+  def styling_canonical_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable w-3xs" value="Subtle (default)">
+    #{slots}
+    </.editable>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.editable id="editable-style-canonical" class="editable w-3xs" value="Subtle (default)">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
     """
   end
 
@@ -101,7 +153,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.editable id="editable-style-color-default" class="editable w-3xs" value="Default">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -152,6 +204,9 @@ defmodule E2eWeb.Demos.EditableDemo do
     <.editable class="editable w-3xs ui-solid" value="Solid">
     #{slots}
     </.editable>
+    <.editable class="editable w-3xs ui-ghost" value="Ghost">
+    #{slots}
+    </.editable>
     """
   end
 
@@ -159,7 +214,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.editable id="editable-style-variant-subtle" class="editable w-3xs" value="Subtle (default)">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -170,6 +225,16 @@ defmodule E2eWeb.Demos.EditableDemo do
         id="editable-style-variant-solid"
         class="editable w-3xs ui-solid"
         value="Solid"
+      >
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable
+        id="editable-style-variant-ghost"
+        class="editable w-3xs ui-ghost"
+        value="Ghost"
       >
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -255,7 +320,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.editable id="editable-style-sm" class="editable w-3xs ui-size-sm" value="SM">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -313,7 +378,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.editable id="editable-style-radius-none" class="editable w-3xs ui-rounded-none" value="None">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -370,28 +435,12 @@ defmodule E2eWeb.Demos.EditableDemo do
     |> DemoScales.join_code()
   end
 
-  def styling_width_code do
-    slots = styling_slots_code()
-
-    DemoScales.width_layout_variants("editable")
-    |> Enum.map(fn %{id: id, modifier: modifier} ->
-      class = DemoScales.join_modifiers("editable", modifier)
-
-      """
-      <.editable class="#{class}" value="#{id}">
-      #{slots}
-      </.editable>
-      """
-    end)
-    |> DemoScales.join_code()
-  end
-
   def styling_max_width_example(assigns) do
     assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("editable"))
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.editable
           id={"editable-style-max-#{variant.id}"}
@@ -408,33 +457,12 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
-  def styling_width_example(assigns) do
-    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("editable"))
-
-    ~H"""
-    <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo ui-size-sm font-medium">{variant.label}</p>
-        <.editable
-          id={"editable-style-width-#{variant.id}"}
-          class={DemoScales.join_modifiers("editable", variant.modifier)}
-          value={variant.label}
-        >
-          <:label>Label</:label>
-          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-        </.editable>
-      </div>
-    </div>
-    """
-  end
-
   def api_set_value_client_binding_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button ui-size-sm">Alpha</.action>
-      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button ui-size-sm">Beta</.action>
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Lorem")} class="button ui-size-sm">Lorem</.action>
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Duis")} class="button ui-size-sm">Duis</.action>
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Donec")} class="button ui-size-sm">Donec</.action>
     </div>
     <.editable class="editable" value="Start">
       <:label>Label</:label>
@@ -449,39 +477,58 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 w-full max-w-4xl">
-      <.action
-        phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")}
-        class="button ui-size-sm"
-      >
-        Alpha
-      </.action>
-      <.action
-        phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")}
-        class="button ui-size-sm"
-      >
-        Beta
-      </.action>
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action
+          phx-click={Corex.Editable.set_value("editable-api-cb", "Lorem")}
+          class="button ui-size-sm"
+        >
+          Lorem
+        </.action>
+        <.action
+          phx-click={Corex.Editable.set_value("editable-api-cb", "Duis")}
+          class="button ui-size-sm"
+        >
+          Duis
+        </.action>
+        <.action
+          phx-click={Corex.Editable.set_value("editable-api-cb", "Donec")}
+          class="button ui-size-sm"
+        >
+          Donec
+        </.action>
+      </div>
+      <.editable id="editable-api-cb" class="editable" value="Start">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
     </div>
-    <.editable id="editable-api-cb" class="editable" value="Start">
-      <:label>Label</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-    </.editable>
     """
   end
 
   def api_set_value_client_js_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <button
-        type="button"
+      <.action
+        phx-click={JS.dispatch("corex:editable:set-value", to: "#editable-api-cjs", bubbles: false, detail: %{value: "Lorem"})}
         class="button ui-size-sm"
-        onclick="document.getElementById('editable-api-cjs')?.dispatchEvent(new CustomEvent('corex:editable:set-value', { bubbles: false, detail: { value: 'Gamma' } }))"
       >
-        Gamma (client JS)
-      </button>
+        Lorem
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:editable:set-value", to: "#editable-api-cjs", bubbles: false, detail: %{value: "Duis"})}
+        class="button ui-size-sm"
+      >
+        Duis
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:editable:set-value", to: "#editable-api-cjs", bubbles: false, detail: %{value: "Donec"})}
+        class="button ui-size-sm"
+      >
+        Donec
+      </.action>
     </div>
     <.editable class="editable" value="Start">
       <:label>Label</:label>
@@ -496,7 +543,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     ~S"""
     const el = document.getElementById("editable-api-cjs");
     el?.dispatchEvent(
-      new CustomEvent("corex:editable:set-value", { bubbles: false, detail: { value: "Gamma" } })
+      new CustomEvent("corex:editable:set-value", { bubbles: false, detail: { value: "Lorem" } })
     );
     """
   end
@@ -505,7 +552,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     ~S"""
     const el: HTMLElement | null = document.getElementById("editable-api-cjs");
     el?.dispatchEvent(
-      new CustomEvent("corex:editable:set-value", { bubbles: false, detail: { value: "Gamma" } })
+      new CustomEvent("corex:editable:set-value", { bubbles: false, detail: { value: "Lorem" } })
     );
     """
   end
@@ -514,15 +561,44 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
-        <button
-          type="button"
+        <.action
+          phx-click={
+            JS.dispatch("corex:editable:set-value",
+              to: "#editable-api-cjs",
+              bubbles: false,
+              detail: %{value: "Lorem"}
+            )
+          }
           class="button ui-size-sm"
-          onclick="document.getElementById('editable-api-cjs')?.dispatchEvent(new CustomEvent('corex:editable:set-value', { bubbles: false, detail: { value: 'Gamma' } }))"
         >
-          Gamma (client JS)
-        </button>
+          Lorem
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:editable:set-value",
+              to: "#editable-api-cjs",
+              bubbles: false,
+              detail: %{value: "Duis"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Duis
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:editable:set-value",
+              to: "#editable-api-cjs",
+              bubbles: false,
+              detail: %{value: "Donec"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Donec
+        </.action>
       </div>
       <.editable id="editable-api-cjs" class="editable" value="Start">
         <:label>Label</:label>
@@ -537,8 +613,9 @@ defmodule E2eWeb.Demos.EditableDemo do
   def api_set_value_server_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="editable_api_alpha" class="button ui-size-sm">Alpha</.action>
-      <.action phx-click="editable_api_beta" class="button ui-size-sm">Beta</.action>
+      <.action phx-click="editable_api_lorem" class="button ui-size-sm">Lorem</.action>
+      <.action phx-click="editable_api_duis" class="button ui-size-sm">Duis</.action>
+      <.action phx-click="editable_api_donec" class="button ui-size-sm">Donec</.action>
     </div>
     <.editable class="editable" value="Start">
       <:label>Label</:label>
@@ -551,12 +628,16 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def api_set_value_server_elixir do
     ~S"""
-    def handle_event("editable_api_alpha", _params, socket) do
-      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Alpha")}
+    def handle_event("editable_api_lorem", _params, socket) do
+      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Lorem")}
     end
 
-    def handle_event("editable_api_beta", _params, socket) do
-      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Beta")}
+    def handle_event("editable_api_duis", _params, socket) do
+      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Duis")}
+    end
+
+    def handle_event("editable_api_donec", _params, socket) do
+      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Donec")}
     end
     """
   end
@@ -565,10 +646,11 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
-        <.action phx-click="editable_api_alpha" class="button ui-size-sm">Alpha</.action>
-        <.action phx-click="editable_api_beta" class="button ui-size-sm">Beta</.action>
+        <.action phx-click="editable_api_lorem" class="button ui-size-sm">Lorem</.action>
+        <.action phx-click="editable_api_duis" class="button ui-size-sm">Duis</.action>
+        <.action phx-click="editable_api_donec" class="button ui-size-sm">Donec</.action>
       </div>
       <.editable id="editable-api-srv" class="editable" value="Start">
         <:label>Label</:label>
@@ -616,6 +698,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
@@ -659,6 +742,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
@@ -708,7 +792,9 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/editable/form"} method="post">
+    <form action={~p"/editable/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.editable name="editable[text]" value="" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
@@ -735,7 +821,9 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -753,7 +841,9 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.editable field={@form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:error :let={msg}>
@@ -778,6 +868,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.editable
         field={f[:text]}
@@ -808,6 +899,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.editable
         field={f[:text]}
@@ -837,7 +929,12 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <form action={~p"/editable/form"} method="post" id="editable-form-native">
+    <form
+      action={~p"/editable/form"}
+      method="post"
+      id="editable-form-native"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.editable
         name="editable[text]"
@@ -864,7 +961,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.editable
         field={@form[:text]}
         placeholder="Enter text"
@@ -889,7 +986,12 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.editable
         field={@form[:text]}
         on_value_change="value_changed"
@@ -927,7 +1029,8 @@ defmodule E2eWeb.Demos.EditableDemo do
      
       phx-change="validate"
       phx-submit="save"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.editable
         field={@form[:text]}
         on_value_change="value_changed"
@@ -1077,6 +1180,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.editable
         field={@form[:text]}

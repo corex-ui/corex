@@ -1,11 +1,12 @@
 import { connect, machine, type Props, type Api } from "@zag-js/editable";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { syncInputFormAssociation } from "../lib/util";
 
-export class Editable extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Editable extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -21,7 +22,15 @@ export class Editable extends Component<Props, Api> {
     const controlEl = this.el.querySelector<HTMLElement>(
       '[data-scope="editable"][data-part="control"]'
     );
-    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+      // Zag control props omit data-readonly; keep host/SSR signal for ui-readonly.
+      if (this.el.hasAttribute("data-readonly")) {
+        controlEl.setAttribute("data-readonly", "");
+      } else {
+        controlEl.removeAttribute("data-readonly");
+      }
+    }
 
     const areaEl = this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="area"]');
     if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());

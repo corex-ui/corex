@@ -1,52 +1,48 @@
 import {
   getPlacement,
+  getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-MHRYIVD2.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CBUVYVIR.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
-import {
-  notifyPhoenixFormChange
-} from "./chunks/chunk-DOKFN6DA.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-C4KEB3WL.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
+  applyItems,
+  firstSelectedValue,
+  initCollectionItems,
   itemValue,
+  redirectCollectionItem,
+  refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-DDT7N35T.mjs";
+} from "./chunks/chunk-XGL2LWL4.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-SGRHPBNS.mjs";
-import {
-  performRedirect,
-  readDomItemRedirect
-} from "./chunks/chunk-HZLPIQBD.mjs";
+} from "./chunks/chunk-NU3NDRI3.mjs";
+import "./chunks/chunk-4JICR5HJ.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-YUSIPE4B.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
+import {
+  notifyPhoenixFormChange
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   readStringListControlledZagProps,
   readUpdatedServerStringList
-} from "./chunks/chunk-BGER3KYP.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -57,6 +53,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   ensure,
   getBoolean,
@@ -73,15 +70,15 @@ import {
   isValidTabEvent,
   markAsInternalChangeEvent,
   observeAttributes,
+  partPropsMethod,
   raf,
-  safeParseJson,
   scrollIntoView,
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -101,7 +98,7 @@ var anatomy = createAnatomy("select").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.collection.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -109,7 +106,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.dom.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
@@ -131,7 +128,7 @@ var getItemEl = (ctx, id) => {
   return ctx.getById(getItemId(ctx, id));
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.connect.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, state, computed, send } = service;
   const translations = prop("translations");
@@ -147,6 +144,7 @@ function connect(service, normalize) {
   const highlightedItem = context.get("highlightedItem");
   const selectedItems = computed("selectedItems");
   const currentPlacement = context.get("currentPlacement");
+  const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
   const isTypingAhead = computed("isTypingAhead");
   const interactive = computed("isInteractive");
   const ariaActiveDescendant = highlightedValue ? getItemId(scope, highlightedValue) : void 0;
@@ -277,6 +275,7 @@ function connect(service, normalize) {
         "data-invalid": dataAttr(invalid),
         "data-readonly": dataAttr(readOnly),
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "data-placeholder-shown": dataAttr(!computed("hasSelectedItems")),
         onClick(event) {
           if (!interactive) return;
@@ -483,6 +482,7 @@ function connect(service, normalize) {
         ...parts.content.attrs,
         "data-state": open ? "open" : "closed",
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "data-activedescendant": ariaActiveDescendant,
         "aria-activedescendant": composite ? ariaActiveDescendant : void 0,
         "aria-multiselectable": prop("multiple") && composite ? true : void 0,
@@ -555,7 +555,7 @@ var getSelectedValues = (el) => {
   return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.machine.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -1274,10 +1274,13 @@ var Select = class extends Component {
   setOptions(options) {
     this._options = Array.isArray(options) ? options : [];
   }
+  /** Refresh placeholder from host dataset (may change across LiveView morphs). */
+  refreshPlaceholder() {
+    this.placeholder = getString(this.el, "placeholder") || "";
+  }
   getCollection() {
     return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     const getCollection = this.getCollection.bind(this);
     return new VanillaMachine(machine, {
@@ -1380,13 +1383,13 @@ var Select = class extends Component {
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
       if (!el) return;
-      const method = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
-      this.spreadProps(el, this.api[method]());
+      this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
     const valueText = this.el.querySelector(
-      '[data-scope="select"][data-part="item-text"]'
+      '[data-scope="select"][data-part="trigger"] [data-scope="select"][data-part="item-text"]'
     );
     if (valueText && this.el.dataset.updateTrigger !== "false") {
+      this.refreshPlaceholder();
       const valueAsString = this.api.valueAsString;
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];
@@ -1494,12 +1497,8 @@ function createSelectOnValueChange(getEl, liveSocket, pushEvent, canPush) {
     if (getBoolean(el, "controlled") && controlledValueMatchesServer(el, details.value)) {
       return;
     }
-    const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-    if (getBoolean(el, "redirect") && firstValue) {
-      const itemEl = el.querySelector(
-        `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-      );
-      performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+    if (getBoolean(el, "redirect")) {
+      redirectCollectionItem(el, "select", firstSelectedValue(details.value), liveSocket);
     }
     syncSelectHiddenInputForPhoenix(el, details.value);
     notifyChange({
@@ -1530,90 +1529,72 @@ function reapplySelectInteractiveState(el) {
   trigger.disabled = false;
   trigger.removeAttribute("disabled");
 }
-var SelectHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    const allItems = safeParseJson(el.dataset.items || "[]", []);
-    const hasGroups = allItems.some((item) => Boolean(item.group));
+var SelectHook = createZagLiveHook({
+  key: "select",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const onValueChange = createSelectOnValueChange(
-      () => this.el,
-      this.liveSocket,
+      () => hook.el,
+      hook.liveSocket,
       pushEvent,
       canPush
     );
-    this.onValueChange = onValueChange;
+    hook.onValueChange = onValueChange;
+    const { items: allItems, hasGroups } = initCollectionItems(el, hook);
     const selectComponent = new Select(el, {
       ...selectZagPropsBase(el, onValueChange),
       collection: buildCollection(allItems, hasGroups),
       ...readStringListControlledZagProps(el, "value", "defaultValue")
     });
-    selectComponent.hasGroups = hasGroups;
-    selectComponent.setOptions(allItems);
-    selectComponent.init();
-    this.select = selectComponent;
-    this.lastItemsJson = el.dataset.items || "[]";
-    this.handlers = [];
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:select:set-value", (event) => {
+    applyItems(selectComponent, allItems, hasGroups);
+    dom.add("corex:select:set-value", (event) => {
       selectComponent.api.setValue(event.detail.value);
     });
-    domRegistry.add("corex:select:set-open", (event) => {
+    dom.add("corex:select:set-open", (event) => {
       selectComponent.api.setOpen(event.detail.open);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("select_set_value", (payload) => {
+    server.add("select_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       selectComponent.api.setValue(payload.value);
     });
-    registry.add("select_set_open", (payload) => {
+    server.add("select_set_open", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.open !== "boolean") return;
       selectComponent.api.setOpen(payload.open);
     });
+    return selectComponent;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-  },
-  updated() {
-    if (!this.select) return;
-    try {
-      const newItemsJson = this.el.dataset.items || "[]";
-      if (newItemsJson !== this.lastItemsJson) {
-        this.lastItemsJson = newItemsJson;
-        const newItems = safeParseJson(newItemsJson, []);
-        const hasGroups = newItems.some((item) => Boolean(item.group));
-        this.select.hasGroups = hasGroups;
-        this.select.setOptions(newItems);
+  update(hook, select) {
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, select);
+    const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
+    if (valuePatch.value !== void 0) {
+      syncControlledValueInputFromServer(hook.el, valuePatch.value);
+    }
+    if (itemsChanged && valuePatch.value === void 0) {
+      const available = new Set(select.options.map((i) => String(itemValue(i))));
+      const current = (select.api.value ?? []).map(String);
+      const next = current.filter((v) => available.has(v));
+      if (next.length !== current.length) {
+        select.api.setValue(next);
       }
-      const valuePatch = readUpdatedServerStringList(this.el, this.beforeAttrs);
-      if (valuePatch.value !== void 0) {
-        syncControlledValueInputFromServer(this.el, valuePatch.value);
-      }
-      this.select.updateProps({
-        ...selectLayoutProps(this.el),
-        collection: this.select.getCollection(),
+    }
+    const propsApplied = select.updateProps(
+      {
+        ...selectLayoutProps(hook.el),
+        collection: select.getCollection(),
         ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
-      });
-      reapplySelectInteractiveState(this.el);
-    } finally {
-      this.beforeAttrs = void 0;
+      },
+      { force: itemsChanged }
+    );
+    if (!propsApplied || itemsChanged) {
+      select.render();
     }
-  },
-  destroyed() {
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.select?.destroy();
+    reapplySelectInteractiveState(hook.el);
   }
-};
+});
 export {
   SelectHook as Select,
   buildCollection,

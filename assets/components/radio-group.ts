@@ -1,13 +1,14 @@
 import { connect, machine, type Props, type Api } from "@zag-js/radio-group";
 import type { ItemProps } from "@zag-js/radio-group";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { hiddenInputPropsWithoutChecked } from "../lib/checkable-form-sync";
 import { syncInputFormAssociation } from "../lib/util";
 
-export class RadioGroup extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class RadioGroup extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

@@ -18,6 +18,9 @@ defmodule E2eWeb.TailwindSizingLiteralsTest do
 
     assert length(TailwindSizingLiterals.min_height_literals()) ==
              length(Scales.steps(:min_height))
+
+    assert length(TailwindSizingLiterals.ui_max_height_literals()) ==
+             length(Scales.master_ladder_strings())
   end
 
   test "lookup maps return static class strings for extended steps" do
@@ -26,5 +29,7 @@ defmodule E2eWeb.TailwindSizingLiteralsTest do
     assert TailwindSizingLiterals.max_width("8xl") == "max-w-8xl"
     assert TailwindSizingLiterals.width("6xs") == "w-6xs"
     assert TailwindSizingLiterals.max_height("9xl") == "max-h-9xl"
+    assert TailwindSizingLiterals.ui_max_height("sm") == "ui-max-height-sm"
+    assert TailwindSizingLiterals.ui_max_height("9xs") == "ui-max-height-9xs"
   end
 end

@@ -97,6 +97,22 @@ defmodule Corex.FormFieldTest do
     assert render_errors(field) == ""
   end
 
+  test "assign_errors shows unused field errors after failed insert" do
+    field = name_field(%{}, :insert)
+
+    refute used_input?(field)
+    assert render_errors(field) =~ "blank"
+  end
+
+  test "assign_form_field marks field_used on failed insert" do
+    field = name_field(%{}, :insert)
+
+    result = FormField.assign_form_field(%{invalid: nil, __changed__: %{}}, field)
+
+    assert result.field_used == true
+    assert result.errors != []
+  end
+
   test "assign_form_field leaves invalid false by default with visible errors" do
     field = name_field(%{"name" => ""}, :validate)
 
@@ -163,13 +179,6 @@ defmodule Corex.FormFieldTest do
     assert result.invalid == false
   end
 
-  test "assign_errors does not show all errors on insert action alone" do
-    field = name_field(%{}, :insert)
-
-    refute used_input?(field)
-    assert render_errors(field) == ""
-  end
-
   test "list_submit_name appends []" do
     assert FormField.list_submit_name("admin[tags]") == "admin[tags][]"
     assert FormField.list_submit_name(nil) == nil
@@ -197,5 +206,28 @@ defmodule Corex.FormFieldTest do
 
     assert result.name == field.name
     assert FormField.list_submit_name(result.name) == field.name <> "[]"
+  end
+
+  test "assign_stable_id keeps explicit id" do
+    assigns = %{id: "my-accordion", __changed__: %{}}
+    assert FormField.assign_stable_id(assigns, "accordion").id == "my-accordion"
+  end
+
+  test "assign_stable_id derives from name when id missing" do
+    assigns = %{name: "country", __changed__: %{}}
+    result = FormField.assign_stable_id(assigns, "accordion")
+    assert result.id == "accordion-country"
+  end
+
+  test "assign_stable_id falls back to prefixed random id" do
+    assigns = %{__changed__: %{}}
+    result = FormField.assign_stable_id(assigns, "menu")
+    assert result.id =~ ~r/^menu-\d+$/
+  end
+
+  test "assign_stable_id sanitizes name fragments" do
+    assigns = %{name: "user[country]", __changed__: %{}}
+    result = FormField.assign_stable_id(assigns, "listbox")
+    assert result.id == "listbox-user-country"
   end
 end

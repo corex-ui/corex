@@ -13,12 +13,18 @@ defmodule Corex.Integration.CodeGeneration.CorexReplaceTest do
 
         assert home =~ ~r/<Layouts\.app[\s\n]/
         assert home =~ "flash={@flash}"
-        assert home =~ "Corex for Phoenix"
-        refute home =~ ~s|<.accordion id="welcome-accordion"|
+        assert home =~ "The Phoenix UI"
+        assert home =~ "real API"
+        assert home =~ ~r/<\.accordion\s+id="home-accordion"/
         refute home =~ "corex.html.heex"
         refute layouts =~ "def flash_group"
         refute layouts =~ "def theme_toggle"
+        assert layouts =~ ~s(id="site-nav-dialog")
+        assert layouts =~ "Components"
+        assert layouts =~ "Hexdocs"
+        refute layouts =~ ~S[~p"/design"]
         refute router =~ ~s[get "/home"]
+        refute router =~ ~s[get "/design"]
       end)
     end
   end

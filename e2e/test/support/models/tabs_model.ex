@@ -130,4 +130,47 @@ defmodule E2eWeb.TabsModel do
   def tabs_events_client_log_has_row?(session) do
     has?(session, css("#tabs-events-log-client tr[data-part='row']"))
   end
+
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
+  def focus_trigger_by_value(session, host_dom_id, value)
+      when is_binary(host_dom_id) and is_binary(value) do
+    if not valid_dom_id?(host_dom_id) or not valid_dom_id?(value),
+      do: raise(ArgumentError, "invalid host or value id")
+
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{host_dom_id}');
+      const trigger = root && root.querySelector(
+        '[data-scope="tabs"][data-part="trigger"][data-value="#{value}"]'
+      );
+      if (trigger) trigger.focus();
+      return !!(trigger && document.activeElement === trigger);
+      """,
+      [],
+      fn v ->
+        assert v == true, "expected focus on tabs trigger #{value} in ##{host_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
 end

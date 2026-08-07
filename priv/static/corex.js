@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-6AOEC32Q.mjs
+  // ../priv/static/chunks/chunk-6L36XW7I.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -169,6 +169,10 @@ var Corex = (() => {
       associateInputWithFormIfOutside(input, hookEl);
     }
   }
+  function partPropsMethod(part) {
+    const camel = part.split("-").map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1)).join("");
+    return `get${camel}Props`;
+  }
   function safeParseJson(raw, fallback2) {
     if (raw == null || raw === "") return fallback2;
     try {
@@ -177,6 +181,121 @@ var Corex = (() => {
       console.error("Failed to parse JSON", error);
       return fallback2;
     }
+  }
+  function parseJsonStringList(raw) {
+    const parsed = safeParseJson(raw, []);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item) => typeof item === "string");
+  }
+  function snapshotDataset(el, keys) {
+    const snap = {};
+    for (const key of keys) {
+      snap[key] = el.dataset[key];
+    }
+    return snap;
+  }
+  function datasetKeyChanged(before, el, key) {
+    if (before === void 0) return true;
+    return before[key] !== el.dataset[key];
+  }
+  function anyDatasetKeyChanged(before, el, keys) {
+    if (before === void 0) return true;
+    return keys.some((key) => datasetKeyChanged(before, el, key));
+  }
+  function createDomEventRegistry(target) {
+    const entries = [];
+    return {
+      add(eventName, listener) {
+        const wrapped = listener;
+        target.addEventListener(eventName, wrapped);
+        entries.push({ eventName, listener: wrapped });
+      },
+      teardown() {
+        for (const { eventName, listener } of entries) {
+          target.removeEventListener(eventName, listener);
+        }
+        entries.length = 0;
+      }
+    };
+  }
+  function createHookHandleEventRegistry(hook) {
+    const refs = [];
+    return {
+      add(eventName, fn) {
+        refs.push(hook.handleEvent(eventName, fn));
+      },
+      teardown() {
+        for (const ref2 of refs) {
+          hook.removeHandleEvent(ref2);
+        }
+        refs.length = 0;
+      }
+    };
+  }
+  function createZagLiveHook(config) {
+    const componentOf = (hook) => hook[config.key];
+    const withComponent = (hook, fn) => {
+      const component = componentOf(hook);
+      if (component && fn) fn(component);
+      return component;
+    };
+    return {
+      mounted() {
+        var _a4;
+        const registries = {
+          dom: createDomEventRegistry(this.el),
+          server: createHookHandleEventRegistry(this)
+        };
+        this[REGISTRIES] = registries;
+        const component = config.mount(this, registries) || void 0;
+        if (!component) return;
+        component.init();
+        this[config.key] = component;
+        (_a4 = config.afterInit) == null ? void 0 : _a4.call(config, this, component);
+      },
+      beforeUpdate() {
+        var _a4;
+        if (config.controlledKeys) {
+          this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
+        }
+        (_a4 = config.beforeUpdate) == null ? void 0 : _a4.call(config, this);
+      },
+      updated() {
+        var _a4;
+        const component = componentOf(this);
+        if (!component) return;
+        try {
+          (_a4 = config.update) == null ? void 0 : _a4.call(config, this, component);
+        } finally {
+          this.beforeAttrs = void 0;
+        }
+      },
+      disconnected() {
+        withComponent(this, (component) => {
+          var _a4;
+          return (_a4 = config.disconnected) == null ? void 0 : _a4.call(config, this, component);
+        });
+      },
+      reconnected() {
+        withComponent(this, (component) => {
+          var _a4;
+          return (_a4 = config.reconnected) == null ? void 0 : _a4.call(config, this, component);
+        });
+      },
+      destroyed() {
+        const registries = this[REGISTRIES];
+        registries == null ? void 0 : registries.dom.teardown();
+        registries == null ? void 0 : registries.server.teardown();
+        this[REGISTRIES] = void 0;
+        const component = withComponent(this, (component2) => {
+          var _a4;
+          return (_a4 = config.destroy) == null ? void 0 : _a4.call(config, this, component2);
+        });
+        component == null ? void 0 : component.destroy();
+        this[config.key] = void 0;
+        this.beforeAttrs = void 0;
+      }
+    };
   }
   function toArray(v2) {
     if (v2 == null) return [];
@@ -241,7 +360,7 @@ var Corex = (() => {
   function throttle(fn, wait = 0) {
     let lastCall = 0;
     let timeout = null;
-    return (...args) => {
+    return ((...args) => {
       const now = Date.now();
       const timeSinceLastCall = now - lastCall;
       if (timeSinceLastCall >= wait) {
@@ -258,7 +377,7 @@ var Corex = (() => {
           timeout = null;
         }, wait - timeSinceLastCall);
       }
-    };
+    });
   }
   function toName(code) {
     let name = "";
@@ -273,9 +392,9 @@ var Corex = (() => {
   }
   function compact(obj) {
     if (!isPlainObject(obj) || obj === void 0) return obj;
-    const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
+    const keys2 = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
     const filtered = {};
-    for (const key of keys) {
+    for (const key of keys2) {
       const value = obj[key];
       if (value !== void 0) {
         filtered[key] = compact(value);
@@ -283,9 +402,9 @@ var Corex = (() => {
     }
     return filtered;
   }
-  function pick(obj, keys) {
+  function pick(obj, keys2) {
     const filtered = {};
-    for (const key of keys) {
+    for (const key of keys2) {
       const value = obj[key];
       if (value !== void 0) {
         filtered[key] = value;
@@ -816,13 +935,18 @@ var Corex = (() => {
     return (_a4 = event.nativeEvent) != null ? _a4 : event;
   }
   function getEventStep(event) {
-    if (event.ctrlKey || event.metaKey) {
-      return 0.1;
-    } else {
-      const isPageKey = pageKeys.has(event.key);
-      const isSkipKey = isPageKey || event.shiftKey && arrowKeys.has(event.key);
-      return isSkipKey ? 10 : 1;
+    const isPageKey = pageKeys.has(event.key);
+    const isSkipKey = isPageKey || event.shiftKey && arrowKeys.has(event.key);
+    return isSkipKey ? 10 : 1;
+  }
+  function getEventStepValue(event, options) {
+    const { step, largeStep, smallStep } = options;
+    const isArrowKey = arrowKeys.has(event.key);
+    if (smallStep != null && event.altKey && isArrowKey) {
+      return smallStep;
     }
+    const isLargeStep = pageKeys.has(event.key) || event.shiftKey && isArrowKey;
+    return isLargeStep ? largeStep : step;
   }
   function getEventPoint(event, type = "client") {
     const point = isTouchEvent(event) ? event.touches[0] || event.changedTouches[0] : event;
@@ -1161,15 +1285,6 @@ var Corex = (() => {
     const { overflow, overflowX, overflowY, display } = win.getComputedStyle(el);
     return OVERFLOW_RE.test(overflow + overflowY + overflowX) && !nonOverflowValues.has(display);
   }
-  function isScrollable(el) {
-    return el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
-  }
-  function scrollIntoView(el, options) {
-    const _a4 = options || {}, { rootEl } = _a4, scrollOptions = __objRest(_a4, ["rootEl"]);
-    if (!el || !rootEl) return;
-    if (!isOverflowElement(rootEl) || !isScrollable(rootEl)) return;
-    el.scrollIntoView(scrollOptions);
-  }
   function getRelativePoint(point, element) {
     const { left, top, width, height } = element.getBoundingClientRect();
     const offset3 = { x: point.x - left, y: point.y - top };
@@ -1457,6 +1572,15 @@ var Corex = (() => {
     if (!x2 || !Number.isFinite(x2)) x2 = 1;
     if (!y2 || !Number.isFinite(y2)) y2 = 1;
     return { x: x2, y: y2 };
+  }
+  function isScrollable(el) {
+    return el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+  }
+  function scrollIntoView(el, options) {
+    const _a4 = options || {}, { rootEl } = _a4, scrollOptions = __objRest(_a4, ["rootEl"]);
+    if (!el || !rootEl) return;
+    if (!isOverflowElement(rootEl) || !isScrollable(rootEl)) return;
+    el.scrollIntoView(scrollOptions);
   }
   function getByText(v2, text, currentId, itemToId = defaultItemToId) {
     const index = currentId ? indexOfId(v2, currentId, itemToId) : -1;
@@ -1822,27 +1946,67 @@ var Corex = (() => {
       }
     };
   }
-  function stableUpdatePropsKey(props) {
-    const keys = Object.keys(props).sort();
-    const serializable = {};
-    for (const key of keys) {
-      const value = props[key];
-      if (typeof value === "function") continue;
-      if (value !== null && typeof value === "object") {
-        try {
-          serializable[key] = JSON.parse(JSON.stringify(value));
-        } catch (e2) {
-          serializable[key] = String(value);
-        }
-      } else {
-        serializable[key] = value;
+  function objectRefId(value) {
+    let id = objectRefIds.get(value);
+    if (id === void 0) {
+      id = nextObjectRefId++;
+      objectRefIds.set(value, id);
+    }
+    return `#${id}`;
+  }
+  function isPlainObject2(value) {
+    const proto = Object.getPrototypeOf(value);
+    return proto === Object.prototype || proto === null;
+  }
+  function stableValueKey(value) {
+    if (value === null) return "null";
+    const type = typeof value;
+    if (type === "string") return JSON.stringify(value);
+    if (type === "number" || type === "boolean") return String(value);
+    if (type === "undefined") return "undefined";
+    if (type === "function" || type === "symbol" || type === "bigint") return "";
+    if (typeof value !== "object") return String(value);
+    if (Array.isArray(value)) {
+      let out = "[";
+      for (let i2 = 0; i2 < value.length; i2++) {
+        if (i2 > 0) out += ",";
+        out += stableValueKey(value[i2]);
+      }
+      return out + "]";
+    }
+    if (isPlainObject2(value)) {
+      try {
+        return JSON.stringify(value, (_key, nested) => {
+          if (typeof nested === "function") return void 0;
+          return nested;
+        });
+      } catch (e2) {
+        return objectRefId(value);
       }
     }
-    return JSON.stringify(serializable);
+    const asString = String(value);
+    if (asString !== "[object Object]") {
+      return JSON.stringify(asString);
+    }
+    return objectRefId(value);
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_6AOEC32Q = __esm({
-    "../priv/static/chunks/chunk-6AOEC32Q.mjs"() {
+  function stableUpdatePropsKey(props) {
+    const keys = Object.keys(props).sort();
+    let out = "";
+    for (const key of keys) {
+      if (HEAVY_PROP_KEYS.has(key)) continue;
+      const value = props[key];
+      if (typeof value === "function") continue;
+      out += key;
+      out += ":";
+      out += stableValueKey(value);
+      out += ";";
+    }
+    return out;
+  }
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, REGISTRIES, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, HEAVY_PROP_KEYS, objectRefIds, nextObjectRefId, Component, createAnatomy, toKebabCase, isEmpty;
+  var init_chunk_6L36XW7I = __esm({
+    "../priv/static/chunks/chunk-6L36XW7I.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1893,6 +2057,7 @@ var Corex = (() => {
         if (element == null ? void 0 : element.id) return element.id;
         return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
       };
+      REGISTRIES = Symbol("corex:zag-hook-registries");
       __defProp2 = Object.defineProperty;
       __defNormalProp2 = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField2 = (obj, key, value) => __defNormalProp2(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -2049,7 +2214,7 @@ var Corex = (() => {
       };
       TEXTAREA_SELECT_REGEX = /(textarea|select)/;
       styleCache = /* @__PURE__ */ new WeakMap();
-      INTERACTIVE_CONTAINER_ROLE = /* @__PURE__ */ new Set(["menu", "listbox", "dialog", "grid", "tree", "region"]);
+      INTERACTIVE_CONTAINER_ROLE = /* @__PURE__ */ new Set(["menu", "listbox", "dialog", "grid", "tree", "region", "application"]);
       isInteractiveContainerRole = (role) => INTERACTIVE_CONTAINER_ROLE.has(role);
       getAriaControls = (element) => {
         var _a4;
@@ -2466,7 +2631,9 @@ var Corex = (() => {
           __publicField2(this, "guard", (str) => {
             var _a5, _b2;
             if (isFunction(str)) return str(this.getParams());
-            return (_b2 = (_a5 = this.machine.implementations) == null ? void 0 : _a5.guards) == null ? void 0 : _b2[str](this.getParams());
+            const fn = (_b2 = (_a5 = this.machine.implementations) == null ? void 0 : _a5.guards) == null ? void 0 : _b2[str];
+            if (!fn) warn(`[zag-js] No implementation found for guard "${JSON.stringify(str)}"`);
+            return fn == null ? void 0 : fn(this.getParams());
           });
           __publicField2(this, "effect", (keys) => {
             const strs = isFunction(keys) ? keys(this.getParams()) : keys;
@@ -2618,12 +2785,18 @@ var Corex = (() => {
               entering.forEach((item) => {
                 var _a6;
                 const cleanup = this.effect((_a6 = item.state) == null ? void 0 : _a6.effects);
-                if (cleanup) this.effects.set(item.path, cleanup);
+                if (cleanup) {
+                  const existing = this.effects.get(item.path);
+                  this.effects.set(item.path, existing ? callAll(existing, cleanup) : cleanup);
+                }
               });
               if (prevState === INIT_STATE) {
                 this.action(machine34.entry);
                 const cleanup = this.effect(machine34.effects);
-                if (cleanup) this.effects.set(INIT_STATE, cleanup);
+                if (cleanup) {
+                  const existing = this.effects.get(INIT_STATE);
+                  this.effects.set(INIT_STATE, existing ? callAll(existing, cleanup) : cleanup);
+                }
               }
               entering.forEach((item) => {
                 var _a6;
@@ -2732,11 +2905,13 @@ var Corex = (() => {
         const shouldPreserveCase = isSvgElement(node) && caseSensitiveSvgAttrs2.has(attrName);
         return shouldPreserveCase ? attrName : attrName.toLowerCase();
       };
+      HEAVY_PROP_KEYS = /* @__PURE__ */ new Set(["collection"]);
+      objectRefIds = /* @__PURE__ */ new WeakMap();
+      nextObjectRefId = 1;
       Component = class {
         constructor(el, props, beforeInitMachine) {
           __publicField(this, "el");
           __publicField(this, "doc");
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           __publicField(this, "machine");
           __publicField(this, "api");
           __publicField(this, "unsubscribe");
@@ -2780,11 +2955,12 @@ var Corex = (() => {
           this.machine = this.initMachine(props);
           this.api = this.initApi();
         }
-        updateProps(props) {
+        updateProps(props, opts) {
           const key = stableUpdatePropsKey(props);
-          if (key === this.lastUpdatePropsKey) return;
+          if (!(opts == null ? void 0 : opts.force) && key === this.lastUpdatePropsKey) return false;
           this.lastUpdatePropsKey = key;
           this.machine.updateProps(props);
+          return true;
         }
         zagConnect(connectFn) {
           return connectFn(this.machine.service, normalizeProps);
@@ -2819,65 +2995,92 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4AOGROPJ.mjs
+  // ../priv/static/chunks/chunk-PWP4CBA7.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
-  function readRequiredAttrString(el, dataAttr2, label) {
+  function readRequiredAttrString(el, dataAttr2, label, fallback2) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
-      throw new Error(`[corex] missing ${label} on #${el.id}`);
+      console.warn(`[corex] missing ${label} on #${el.id}, using default`);
+      return fallback2;
     }
     return raw;
   }
-  function readRequiredAttrNumber(el, dataAttr2, label) {
-    const raw = readRequiredAttrString(el, dataAttr2, label);
+  function readRequiredAttrNumber(el, dataAttr2, label, fallback2) {
+    const raw = el.getAttribute(dataAttr2);
+    if (raw === null) {
+      console.warn(`[corex] missing ${label} on #${el.id}, using default`);
+      return fallback2;
+    }
     const n2 = parseFloat(raw);
     if (Number.isNaN(n2)) {
-      throw new Error(`[corex] invalid ${label} on #${el.id}`);
+      console.warn(`[corex] invalid ${label} on #${el.id}, using default`);
+      return fallback2;
     }
     return n2;
   }
   function readHeightAnimationOptions(el) {
     return {
-      duration: readRequiredAttrNumber(el, "data-anim-height-duration", "data-anim-height-duration"),
-      easing: readRequiredAttrString(el, "data-anim-height-easing", "data-anim-height-easing"),
+      duration: readRequiredAttrNumber(
+        el,
+        "data-anim-height-duration",
+        "data-anim-height-duration",
+        200
+      ),
+      easing: readRequiredAttrString(
+        el,
+        "data-anim-height-easing",
+        "data-anim-height-easing",
+        "ease"
+      ),
       opacityStart: readRequiredAttrNumber(
         el,
         "data-anim-height-opacity-start",
-        "data-anim-height-opacity-start"
+        "data-anim-height-opacity-start",
+        0
       ),
       opacityEnd: readRequiredAttrNumber(
         el,
         "data-anim-height-opacity-end",
-        "data-anim-height-opacity-end"
+        "data-anim-height-opacity-end",
+        1
       ),
       blockInteraction: getBooleanValue(el, "animHeightBlockInteraction") !== false
     };
   }
   function readScaleAnimationOptions(el) {
     return {
-      duration: readRequiredAttrNumber(el, "data-anim-scale-duration", "data-anim-scale-duration"),
-      easing: readRequiredAttrString(el, "data-anim-scale-easing", "data-anim-scale-easing"),
+      duration: readRequiredAttrNumber(
+        el,
+        "data-anim-scale-duration",
+        "data-anim-scale-duration",
+        200
+      ),
+      easing: readRequiredAttrString(el, "data-anim-scale-easing", "data-anim-scale-easing", "ease"),
       opacityStart: readRequiredAttrNumber(
         el,
         "data-anim-scale-opacity-start",
-        "data-anim-scale-opacity-start"
+        "data-anim-scale-opacity-start",
+        0
       ),
       opacityEnd: readRequiredAttrNumber(
         el,
         "data-anim-scale-opacity-end",
-        "data-anim-scale-opacity-end"
+        "data-anim-scale-opacity-end",
+        1
       ),
       scaleStart: readRequiredAttrNumber(
         el,
         "data-anim-transform-scale-start",
-        "data-anim-transform-scale-start"
+        "data-anim-transform-scale-start",
+        0.95
       ),
       scaleEnd: readRequiredAttrNumber(
         el,
         "data-anim-transform-scale-end",
-        "data-anim-transform-scale-end"
+        "data-anim-transform-scale-end",
+        1
       ),
       blockInteraction: getBooleanValue(el, "animScaleBlockInteraction") !== false
     };
@@ -2979,16 +3182,6 @@ var Corex = (() => {
       opts: readHeightAnimationOptions(el),
       wasOpen: (node) => isInOpenValueList(resolveValue(node), prevOpen),
       isOpen: (node) => isInOpenValueList(resolveValue(node), nextOpen)
-    });
-  }
-  function runHeightOpenToValues(args) {
-    const { el, selector, openValues, resolveValue } = args;
-    if (!isJsAnimation(el)) return;
-    runOpenStateTransitionsHeight({
-      rootEl: el,
-      selector,
-      opts: readHeightAnimationOptions(el),
-      isOpen: (node) => isInOpenValueList(resolveValue(node), openValues)
     });
   }
   function prepareJsHeightInitialState(el, selector) {
@@ -3124,37 +3317,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_4AOGROPJ = __esm({
-    "../priv/static/chunks/chunk-4AOGROPJ.mjs"() {
+  var init_chunk_PWP4CBA7 = __esm({
+    "../priv/static/chunks/chunk-PWP4CBA7.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-TKOH2OAC.mjs
-  function snapshotDataset(el, keys) {
-    const snap = {};
-    for (const key of keys) {
-      snap[key] = el.dataset[key];
-    }
-    return snap;
-  }
-  function datasetKeyChanged(before, el, key) {
-    if (before === void 0) return true;
-    return before[key] !== el.dataset[key];
-  }
-  function anyDatasetKeyChanged(before, el, keys) {
-    if (before === void 0) return true;
-    return keys.some((key) => datasetKeyChanged(before, el, key));
-  }
-  var init_chunk_TKOH2OAC = __esm({
-    "../priv/static/chunks/chunk-TKOH2OAC.mjs"() {
-      "use strict";
-    }
-  });
-
-  // ../priv/static/chunks/chunk-BGER3KYP.mjs
+  // ../priv/static/chunks/chunk-F2ZOUSGC.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3189,6 +3360,14 @@ var Corex = (() => {
     if (Number.isNaN(n2)) return trimmed.replace(/,/g, "");
     return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n2);
   }
+  function resolveNumberInputSubmitValue(valueAsNumber, displayValue, step) {
+    if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
+      return formatSubmitValue(valueAsNumber, step);
+    }
+    const stripped = (displayValue != null ? displayValue : "").replace(/,/g, "").trim();
+    if (stripped === "") return "";
+    return formatSubmitValue(stripped, step);
+  }
   function formatDisplayValue(value, step) {
     if (value === void 0 || value === null) return "";
     const trimmed = String(value).trim();
@@ -3209,18 +3388,30 @@ var Corex = (() => {
     }
     return { value: z(getString(el, valueKey)) };
   }
+  function parseDatasetValueList(raw) {
+    if (raw === void 0) return [];
+    const trimmed = raw.trim();
+    if (trimmed === "") return [];
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+          return parsed;
+        }
+        return [];
+      } catch (e2) {
+        return [];
+      }
+    }
+    return trimmed.split(",").map((v2) => v2.trim()).filter((v2) => v2.length > 0);
+  }
   function getJsonStringList(el, datasetKey) {
     const raw = el.dataset[datasetKey];
     if (raw === void 0) return void 0;
     if (!raw || raw.trim() === "") return [];
     const trimmed = raw.trim();
     if (!trimmed.startsWith("[")) return void 0;
-    try {
-      const v2 = JSON.parse(trimmed);
-      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
-    } catch (e2) {
-      return [];
-    }
+    return parseDatasetValueList(raw);
   }
   function readFormFieldServerPaths(el, datasetKey = "defaultPaths") {
     if (!getBoolean(el, "formField")) {
@@ -3245,8 +3436,7 @@ var Corex = (() => {
     return getBoolean(el, "controlled");
   }
   function readDatasetStringList(el, datasetKey) {
-    var _a4, _b;
-    return (_b = (_a4 = getJsonStringList(el, datasetKey)) != null ? _a4 : getStringList(el, datasetKey)) != null ? _b : [];
+    return parseDatasetValueList(el.dataset[datasetKey]);
   }
   function readUpdatedServerStringList(el, before) {
     if (!isZagValueControlled(el)) {
@@ -3328,8 +3518,11 @@ var Corex = (() => {
       return base;
     }
     const raw = (_a4 = getString(el, "value")) != null ? _a4 : getBoolean(el, "formField") ? getString(el, "defaultValue") : void 0;
-    if (raw === void 0 || raw === "") {
+    if (raw === void 0) {
       return base;
+    }
+    if (raw === "") {
+      return __spreadProps(__spreadValues({}, base), { value: "" });
     }
     return __spreadProps(__spreadValues({}, base), {
       value: formatDisplayValue(raw, step)
@@ -3372,54 +3565,16 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_BGER3KYP = __esm({
-    "../priv/static/chunks/chunk-BGER3KYP.mjs"() {
+  var init_chunk_F2ZOUSGC = __esm({
+    "../priv/static/chunks/chunk-F2ZOUSGC.mjs"() {
       "use strict";
-      init_chunk_TKOH2OAC();
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
 
-  // ../priv/static/chunks/chunk-77HPO22C.mjs
-  function createHookHandleEventRegistry(hook) {
-    const refs = [];
-    return {
-      add(eventName, fn) {
-        refs.push(hook.handleEvent(eventName, fn));
-      },
-      teardown() {
-        for (const ref of refs) {
-          hook.removeHandleEvent(ref);
-        }
-        refs.length = 0;
-      }
-    };
-  }
-  function createDomEventRegistry(target) {
-    const entries = [];
-    return {
-      add(eventName, listener) {
-        const wrapped = listener;
-        target.addEventListener(eventName, wrapped);
-        entries.push({ eventName, listener: wrapped });
-      },
-      teardown() {
-        for (const { eventName, listener } of entries) {
-          target.removeEventListener(eventName, listener);
-        }
-        entries.length = 0;
-      }
-    };
-  }
-  var init_chunk_77HPO22C = __esm({
-    "../priv/static/chunks/chunk-77HPO22C.mjs"() {
-      "use strict";
-    }
-  });
-
-  // ../priv/static/chunks/chunk-LNVRIZ4K.mjs
+  // ../priv/static/chunks/chunk-EAQ6WQNO.mjs
   function checkedChangePayload(el, details) {
     return {
       id: el.id,
@@ -3515,8 +3670,8 @@ var Corex = (() => {
   }
   function createValueEmitter(hook, options) {
     return (respondTo) => {
-      const value = options.getValue();
-      const payload = { id: hook.el.id, value };
+      var _a4;
+      const payload = options.getPayload ? options.getPayload() : { id: hook.el.id, value: (_a4 = options.getValue) == null ? void 0 : _a4.call(options) };
       emitResponse({
         respondTo,
         canPushServer: hook.canPushServer(),
@@ -3552,8 +3707,8 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_LNVRIZ4K = __esm({
-    "../priv/static/chunks/chunk-LNVRIZ4K.mjs"() {
+  var init_chunk_EAQ6WQNO = __esm({
+    "../priv/static/chunks/chunk-EAQ6WQNO.mjs"() {
       "use strict";
     }
   });
@@ -3644,7 +3799,6 @@ var Corex = (() => {
           "aria-expanded": itemState.expanded,
           disabled: itemState.disabled,
           "data-orientation": prop("orientation"),
-          "aria-disabled": itemState.disabled,
           "data-state": itemState.expanded ? "open" : "closed",
           "data-focus": dataAttr(itemState.focused),
           "data-ownedby": getRootId(scope),
@@ -3718,12 +3872,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_4AOGROPJ();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_PWP4CBA7();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3886,7 +4038,6 @@ var Corex = (() => {
         }
       });
       Accordion = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine, props);
         }
@@ -3943,12 +4094,14 @@ var Corex = (() => {
       ITEM_CONTENT_SELECTOR = '[data-scope="accordion"][data-part="item-content"]';
       ITEM_SELECTOR = '[data-scope="accordion"][data-part="item"]';
       resolveAccordionValue = closestPartValue(ITEM_SELECTOR);
-      AccordionHook = {
-        mounted() {
-          const el = this.el;
-          const self2 = this;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      AccordionHook = createZagLiveHook({
+        key: "accordion",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const self2 = hook;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           self2.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
           const accordion = new Accordion(el, __spreadProps(__spreadValues({
             id: el.id
@@ -3979,10 +4132,11 @@ var Corex = (() => {
                 clientEventName: getString(el, "onValueChangeClient")
               });
               if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
-                runHeightOpenToValues({
+                runHeightOpenTransition({
                   el,
                   selector: ITEM_CONTENT_SELECTOR,
-                  openValues: next2,
+                  prevOpen: previousValue,
+                  nextOpen: next2,
                   resolveValue: resolveAccordionValue
                 });
               }
@@ -3999,8 +4153,6 @@ var Corex = (() => {
               });
             }
           }));
-          accordion.init();
-          this.accordion = accordion;
           prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
           const hookApi = { el, pushEvent, canPushServer: canPush };
           const emitValue = createValueEmitter(hookApi, {
@@ -4035,18 +4187,16 @@ var Corex = (() => {
               domDetail: { id: el.id, value: itemValue2, state: state2 }
             });
           };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:accordion:set-value", (event) => {
+          dom2.add("corex:accordion:set-value", (event) => {
             accordion.api.setValue(event.detail.value);
           });
-          domRegistry.add("corex:accordion:value", (event) => {
+          dom2.add("corex:accordion:value", (event) => {
             emitValue(parseRespondTo(event.detail));
           });
-          domRegistry.add("corex:accordion:focused", (event) => {
+          dom2.add("corex:accordion:focused", (event) => {
             emitFocusedValue(parseRespondTo(event.detail));
           });
-          domRegistry.add(
+          dom2.add(
             "corex:accordion:item-state",
             (event) => {
               const d2 = event.detail;
@@ -4055,21 +4205,19 @@ var Corex = (() => {
               emitItemState(v2, (d2 == null ? void 0 : d2.disabled) === true, parseRespondTo(d2));
             }
           );
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("accordion_set_value", (payload) => {
+          server.add("accordion_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             accordion.api.setValue(payload.value);
           });
-          registry.add("accordion_value", (payload) => {
+          server.add("accordion_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitValue(parseRespondTo(payload));
           });
-          registry.add("accordion_focused", (payload) => {
+          server.add("accordion_focused", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitFocusedValue(parseRespondTo(payload));
           });
-          registry.add(
+          server.add(
             "accordion_item_state",
             (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -4077,67 +4225,40 @@ var Corex = (() => {
               emitItemState(payload.value, payload.disabled === true, parseRespondTo(payload));
             }
           );
+          return accordion;
         },
-        beforeUpdate() {
-          var _a4;
-          const { el } = this;
-          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-            this.previousValue = (_a4 = getStringList(el, "value")) != null ? _a4 : [];
-          }
-        },
-        updated() {
-          var _a4, _b, _c, _d, _e;
-          const { el } = this;
+        update(hook, accordion) {
+          var _a4, _b;
+          const { el } = hook;
           const layout = readAccordionLayoutProps(el);
-          if (!getBoolean(el, "controlled")) {
-            (_a4 = this.accordion) == null ? void 0 : _a4.updateProps(layout);
-            return;
-          }
-          const nextValue = (_b = getStringList(el, "value")) != null ? _b : [];
-          const prevValue = (_d = (_c = this.previousValue) != null ? _c : this.lastValue) != null ? _d : [];
-          this.previousValue = void 0;
-          this.lastValue = nextValue;
-          runHeightOpenTransition({
+          const valuePatch = readStringListControlledZagUpdate(
             el,
-            selector: ITEM_CONTENT_SELECTOR,
-            prevOpen: prevValue,
-            nextOpen: nextValue,
-            resolveValue: resolveAccordionValue
-          });
-          (_e = this.accordion) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({}, layout), { value: nextValue }));
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.accordion) == null ? void 0 : _c.destroy();
+            "value",
+            "defaultValue",
+            hook.beforeAttrs
+          );
+          if ("value" in valuePatch) {
+            const nextValue = (_a4 = valuePatch.value) != null ? _a4 : [];
+            const prevValue = parseDatasetValueList((_b = hook.beforeAttrs) == null ? void 0 : _b.value);
+            runHeightOpenTransition({
+              el,
+              selector: ITEM_CONTENT_SELECTOR,
+              prevOpen: prevValue,
+              nextOpen: nextValue,
+              resolveValue: resolveAccordionValue
+            });
+            hook.lastValue = nextValue;
+          }
+          const propsApplied = accordion.updateProps(__spreadValues(__spreadValues({}, layout), valuePatch));
+          if (!propsApplied) {
+            accordion.render();
+          }
         }
-      };
+      });
     }
   });
 
-  // ../priv/static/chunks/chunk-DH47S3VU.mjs
-  function hiddenInputPropsWithoutValue(props) {
-    const rest = __spreadValues({}, props);
-    delete rest.defaultValue;
-    delete rest.value;
-    return rest;
-  }
-  function syncHiddenInputValue(inputEl, hostEl, value, spreadProps2, hiddenProps) {
-    if (Object.keys(hiddenProps).length > 0) {
-      spreadProps2(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
-    }
-    inputEl.value = value;
-    syncInputFormAssociation(inputEl, hostEl);
-  }
-  var init_chunk_DH47S3VU = __esm({
-    "../priv/static/chunks/chunk-DH47S3VU.mjs"() {
-      "use strict";
-      init_chunk_6AOEC32Q();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-QB2YSZP6.mjs
+  // ../priv/static/chunks/chunk-SBGJ6WBJ.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
     const midX = x2 + width / 2;
@@ -4164,8 +4285,8 @@ var Corex = (() => {
     return { top, right, bottom, left };
   }
   var __defProp4, __defNormalProp4, __publicField4, createPoint, subtractPoints, addPoints;
-  var init_chunk_QB2YSZP6 = __esm({
-    "../priv/static/chunks/chunk-QB2YSZP6.mjs"() {
+  var init_chunk_SBGJ6WBJ = __esm({
+    "../priv/static/chunks/chunk-SBGJ6WBJ.mjs"() {
       "use strict";
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -4179,10 +4300,10 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-PE34YET2.mjs
+  // ../priv/static/chunks/chunk-KHEHQE65.mjs
   var floor, abs, round, min, max, pow, sign, isNaN2, nan, mod, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, roundValue, clampValue, getValuePercent, getPercentValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, toFixedNumber, countDecimals, decimalOp, incrementValue, decrementValue, toPx;
-  var init_chunk_PE34YET2 = __esm({
-    "../priv/static/chunks/chunk-PE34YET2.mjs"() {
+  var init_chunk_KHEHQE65 = __esm({
+    "../priv/static/chunks/chunk-KHEHQE65.mjs"() {
       "use strict";
       ({ floor, abs, round, min, max, pow, sign } = Math);
       isNaN2 = (v2) => Number.isNaN(v2);
@@ -4259,6 +4380,221 @@ var Corex = (() => {
       incrementValue = (v2, s2) => decimalOp(nan(v2), "+", s2);
       decrementValue = (v2, s2) => decimalOp(nan(v2), "-", s2);
       toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
+    }
+  });
+
+  // ../priv/static/chunks/chunk-NUQOKDPA.mjs
+  function reapplyLiveViewValueInputUsage(input) {
+    const p2 = input;
+    if (!p2.phxPrivate) p2.phxPrivate = {};
+    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
+  }
+  function dispatchFormInputEvents(input, options = {}) {
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    if (options.change !== false) {
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+  function syncCheckedHiddenInput(input, checked, options = {}) {
+    input.checked = checked;
+    if (options.markUsed !== false) {
+      reapplyLiveViewValueInputUsage(input);
+    }
+    dispatchFormInputEvents(input, options);
+  }
+  function notifyPhoenixFormChange(input, value, options = {}) {
+    var _a4;
+    const next2 = String(value);
+    const unchanged = String(input.value) === next2;
+    if (!unchanged) {
+      input.value = next2;
+    }
+    if (input.getAttribute("value") !== next2) {
+      input.setAttribute("value", next2);
+    }
+    if (unchanged && options.force !== true) {
+      return;
+    }
+    (_a4 = options.onTouched) == null ? void 0 : _a4.call(options);
+    if (options.markUsed !== false) {
+      reapplyLiveViewValueInputUsage(input);
+    }
+    if (options.dispatch === false) {
+      return;
+    }
+    dispatchFormInputEvents(input, { change: options.change });
+  }
+  function syncLiveViewFormInput(input, getValue, onTouched) {
+    notifyPhoenixFormChange(input, getValue(), { onTouched });
+  }
+  function isFormFieldUsed(el, userTouched = false) {
+    return userTouched || getBoolean(el, "fieldUsed") === true;
+  }
+  function padValues(values, fixedLength) {
+    const out = values.map((v2) => String(v2));
+    while (out.length < fixedLength) out.push("");
+    return out.slice(0, fixedLength);
+  }
+  function arrayInputId(scope, hostId, index) {
+    return index === "empty" ? `${scope}:${hostId}:array-input-empty` : `${scope}:${hostId}:array-input-${index}`;
+  }
+  function createArrayInput(scope, submitName, hostEl, value, empty, index) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.id = arrayInputId(scope, hostEl.id, index);
+    input.setAttribute("data-scope", scope);
+    input.setAttribute("data-part", "array-input");
+    if (empty) input.setAttribute("data-empty", "true");
+    if (submitName) {
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, hostEl);
+    }
+    input.value = value;
+    return input;
+  }
+  function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fieldTouched) {
+    var _a4;
+    const existing = Array.from(
+      container.querySelectorAll(`[data-scope="${scope}"][data-part="array-input"]`)
+    );
+    if (values.length === 0) {
+      existing.forEach((node) => node.remove());
+      const empty = createArrayInput(
+        scope,
+        fieldTouched ? submitName : void 0,
+        hostEl,
+        "",
+        true,
+        "empty"
+      );
+      container.appendChild(empty);
+      return empty;
+    }
+    const emptyNodes = existing.filter((n2) => n2.hasAttribute("data-empty"));
+    emptyNodes.forEach((n2) => n2.remove());
+    let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
+    while (valueNodes.length < values.length) {
+      const input = createArrayInput(
+        scope,
+        fieldTouched ? submitName : void 0,
+        hostEl,
+        "",
+        false,
+        valueNodes.length
+      );
+      container.appendChild(input);
+      valueNodes = Array.from(
+        container.querySelectorAll(
+          `[data-scope="${scope}"][data-part="array-input"]:not([data-empty])`
+        )
+      );
+    }
+    while (valueNodes.length > values.length) {
+      const last2 = valueNodes[valueNodes.length - 1];
+      last2 == null ? void 0 : last2.remove();
+      valueNodes = valueNodes.slice(0, -1);
+    }
+    valueNodes.forEach((input, index) => {
+      var _a5;
+      input.id = arrayInputId(scope, hostEl.id, index);
+      input.value = (_a5 = values[index]) != null ? _a5 : "";
+      if (fieldTouched) {
+        input.name = submitName;
+        associateInputWithFormIfOutside(input, hostEl);
+      } else {
+        input.removeAttribute("name");
+        input.removeAttribute("form");
+      }
+    });
+    return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
+  }
+  function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
+    var _a4, _b, _c, _d;
+    const scope = (_a4 = options.scope) != null ? _a4 : "tags-input";
+    const submitName = (_b = options.submitName) != null ? _b : getString(el, "submitName");
+    if (!submitName) return;
+    const fixedLength = options.fixedLength;
+    const padded = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
+    const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
+    const allEmpty = padded.length > 0 && padded.every((v2) => String(v2).trim() === "");
+    const normalized = fixedLength !== void 0 && fieldTouched && allEmpty ? [] : padded;
+    const container = el.querySelector(
+      `[data-scope="${scope}"][data-part="array-inputs"]`
+    );
+    if (!container) return;
+    const notifyInput = syncArrayInputsInPlace(
+      container,
+      scope,
+      submitName,
+      el,
+      normalized,
+      fieldTouched
+    );
+    if (fieldTouched) {
+      container.querySelectorAll(
+        `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
+      ).forEach((input) => reapplyLiveViewValueInputUsage(input));
+    }
+    const notifyLiveView = (_c = options.notifyLiveView) != null ? _c : false;
+    if (!notifyLiveView || !notifyInput) return;
+    (_d = options.onTouched) == null ? void 0 : _d.call(options);
+    notifyPhoenixFormChange(notifyInput, notifyInput.value, {
+      onTouched: void 0,
+      force: true
+    });
+  }
+  function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
+    const form = hostEl.closest("form");
+    if (!form) return () => {
+    };
+    const handler = () => {
+      onPrepareSubmit();
+    };
+    form.addEventListener("submit", handler, { capture: true });
+    return () => form.removeEventListener("submit", handler, { capture: true });
+  }
+  function hiddenInputPropsWithoutChecked(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultChecked;
+    delete rest.checked;
+    return rest;
+  }
+  function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps2, hiddenInputProps) {
+    spreadProps2(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
+    inputEl.checked = checked;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  function hiddenInputPropsWithoutValue(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultValue;
+    delete rest.value;
+    return rest;
+  }
+  function syncHiddenInputValue(inputEl, hostEl, value, spreadProps2, hiddenProps) {
+    if (Object.keys(hiddenProps).length > 0) {
+      spreadProps2(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
+    }
+    inputEl.value = value;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  function markUsed(input) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  function setScalarValue(input, value, options = {}) {
+    notifyPhoenixFormChange(input, value, options);
+  }
+  function setArrayValues(el, values, options = {}) {
+    syncArrayHiddenInputsForPhoenix(el, values, options);
+  }
+  function syncFormInput(input, getValue, onTouched) {
+    syncLiveViewFormInput(input, getValue, onTouched);
+  }
+  var PHX_HAS_FOCUSED;
+  var init_chunk_NUQOKDPA = __esm({
+    "../priv/static/chunks/chunk-NUQOKDPA.mjs"() {
+      "use strict";
+      init_chunk_6L36XW7I();
+      PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
 
@@ -4500,33 +4836,58 @@ var Corex = (() => {
       valueAsDegree: details.valueAsDegree
     };
   }
-  function queueFormBubblingInputForPhoenix(el, getZag) {
+  function formSubmitName(el) {
+    var _a4;
+    return (_a4 = getString(el, "submitName")) != null ? _a4 : getString(el, "name");
+  }
+  function hiddenInput(el) {
+    return el.querySelector(
+      '[data-scope="angle-slider"][data-part="hidden-input"]'
+    );
+  }
+  function ensureHiddenInputName(el) {
+    const input = hiddenInput(el);
+    if (!input) return null;
+    const name = formSubmitName(el);
+    if (name && !input.getAttribute("name")) {
+      input.setAttribute("name", name);
+    }
+    return input;
+  }
+  function stripHiddenInputName(el) {
+    const input = hiddenInput(el);
+    if (!input) return;
+    input.removeAttribute("name");
+    input.removeAttribute("form");
+  }
+  function zagNameForForm(el) {
+    var _a4, _b;
+    return (_b = (_a4 = hiddenInput(el)) == null ? void 0 : _a4.getAttribute("name")) != null ? _b : void 0;
+  }
+  function queueFormBubblingInputForPhoenix(el, getZag, opts = {}) {
     queueMicrotask(() => {
       const zag = getZag();
-      const input = el.querySelector(
-        '[data-scope="angle-slider"][data-part="hidden-input"]'
-      );
+      const input = ensureHiddenInputName(el);
       if (!input) return;
-      const v2 = zag.api.value;
-      if (String(input.value) !== String(v2)) {
-        input.value = String(v2);
-      }
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
+      notifyPhoenixFormChange(input, String(zag.api.value), {
+        force: true,
+        markUsed: opts.markUsed
+      });
     });
+  }
+  function shouldGateHiddenName(el) {
+    return Boolean(formSubmitName(el)) && getString(el, "name") === void 0;
   }
   var anatomy2, parts2, getRootId2, getThumbId, getHiddenInputId, getControlId, getValueTextId, getLabelId, getHiddenInputEl, getControlEl, getThumbEl, MIN_VALUE, MAX_VALUE, machine2, AngleSlider, AngleSliderHook;
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_DH47S3VU();
-      init_chunk_QB2YSZP6();
-      init_chunk_PE34YET2();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_SBGJ6WBJ();
+      init_chunk_KHEHQE65();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4726,7 +5087,6 @@ var Corex = (() => {
         }
       });
       AngleSlider = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine2, props);
         }
@@ -4752,6 +5112,12 @@ var Corex = (() => {
               (el, props) => this.spreadProps(el, props),
               this.api.getHiddenInputProps()
             );
+            const submitName = this.el.dataset.submitName;
+            const gatedName = this.el.dataset.name;
+            if (submitName && !gatedName) {
+              hiddenInputEl.removeAttribute("name");
+              hiddenInputEl.removeAttribute("form");
+            }
           }
           const controlEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="control"]'
@@ -4786,22 +5152,26 @@ var Corex = (() => {
           });
         }
       };
-      AngleSliderHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      AngleSliderHook = createZagLiveHook({
+        key: "angleSlider",
+        controlledKeys: ["value", "defaultValue"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
+          hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
           const zag = new AngleSlider(el, __spreadProps(__spreadValues({
             id: el.id
           }, mountNumberBinding(el)), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
+            name: zagNameForForm(el),
             dir: getDir(el),
             "aria-label": getString(el, "aria-label"),
             "aria-labelledby": getString(el, "aria-labelledby"),
             onValueChange: (details) => {
+              hook.fieldTouched = true;
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -4812,6 +5182,7 @@ var Corex = (() => {
               });
             },
             onValueChangeEnd: (details) => {
+              hook.fieldTouched = true;
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -4823,8 +5194,6 @@ var Corex = (() => {
               queueFormBubblingInputForPhoenix(el, () => zag);
             }
           }));
-          zag.init();
-          this.angleSlider = zag;
           const emitValue = (respondTo) => {
             emitResponse({
               respondTo,
@@ -4847,46 +5216,54 @@ var Corex = (() => {
               }
             });
           };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:angle-slider:set-value", (event) => {
+          dom2.add("corex:angle-slider:set-value", (event) => {
+            hook.fieldTouched = true;
             zag.api.setValue(event.detail.value);
             queueFormBubblingInputForPhoenix(el, () => zag);
           });
-          domRegistry.add("corex:angle-slider:value", (event) => {
+          dom2.add("corex:angle-slider:value", (event) => {
             emitValue(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("angle_slider_set_value", (payload) => {
+          server.add("angle_slider_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setValue(payload.value);
-            queueFormBubblingInputForPhoenix(el, () => zag);
+            queueFormBubblingInputForPhoenix(el, () => zag, { markUsed: false });
           });
-          registry.add("angle_slider_value", (payload) => {
+          server.add("angle_slider_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitValue(parseRespondTo(payload));
           });
+          return zag;
         },
-        updated() {
-          const el = this.el;
-          const zag = this.angleSlider;
-          zag == null ? void 0 : zag.updateProps({
+        afterInit(hook, zag) {
+          if (!hook.fieldTouched && shouldGateHiddenName(hook.el)) {
+            stripHiddenInputName(hook.el);
+            zag.updateProps({ name: void 0 });
+            zag.render();
+          }
+        },
+        update(hook, zag) {
+          var _a4;
+          const el = hook.el;
+          const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+          if (getBoolean(el, "fieldUsed")) {
+            hook.fieldTouched = true;
+          }
+          const name = hook.fieldTouched ? formSubmitName(el) : shouldGateHiddenName(el) ? void 0 : (_a4 = getString(el, "name")) != null ? _a4 : formSubmitName(el);
+          zag.updateProps(__spreadValues(__spreadValues({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
+            name,
             dir: getDir(el)
-          });
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.angleSlider) == null ? void 0 : _c.destroy();
+          }, valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
+          zag.render();
+          if (!hook.fieldTouched && shouldGateHiddenName(el)) {
+            stripHiddenInputName(el);
+          }
         }
-      };
+      });
     }
   });
 
@@ -4951,9 +5328,8 @@ var Corex = (() => {
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5059,7 +5435,6 @@ var Corex = (() => {
         }
       });
       Avatar = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine3, props);
         }
@@ -5088,11 +5463,12 @@ var Corex = (() => {
           }
         }
       };
-      AvatarHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      AvatarHook = createZagLiveHook({
+        key: "avatar",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const initialSrc = getString(el, "src");
           const zag = new Avatar(el, {
             id: el.id,
@@ -5109,70 +5485,52 @@ var Corex = (() => {
               });
             }
           });
-          zag.init();
-          this.avatar = zag;
-          this.lastSrc = initialSrc;
-          const emitLoaded = (respondTo) => {
-            const loaded = zag.api.loaded;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
+          hook.lastSrc = initialSrc;
+          const emitLoaded = createValueEmitter(
+            { el, pushEvent, canPushServer: canPush },
+            {
+              getPayload: () => ({ id: el.id, loaded: zag.api.loaded }),
               serverEventName: "avatar_loaded_response",
-              serverPayload: { id: el.id, loaded },
-              el,
-              domEventName: "avatar-loaded",
-              domDetail: { id: el.id, loaded }
-            });
-          };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:avatar:set-src", (event) => {
+              domEventName: "avatar-loaded"
+            }
+          );
+          dom2.add("corex:avatar:set-src", (event) => {
             var _a4;
             const next2 = (_a4 = event.detail) == null ? void 0 : _a4.src;
             if (typeof next2 !== "string") return;
             zag.api.setSrc(next2);
-            this.lastSrc = next2;
+            hook.lastSrc = next2;
             el.dataset.src = next2;
           });
-          domRegistry.add("corex:avatar:loaded", (event) => {
+          dom2.add("corex:avatar:loaded", (event) => {
             emitLoaded(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("avatar_set_src", (payload) => {
+          server.add("avatar_set_src", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setSrc(payload.src);
-            this.lastSrc = payload.src;
+            hook.lastSrc = payload.src;
             el.dataset.src = payload.src;
           });
-          registry.add("avatar_loaded", (payload) => {
+          server.add("avatar_loaded", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitLoaded(parseRespondTo(payload));
           });
+          return zag;
         },
-        updated() {
-          const src = getString(this.el, "src");
-          const dir = getString(this.el, "dir");
-          if (this.avatar) {
-            this.avatar.updateProps(__spreadValues({}, dir !== void 0 ? { dir } : {}));
+        update(hook, zag) {
+          const src = getString(hook.el, "src");
+          const dir = getString(hook.el, "dir");
+          zag.updateProps(__spreadValues({}, dir !== void 0 ? { dir } : {}));
+          if (src !== void 0 && src !== hook.lastSrc) {
+            zag.api.setSrc(src);
+            hook.lastSrc = src;
           }
-          if (this.avatar && src !== void 0 && src !== this.lastSrc) {
-            this.avatar.api.setSrc(src);
-            this.lastSrc = src;
+          if (src === void 0 && hook.lastSrc !== void 0) {
+            zag.api.setSrc("");
+            hook.lastSrc = void 0;
           }
-          if (this.avatar && src === void 0 && this.lastSrc !== void 0) {
-            this.avatar.api.setSrc("");
-            this.lastSrc = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.avatar) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -5633,10 +5991,9 @@ var Corex = (() => {
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
       "use strict";
-      init_chunk_PE34YET2();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_KHEHQE65();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6218,7 +6575,6 @@ var Corex = (() => {
         }
       });
       Carousel = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine4, props);
         }
@@ -6226,8 +6582,9 @@ var Corex = (() => {
           return this.zagConnect(connect4);
         }
         updateProps(props) {
-          super.updateProps(props);
+          const applied = super.updateProps(props);
           this.machine.service.send({ type: "SNAP.REFRESH" });
+          return applied;
         }
         render() {
           var _a4;
@@ -6284,11 +6641,12 @@ var Corex = (() => {
           itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
         }
       };
-      CarouselHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      CarouselHook = createZagLiveHook({
+        key: "carousel",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const slideCount = getNumber(el, "slideCount");
           if (slideCount == null || slideCount < 1) {
             return;
@@ -6324,92 +6682,61 @@ var Corex = (() => {
               });
             }
           });
-          zag.init();
-          this.carousel = zag;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:carousel:play", () => {
+          dom2.add("corex:carousel:play", () => {
             zag.api.play();
           });
-          domRegistry.add("corex:carousel:pause", () => {
+          dom2.add("corex:carousel:pause", () => {
             zag.api.pause();
           });
-          domRegistry.add("corex:carousel:scroll-next", (event) => {
+          dom2.add("corex:carousel:scroll-next", (event) => {
             zag.api.scrollNext(readInstant(event.detail));
           });
-          domRegistry.add("corex:carousel:scroll-prev", (event) => {
+          dom2.add("corex:carousel:scroll-prev", (event) => {
             zag.api.scrollPrev(readInstant(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("carousel_play", (payload) => {
+          server.add("carousel_play", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.play();
           });
-          registry.add("carousel_pause", (payload) => {
+          server.add("carousel_pause", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.pause();
           });
-          registry.add("carousel_scroll_next", (payload) => {
+          server.add("carousel_scroll_next", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.scrollNext(readInstant(payload));
           });
-          registry.add("carousel_scroll_prev", (payload) => {
+          server.add("carousel_scroll_prev", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.scrollPrev(readInstant(payload));
           });
+          return zag;
         },
-        updated() {
-          var _a4;
-          const slideCount = getNumber(this.el, "slideCount");
+        update(hook, zag) {
+          const slideCount = getNumber(hook.el, "slideCount");
           if (slideCount == null || slideCount < 1) return;
-          (_a4 = this.carousel) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
+          zag.updateProps({
+            id: hook.el.id,
             slideCount,
-            dir: getDir(this.el),
-            orientation: getString(this.el, "orientation"),
-            slidesPerPage: getNumber(this.el, "slidesPerPage"),
-            slidesPerMove: getString(this.el, "slidesPerMove") === "auto" ? "auto" : getNumber(this.el, "slidesPerMove"),
-            loop: getBoolean(this.el, "loop"),
-            autoplay: getBoolean(this.el, "autoplay") ? { delay: getNumber(this.el, "autoplayDelay") } : false,
-            allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
-            spacing: getString(this.el, "spacing"),
-            padding: getString(this.el, "padding"),
-            inViewThreshold: getNumber(this.el, "inViewThreshold"),
-            snapType: getString(this.el, "snapType"),
-            autoSize: getBoolean(this.el, "autoSize")
+            dir: getDir(hook.el),
+            orientation: getString(hook.el, "orientation"),
+            slidesPerPage: getNumber(hook.el, "slidesPerPage"),
+            slidesPerMove: getString(hook.el, "slidesPerMove") === "auto" ? "auto" : getNumber(hook.el, "slidesPerMove"),
+            loop: getBoolean(hook.el, "loop"),
+            autoplay: getBoolean(hook.el, "autoplay") ? { delay: getNumber(hook.el, "autoplayDelay") } : false,
+            allowMouseDrag: getBoolean(hook.el, "allowMouseDrag"),
+            spacing: getString(hook.el, "spacing"),
+            padding: getString(hook.el, "padding"),
+            inViewThreshold: getNumber(hook.el, "inViewThreshold"),
+            snapType: getString(hook.el, "snapType"),
+            autoSize: getBoolean(hook.el, "autoSize")
           });
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.carousel) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
-  // ../priv/static/chunks/chunk-MM3X6GKK.mjs
-  function hiddenInputPropsWithoutChecked(props) {
-    const rest = __spreadValues({}, props);
-    delete rest.defaultChecked;
-    delete rest.checked;
-    return rest;
-  }
-  function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps2, hiddenInputProps) {
-    spreadProps2(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
-    inputEl.checked = checked;
-    syncInputFormAssociation(inputEl, hostEl);
-  }
-  var init_chunk_MM3X6GKK = __esm({
-    "../priv/static/chunks/chunk-MM3X6GKK.mjs"() {
-      "use strict";
-      init_chunk_6AOEC32Q();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-YUSIPE4B.mjs
+  // ../priv/static/chunks/chunk-QCFVFTGB.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6528,10 +6855,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_YUSIPE4B = __esm({
-    "../priv/static/chunks/chunk-YUSIPE4B.mjs"() {
+  var init_chunk_QCFVFTGB = __esm({
+    "../priv/static/chunks/chunk-QCFVFTGB.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6701,13 +7028,11 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_MM3X6GKK();
-      init_chunk_YUSIPE4B();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_QCFVFTGB();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6865,7 +7190,6 @@ var Corex = (() => {
         }
       });
       Checkbox = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine5, props);
         }
@@ -6908,11 +7232,13 @@ var Corex = (() => {
           }
         }
       };
-      CheckboxHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      CheckboxHook = createZagLiveHook({
+        key: "checkbox",
+        controlledKeys: ["checked"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const zagCheckbox = new Checkbox(el, __spreadProps(__spreadValues({
             id: el.id
           }, mountCheckedBinding(el)), {
@@ -6937,38 +7263,30 @@ var Corex = (() => {
                 '[data-scope="checkbox"][data-part="hidden-input"]'
               );
               if (input) {
-                input.checked = details.checked === true;
-                input.dispatchEvent(new Event("input", { bubbles: true }));
-                input.dispatchEvent(new Event("change", { bubbles: true }));
+                syncCheckedHiddenInput(input, details.checked === true, { markUsed: false });
               }
             }
           }));
-          zagCheckbox.init();
-          this.checkbox = zagCheckbox;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:checkbox:set-checked", (event) => {
+          dom2.add("corex:checkbox:set-checked", (event) => {
             const { checked } = event.detail;
             zagCheckbox.api.setChecked(checked);
           });
-          domRegistry.add("corex:checkbox:toggle-checked", () => {
+          dom2.add("corex:checkbox:toggle-checked", () => {
             zagCheckbox.api.toggleChecked();
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("checkbox_set_checked", (payload) => {
+          server.add("checkbox_set_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const checked = readPayloadChecked(payload);
             if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
           });
-          registry.add("checkbox_set_checked_many", (payload) => {
+          server.add("checkbox_set_checked_many", (payload) => {
             if (!payload || typeof payload !== "object") return;
             const ids = payload.ids;
             if (!Array.isArray(ids) || !ids.includes(el.id)) return;
             const checked = readPayloadChecked(payload);
             if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
           });
-          registry.add("checkbox_toggle_checked", (payload) => {
+          server.add("checkbox_toggle_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zagCheckbox.api.toggleChecked();
           });
@@ -6985,7 +7303,7 @@ var Corex = (() => {
               domDetail: detail
             });
           };
-          registry.add("checkbox_checked", (payload) => {
+          server.add("checkbox_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitCheckedState(
               parseRespondTo(payload),
@@ -6994,7 +7312,7 @@ var Corex = (() => {
               zagCheckbox.api.checked
             );
           });
-          registry.add("checkbox_focused", (payload) => {
+          server.add("checkbox_focused", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitCheckedState(
               parseRespondTo(payload),
@@ -7003,7 +7321,7 @@ var Corex = (() => {
               zagCheckbox.api.focused
             );
           });
-          registry.add("checkbox_disabled", (payload) => {
+          server.add("checkbox_disabled", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitCheckedState(
               parseRespondTo(payload),
@@ -7012,42 +7330,28 @@ var Corex = (() => {
               zagCheckbox.api.disabled
             );
           });
+          return zagCheckbox;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
-        },
-        updated() {
-          const zagCheckbox = this.checkbox;
-          if (!zagCheckbox) return;
-          try {
-            const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
-            zagCheckbox.updateProps(__spreadProps(__spreadValues({
-              id: this.el.id
-            }, "checked" in checkedPatch ? { checked: checkedPatch.checked } : {}), {
-              disabled: getBoolean(this.el, "disabled"),
-              name: getString(this.el, "name"),
-              form: getString(this.el, "form"),
-              value: getString(this.el, "value"),
-              dir: getDir(this.el),
-              invalid: getBoolean(this.el, "invalid"),
-              required: getBoolean(this.el, "required"),
-              readOnly: getBoolean(this.el, "readonly")
-            }));
-          } finally {
-            this.beforeAttrs = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.checkbox) == null ? void 0 : _c.destroy();
+        update(hook, zagCheckbox) {
+          const checkedPatch = readUpdatedServerChecked(hook.el, hook.beforeAttrs);
+          zagCheckbox.updateProps(__spreadProps(__spreadValues({
+            id: hook.el.id
+          }, "checked" in checkedPatch ? { checked: checkedPatch.checked } : {}), {
+            disabled: getBoolean(hook.el, "disabled"),
+            name: getString(hook.el, "name"),
+            form: getString(hook.el, "form"),
+            value: getString(hook.el, "value"),
+            dir: getDir(hook.el),
+            invalid: getBoolean(hook.el, "invalid"),
+            required: getBoolean(hook.el, "required"),
+            readOnly: getBoolean(hook.el, "readonly")
+          }));
         }
-      };
+      });
     }
   });
 
-  // ../priv/static/chunks/chunk-6MIECCPA.mjs
+  // ../priv/static/chunks/chunk-V2LDXRRO.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -7070,10 +7374,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_6MIECCPA = __esm({
-    "../priv/static/chunks/chunk-6MIECCPA.mjs"() {
+  var init_chunk_V2LDXRRO = __esm({
+    "../priv/static/chunks/chunk-V2LDXRRO.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7251,10 +7555,9 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_6MIECCPA();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_V2LDXRRO();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7364,7 +7667,6 @@ var Corex = (() => {
         }
       });
       Clipboard = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine6, props);
         }
@@ -7412,11 +7714,12 @@ var Corex = (() => {
           }
         }
       };
-      ClipboardHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      ClipboardHook = createZagLiveHook({
+        key: "clipboard",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const clipboard = new Clipboard(el, {
             id: el.id,
             timeout: getNumber(el, "timeout"),
@@ -7435,25 +7738,19 @@ var Corex = (() => {
               });
             }
           });
-          clipboard.init();
-          this.clipboard = clipboard;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:clipboard:copy", () => {
+          dom2.add("corex:clipboard:copy", () => {
             clipboard.api.copy();
           });
-          domRegistry.add("corex:clipboard:set-value", (event) => {
+          dom2.add("corex:clipboard:set-value", (event) => {
             var _a4;
             const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
             if (typeof v2 === "string") clipboard.api.setValue(v2);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("clipboard_copy", (payload) => {
+          server.add("clipboard_copy", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             clipboard.api.copy();
           });
-          registry.add("clipboard_set_value", (payload) => {
+          server.add("clipboard_set_value", (payload) => {
             var _a4;
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!payload || typeof payload !== "object") return;
@@ -7461,21 +7758,15 @@ var Corex = (() => {
             const v2 = (_a4 = o2.value) != null ? _a4 : o2["value"];
             if (typeof v2 === "string") clipboard.api.setValue(v2);
           });
+          return clipboard;
         },
-        updated() {
-          var _a4;
-          (_a4 = this.clipboard) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            timeout: getNumber(this.el, "timeout")
+        update(hook, clipboard) {
+          clipboard.updateProps({
+            id: hook.el.id,
+            timeout: getNumber(hook.el, "timeout")
           });
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.clipboard) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -7577,12 +7868,10 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_PE34YET2();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_KHEHQE65();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7849,7 +8138,6 @@ var Corex = (() => {
         }
       });
       Collapsible = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine7, props);
         }
@@ -7881,11 +8169,13 @@ var Corex = (() => {
           }
         }
       };
-      CollapsibleHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      CollapsibleHook = createZagLiveHook({
+        key: "collapsible",
+        controlledKeys: ["open"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const collapsible = new Collapsible(el, __spreadProps(__spreadValues({
             id: el.id
           }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
@@ -7902,106 +8192,92 @@ var Corex = (() => {
               });
             }
           }));
-          collapsible.init();
-          this.collapsible = collapsible;
-          const emitOpen = (respondTo) => {
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
+          const emitOpen = createValueEmitter(
+            { el, pushEvent, canPushServer: canPush },
+            {
+              getPayload: () => ({
+                id: el.id,
+                open: collapsible.api.open,
+                disabled: collapsible.api.disabled
+              }),
               serverEventName: "collapsible_open_response",
-              serverPayload: {
-                id: el.id,
-                open: collapsible.api.open,
-                disabled: collapsible.api.disabled
-              },
-              el,
-              domEventName: "collapsible-open",
-              domDetail: {
-                id: el.id,
-                open: collapsible.api.open,
-                disabled: collapsible.api.disabled
-              }
-            });
-          };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:collapsible:set-open", (event) => {
-            const { open } = event.detail;
-            collapsible.api.setOpen(open);
+              domEventName: "collapsible-open"
+            }
+          );
+          dom2.add("corex:collapsible:set-open", (event) => {
+            collapsible.api.setOpen(event.detail.open);
           });
-          domRegistry.add("corex:collapsible:open", (event) => {
+          dom2.add("corex:collapsible:open", (event) => {
             emitOpen(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("collapsible_set_open", (payload) => {
+          server.add("collapsible_set_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             collapsible.api.setOpen(payload.open);
           });
-          registry.add("collapsible_open", (payload) => {
+          server.add("collapsible_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitOpen(parseRespondTo(payload));
           });
+          return collapsible;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["open"]);
-        },
-        updated() {
-          var _a4;
-          try {
-            const openPatch = readBooleanControlledZagUpdate(
-              this.el,
-              "open",
-              "defaultOpen",
-              this.beforeAttrs
-            );
-            (_a4 = this.collapsible) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-              id: this.el.id
-            }, openPatch), {
-              disabled: getBoolean(this.el, "disabled"),
-              dir: getDir(this.el)
-            }));
-          } finally {
-            this.beforeAttrs = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.collapsible) == null ? void 0 : _c.destroy();
+        update(hook, collapsible) {
+          const openPatch = readBooleanControlledZagUpdate(
+            hook.el,
+            "open",
+            "defaultOpen",
+            hook.beforeAttrs
+          );
+          collapsible.updateProps(__spreadProps(__spreadValues({
+            id: hook.el.id
+          }, openPatch), {
+            disabled: getBoolean(hook.el, "disabled"),
+            dir: getDir(hook.el)
+          }));
         }
-      };
+      });
     }
   });
 
-  // ../priv/static/chunks/chunk-OZ2OVCG5.mjs
+  // ../priv/static/chunks/chunk-3IY2CPWD.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
   function stripZagSubmitNames(el, scope, parts34 = ["hidden-input"]) {
     if (!hasArraySubmitName(el)) return;
     for (const part of parts34) {
-      const node = el.querySelector(`[data-scope="${scope}"][data-part="${part}"]`);
-      if (!node) continue;
-      node.removeAttribute("name");
-      node.removeAttribute("form");
+      el.querySelectorAll(`[data-scope="${scope}"][data-part="${part}"]`).forEach(
+        (node) => {
+          node.removeAttribute("name");
+          node.removeAttribute("form");
+        }
+      );
     }
   }
-  var init_chunk_OZ2OVCG5 = __esm({
-    "../priv/static/chunks/chunk-OZ2OVCG5.mjs"() {
+  var init_chunk_3IY2CPWD = __esm({
+    "../priv/static/chunks/chunk-3IY2CPWD.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
     }
   });
 
-  // ../priv/static/chunks/chunk-7BZGUIUZ.mjs
+  // ../priv/static/chunks/chunk-UFCM6256.mjs
   function createLiveRegion(opts = {}) {
     var _a4;
-    const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
+    const { level = "polite", document: doc = document, root, delay: _delay = 0, debug = false } = opts;
     const win = (_a4 = doc.defaultView) != null ? _a4 : window;
     const parent = root != null ? root : doc.body;
+    function getDebugRegion() {
+      if (!debug) return;
+      let region = doc.getElementById(DEBUG_ID);
+      if (region) return region;
+      region = doc.createElement("div");
+      region.id = DEBUG_ID;
+      region.dataset.liveAnnouncerDebug = "true";
+      region.setAttribute("aria-hidden", "true");
+      region.style.cssText = DEBUG_STYLES;
+      parent.appendChild(region);
+      return region;
+    }
     function announce(message, delay2) {
       const oldRegion = doc.getElementById(ID);
       oldRegion == null ? void 0 : oldRegion.remove();
@@ -8026,12 +8302,17 @@ var Corex = (() => {
       });
       parent.appendChild(region);
       win.setTimeout(() => {
+        if (!region.isConnected) return;
         region.textContent = message;
+        const debugRegion = getDebugRegion();
+        if (debugRegion) debugRegion.textContent = message;
       }, delay2);
     }
     function destroy() {
       const oldRegion = doc.getElementById(ID);
       oldRegion == null ? void 0 : oldRegion.remove();
+      const debugRegion = doc.getElementById(DEBUG_ID);
+      debugRegion == null ? void 0 : debugRegion.remove();
     }
     return {
       announce,
@@ -8041,15 +8322,17 @@ var Corex = (() => {
       }
     };
   }
-  var ID;
-  var init_chunk_7BZGUIUZ = __esm({
-    "../priv/static/chunks/chunk-7BZGUIUZ.mjs"() {
+  var ID, DEBUG_ID, DEBUG_STYLES;
+  var init_chunk_UFCM6256 = __esm({
+    "../priv/static/chunks/chunk-UFCM6256.mjs"() {
       "use strict";
       ID = "__live-region__";
+      DEBUG_ID = "__live-region-debug__";
+      DEBUG_STYLES = "position:fixed;inset-inline:0;bottom:0;z-index:2147483647;padding:12px 16px;background:black;color:white;font-size:14px;line-height:20px;text-align:center;pointer-events:none;";
     }
   });
 
-  // ../priv/static/chunks/chunk-MHRYIVD2.mjs
+  // ../priv/static/chunks/chunk-X7GOMWQ5.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9149,21 +9432,25 @@ var Corex = (() => {
   }
   function getFlipMiddleware(opts) {
     if (!opts.flip) return;
-    const boundary = resolveBoundaryOption(opts.boundary);
-    return flip2(__spreadProps(__spreadValues({}, boundary ? { boundary } : void 0), {
-      padding: opts.overflowPadding,
-      fallbackPlacements: opts.flip === true ? void 0 : opts.flip
-    }));
+    return flip2(() => {
+      const boundary = resolveBoundaryOption(opts.boundary);
+      return __spreadProps(__spreadValues({}, boundary ? { boundary } : void 0), {
+        padding: opts.overflowPadding,
+        fallbackPlacements: opts.flip === true ? void 0 : opts.flip
+      });
+    });
   }
   function getShiftMiddleware(opts) {
     if (!opts.slide && !opts.overlap) return;
-    const boundary = resolveBoundaryOption(opts.boundary);
-    return shift2(__spreadProps(__spreadValues({}, boundary ? { boundary } : void 0), {
-      mainAxis: opts.slide,
-      crossAxis: opts.overlap,
-      padding: opts.overflowPadding,
-      limiter: limitShift2()
-    }));
+    return shift2(() => {
+      const boundary = resolveBoundaryOption(opts.boundary);
+      return __spreadProps(__spreadValues({}, boundary ? { boundary } : void 0), {
+        mainAxis: opts.slide,
+        crossAxis: opts.overlap,
+        padding: opts.overflowPadding,
+        limiter: limitShift2()
+      });
+    });
   }
   function getSizeMiddleware(opts) {
     if (opts.sizeMiddleware === false && !opts.sameWidth && !opts.fitViewport) return;
@@ -9171,37 +9458,46 @@ var Corex = (() => {
     let lastReferenceHeight;
     let lastAvailableWidth;
     let lastAvailableHeight;
-    return size2({
-      padding: opts.overflowPadding,
-      apply({ elements, rects, availableHeight, availableWidth }) {
-        const floating = elements.floating;
-        const referenceWidth = Math.round(rects.reference.width);
-        const referenceHeight = Math.round(rects.reference.height);
-        availableWidth = Math.floor(availableWidth);
-        availableHeight = Math.floor(availableHeight);
-        if (!isApproximatelyEqual(lastReferenceWidth, referenceWidth)) {
-          floating.style.setProperty("--reference-width", `${referenceWidth}px`);
-          lastReferenceWidth = referenceWidth;
+    return size2(() => {
+      const boundary = resolveBoundaryOption(opts.boundary);
+      return __spreadProps(__spreadValues({
+        padding: opts.overflowPadding
+      }, boundary ? { boundary } : void 0), {
+        apply({ elements, rects, availableHeight, availableWidth }) {
+          const floating = elements.floating;
+          const referenceWidth = Math.round(rects.reference.width);
+          const referenceHeight = Math.round(rects.reference.height);
+          availableWidth = Math.floor(availableWidth);
+          availableHeight = Math.floor(availableHeight);
+          if (!isApproximatelyEqual(lastReferenceWidth, referenceWidth)) {
+            floating.style.setProperty("--reference-width", `${referenceWidth}px`);
+            lastReferenceWidth = referenceWidth;
+          }
+          if (!isApproximatelyEqual(lastReferenceHeight, referenceHeight)) {
+            floating.style.setProperty("--reference-height", `${referenceHeight}px`);
+            lastReferenceHeight = referenceHeight;
+          }
+          if (!isApproximatelyEqual(lastAvailableWidth, availableWidth)) {
+            floating.style.setProperty("--available-width", `${availableWidth}px`);
+            lastAvailableWidth = availableWidth;
+          }
+          if (!isApproximatelyEqual(lastAvailableHeight, availableHeight)) {
+            floating.style.setProperty("--available-height", `${availableHeight}px`);
+            lastAvailableHeight = availableHeight;
+          }
         }
-        if (!isApproximatelyEqual(lastReferenceHeight, referenceHeight)) {
-          floating.style.setProperty("--reference-height", `${referenceHeight}px`);
-          lastReferenceHeight = referenceHeight;
-        }
-        if (!isApproximatelyEqual(lastAvailableWidth, availableWidth)) {
-          floating.style.setProperty("--available-width", `${availableWidth}px`);
-          lastAvailableWidth = availableWidth;
-        }
-        if (!isApproximatelyEqual(lastAvailableHeight, availableHeight)) {
-          floating.style.setProperty("--available-height", `${availableHeight}px`);
-          lastAvailableHeight = availableHeight;
-        }
-      }
+      });
     });
   }
   function hideWhenDetachedMiddleware(opts) {
-    var _a4;
     if (!opts.hideWhenDetached) return;
-    return hide2({ strategy: "referenceHidden", boundary: (_a4 = resolveBoundaryOption(opts.boundary)) != null ? _a4 : "clippingAncestors" });
+    return hide2(() => {
+      var _a4;
+      return {
+        strategy: "referenceHidden",
+        boundary: (_a4 = resolveBoundaryOption(opts.boundary)) != null ? _a4 : "clippingAncestors"
+      };
+    });
   }
   function getAutoUpdateOptions(opts) {
     if (!opts) return {};
@@ -9413,10 +9709,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_MHRYIVD2 = __esm({
-    "../priv/static/chunks/chunk-MHRYIVD2.mjs"() {
+  var init_chunk_X7GOMWQ5 = __esm({
+    "../priv/static/chunks/chunk-X7GOMWQ5.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10126,7 +10422,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ZSA4KI2Y.mjs
+  // ../priv/static/chunks/chunk-F544AH56.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10351,17 +10647,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_ZSA4KI2Y = __esm({
-    "../priv/static/chunks/chunk-ZSA4KI2Y.mjs"() {
+  var init_chunk_F544AH56 = __esm({
+    "../priv/static/chunks/chunk-F544AH56.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-CBUVYVIR.mjs
+  // ../priv/static/chunks/chunk-CI7ZMY4G.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10369,6 +10665,27 @@ var Corex = (() => {
       fn == null ? void 0 : fn(event);
     };
     return addDomEvent(getDocument(node), "keydown", handleKeyDown, { capture: true });
+  }
+  function applyLayerStackMetadata(layer, index, el) {
+    el.style.setProperty("--layer-index", `${index}`);
+    el.removeAttribute("data-nested");
+    el.removeAttribute("data-has-nested");
+    const parentOfSameType = layerStack.getParentLayerOfType(layer.node, layer.type);
+    if (parentOfSameType) {
+      el.setAttribute("data-nested", layer.type);
+    }
+    const nestedCount = layerStack.countNestedLayersOfType(layer.node, layer.type);
+    if (nestedCount > 0) {
+      el.setAttribute("data-has-nested", layer.type);
+    }
+    el.style.setProperty("--nested-layer-count", `${nestedCount}`);
+  }
+  function clearLayerStyleMirror(el) {
+    el.style.removeProperty("--layer-index");
+    el.style.removeProperty("--nested-layer-count");
+    el.style.removeProperty("--z-index");
+    el.removeAttribute("data-nested");
+    el.removeAttribute("data-has-nested");
   }
   function fireCustomEvent2(el, type, detail) {
     const win = el.ownerDocument.defaultView || window;
@@ -10378,22 +10695,50 @@ var Corex = (() => {
   function addListenerOnce(el, type, callback) {
     el.addEventListener(type, callback, { once: true });
   }
+  function getDesiredPointerEvents(node) {
+    return layerStack.isBelowPointerBlockingLayer(node) ? "none" : "auto";
+  }
+  function applyPointerEvents(node) {
+    const desired = getDesiredPointerEvents(node);
+    if (node.style.pointerEvents !== desired) {
+      node.style.pointerEvents = desired;
+    }
+  }
+  function ensurePointerEventsObserver(node) {
+    if (layerObservers.has(node)) return;
+    const win = getWindow(node);
+    if (typeof win.MutationObserver === "undefined") return;
+    const observer = new win.MutationObserver(() => {
+      if (!layerObservers.has(node)) return;
+      applyPointerEvents(node);
+    });
+    observer.observe(node, { attributes: true, attributeFilter: ["style"] });
+    layerObservers.set(node, observer);
+  }
   function assignPointerEventToLayers() {
     layerStack.layers.forEach(({ node }) => {
-      node.style.pointerEvents = layerStack.isBelowPointerBlockingLayer(node) ? "none" : "auto";
+      applyPointerEvents(node);
+      ensurePointerEventsObserver(node);
     });
   }
   function clearPointerEvent(node) {
+    const observer = layerObservers.get(node);
+    if (observer) {
+      observer.disconnect();
+      layerObservers.delete(node);
+    }
     node.style.pointerEvents = "";
   }
   function disablePointerEventsOutside(node, persistentElements) {
     const doc = getDocument(node);
     const cleanups = [];
     if (layerStack.hasPointerBlockingLayer() && !doc.body.hasAttribute("data-inert")) {
-      originalBodyPointerEvents = document.body.style.pointerEvents;
+      originalBodyPointerEvents.set(doc.body, doc.body.style.pointerEvents);
       queueMicrotask(() => {
-        doc.body.style.pointerEvents = "none";
-        doc.body.setAttribute("data-inert", "");
+        const body = doc.body;
+        if (!body) return;
+        body.style.pointerEvents = "none";
+        body.setAttribute("data-inert", "");
       });
     }
     persistentElements == null ? void 0 : persistentElements.forEach((el) => {
@@ -10410,9 +10755,15 @@ var Corex = (() => {
     return () => {
       if (layerStack.hasPointerBlockingLayer()) return;
       queueMicrotask(() => {
-        doc.body.style.pointerEvents = originalBodyPointerEvents;
-        doc.body.removeAttribute("data-inert");
-        if (doc.body.style.length === 0) doc.body.removeAttribute("style");
+        const body = doc.body;
+        if (!body) return;
+        const original = originalBodyPointerEvents.get(body);
+        if (original !== void 0) {
+          body.style.pointerEvents = original;
+          originalBodyPointerEvents.delete(body);
+        }
+        body.removeAttribute("data-inert");
+        if (body.style.length === 0) body.removeAttribute("style");
       });
       cleanups.forEach((fn) => fn());
     };
@@ -10426,8 +10777,23 @@ var Corex = (() => {
     if (!node) {
       return;
     }
-    const { onDismiss, onRequestDismiss, pointerBlocking, exclude: excludeContainers, debug, type = "dialog" } = options;
-    const layer = { dismiss: onDismiss, node, type, pointerBlocking, requestDismiss: onRequestDismiss };
+    const {
+      onDismiss,
+      onRequestDismiss,
+      pointerBlocking,
+      exclude: excludeContainers,
+      debug,
+      type = "dialog",
+      layerStyleTargets
+    } = options;
+    const layer = {
+      dismiss: onDismiss,
+      node,
+      type,
+      pointerBlocking,
+      requestDismiss: onRequestDismiss,
+      styleTargets: layerStyleTargets
+    };
     layerStack.add(layer);
     assignPointerEventToLayers();
     function onPointerDownOutside(event) {
@@ -10519,12 +10885,12 @@ var Corex = (() => {
       cleanups.forEach((fn) => fn == null ? void 0 : fn());
     };
   }
-  var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_CBUVYVIR = __esm({
-    "../priv/static/chunks/chunk-CBUVYVIR.mjs"() {
+  var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents, layerObservers;
+  var init_chunk_CI7ZMY4G = __esm({
+    "../priv/static/chunks/chunk-CI7ZMY4G.mjs"() {
       "use strict";
-      init_chunk_ZSA4KI2Y();
-      init_chunk_6AOEC32Q();
+      init_chunk_F544AH56();
+      init_chunk_6L36XW7I();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10581,6 +10947,10 @@ var Corex = (() => {
           return Array.from(this.branches).some((branch) => contains(branch, target));
         },
         add(layer) {
+          const existingIndex = this.indexOf(layer.node);
+          if (existingIndex !== -1) {
+            this.layers.splice(existingIndex, 1);
+          }
           this.layers.push(layer);
           this.syncLayers();
         },
@@ -10588,13 +10958,21 @@ var Corex = (() => {
           this.branches.push(node);
         },
         remove(node) {
+          var _a4;
           const index = this.indexOf(node);
           if (index < 0) return;
+          const layer = this.layers[index];
+          (_a4 = layer.styleTargets) == null ? void 0 : _a4.forEach((getTarget) => {
+            const target = getTarget();
+            if (target) {
+              clearLayerStyleMirror(target);
+            }
+          });
           this.recentlyRemoved.add(node);
           nextTick(() => this.recentlyRemoved.delete(node));
           if (index < this.count() - 1) {
             const _layers = this.getNestedLayers(node);
-            _layers.forEach((layer) => layerStack.dismiss(layer.node, node));
+            _layers.forEach((layer2) => layerStack.dismiss(layer2.node, node));
           }
           this.layers.splice(index, 1);
           this.syncLayers();
@@ -10605,18 +10983,15 @@ var Corex = (() => {
         },
         syncLayers() {
           this.layers.forEach((layer, index) => {
-            layer.node.style.setProperty("--layer-index", `${index}`);
-            layer.node.removeAttribute("data-nested");
-            layer.node.removeAttribute("data-has-nested");
-            const parentOfSameType = this.getParentLayerOfType(layer.node, layer.type);
-            if (parentOfSameType) {
-              layer.node.setAttribute("data-nested", layer.type);
-            }
-            const nestedCount = this.countNestedLayersOfType(layer.node, layer.type);
-            if (nestedCount > 0) {
-              layer.node.setAttribute("data-has-nested", layer.type);
-            }
-            layer.node.style.setProperty("--nested-layer-count", `${nestedCount}`);
+            var _a4;
+            applyLayerStackMetadata(layer, index, layer.node);
+            (_a4 = layer.styleTargets) == null ? void 0 : _a4.forEach((getTarget) => {
+              const target = getTarget();
+              if (!target || target === layer.node) return;
+              applyLayerStackMetadata(layer, index, target);
+              const { zIndex } = getComputedStyle2(layer.node);
+              target.style.setProperty("--z-index", zIndex);
+            });
           });
         },
         indexOf(node) {
@@ -10645,190 +11020,12 @@ var Corex = (() => {
           this.remove(this.layers[0].node);
         }
       };
+      originalBodyPointerEvents = /* @__PURE__ */ new WeakMap();
+      layerObservers = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-DOKFN6DA.mjs
-  function reapplyLiveViewValueInputUsage(input) {
-    const p2 = input;
-    if (!p2.phxPrivate) p2.phxPrivate = {};
-    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
-  }
-  function notifyPhoenixFormChange(input, value, options = {}) {
-    var _a4;
-    const next2 = String(value);
-    const unchanged = String(input.value) === next2;
-    if (!unchanged) {
-      input.value = next2;
-    }
-    if (input.getAttribute("value") !== next2) {
-      input.setAttribute("value", next2);
-    }
-    if (unchanged && options.force !== true) {
-      return;
-    }
-    (_a4 = options.onTouched) == null ? void 0 : _a4.call(options);
-    if (options.markUsed === false) {
-      return;
-    }
-    reapplyLiveViewValueInputUsage(input);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    if (options.change !== false) {
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-  }
-  function syncLiveViewFormInput(input, getValue, onTouched) {
-    notifyPhoenixFormChange(input, getValue(), { onTouched });
-  }
-  var PHX_HAS_FOCUSED;
-  var init_chunk_DOKFN6DA = __esm({
-    "../priv/static/chunks/chunk-DOKFN6DA.mjs"() {
-      "use strict";
-      PHX_HAS_FOCUSED = "phx-has-focused";
-    }
-  });
-
-  // ../priv/static/chunks/chunk-3BEM4I52.mjs
-  function isFormFieldUsed(el, userTouched = false) {
-    return userTouched || getBoolean(el, "fieldUsed") === true;
-  }
-  function padValues(values, fixedLength) {
-    const out = values.map((v2) => String(v2));
-    while (out.length < fixedLength) out.push("");
-    return out.slice(0, fixedLength);
-  }
-  function arrayInputId(scope, hostId, index) {
-    return index === "empty" ? `${scope}:${hostId}:array-input-empty` : `${scope}:${hostId}:array-input-${index}`;
-  }
-  function createArrayInput(scope, submitName, hostEl, value, empty, index) {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.id = arrayInputId(scope, hostEl.id, index);
-    input.setAttribute("data-scope", scope);
-    input.setAttribute("data-part", "array-input");
-    if (empty) input.setAttribute("data-empty", "true");
-    if (submitName) {
-      input.name = submitName;
-      associateInputWithFormIfOutside(input, hostEl);
-    }
-    input.value = value;
-    return input;
-  }
-  function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fieldTouched) {
-    var _a4;
-    const existing = Array.from(
-      container.querySelectorAll(`[data-scope="${scope}"][data-part="array-input"]`)
-    );
-    if (values.length === 0) {
-      existing.forEach((node) => node.remove());
-      const empty = createArrayInput(
-        scope,
-        fieldTouched ? submitName : void 0,
-        hostEl,
-        "",
-        true,
-        "empty"
-      );
-      container.appendChild(empty);
-      return empty;
-    }
-    const emptyNodes = existing.filter((n2) => n2.hasAttribute("data-empty"));
-    emptyNodes.forEach((n2) => n2.remove());
-    let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
-    while (valueNodes.length < values.length) {
-      const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
-      container.appendChild(input);
-      valueNodes = Array.from(
-        container.querySelectorAll(
-          `[data-scope="${scope}"][data-part="array-input"]:not([data-empty])`
-        )
-      );
-    }
-    while (valueNodes.length > values.length) {
-      const last2 = valueNodes[valueNodes.length - 1];
-      last2 == null ? void 0 : last2.remove();
-      valueNodes = valueNodes.slice(0, -1);
-    }
-    valueNodes.forEach((input, index) => {
-      var _a5;
-      input.id = arrayInputId(scope, hostEl.id, index);
-      input.value = (_a5 = values[index]) != null ? _a5 : "";
-    });
-    return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
-  }
-  function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
-    var _a4, _b, _c, _d;
-    const scope = (_a4 = options.scope) != null ? _a4 : "tags-input";
-    const submitName = (_b = options.submitName) != null ? _b : getString(el, "submitName");
-    if (!submitName) return;
-    const fixedLength = options.fixedLength;
-    const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
-    const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
-    const container = el.querySelector(
-      `[data-scope="${scope}"][data-part="array-inputs"]`
-    );
-    if (!container) return;
-    const notifyInput = syncArrayInputsInPlace(
-      container,
-      scope,
-      submitName,
-      el,
-      normalized,
-      fieldTouched
-    );
-    if (fieldTouched) {
-      container.querySelectorAll(
-        `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
-      ).forEach((input) => reapplyLiveViewValueInputUsage(input));
-    }
-    const notifyLiveView = (_c = options.notifyLiveView) != null ? _c : false;
-    if (!notifyLiveView || !notifyInput) return;
-    (_d = options.onTouched) == null ? void 0 : _d.call(options);
-    notifyPhoenixFormChange(notifyInput, notifyInput.value, {
-      onTouched: void 0,
-      force: true
-    });
-  }
-  function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
-    const form = hostEl.closest("form");
-    if (!form) return () => {
-    };
-    const handler = () => {
-      onPrepareSubmit();
-    };
-    form.addEventListener("submit", handler, { capture: true });
-    return () => form.removeEventListener("submit", handler, { capture: true });
-  }
-  var init_chunk_3BEM4I52 = __esm({
-    "../priv/static/chunks/chunk-3BEM4I52.mjs"() {
-      "use strict";
-      init_chunk_DOKFN6DA();
-      init_chunk_6AOEC32Q();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-2H6YHTHG.mjs
-  function markUsed(input) {
-    reapplyLiveViewValueInputUsage(input);
-  }
-  function setScalarValue(input, value, options = {}) {
-    notifyPhoenixFormChange(input, value, options);
-  }
-  function setArrayValues(el, values, options = {}) {
-    syncArrayHiddenInputsForPhoenix(el, values, options);
-  }
-  function syncFormInput(input, getValue, onTouched) {
-    syncLiveViewFormInput(input, getValue, onTouched);
-  }
-  var init_chunk_2H6YHTHG = __esm({
-    "../priv/static/chunks/chunk-2H6YHTHG.mjs"() {
-      "use strict";
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-C4KEB3WL.mjs
+  // ../priv/static/chunks/chunk-VOKBRZCH.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10873,14 +11070,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_C4KEB3WL = __esm({
-    "../priv/static/chunks/chunk-C4KEB3WL.mjs"() {
+  var init_chunk_VOKBRZCH = __esm({
+    "../priv/static/chunks/chunk-VOKBRZCH.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
     }
   });
 
-  // ../priv/static/chunks/chunk-SGRHPBNS.mjs
+  // ../priv/static/chunks/chunk-NU3NDRI3.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -11280,10 +11477,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_SGRHPBNS = __esm({
-    "../priv/static/chunks/chunk-SGRHPBNS.mjs"() {
+  var init_chunk_NU3NDRI3 = __esm({
+    "../priv/static/chunks/chunk-NU3NDRI3.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12280,7 +12477,76 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-DDT7N35T.mjs
+  // ../priv/static/chunks/chunk-4JICR5HJ.mjs
+  function stripLeadingC0AndSpace(destination) {
+    let i2 = 0;
+    while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
+      i2 += 1;
+    }
+    return destination.slice(i2);
+  }
+  function sanitizeRedirectDestination(destination) {
+    const trimmed = stripLeadingC0AndSpace(destination);
+    if (!trimmed) return null;
+    if (trimmed.startsWith("//")) return null;
+    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+    if (schemeMatch) {
+      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+      if (scheme !== "http" && scheme !== "https") return null;
+    }
+    return trimmed;
+  }
+  function isAllowedRedirectDestination(destination) {
+    return sanitizeRedirectDestination(destination) !== null;
+  }
+  function readDomItemRedirect(itemEl, fallback2) {
+    if (!itemEl) {
+      const destination2 = fallback2 ? sanitizeRedirectDestination(fallback2) : null;
+      if (!destination2) return null;
+      return { destination: destination2 };
+    }
+    const dataRedirect = itemEl.getAttribute("data-redirect");
+    if (dataRedirect === "false") return null;
+    const raw = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
+    const destination = sanitizeRedirectDestination(raw);
+    if (!destination) return null;
+    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
+    const newTab = itemEl.hasAttribute("data-new-tab");
+    return { destination, mode, newTab };
+  }
+  function performRedirect(input, ctx) {
+    if (!input || !input.destination) return false;
+    const destination = sanitizeRedirectDestination(input.destination);
+    if (!destination) return false;
+    const { newTab, mode } = input;
+    if (newTab) {
+      window.open(destination, "_blank", "noopener,noreferrer");
+      return true;
+    }
+    const main = ctx.liveSocket.main;
+    const connected = !main.isDead && main.isConnected();
+    if (!connected || !mode || mode === "href") {
+      window.location.href = destination;
+      return true;
+    }
+    const js = ctx.liveSocket.js();
+    if (mode === "patch") {
+      js.patch(destination);
+    } else {
+      js.navigate(destination);
+    }
+    return true;
+  }
+  var REDIRECT_MODES, SCHEME_PREFIX;
+  var init_chunk_4JICR5HJ = __esm({
+    "../priv/static/chunks/chunk-4JICR5HJ.mjs"() {
+      "use strict";
+      REDIRECT_MODES = ["href", "patch", "navigate"];
+      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+    }
+  });
+
+  // ../priv/static/chunks/chunk-XGL2LWL4.mjs
   function connect8(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -12673,6 +12939,9 @@ var Corex = (() => {
     var _a4;
     return (_a4 = item.value) != null ? _a4 : "";
   }
+  function itemsMembershipKey(items) {
+    return items.map((item) => itemValue(item)).join("\0");
+  }
   function zagListCollectionConfig(items, hasGroups) {
     if (hasGroups) {
       return {
@@ -12696,13 +12965,60 @@ var Corex = (() => {
   function buildCollection(items, hasGroups) {
     return collection(zagListCollectionConfig(items, hasGroups));
   }
+  function readItemsJson(el) {
+    var _a4;
+    return (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
+  }
+  function parseItemsJson(raw) {
+    return safeParseJson(raw, []);
+  }
+  function itemsHaveGroups(items) {
+    return items.some((item) => Boolean(item.group));
+  }
+  function readItems(el) {
+    const json = readItemsJson(el);
+    const items = parseItemsJson(json);
+    return { json, items, hasGroups: itemsHaveGroups(items) };
+  }
+  function applyItems(host, items, hasGroups = itemsHaveGroups(items)) {
+    host.hasGroups = hasGroups;
+    if (host.setAllOptions) {
+      host.setAllOptions(items);
+    } else if (host.setOptions) {
+      host.setOptions(items);
+    }
+  }
+  function refreshItemsIfChanged(el, state2, host) {
+    const json = readItemsJson(el);
+    if (json === state2.lastItemsJson) return false;
+    state2.lastItemsJson = json;
+    const items = parseItemsJson(json);
+    applyItems(host, items);
+    return true;
+  }
+  function firstSelectedValue(values) {
+    return values.length > 0 ? String(values[0]) : null;
+  }
+  function redirectCollectionItem(el, scope, value, liveSocket) {
+    if (!value) return false;
+    const itemEl = el.querySelector(
+      `[data-scope="${scope}"][data-part="item"][data-value="${CSS.escape(value)}"]`
+    );
+    return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
+  }
+  function initCollectionItems(el, state2) {
+    const result = readItems(el);
+    state2.lastItemsJson = result.json;
+    return result;
+  }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_DDT7N35T = __esm({
-    "../priv/static/chunks/chunk-DDT7N35T.mjs"() {
+  var init_chunk_XGL2LWL4 = __esm({
+    "../priv/static/chunks/chunk-XGL2LWL4.mjs"() {
       "use strict";
-      init_chunk_SGRHPBNS();
-      init_chunk_YUSIPE4B();
-      init_chunk_6AOEC32Q();
+      init_chunk_NU3NDRI3();
+      init_chunk_4JICR5HJ();
+      init_chunk_QCFVFTGB();
+      init_chunk_6L36XW7I();
       anatomy8 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -13151,62 +13467,6 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-HZLPIQBD.mjs
-  function isAllowedRedirectDestination(destination) {
-    const trimmed = destination.trim();
-    if (!trimmed) return false;
-    if (trimmed.startsWith("//")) return false;
-    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
-    if (schemeMatch) {
-      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
-      return scheme === "http" || scheme === "https";
-    }
-    return true;
-  }
-  function readDomItemRedirect(itemEl, fallback2) {
-    if (!itemEl) {
-      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
-      return { destination: fallback2 };
-    }
-    const dataRedirect = itemEl.getAttribute("data-redirect");
-    if (dataRedirect === "false") return null;
-    const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    if (!destination || !isAllowedRedirectDestination(destination)) return null;
-    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
-    const newTab = itemEl.hasAttribute("data-new-tab");
-    return { destination, mode, newTab };
-  }
-  function performRedirect(input, ctx) {
-    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
-      return false;
-    const { destination, newTab, mode } = input;
-    if (newTab) {
-      window.open(destination, "_blank", "noopener,noreferrer");
-      return true;
-    }
-    const main = ctx.liveSocket.main;
-    const connected = !main.isDead && main.isConnected();
-    if (!connected || !mode || mode === "href") {
-      window.location.href = destination;
-      return true;
-    }
-    const js = ctx.liveSocket.js();
-    if (mode === "patch") {
-      js.patch(destination);
-    } else {
-      js.navigate(destination);
-    }
-    return true;
-  }
-  var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_HZLPIQBD = __esm({
-    "../priv/static/chunks/chunk-HZLPIQBD.mjs"() {
-      "use strict";
-      REDIRECT_MODES = ["href", "patch", "navigate"];
-      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
-    }
-  });
-
   // ../priv/static/combobox.mjs
   var combobox_exports = {};
   __export(combobox_exports, {
@@ -13230,8 +13490,10 @@ var Corex = (() => {
     const focused = state2.hasTag("focused");
     const composite = prop("composite");
     const highlightedValue = context.get("highlightedValue");
+    const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
-      placement: context.get("currentPlacement")
+      placement: currentPlacement
     }));
     function getItemState(props) {
       const itemDisabled = collection22.getItemDisabled(props.item);
@@ -13414,10 +13676,10 @@ var Corex = (() => {
               Enter(event3) {
                 var _a4;
                 send({ type: "INPUT.ENTER", keypress, src: "item-select" });
-                const submittable = computed("isCustomValue") && prop("allowCustomValue");
                 const hasHighlight = highlightedValue != null;
                 const alwaysSubmit = prop("alwaysSubmitOnEnter");
-                if (open && !submittable && !alwaysSubmit && hasHighlight) {
+                const willBeRejected = computed("isCustomValue") && !prop("allowCustomValue");
+                if (open && !alwaysSubmit && (hasHighlight || willBeRejected)) {
                   event3.preventDefault();
                 }
                 if (highlightedValue == null) return;
@@ -13500,7 +13762,8 @@ var Corex = (() => {
           tabIndex: -1,
           hidden: !open,
           "data-state": open ? "open" : "closed",
-          "data-placement": context.get("currentPlacement"),
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "aria-labelledby": getLabelId5(scope),
           "aria-multiselectable": prop("multiple") && composite ? true : void 0,
           "data-empty": dataAttr(collection22.size === 0),
@@ -13754,12 +14017,8 @@ var Corex = (() => {
       },
       onValueChange: (details) => {
         var _a5;
-        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        if (redirectOn && firstValue) {
-          const itemEl = el.querySelector(
-            `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-          );
-          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+        if (redirectOn) {
+          redirectCollectionItem(el, "combobox", firstSelectedValue(details.value), liveSocket);
         }
         syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
         (_a5 = getCombobox()) == null ? void 0 : _a5.restoreFilteredOptions();
@@ -13819,24 +14078,20 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_OZ2OVCG5();
-      init_chunk_7BZGUIUZ();
-      init_chunk_MHRYIVD2();
-      init_chunk_CBUVYVIR();
-      init_chunk_2H6YHTHG();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_C4KEB3WL();
-      init_chunk_DDT7N35T();
-      init_chunk_SGRHPBNS();
-      init_chunk_HZLPIQBD();
-      init_chunk_YUSIPE4B();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_3IY2CPWD();
+      init_chunk_UFCM6256();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_XGL2LWL4();
+      init_chunk_NU3NDRI3();
+      init_chunk_4JICR5HJ();
+      init_chunk_QCFVFTGB();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -14948,7 +15203,6 @@ var Corex = (() => {
           const items = this.activeItems();
           return collection2(zagListCollectionConfig(items, this.hasGroups));
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = () => this.getCollection();
           return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props), {
@@ -15252,19 +15506,39 @@ var Corex = (() => {
           const multiple = this.el.hasAttribute("data-multiple");
           return values.length === 0 ? "" : multiple ? values.join(",") : (_c = values[0]) != null ? _c : "";
         }
-        render() {
+        /**
+         * Hide/show LiveView-owned item nodes for the active (filtered) option set.
+         * Prefer this over remove/clone so custom :item slots survive filter + select.
+         */
+        applyFilterVisibility() {
+          const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+          if (!listEl) return;
+          const desired = new Set(this.activeItems().map((item) => this.getItemValue(item)));
+          const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
+          listEl.querySelectorAll(
+            '[data-scope="combobox"][data-part="item"]:not([data-template])'
+          ).forEach((itemEl) => {
+            var _a4;
+            if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
+            const value = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
+            if (!allValues.has(value)) return;
+            itemEl.hidden = !desired.has(value);
+          });
+        }
+        render(options = {}) {
+          const syncList = options.syncList === true;
           const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
           if (!root) return;
           this.spreadProps(root, this.api.getRootProps());
-          const hiddenInput = this.el.querySelector(
+          const hiddenInput2 = this.el.querySelector(
             '[data-scope="combobox"][data-part="hidden-input"]'
           );
-          if (hiddenInput) {
+          if (hiddenInput2) {
             const valueStr = this.hiddenInputValue();
-            if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+            if (hiddenInput2.value !== valueStr) hiddenInput2.value = valueStr;
             if (getString(this.el, "submitName")) {
-              hiddenInput.removeAttribute("name");
-              hiddenInput.removeAttribute("form");
+              hiddenInput2.removeAttribute("name");
+              hiddenInput2.removeAttribute("form");
             }
           }
           stripZagSubmitNames(this.el, "combobox", ["hidden-input", "input"]);
@@ -15280,28 +15554,29 @@ var Corex = (() => {
           ].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
             if (!el) return;
-            const apiMethod = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
-            this.spreadProps(el, this.api[apiMethod]());
+            this.spreadProps(el, this.api[partPropsMethod(part)]());
           });
-          this.renderItems();
+          if (syncList) {
+            this.renderItems();
+          }
+          this.applyFilterVisibility();
           this.applyItemProps();
         }
       };
-      ComboboxHook = {
-        mounted() {
-          var _a4, _b;
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          const hook = this;
+      ComboboxHook = createZagLiveHook({
+        key: "combobox",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          var _a4;
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           hook.fieldTouched = false;
           const markFieldTouched = () => {
             hook.fieldTouched = true;
           };
-          const itemsJson = (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
-          const allItems = safeParseJson(itemsJson, []);
-          const hasGroups = allItems.some((item) => Boolean(item.group));
-          const defaultValues = (_b = getStringList(el, "defaultValue")) != null ? _b : [];
+          const { items: allItems, hasGroups } = initCollectionItems(el, hook);
+          const defaultValues = (_a4 = getStringList(el, "defaultValue")) != null ? _a4 : [];
           if (defaultValues.length > 0) {
             hook.fieldTouched = true;
             reapplyComboboxHiddenInputUsage(el);
@@ -15311,75 +15586,64 @@ var Corex = (() => {
             el,
             pushEvent,
             canPush,
-            this.liveSocket,
+            hook.liveSocket,
             () => comboboxRef,
             markFieldTouched
           )), mountStringListBinding(el));
           const combobox = new Combobox(el, props, allItems, hasGroups);
           comboboxRef = combobox;
-          combobox.init();
-          this.combobox = combobox;
-          this.lastItemsJson = itemsJson;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:combobox:set-value", (event) => {
+          dom2.add("corex:combobox:set-value", (event) => {
             combobox.api.setValue(event.detail.value);
           });
-          domRegistry.add("corex:combobox:set-open", (event) => {
+          dom2.add("corex:combobox:set-open", (event) => {
             combobox.api.setOpen(event.detail.open);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("combobox_set_value", (payload) => {
+          server.add("combobox_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             combobox.api.setValue(payload.value);
           });
-          registry.add("combobox_set_open", (payload) => {
+          server.add("combobox_set_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (typeof payload.open !== "boolean") return;
             combobox.api.setOpen(payload.open);
           });
+          return combobox;
         },
-        updated() {
-          var _a4;
-          if (!this.combobox) return;
-          const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
-          let itemsChanged = false;
-          if (newItemsJson !== this.lastItemsJson) {
-            this.lastItemsJson = newItemsJson;
-            itemsChanged = true;
-            const newCollection = safeParseJson(newItemsJson, []);
-            const hasGroups = newCollection.some((item) => Boolean(item.group));
-            this.combobox.hasGroups = hasGroups;
-            this.combobox.setAllOptions(newCollection);
-          }
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          this.combobox.updateProps(__spreadValues({}, comboboxMachineDomPropsForUpdate(
-            this.el,
-            pushEvent,
-            canPush,
-            this.liveSocket,
-            () => this.combobox,
-            () => {
-              this.fieldTouched = true;
-            }
-          )));
-          if (this.combobox.api.open) {
-            this.combobox.api.reposition();
-          }
-          if (itemsChanged) {
-            this.combobox.renderItems();
-            this.combobox.applyItemProps();
-          }
-        },
-        destroyed() {
+        update(hook, combobox) {
           var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.combobox) == null ? void 0 : _c.destroy();
+          const prevMembership = itemsMembershipKey(
+            parseItemsJson((_b = (_a4 = hook.lastItemsJson) != null ? _a4 : hook.el.getAttribute("data-items")) != null ? _b : "[]")
+          );
+          const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
+          const nextMembership = itemsMembershipKey(parseItemsJson((_c = hook.lastItemsJson) != null ? _c : "[]"));
+          const membershipChanged = itemsChanged && prevMembership !== nextMembership;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
+          const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
+          const propsApplied = combobox.updateProps(
+            __spreadValues(__spreadValues({}, comboboxMachineDomPropsForUpdate(
+              hook.el,
+              pushEvent,
+              canPush,
+              hook.liveSocket,
+              () => combobox,
+              () => {
+                hook.fieldTouched = true;
+              }
+            )), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}),
+            { force: itemsChanged }
+          );
+          if (combobox.api.open) {
+            combobox.api.reposition();
+          }
+          if (!propsApplied || itemsChanged) {
+            combobox.render({ syncList: membershipChanged });
+          } else {
+            combobox.applyFilterVisibility();
+            combobox.applyItemProps();
+          }
         }
-      };
+      });
     }
   });
 
@@ -15552,6 +15816,7 @@ var Corex = (() => {
       };
     };
     const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: currentPlacement
     }));
@@ -15652,6 +15917,7 @@ var Corex = (() => {
           "data-readonly": dataAttr(readOnly),
           "data-invalid": dataAttr(invalid),
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
           "data-focus": dataAttr(focused),
@@ -15683,6 +15949,7 @@ var Corex = (() => {
           role: prop("inline") ? void 0 : "dialog",
           tabIndex: -1,
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "data-state": open ? "open" : "closed",
           hidden: !open
         }));
@@ -16157,15 +16424,25 @@ var Corex = (() => {
     if (!selectEl) return;
     raf(() => setElementValue(selectEl, format));
   }
+  function tryParseColor(raw, label = "color") {
+    try {
+      return parse(raw);
+    } catch (error) {
+      console.warn(`[corex] color-picker: failed to parse ${label}`, raw, error);
+      return void 0;
+    }
+  }
   function readColorValueBinding(el) {
     const binding = mountStringBinding(el, "value", "defaultValue");
     if ("value" in binding && binding.value) {
-      return { value: parse(binding.value) };
+      const parsed = tryParseColor(binding.value, "value");
+      if (parsed) return { value: parsed };
     }
     if ("defaultValue" in binding && binding.defaultValue) {
-      return { defaultValue: parse(binding.defaultValue) };
+      const parsed = tryParseColor(binding.defaultValue, "defaultValue");
+      if (parsed) return { defaultValue: parsed };
     }
-    return {};
+    return { defaultValue: tryParseColor("#000000", "fallback") };
   }
   function syncColorHiddenAndNotify(el, valueAsString) {
     if (valueAsString === void 0) {
@@ -16175,29 +16452,26 @@ var Corex = (() => {
       '[data-scope="color-picker"][data-part="hidden-input"]'
     );
     if (hidden) {
-      hidden.value = valueAsString;
-      hidden.dispatchEvent(new Event("input", { bubbles: true }));
-      hidden.dispatchEvent(new Event("change", { bubbles: true }));
+      notifyPhoenixFormChange(hidden, valueAsString, { force: true });
     }
   }
   function readValueProps(el) {
     const defaultVal = getString(el, "defaultValue");
-    return { defaultValue: defaultVal ? parse(defaultVal) : void 0 };
+    return { defaultValue: defaultVal ? tryParseColor(defaultVal, "defaultValue") : void 0 };
   }
   var anatomy10, parts10, __defProp6, __defNormalProp6, __publicField6, generateRGB_R, generateRGB_G, generateRGB_B, generateHSL_H, generateHSL_S, generateHSL_L, generateHSB_H, generateHSB_S, generateHSB_B, isEqualObject, Color, HEX_COLOR_REGEX, RGB_COLOR_REGEX, HEX_STARTING_REGEX, _RGBColor, RGBColor, HSL_REGEX, _HSLColor, HSLColor, HSB_REGEX, _HSBColor, HSBColor, nativeColors, makeMap, nativeColorMap, parseColor, normalizeColor, getRootId10, getLabelId6, getHiddenInputId3, getControlId4, getTriggerId3, getContentId4, getPositionerId2, getFormatSelectId, getAreaId, getAreaGradientId, getAreaThumbId, getChannelSliderTrackId, getChannelSliderThumbId, getContentEl4, getAreaThumbEl, getChannelSliderThumbEl, getFormatSelectEl, getHiddenInputEl3, getAreaEl, getAreaValueFromPoint, getControlEl3, getTriggerEl2, getPositionerEl2, getChannelSliderTrackEl, getChannelSliderValueFromPoint, getChannelInputEls, getSliderBackground, formats, formatRegex, parse, HEX_REGEX, and3, hashObject, DEFAULT_COLOR, machine10, ColorPicker, ColorPickerHook;
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_DH47S3VU();
-      init_chunk_PE34YET2();
-      init_chunk_MHRYIVD2();
-      init_chunk_CBUVYVIR();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_C4KEB3WL();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_KHEHQE65();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -17398,7 +17672,7 @@ var Corex = (() => {
             }
           },
           actions: {
-            openEyeDropper({ scope, context }) {
+            openEyeDropper({ scope, context, prop }) {
               const win = scope.getWin();
               const isSupported = "EyeDropper" in win;
               if (!isSupported) return;
@@ -17407,6 +17681,13 @@ var Corex = (() => {
                 const format = context.get("value").getFormat();
                 const color = parseColor(sRGBHex).toFormat(format);
                 context.set("value", color);
+                return color;
+              }).then((value) => {
+                var _a4;
+                (_a4 = prop("onValueChangeEnd")) == null ? void 0 : _a4({
+                  value,
+                  valueAsString: value.toString(context.get("format"))
+                });
               }).catch(() => void 0);
             },
             setActiveChannel({ context, event }) {
@@ -17583,12 +17864,28 @@ var Corex = (() => {
         }
       });
       ColorPicker = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine10, props);
         }
         initApi() {
           return this.zagConnect(connect10);
+        }
+        reassertSwatchColor(swatchEl, colorValue) {
+          var _a4, _b;
+          this.spreadProps(swatchEl, this.api.getSwatchProps({ value: colorValue }));
+          let color = typeof colorValue === "string" ? colorValue : (_b = (_a4 = colorValue == null ? void 0 : colorValue.toString) == null ? void 0 : _a4.call(colorValue, "css")) != null ? _b : "";
+          if (!color && colorValue && typeof colorValue.toString === "function") {
+            try {
+              color = String(colorValue.toString());
+            } catch (e2) {
+              color = "";
+            }
+          }
+          if (!color && this.api.valueAsString) color = this.api.valueAsString;
+          if (color) {
+            swatchEl.style.setProperty("--color", color);
+            swatchEl.style.background = color;
+          }
         }
         render() {
           var _a4;
@@ -17610,15 +17907,17 @@ var Corex = (() => {
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
           const triggerEl = this.el.querySelector('[data-part="trigger"]');
           if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-          const triggerGrids = this.el.querySelectorAll(
-            '[data-part="transparency-grid"][data-size="10px"]'
+          const transparencyGrids = this.el.querySelectorAll(
+            '[data-part="transparency-grid"]'
           );
-          triggerGrids.forEach(
-            (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "10px" }))
-          );
+          transparencyGrids.forEach((el) => {
+            const size3 = el.getAttribute("data-size") || "12px";
+            this.spreadProps(el, this.api.getTransparencyGridProps({ size: size3 }));
+          });
           const triggerSwatch = triggerEl == null ? void 0 : triggerEl.querySelector('[data-part="swatch"]');
-          if (triggerSwatch)
-            this.spreadProps(triggerSwatch, this.api.getSwatchProps({ value: this.api.value }));
+          if (triggerSwatch) {
+            this.reassertSwatchColor(triggerSwatch, this.api.value);
+          }
           const hexInputs = this.el.querySelectorAll(
             '[data-part="channel-input"][data-channel="hex"]'
           );
@@ -17650,33 +17949,39 @@ var Corex = (() => {
             '[data-part="channel-slider-track"][data-channel="hue"]'
           );
           if (hueTrackEl)
-            this.spreadProps(hueTrackEl, this.api.getChannelSliderTrackProps({ channel: "hue" }));
+            this.spreadProps(
+              hueTrackEl,
+              this.api.getChannelSliderTrackProps({ channel: "hue", format: "hsba" })
+            );
           const hueThumbEl = this.el.querySelector(
             '[data-part="channel-slider-thumb"][data-channel="hue"]'
           );
           if (hueThumbEl)
-            this.spreadProps(hueThumbEl, this.api.getChannelSliderThumbProps({ channel: "hue" }));
+            this.spreadProps(
+              hueThumbEl,
+              this.api.getChannelSliderThumbProps({ channel: "hue", format: "hsba" })
+            );
           const alphaSliderEl = this.el.querySelector(
             '[data-part="channel-slider"][data-channel="alpha"]'
           );
           if (alphaSliderEl)
             this.spreadProps(alphaSliderEl, this.api.getChannelSliderProps({ channel: "alpha" }));
-          const alphaGrids = this.el.querySelectorAll(
-            '[data-part="transparency-grid"][data-size="12px"]'
-          );
-          alphaGrids.forEach(
-            (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
-          );
           const alphaTrackEl = this.el.querySelector(
             '[data-part="channel-slider-track"][data-channel="alpha"]'
           );
           if (alphaTrackEl)
-            this.spreadProps(alphaTrackEl, this.api.getChannelSliderTrackProps({ channel: "alpha" }));
+            this.spreadProps(
+              alphaTrackEl,
+              this.api.getChannelSliderTrackProps({ channel: "alpha", format: "hsba" })
+            );
           const alphaThumbEl = this.el.querySelector(
             '[data-part="channel-slider-thumb"][data-channel="alpha"]'
           );
           if (alphaThumbEl)
-            this.spreadProps(alphaThumbEl, this.api.getChannelSliderThumbProps({ channel: "alpha" }));
+            this.spreadProps(
+              alphaThumbEl,
+              this.api.getChannelSliderThumbProps({ channel: "alpha", format: "hsba" })
+            );
           const redInputs = this.el.querySelectorAll(
             '[data-part="channel-input"][data-channel="red"]'
           );
@@ -17706,23 +18011,18 @@ var Corex = (() => {
             const swatchEl = trigger.querySelector('[data-part="swatch"][data-value]');
             if (swatchEl) {
               const swatchValue = swatchEl.getAttribute("data-value");
-              if (swatchValue)
-                this.spreadProps(swatchEl, this.api.getSwatchProps({ value: swatchValue }));
+              if (swatchValue) this.reassertSwatchColor(swatchEl, swatchValue);
             }
           });
-          const swatchGrids = this.el.querySelectorAll(
-            '[data-part="transparency-grid"][data-size="var(--spacing-mini)"]'
-          );
-          swatchGrids.forEach(
-            (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "var(--spacing-mini)" }))
-          );
         }
       };
-      ColorPickerHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      ColorPickerHook = createZagLiveHook({
+        key: "colorPicker",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const valueProps = readColorValueBinding(el);
           const zag = new ColorPicker(el, __spreadProps(__spreadValues({
             id: el.id
@@ -17817,25 +18117,25 @@ var Corex = (() => {
               });
             }
           }));
-          zag.init();
-          this.colorPicker = zag;
-          this.handlers = [];
-          this.onSetValue = (event) => {
+          dom2.add("corex:color-picker:set-value", (event) => {
             const { value } = event.detail;
+            if (typeof value !== "string") return;
+            if (!tryParseColor(value, "set-value")) return;
             zag.api.setValue(value);
-          };
-          el.addEventListener("corex:color-picker:set-value", this.onSetValue);
-          this.handlers.push(
-            this.handleEvent("color_picker_set_value", (payload) => {
-              if (!idMatches(el.id, readPayloadId(payload))) return;
-              zag.api.setValue(payload.value);
-            })
-          );
+          });
+          server.add("color_picker_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (typeof payload.value !== "string") return;
+            if (!tryParseColor(payload.value, "set_value")) return;
+            zag.api.setValue(payload.value);
+          });
+          return zag;
         },
-        updated() {
-          const el = this.el;
-          const zag = this.colorPicker;
-          zag == null ? void 0 : zag.updateProps({
+        update(hook, zag) {
+          const el = hook.el;
+          const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
+          const parsedValue = valuePatch.value !== void 0 && valuePatch.value ? tryParseColor(valuePatch.value, "value") : void 0;
+          zag.updateProps(__spreadValues({
             name: getString(el, "name"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -17845,25 +18145,14 @@ var Corex = (() => {
             required: getBoolean(el, "required"),
             dir: getDir(el),
             positioning: readPositioningOptions(el)
-          });
-        },
-        destroyed() {
-          var _a4;
-          if (this.onSetValue) {
-            this.el.removeEventListener("corex:color-picker:set-value", this.onSetValue);
-          }
-          if (this.handlers) {
-            for (const h2 of this.handlers) {
-              this.removeHandleEvent(h2);
-            }
-          }
-          (_a4 = this.colorPicker) == null ? void 0 : _a4.destroy();
+          }, parsedValue !== void 0 ? { value: parsedValue } : {}));
+          zag.render();
         }
-      };
+      });
     }
   });
 
-  // ../priv/static/chunks/chunk-NB7M3GJN.mjs
+  // ../priv/static/chunks/chunk-Z3EQ3GCO.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -17878,10 +18167,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_NB7M3GJN = __esm({
-    "../priv/static/chunks/chunk-NB7M3GJN.mjs"() {
+  var init_chunk_Z3EQ3GCO = __esm({
+    "../priv/static/chunks/chunk-Z3EQ3GCO.mjs"() {
       "use strict";
-      init_chunk_6AOEC32Q();
+      init_chunk_6L36XW7I();
     }
   });
 
@@ -19034,6 +19323,23 @@ var Corex = (() => {
       });
     }
   }
+  function getLocaleDigits(locale) {
+    let digits = digitsCache.get(locale);
+    if (digits != null) return digits;
+    const localeDigits = new Intl.NumberFormat(locale, { useGrouping: false }).format(1234567890);
+    digits = "0123456789" + localeDigits;
+    digitsCache.set(locale, digits);
+    return digits;
+  }
+  function getLocaleSeparator(locale) {
+    let separator = separatorCache.get(locale);
+    if (separator != null) return separator;
+    const parts210 = new Intl.DateTimeFormat(locale).formatToParts(/* @__PURE__ */ new Date());
+    const literal = parts210.find((part) => part.type === "literal");
+    separator = literal ? literal.value : "/";
+    separatorCache.set(locale, separator);
+    return separator;
+  }
   function parseDateString(date, locale, timeZone) {
     var _a4;
     const regex = createRegex(locale, timeZone);
@@ -19146,12 +19452,6 @@ var Corex = (() => {
       return (_a4 = PLACEHOLDERS[item.type]) != null ? _a4 : item.value;
     }).join("");
   }
-  function getLocaleSeparator(locale) {
-    const dateFormatter = new Intl.DateTimeFormat(locale);
-    const parts210 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
-    const literalPart = parts210.find((part) => part.type === "literal");
-    return literalPart ? literalPart.value : "/";
-  }
   function viewToNumber(view, fallback2) {
     if (!view) return fallback2 || 0;
     return view === "day" ? 0 : view === "month" ? 1 : 2;
@@ -19207,6 +19507,7 @@ var Corex = (() => {
     const maxSelectedDates = prop("maxSelectedDates");
     const isMaxSelected = isMultiPicker && maxSelectedDates != null && selectedValue.length >= maxSelectedDates;
     const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: currentPlacement
     }));
@@ -19516,6 +19817,7 @@ var Corex = (() => {
           dir: prop("dir"),
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "data-inline": dataAttr(prop("inline")),
           id: getContentId5(scope),
           tabIndex: -1,
@@ -19678,6 +19980,7 @@ var Corex = (() => {
           "aria-disabled": ariaAttr(!cellState.selectable),
           "aria-invalid": ariaAttr(cellState.invalid),
           "data-disabled": dataAttr(!cellState.selectable),
+          "data-selectable": dataAttr(cellState.selectable),
           "data-selected": dataAttr(cellState.selected),
           "data-value": value.toString(),
           "data-view": "day",
@@ -19702,7 +20005,13 @@ var Corex = (() => {
             if (!cellState.selectable) return;
             const focus = !scope.isActiveElement(event.currentTarget);
             if (hoveredValue && $ad063034c8620db8$export$91b62ebf2ba703ee(value, hoveredValue)) return;
-            send({ type: "CELL.POINTER_MOVE", cell: "day", value, focus });
+            send({
+              type: "CELL.POINTER_MOVE",
+              cell: "day",
+              value,
+              focus,
+              outsideRange: cellState.outsideRange
+            });
           } : void 0
         }));
       },
@@ -19731,6 +20040,7 @@ var Corex = (() => {
           "aria-label": cellState.valueText,
           "aria-disabled": ariaAttr(!cellState.selectable),
           "data-disabled": dataAttr(!cellState.selectable),
+          "data-selectable": dataAttr(cellState.selectable),
           "data-selected": dataAttr(cellState.selected),
           "data-value": value,
           "data-view": "month",
@@ -19781,6 +20091,7 @@ var Corex = (() => {
           "aria-label": cellState.valueText,
           "aria-disabled": ariaAttr(!cellState.selectable),
           "data-disabled": dataAttr(!cellState.selectable),
+          "data-selectable": dataAttr(cellState.selectable),
           "data-selected": dataAttr(cellState.selected),
           "data-value": value,
           "data-view": "year",
@@ -19857,8 +20168,10 @@ var Corex = (() => {
           dir: prop("dir"),
           type: "button",
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "aria-label": translations.trigger(open),
           "aria-controls": getContentId5(scope),
+          "aria-expanded": open,
           "data-state": open ? "open" : "closed",
           "data-placeholder-shown": dataAttr(empty),
           "aria-haspopup": "grid",
@@ -19921,7 +20234,7 @@ var Corex = (() => {
           defaultValue: computed("valueAsString")[index],
           onBeforeInput(event) {
             const { data } = getNativeEvent(event);
-            if (!isValidCharacter(data, separator)) {
+            if (!isValidCharacter(data, separator, locale)) {
               event.preventDefault();
             }
           },
@@ -19957,7 +20270,7 @@ var Corex = (() => {
           },
           onInput(event) {
             const value = event.currentTarget.value;
-            send({ type: "INPUT.CHANGE", value: ensureValidCharacters(value, separator), index });
+            send({ type: "INPUT.CHANGE", value: ensureValidCharacters(value, separator, locale), index });
           }
         }));
       },
@@ -20115,11 +20428,47 @@ var Corex = (() => {
       }
     }
   }
+  function dataAttrName(camelKey) {
+    return `data-${camelKey.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+  }
+  function datePickerUpdateAttrsKey(el) {
+    var _a4;
+    const d2 = el.dataset;
+    let out = "";
+    for (const key of DATE_PICKER_UPDATE_ATTR_KEYS) {
+      out += key;
+      out += "=";
+      if (DATE_PICKER_PRESENCE_ATTR_KEYS.has(key)) {
+        out += el.hasAttribute(dataAttrName(key)) ? "1" : "0";
+      } else {
+        out += (_a4 = d2[key]) != null ? _a4 : "";
+      }
+      out += ";";
+    }
+    return out;
+  }
   function sameStringList(a2, b2) {
     return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
   }
   function isDateLike(d2) {
     return typeof d2 === "object" && d2 !== null && "year" in d2 && "month" in d2 && "day" in d2 && typeof d2.year === "number" && typeof d2.month === "number" && typeof d2.day === "number";
+  }
+  function tryParseDate(raw, label = "date") {
+    try {
+      return parse2(raw);
+    } catch (error) {
+      console.warn(`[corex] date-picker: failed to parse ${label}`, raw, error);
+      return void 0;
+    }
+  }
+  function tryParseDateList(values) {
+    if (!values) return void 0;
+    const parsed = [];
+    for (const x2 of values) {
+      const next2 = tryParseDate(x2, "value");
+      if (next2) parsed.push(next2);
+    }
+    return parsed;
   }
   function valueToIsoString(d2) {
     if (d2 == null) return "";
@@ -20144,11 +20493,11 @@ var Corex = (() => {
     return (values == null ? void 0 : values.length) ? values.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
   }
   function hiddenValueInputIsoList(el) {
-    const hiddenInput = el.querySelector(
+    const hiddenInput2 = el.querySelector(
       '[data-scope="date-picker"][data-part="value-input"]'
     );
-    if (!(hiddenInput == null ? void 0 : hiddenInput.value)) return [];
-    return hiddenInput.value.split(",").map((v2) => v2.trim()).filter(Boolean);
+    if (!(hiddenInput2 == null ? void 0 : hiddenInput2.value)) return [];
+    return hiddenInput2.value.split(",").map((v2) => v2.trim()).filter(Boolean);
   }
   function resolveIsoListForFormSync(el, apiValues, serverValues) {
     if (serverValues != null) {
@@ -20164,18 +20513,25 @@ var Corex = (() => {
     const current = isoListFromValues(datePickerInstance.api.value);
     if (current.length > 0) return current;
     if (isoList.length === 0) return [];
-    datePickerInstance.api.setValue(isoList.map((x2) => parse2(x2)));
+    const parsed = tryParseDateList(isoList);
+    if (!parsed || parsed.length === 0) return current;
+    try {
+      datePickerInstance.api.setValue(parsed);
+    } catch (error) {
+      console.warn("[corex] date-picker: failed to set value from server iso", isoList, error);
+      return current;
+    }
     return isoListFromValues(datePickerInstance.api.value);
   }
   function syncDatePickerValueInput(el, isoStr, notifyForm = false) {
-    const hiddenInput = el.querySelector(
+    const hiddenInput2 = el.querySelector(
       '[data-scope="date-picker"][data-part="value-input"]'
     );
-    if (!hiddenInput) return;
+    if (!hiddenInput2) return;
     if (notifyForm) {
-      setScalarValue(hiddenInput, isoStr);
+      setScalarValue(hiddenInput2, isoStr);
     } else {
-      setScalarValue(hiddenInput, isoStr, { markUsed: false });
+      setScalarValue(hiddenInput2, isoStr, { markUsed: false });
     }
   }
   function resolveZagDatePickerTranslations(el) {
@@ -20193,24 +20549,21 @@ var Corex = (() => {
   function resolveCloseOnSelect(el) {
     return getBoolean(el, "closeOnSelect");
   }
-  var anatomy11, parts11, $93635573935797de$var$EPOCH, $93635573935797de$var$daysInMonth, $93635573935797de$export$80ee6245ec4f29ec, $d2ca8165c9aa885a$export$7a5acbd77d414bd9, $ad063034c8620db8$var$DAY_MAP, $ad063034c8620db8$var$localTimeZone, $ad063034c8620db8$var$localTimeZoneOverride, $ad063034c8620db8$var$cachedRegions, $ad063034c8620db8$var$cachedWeekInfo, $ad063034c8620db8$var$WEEKEND_DATA, $d07e34cce18680fd$var$formattersByTimeZone, $d07e34cce18680fd$var$DAYMILLIS, $435a2ceaa8778ed8$var$ONE_HOUR, $58246871e4652552$var$DATE_RE, $58246871e4652552$var$ABSOLUTE_RE, $58246871e4652552$var$requiredDurationTimeGroups, $58246871e4652552$var$requiredDurationGroups, _type, _a, $2aaf608024c21ca1$export$99faa760c7908e4f, _type2, _a2, $2aaf608024c21ca1$export$ca871e8dbb80966f, _type3, _a3, $2aaf608024c21ca1$export$d3b7288e7994edea, $12a3c853105e5a70$var$formatterCache, $12a3c853105e5a70$export$ad991b66133851cf, $12a3c853105e5a70$var$hour12Preferences, $12a3c853105e5a70$var$_hasBuggyHour12Behavior, $12a3c853105e5a70$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, getLabelId7, getRootId11, getTableId, getContentId5, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl5, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and4, machine11, normalizeValue, preserveTime, pickViewLabel, formatWeek, DatePicker, DatePickerHook;
+  var anatomy11, parts11, $93635573935797de$var$EPOCH, $93635573935797de$var$daysInMonth, $93635573935797de$export$80ee6245ec4f29ec, $d2ca8165c9aa885a$export$7a5acbd77d414bd9, $ad063034c8620db8$var$DAY_MAP, $ad063034c8620db8$var$localTimeZone, $ad063034c8620db8$var$localTimeZoneOverride, $ad063034c8620db8$var$cachedRegions, $ad063034c8620db8$var$cachedWeekInfo, $ad063034c8620db8$var$WEEKEND_DATA, $d07e34cce18680fd$var$formattersByTimeZone, $d07e34cce18680fd$var$DAYMILLIS, $435a2ceaa8778ed8$var$ONE_HOUR, $58246871e4652552$var$DATE_RE, $58246871e4652552$var$ABSOLUTE_RE, $58246871e4652552$var$requiredDurationTimeGroups, $58246871e4652552$var$requiredDurationGroups, _type, _a, $2aaf608024c21ca1$export$99faa760c7908e4f, _type2, _a2, $2aaf608024c21ca1$export$ca871e8dbb80966f, _type3, _a3, $2aaf608024c21ca1$export$d3b7288e7994edea, $12a3c853105e5a70$var$formatterCache, $12a3c853105e5a70$export$ad991b66133851cf, $12a3c853105e5a70$var$hour12Preferences, $12a3c853105e5a70$var$_hasBuggyHour12Behavior, $12a3c853105e5a70$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, digitsCache, isDigit, isValidCharacter, ensureValidCharacters, separatorCache, isValidYear, isValidMonth, isValidDay, getLabelId7, getRootId11, getTableId, getContentId5, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl5, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidDate, defaultTranslations, views, getVisibleRangeText, and4, machine11, normalizeValue, preserveTime, pickViewLabel, formatWeek, DatePicker, DATE_PICKER_UPDATE_ATTR_KEYS, DATE_PICKER_PRESENCE_ATTR_KEYS, DatePickerHook;
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_NB7M3GJN();
-      init_chunk_PE34YET2();
-      init_chunk_7BZGUIUZ();
-      init_chunk_MHRYIVD2();
-      init_chunk_CBUVYVIR();
-      init_chunk_2H6YHTHG();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_C4KEB3WL();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_Z3EQ3GCO();
+      init_chunk_KHEHQE65();
+      init_chunk_UFCM6256();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -20774,6 +21127,19 @@ var Corex = (() => {
       DEFAULT_MIN_YEAR = 1900;
       DEFAULT_MAX_YEAR = 2099;
       FUTURE_YEAR_COERCION = 10;
+      digitsCache = /* @__PURE__ */ new Map();
+      isDigit = (char, locale) => {
+        return locale ? getLocaleDigits(locale).includes(char) : /\d/.test(char);
+      };
+      isValidCharacter = (char, separator, locale) => {
+        if (!char) return true;
+        if (char.length !== 1) return true;
+        return isDigit(char, locale) || separator.includes(char);
+      };
+      ensureValidCharacters = (value, separator, locale) => {
+        return value.split("").filter((char) => isValidCharacter(char, separator, locale)).join("");
+      };
+      separatorCache = /* @__PURE__ */ new Map();
       isValidYear = (year) => year != null && year.length === 4;
       isValidMonth = (month) => month != null && parseFloat(month) <= 12;
       isValidDay = (day) => day != null && parseFloat(day) <= 31;
@@ -20851,15 +21217,8 @@ var Corex = (() => {
         month: "mm",
         year: "yyyy"
       };
-      isValidCharacter = (char, separator) => {
-        if (!char) return true;
-        return /\d/.test(char) || char === separator || char.length !== 1;
-      };
       isValidDate = (value) => {
         return !Number.isNaN(value.day) && !Number.isNaN(value.month) && !Number.isNaN(value.year);
-      };
-      ensureValidCharacters = (value, separator) => {
-        return value.split("").filter((char) => isValidCharacter(char, separator)).join("");
       };
       defaultTranslations = {
         dayCell(state2) {
@@ -20912,7 +21271,14 @@ var Corex = (() => {
       };
       views = ["day", "month", "year"];
       getVisibleRangeText = memo(
-        (opts) => [opts.view, opts.startValue.toString(), opts.endValue.toString(), opts.locale],
+        (opts) => [
+          opts.view,
+          opts.startValue.toString(),
+          opts.endValue.toString(),
+          opts.locale,
+          opts.timeZone,
+          opts.selectionMode
+        ],
         ([view], opts) => {
           const { startValue, endValue, locale, timeZone, selectionMode } = opts;
           if (view === "year") {
@@ -21135,7 +21501,13 @@ var Corex = (() => {
             actions: ["setFocusedDate"]
           },
           "VALUE.CLEAR": {
-            actions: ["clearDateValue", "clearFocusedDate", "focusFirstInputElement"]
+            actions: [
+              "clearDateValue",
+              "clearFocusedDate",
+              "setActiveIndexToStart",
+              "clearHoveredDate",
+              "focusFirstInputElement"
+            ]
           },
           "INPUT.CHANGE": [
             {
@@ -21204,7 +21576,7 @@ var Corex = (() => {
             on: {
               "CONTROLLED.OPEN": {
                 target: "open",
-                actions: ["focusFirstSelectedDate", "focusActiveCell"]
+                actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell"]
               },
               "TRIGGER.CLICK": [
                 {
@@ -21213,7 +21585,7 @@ var Corex = (() => {
                 },
                 {
                   target: "open",
-                  actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+                  actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
                 }
               ],
               OPEN: [
@@ -21223,7 +21595,7 @@ var Corex = (() => {
                 },
                 {
                   target: "open",
-                  actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+                  actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
                 }
               ]
             }
@@ -21233,7 +21605,7 @@ var Corex = (() => {
             on: {
               "CONTROLLED.OPEN": {
                 target: "open",
-                actions: ["focusFirstSelectedDate", "focusActiveCell"]
+                actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell"]
               },
               "TRIGGER.CLICK": [
                 {
@@ -21242,7 +21614,7 @@ var Corex = (() => {
                 },
                 {
                   target: "open",
-                  actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+                  actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
                 }
               ],
               OPEN: [
@@ -21252,7 +21624,7 @@ var Corex = (() => {
                 },
                 {
                   target: "open",
-                  actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+                  actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
                 }
               ]
             }
@@ -21260,7 +21632,7 @@ var Corex = (() => {
           open: {
             tags: ["open"],
             effects: ["trackDismissableElement", "trackPositioning"],
-            exit: ["clearHoveredDate", "resetView"],
+            exit: ["clearHoveredDate"],
             on: {
               "CONTROLLED.CLOSE": [
                 {
@@ -21342,10 +21714,16 @@ var Corex = (() => {
                 }
                 // ===
               ],
-              "CELL.POINTER_MOVE": {
-                guard: and4("isRangePicker", "isSelectingEndDate"),
-                actions: ["setHoveredDate", "setFocusedDate"]
-              },
+              "CELL.POINTER_MOVE": [
+                {
+                  guard: and4("isRangePicker", "isSelectingEndDate", "isDayPointerMoveOutsideVisibleMonth"),
+                  actions: ["setHoveredDate"]
+                },
+                {
+                  guard: and4("isRangePicker", "isSelectingEndDate"),
+                  actions: ["setHoveredDate", "setFocusedDate"]
+                }
+              ],
               "TABLE.POINTER_LEAVE": {
                 guard: "isRangePicker",
                 actions: ["clearHoveredDate"]
@@ -21575,7 +21953,8 @@ var Corex = (() => {
               return ((_a4 = event.previousEvent) == null ? void 0 : _a4.type) === "INTERACT_OUTSIDE";
             },
             isInputValueEmpty: ({ event }) => event.value.trim() === "",
-            shouldFixOnBlur: ({ event }) => !!event.fixOnBlur
+            shouldFixOnBlur: ({ event }) => !!event.fixOnBlur,
+            isDayPointerMoveOutsideVisibleMonth: ({ event }) => event.cell === "day" && event.outsideRange === true
           },
           effects: {
             trackPositioning({ context, prop, scope }) {
@@ -21606,6 +21985,7 @@ var Corex = (() => {
               return trackDismissableElement(getContentEl22, {
                 type: "popover",
                 defer: true,
+                layerStyleTargets: [() => getPositionerEl3(scope)],
                 exclude: [...getInputEls(scope), getTriggerEl3(scope), getClearTriggerEl2(scope)],
                 onInteractOutside(event) {
                   context.set("restoreFocus", !event.detail.focusable);
@@ -22003,9 +22383,10 @@ var Corex = (() => {
               if (!date) return;
               date = constrainValue(date, prop("min"), prop("max"));
               const values = Array.from(context.get("value"));
-              values[event.index] = date;
-              context.set("value", values);
-              const valueAsString = getValueAsString(values, prop);
+              values[event.index] = preserveTime(values[event.index], date);
+              const adjustedValues = adjustStartAndEndDate(values);
+              context.set("value", adjustedValues);
+              const valueAsString = getValueAsString(adjustedValues, prop);
               context.set("inputValue", valueAsString[event.index]);
             },
             resetView({ context }) {
@@ -22175,7 +22556,6 @@ var Corex = (() => {
             });
           });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine11, props);
         }
@@ -22274,84 +22654,143 @@ var Corex = (() => {
             '[data-scope="date-picker"][data-part="content"]'
           );
           if (content) this.spreadProps(content, this.api.getContentProps());
-          if (this.api.open) {
-            const dayView = this.getDayView();
-            const monthView = this.getMonthView();
-            const yearView = this.getYearView();
-            if (dayView) dayView.hidden = this.api.view !== "day";
-            if (monthView) monthView.hidden = this.api.view !== "month";
-            if (yearView) yearView.hidden = this.api.view !== "year";
-            if (this.api.view === "day" && dayView) {
-              const viewControl = dayView.querySelector('[data-part="view-control"]');
-              if (viewControl)
-                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-              const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
-              if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-              const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
-              if (viewTrigger) {
-                this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
-                viewTrigger.textContent = this.api.visibleRangeText.start;
-              }
-              const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
-              if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
-              const table = dayView.querySelector("table");
-              if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
-              const thead = dayView.querySelector("thead");
-              if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
-              this.renderDayTableHeader();
-              this.renderDayTableBody();
-            } else if (this.api.view === "month" && monthView) {
-              const viewControl = monthView.querySelector('[data-part="view-control"]');
-              if (viewControl)
-                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
-              const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
-              if (prevTrigger)
-                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
-              const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
-              if (viewTrigger) {
-                this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
-                viewTrigger.textContent = String(this.api.visibleRange.start.year);
-              }
-              const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
-              if (nextTrigger)
-                this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
-              const table = monthView.querySelector("table");
-              if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
-              this.renderMonthTableBody();
-            } else if (this.api.view === "year" && yearView) {
-              const viewControl = yearView.querySelector('[data-part="view-control"]');
-              if (viewControl)
-                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-              const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
-              if (prevTrigger)
-                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
-              const decadeText = yearView.querySelector('[data-part="decade"]');
-              if (decadeText) {
-                const decade = this.api.getDecade();
-                decadeText.textContent = `${decade.start} - ${decade.end}`;
-              }
-              const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
-              if (nextTrigger)
-                this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
-              const table = yearView.querySelector("table");
-              if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
-              this.renderYearTableBody();
+          const dayView = this.getDayView();
+          const monthView = this.getMonthView();
+          const yearView = this.getYearView();
+          if (!this.api.open) {
+            if (dayView) dayView.hidden = true;
+            if (monthView) monthView.hidden = true;
+            if (yearView) yearView.hidden = true;
+            return;
+          }
+          if (dayView) dayView.hidden = this.api.view !== "day";
+          if (monthView) monthView.hidden = this.api.view !== "month";
+          if (yearView) yearView.hidden = this.api.view !== "year";
+          if (this.api.view === "day" && dayView) {
+            const viewControl = dayView.querySelector('[data-part="view-control"]');
+            if (viewControl)
+              this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+            const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
+            if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+            const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
+            if (viewTrigger) {
+              this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
+              viewTrigger.textContent = this.api.visibleRangeText.start;
             }
+            const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
+            if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+            const table = dayView.querySelector("table");
+            if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+            const thead = dayView.querySelector("thead");
+            if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
+            this.renderDayTableHeader();
+            this.renderDayTableBody();
+          } else if (this.api.view === "month" && monthView) {
+            const viewControl = monthView.querySelector('[data-part="view-control"]');
+            if (viewControl)
+              this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
+            const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
+            if (prevTrigger)
+              this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
+            const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
+            if (viewTrigger) {
+              this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
+              viewTrigger.textContent = String(this.api.visibleRange.start.year);
+            }
+            const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
+            if (nextTrigger)
+              this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
+            const table = monthView.querySelector("table");
+            if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
+            this.renderMonthTableBody();
+          } else if (this.api.view === "year" && yearView) {
+            const viewControl = yearView.querySelector('[data-part="view-control"]');
+            if (viewControl)
+              this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+            const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
+            if (prevTrigger)
+              this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
+            const decadeText = yearView.querySelector('[data-part="decade"]');
+            if (decadeText) {
+              const decade = this.api.getDecade();
+              decadeText.textContent = `${decade.start} - ${decade.end}`;
+            }
+            const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
+            if (nextTrigger)
+              this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
+            const table = yearView.querySelector("table");
+            if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
+            this.renderYearTableBody();
           }
         }
       };
-      DatePickerHook = {
-        mounted() {
-          const el = this.el;
-          const hook = this;
+      DATE_PICKER_UPDATE_ATTR_KEYS = [
+        "dir",
+        "locale",
+        "timeZone",
+        "disabled",
+        "readonly",
+        "required",
+        "invalid",
+        "outsideDaySelectable",
+        "closeOnSelect",
+        "min",
+        "max",
+        "startOfWeek",
+        "fixedWeeks",
+        "selectionMode",
+        "maxSelectedDates",
+        "placeholder",
+        "minView",
+        "maxView",
+        "inline",
+        "translation",
+        "submitName",
+        "value",
+        "positionStrategy",
+        "positionPlacement",
+        "positionGutter",
+        "positionShift",
+        "positionOverflowPadding",
+        "positionArrowPadding",
+        "positionOffsetMainAxis",
+        "positionOffsetCrossAxis",
+        "positionFlip",
+        "positionSlide",
+        "positionOverlap",
+        "positionSameWidth",
+        "positionFitViewport",
+        "positionHideWhenDetached"
+      ];
+      DATE_PICKER_PRESENCE_ATTR_KEYS = /* @__PURE__ */ new Set([
+        "disabled",
+        "readonly",
+        "required",
+        "invalid",
+        "outsideDaySelectable",
+        "closeOnSelect",
+        "fixedWeeks",
+        "inline",
+        "positionFlip",
+        "positionSlide",
+        "positionOverlap",
+        "positionSameWidth",
+        "positionFitViewport",
+        "positionHideWhenDetached"
+      ]);
+      DatePickerHook = createZagLiveHook({
+        key: "datePicker",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
           hook.fieldTouched = false;
-          const pushEvent = this.pushEvent.bind(this);
-          const liveSocket = this.liveSocket;
-          const canPush = () => canPushEvent(this.liveSocket);
+          const pushEvent = hook.pushEvent.bind(hook);
+          const liveSocket = hook.liveSocket;
+          const canPush = () => canPushEvent(hook.liveSocket);
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          const parseList = (v2) => v2 ? v2.map((x2) => parse2(x2)) : void 0;
-          const parseOne = (v2) => v2 ? parse2(v2) : void 0;
+          const parseList = (v2) => tryParseDateList(v2);
+          const parseOne = (v2) => v2 ? tryParseDate(v2, "focusedValue") : void 0;
           const valueBinding = mountStringListBinding(el);
           const initialIsoList = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
           const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
@@ -22373,8 +22812,8 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
             closeOnSelect: resolveCloseOnSelect(el),
-            min: min4 ? parse2(min4) : void 0,
-            max: max3 ? parse2(max3) : void 0,
+            min: min4 ? tryParseDate(min4, "min") : void 0,
+            max: max3 ? tryParseDate(max3, "max") : void 0,
             startOfWeek: getNumber(el, "startOfWeek"),
             fixedWeeks: getBoolean(el, "fixedWeeks"),
             selectionMode: getString(el, "selectionMode"),
@@ -22455,8 +22894,6 @@ var Corex = (() => {
               });
             }
           }));
-          datePickerInstance.init();
-          this.datePicker = datePickerInstance;
           const submitName = getString(el, "submitName");
           const isoList = applyServerIsoToZagIfNeeded(
             datePickerInstance,
@@ -22471,32 +22908,36 @@ var Corex = (() => {
           } else {
             syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
           }
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent(
-              "date_picker_set_value",
-              (payload) => {
-                const targetId = payload.date_picker_id;
-                if (!targetId || targetId !== el.id) return;
-                datePickerInstance.api.setValue([parse2(payload.value)]);
-              }
-            )
-          );
-          this.onSetValue = (event) => {
+          server.add("date_picker_set_value", (payload) => {
+            const targetId = payload.date_picker_id;
+            if (!targetId || targetId !== el.id) return;
+            const parsed = tryParseDate(payload.value, "set_value");
+            if (parsed) datePickerInstance.api.setValue([parsed]);
+          });
+          dom2.add("corex:date-picker:set-value", (event) => {
             var _a4;
             const value = (_a4 = event.detail) == null ? void 0 : _a4.value;
             if (typeof value === "string") {
-              datePickerInstance.api.setValue([parse2(value)]);
+              const parsed = tryParseDate(value, "set-value");
+              if (parsed) datePickerInstance.api.setValue([parsed]);
             }
-          };
-          el.addEventListener("corex:date-picker:set-value", this.onSetValue);
+          });
+          hook.lastUpdateAttrsKey = datePickerUpdateAttrsKey(el);
+          hook.locale = getString(el, "locale");
+          return datePickerInstance;
         },
-        updated() {
-          const el = this.el;
-          const zag = this.datePicker;
+        update(hook, zag) {
+          const el = hook.el;
+          const attrsKey = datePickerUpdateAttrsKey(el);
+          if (attrsKey === hook.lastUpdateAttrsKey) return;
+          hook.lastUpdateAttrsKey = attrsKey;
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          zag == null ? void 0 : zag.updateProps(__spreadValues({
+          const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+          const locale = getString(el, "locale");
+          const localeChanged = hook.locale !== void 0 && hook.locale !== locale;
+          hook.locale = locale;
+          zag.updateProps(__spreadValues(__spreadValues({
             dir: getString(el, "dir"),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
@@ -22506,8 +22947,8 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
             closeOnSelect: resolveCloseOnSelect(el),
-            min: min4 ? parse2(min4) : void 0,
-            max: max3 ? parse2(max3) : void 0,
+            min: min4 ? tryParseDate(min4, "min") : void 0,
+            max: max3 ? tryParseDate(max3, "max") : void 0,
             startOfWeek: getNumber(el, "startOfWeek"),
             fixedWeeks: getBoolean(el, "fixedWeeks"),
             selectionMode: getString(el, "selectionMode"),
@@ -22517,8 +22958,12 @@ var Corex = (() => {
             maxView: getString(el, "maxView"),
             inline: getBoolean(el, "inline"),
             positioning: readPositioningOptions(el)
-          }, resolveZagDatePickerTranslations(el)));
-          if (!zag) return;
+          }, resolveZagDatePickerTranslations(el)), valuePatch.value !== void 0 ? { value: tryParseDateList(valuePatch.value) } : {}));
+          const currentValue = zag.api.value;
+          if (localeChanged && (currentValue == null ? void 0 : currentValue.length)) {
+            zag.api.setValue(currentValue);
+          }
+          zag.render();
           const submitName = getString(el, "submitName");
           const isoList = isoListFromValues(zag.api.value);
           if (submitName) {
@@ -22530,21 +22975,8 @@ var Corex = (() => {
           } else {
             syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
           }
-          zag.render();
-        },
-        destroyed() {
-          var _a4;
-          if (this.onSetValue) {
-            this.el.removeEventListener("corex:date-picker:set-value", this.onSetValue);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a4 = this.datePicker) == null ? void 0 : _a4.destroy();
         }
-      };
+      });
     }
   });
 
@@ -22705,13 +23137,10 @@ var Corex = (() => {
     const scrollbarGutter = styles == null ? void 0 : styles.scrollbarGutter;
     return scrollbarGutter === "stable" || (scrollbarGutter == null ? void 0 : scrollbarGutter.startsWith("stable ")) === true;
   }
-  function preventBodyScroll(_document) {
+  function applyLock(doc) {
     var _a4;
-    const doc = _document != null ? _document : document;
     const win = (_a4 = doc.defaultView) != null ? _a4 : window;
     const { documentElement, body } = doc;
-    const locked = body.hasAttribute(LOCK_CLASSNAME);
-    if (locked) return;
     const hasStableGutter = hasStableScrollbarGutter(documentElement) || hasStableScrollbarGutter(body);
     const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
     body.setAttribute(LOCK_CLASSNAME, "");
@@ -22751,6 +23180,26 @@ var Corex = (() => {
     return () => {
       cleanups.forEach((fn) => fn == null ? void 0 : fn());
       body.removeAttribute(LOCK_CLASSNAME);
+    };
+  }
+  function preventBodyScroll(_document) {
+    const doc = _document != null ? _document : document;
+    let state2 = lockMap.get(doc);
+    if (!state2) {
+      state2 = { count: 0, cleanup: applyLock(doc) };
+      lockMap.set(doc, state2);
+    }
+    state2.count++;
+    const lockState = state2;
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      lockState.count--;
+      if (lockState.count === 0) {
+        lockState.cleanup();
+        lockMap.delete(doc);
+      }
     };
   }
   function dialogInitialAriaLabel(rootEl) {
@@ -22820,18 +23269,16 @@ var Corex = (() => {
     if (!isJsAnimation(el)) return;
     runDialogScaleTransitions(el, isOpen);
   }
-  var anatomy12, parts12, getPositionerId4, getBackdropId, getContentId6, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl6, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine12, Dialog, DIALOG_SCALE_SELECTOR, DialogHook;
+  var anatomy12, parts12, getPositionerId4, getBackdropId, getContentId6, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl6, getPositionerEl4, getBackdropEl, getTriggerEl4, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, lockMap, machine12, Dialog, DIALOG_SCALE_SELECTOR, DialogHook;
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_4AOGROPJ();
-      init_chunk_CBUVYVIR();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_PWP4CBA7();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -22875,12 +23322,17 @@ var Corex = (() => {
       getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
       getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
       getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
+      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
       getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
       getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
       getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
-      getTriggerEls2 = (ctx) => queryAll(ctx.getDoc(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+      getTriggerEls2 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
       getActiveTriggerEl = (ctx, value) => {
-        return value == null ? getTriggerEls2(ctx)[0] : ctx.getById(getTriggerId5(ctx, value));
+        var _a4;
+        if (value == null) {
+          return (_a4 = getTriggerEl4(ctx)) != null ? _a4 : getTriggerEls2(ctx)[0];
+        }
+        return ctx.getById(getTriggerId5(ctx, value));
       };
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
@@ -23578,6 +24030,7 @@ var Corex = (() => {
       delay = (fn) => setTimeout(fn, 0);
       isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
       LOCK_CLASSNAME = "data-scroll-lock";
+      lockMap = /* @__PURE__ */ new WeakMap();
       machine12 = createMachine({
         props({ props, scope }) {
           const alertDialog = props.role === "alertdialog";
@@ -23625,7 +24078,7 @@ var Corex = (() => {
         },
         states: {
           open: {
-            entry: ["checkRenderedElements", "syncZIndex", "setInitialFocus"],
+            entry: ["checkRenderedElements", "setInitialFocus"],
             effects: ["trackDismissableElement", "trapFocus", "preventScroll", "hideContentBelow"],
             on: {
               "CONTROLLED.CLOSE": {
@@ -23698,7 +24151,8 @@ var Corex = (() => {
                 type: "dialog",
                 defer: true,
                 pointerBlocking: prop("modal"),
-                exclude: getTriggerEls2(scope),
+                layerStyleTargets: [() => getBackdropEl(scope), () => getPositionerEl4(scope)],
+                exclude: [getTriggerEl4(scope), ...getTriggerEls2(scope)].filter(Boolean),
                 onInteractOutside(event) {
                   var _a4;
                   (_a4 = prop("onInteractOutside")) == null ? void 0 : _a4(event);
@@ -23774,18 +24228,6 @@ var Corex = (() => {
                 });
               });
             },
-            syncZIndex({ scope }) {
-              raf(() => {
-                const contentEl = getContentEl6(scope);
-                if (!contentEl) return;
-                const styles = getComputedStyle2(contentEl);
-                const elems = [getPositionerEl4(scope), getBackdropEl(scope)];
-                elems.forEach((node) => {
-                  node == null ? void 0 : node.style.setProperty("--z-index", styles.zIndex);
-                  node == null ? void 0 : node.style.setProperty("--layer-index", styles.getPropertyValue("--layer-index"));
-                });
-              });
-            },
             invokeOnClose({ prop }) {
               var _a4;
               (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: false });
@@ -23808,7 +24250,6 @@ var Corex = (() => {
         }
       });
       Dialog = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine12, props);
         }
@@ -23868,12 +24309,13 @@ var Corex = (() => {
         }
       };
       DIALOG_SCALE_SELECTOR = '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]';
-      DialogHook = {
-        mounted() {
-          const el = this.el;
-          const self2 = this;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      DialogHook = createZagLiveHook({
+        key: "dialog",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const self2 = hook;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           self2.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
           const dialog = new Dialog(el, __spreadProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(el)), readBooleanControlledZagProps(el, "open", "defaultOpen")), {
             "aria-label": dialogInitialAriaLabel(el),
@@ -23902,64 +24344,53 @@ var Corex = (() => {
               }
             }
           }));
-          dialog.init();
-          this.dialog = dialog;
           prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
             if (sub.dataset.part === "backdrop") return { scale: false };
           });
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:dialog:set-open", (event) => {
+          dom2.add("corex:dialog:set-open", (event) => {
             const { open } = event.detail;
             dialog.api.setOpen(open);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("dialog_set_open", (payload) => {
+          server.add("dialog_set_open", (payload) => {
             if (!payload || typeof payload !== "object") return;
             const o2 = payload;
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (typeof o2.open === "boolean") dialog.api.setOpen(o2.open);
           });
-          registry.add("dialog_open", (payload) => {
+          server.add("dialog_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("dialog_open_response", {
+            hook.pushEvent("dialog_open_response", {
               id: el.id,
               value: dialog.api.open
             });
           });
+          return dialog;
         },
-        beforeUpdate() {
-          const { el } = this;
+        beforeUpdate(hook) {
+          const { el } = hook;
           if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-            this.previousOpen = getBoolean(el, "open");
+            hook.previousOpen = getBoolean(el, "open");
           }
         },
-        updated() {
-          var _a4, _b, _c, _d, _e;
-          const { el } = this;
+        update(hook, dialog) {
+          var _a4, _b, _c;
+          const { el } = hook;
           const layout = readDialogLayoutProps(el);
           if (!getBoolean(el, "controlled")) {
-            (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(layout);
+            dialog.updateProps(layout);
             return;
           }
-          const nextOpen = (_b = getBoolean(el, "open")) != null ? _b : false;
-          const prevOpen = (_d = (_c = this.previousOpen) != null ? _c : this.lastOpen) != null ? _d : false;
-          this.previousOpen = void 0;
-          this.lastOpen = nextOpen;
-          (_e = this.dialog) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({}, layout), { open: nextOpen }));
+          const nextOpen = (_a4 = getBoolean(el, "open")) != null ? _a4 : false;
+          const prevOpen = (_c = (_b = hook.previousOpen) != null ? _b : hook.lastOpen) != null ? _c : false;
+          hook.previousOpen = void 0;
+          hook.lastOpen = nextOpen;
+          dialog.updateProps(__spreadProps(__spreadValues({}, layout), { open: nextOpen }));
           if (nextOpen !== prevOpen) {
             runDialogScaleIfJs(el, nextOpen);
           }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.dialog) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -24258,15 +24689,11 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_2H6YHTHG();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_F544AH56();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -24549,7 +24976,6 @@ var Corex = (() => {
         }
       });
       Editable = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine13, props);
         }
@@ -24563,7 +24989,14 @@ var Corex = (() => {
           const controlEl = this.el.querySelector(
             '[data-scope="editable"][data-part="control"]'
           );
-          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          if (controlEl) {
+            this.spreadProps(controlEl, this.api.getControlProps());
+            if (this.el.hasAttribute("data-readonly")) {
+              controlEl.setAttribute("data-readonly", "");
+            } else {
+              controlEl.removeAttribute("data-readonly");
+            }
+          }
           const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
           if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
           const labelEl = this.el.querySelector(
@@ -24597,16 +25030,18 @@ var Corex = (() => {
           if (cancelTriggerEl) this.spreadProps(cancelTriggerEl, this.api.getCancelTriggerProps());
         }
       };
-      EditableHook = {
-        mounted() {
+      EditableHook = createZagLiveHook({
+        key: "editable",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
           var _a4, _b, _c, _d;
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const placeholder = getString(el, "placeholder");
           const activationMode = getString(el, "activationMode");
           const selectOnFocus = getBoolean(el, "selectOnFocus");
-          this.fieldTouched = false;
+          hook.fieldTouched = false;
           const valueBinding = mountStringBinding(el, "value", "defaultValue");
           const initialValue = "value" in valueBinding ? (_a4 = valueBinding.value) != null ? _a4 : "" : (_b = valueBinding.defaultValue) != null ? _b : "";
           const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
@@ -24622,34 +25057,32 @@ var Corex = (() => {
           }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), {
             defaultEdit: getBoolean(el, "defaultEdit"),
             onValueChange: (details) => {
-              notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, hook, initialValue);
             },
             onValueCommit: (details) => {
-              notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, hook, initialValue);
             }
           }));
-          zag.init();
-          this.editable = zag;
-          syncEditableFormValue(el, zag.api.value, { markUsed: false });
-          this.unbindFormSubmit = bindFormSubmitSync(el, zag);
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:editable:set-value", (event) => {
+          hook.unbindFormSubmit = bindFormSubmitSync(el, zag);
+          dom2.add("corex:editable:set-value", (event) => {
             var _a5;
             const raw = (_a5 = event.detail) == null ? void 0 : _a5.value;
             zag.api.setValue(raw === void 0 || raw === null ? "" : String(raw));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("editable_set_value", (payload) => {
+          server.add("editable_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setValue(readPayloadValue(payload));
           });
+          return zag;
         },
-        updated() {
+        afterInit(hook, zag) {
+          syncEditableFormValue(hook.el, zag.api.value, { markUsed: false });
+        },
+        update(hook, zag) {
           var _a4;
-          const el = this.el;
-          (_a4 = this.editable) == null ? void 0 : _a4.updateProps({
+          const el = hook.el;
+          const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
+          zag.updateProps(__spreadValues({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
@@ -24658,16 +25091,13 @@ var Corex = (() => {
             name: zagName2(el),
             form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
-          });
+          }, valuePatch.value !== void 0 ? { value: (_a4 = valuePatch.value) != null ? _a4 : "" } : {}));
         },
-        destroyed() {
-          var _a4, _b, _c, _d;
-          (_a4 = this.unbindFormSubmit) == null ? void 0 : _a4.call(this);
-          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
-          (_d = this.editable) == null ? void 0 : _d.destroy();
+        destroy(hook) {
+          var _a4;
+          (_a4 = hook.unbindFormSubmit) == null ? void 0 : _a4.call(hook);
         }
-      };
+      });
     }
   });
 
@@ -25140,6 +25570,28 @@ var Corex = (() => {
     }
     return `${fieldName}_label`;
   }
+  function syncFileFieldNames(opts) {
+    const { fileInput, sentinel, name, filesLength, nameEmptySentinel } = opts;
+    if (fileInput) {
+      if (filesLength > 0 && name) {
+        fileInput.setAttribute("name", name);
+      } else {
+        fileInput.removeAttribute("name");
+      }
+    }
+    if (!sentinel) return;
+    if (filesLength > 0) {
+      sentinel.disabled = true;
+      sentinel.removeAttribute("name");
+      return;
+    }
+    sentinel.disabled = false;
+    if (name && nameEmptySentinel) {
+      sentinel.setAttribute("name", name);
+    } else {
+      sentinel.removeAttribute("name");
+    }
+  }
   function setInputFiles2(inputEl, files) {
     try {
       if (typeof window.DataTransfer !== "undefined") {
@@ -25176,15 +25628,30 @@ var Corex = (() => {
       count: details.files.length
     };
   }
+  function formSubmitName2(el) {
+    var _a4;
+    return (_a4 = getString(el, "submitName")) != null ? _a4 : getString(el, "name");
+  }
+  function ensureEmptySentinelNamed(el, zag, opts = {}) {
+    zag.syncFormSubmitInputs({ forSubmit: true });
+    const sentinel = el.querySelector('[data-part="hidden-input-sentinel"]');
+    if (!sentinel || zag.api.acceptedFiles.length > 0) return;
+    const name = formSubmitName2(el);
+    if (name) sentinel.setAttribute("name", name);
+    if (opts.markUsed) {
+      reapplyLiveViewValueInputUsage(sentinel);
+      if (opts.notify !== false) {
+        notifyPhoenixFormChange(sentinel, "", { force: true });
+      }
+    }
+  }
   var anatomy14, parts14, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId13, getDropzoneId, getHiddenInputId4, getTriggerId6, getLabelId9, getItemId5, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine14, ACCEPTED, FileUpload, FileUploadHook;
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_NUQOKDPA();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -25567,7 +26034,6 @@ ${err}`);
           __publicField(this, "previewCleanup", /* @__PURE__ */ new Map());
           __publicField(this, "sentinelSnapshot", "");
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine14, props);
         }
@@ -25676,27 +26142,27 @@ ${err}`);
           this.syncFormSubmitInputs();
           this.touchSentinel();
         }
-        syncFormSubmitInputs() {
+        syncFormSubmitInputs(opts = {}) {
+          var _a4;
           const fileInput = this.el.querySelector(
             '[data-scope="file-upload"][data-part="hidden-input"]'
           );
           const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
           const files = this.api.acceptedFiles;
-          const name = this.el.dataset.name;
+          const name = (_a4 = this.el.dataset.submitName) != null ? _a4 : this.el.dataset.name;
+          const fieldUsed = this.el.dataset.fieldUsed === "true";
+          const forSubmit = opts.forSubmit === true;
           if (fileInput) {
             setInputFiles2(fileInput, files);
           }
           this.syncAcceptedNamesHidden(name, files);
-          if (!sentinel) return;
-          if (files.length > 0) {
-            sentinel.disabled = true;
-            sentinel.removeAttribute("name");
-            return;
-          }
-          sentinel.disabled = false;
-          if (name) {
-            sentinel.setAttribute("name", name);
-          }
+          syncFileFieldNames({
+            fileInput,
+            sentinel,
+            name,
+            filesLength: files.length,
+            nameEmptySentinel: forSubmit || fieldUsed || Boolean(this.el.dataset.name)
+          });
         }
         syncAcceptedNamesHidden(fieldName, files) {
           var _a4;
@@ -25832,24 +26298,26 @@ ${err}`);
           return this.api.acceptedFiles.find((f2) => fileKeyFor(f2) === k2);
         }
       };
-      FileUploadHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      FileUploadHook = createZagLiveHook({
+        key: "fileUpload",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const maxFiles = getNumber(el, "maxFiles");
           const maxFileSize = getNumber(el, "maxFileSize");
           const minFileSize = getNumber(el, "minFileSize");
           const allowDropRaw = el.dataset.allowDrop;
           const preventDropRaw = el.dataset.preventDocumentDrop;
           const dropzoneI18n = getString(el, "translationDropzone");
+          hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
           const zag = new FileUpload(el, {
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
-            name: getString(el, "name"),
+            name: formSubmitName2(el),
             dir: getDir(el),
             allowDrop: allowDropRaw === void 0 ? true : allowDropRaw !== "false",
             preventDocumentDrop: preventDropRaw === void 0 ? true : preventDropRaw !== "false",
@@ -25860,6 +26328,7 @@ ${err}`);
             directory: getBoolean(el, "directory"),
             translations: dropzoneI18n ? { dropzone: dropzoneI18n } : void 0,
             onFileChange: (details) => {
+              hook.fieldTouched = true;
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -25868,8 +26337,10 @@ ${err}`);
                 serverEventName: getString(el, "onFileChange"),
                 clientEventName: getString(el, "onFileChangeClient")
               });
+              queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
             },
             onFileAccept: (details) => {
+              hook.fieldTouched = true;
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -25890,69 +26361,74 @@ ${err}`);
               });
             }
           });
-          zag.init();
-          this.fileUpload = zag;
-          this.handlers = [];
-          this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
-            zag.syncFormSubmitInputs();
+          hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            hook.fieldTouched = true;
+            ensureEmptySentinelNamed(el, zag, { markUsed: true, notify: false });
           });
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:file-upload:clear-files", () => {
+          dom2.add("corex:file-upload:clear-files", () => {
+            hook.fieldTouched = true;
             zag.api.clearFiles();
+            queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
           });
-          domRegistry.add("corex:file-upload:clear-rejected", () => {
+          dom2.add("corex:file-upload:clear-rejected", () => {
             zag.api.clearRejectedFiles();
           });
-          domRegistry.add("corex:file-upload:open", () => {
+          dom2.add("corex:file-upload:open", () => {
             zag.api.openFilePicker();
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("file_upload_clear_files", (payload) => {
+          server.add("file_upload_clear_files", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
+            hook.fieldTouched = true;
             zag.api.clearFiles();
+            queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
           });
-          registry.add("file_upload_clear_rejected", (payload) => {
+          server.add("file_upload_clear_rejected", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.clearRejectedFiles();
           });
-          registry.add("file_upload_open", (payload) => {
+          server.add("file_upload_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.openFilePicker();
           });
+          return zag;
         },
-        updated() {
-          var _a4, _b, _c, _d;
-          (_d = this.fileUpload) == null ? void 0 : _d.updateProps({
-            id: this.el.id,
-            disabled: getBoolean(this.el, "disabled"),
-            invalid: getBoolean(this.el, "invalid"),
-            readOnly: getBoolean(this.el, "readonly"),
-            required: getBoolean(this.el, "required"),
-            name: getString(this.el, "name"),
-            dir: getDir(this.el),
-            allowDrop: this.el.dataset.allowDrop === void 0 ? true : this.el.dataset.allowDrop !== "false",
-            preventDocumentDrop: this.el.dataset.preventDocumentDrop === void 0 ? true : this.el.dataset.preventDocumentDrop !== "false",
-            maxFiles: (_a4 = getNumber(this.el, "maxFiles")) != null ? _a4 : 1,
-            maxFileSize: (_b = getNumber(this.el, "maxFileSize")) != null ? _b : Number.POSITIVE_INFINITY,
-            minFileSize: (_c = getNumber(this.el, "minFileSize")) != null ? _c : 0,
-            accept: getString(this.el, "accept"),
-            directory: getBoolean(this.el, "directory")
+        afterInit(hook, zag) {
+          zag.syncFormSubmitInputs({
+            forSubmit: hook.fieldTouched === true || getBoolean(hook.el, "fieldUsed")
           });
         },
-        destroyed() {
-          var _a4, _b, _c, _d, _e;
-          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+        update(hook, zag) {
+          var _a4, _b, _c;
+          if (getBoolean(hook.el, "fieldUsed")) {
+            hook.fieldTouched = true;
           }
-          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
-          (_d = this.fileUpload) == null ? void 0 : _d.cleanupPreviews();
-          (_e = this.fileUpload) == null ? void 0 : _e.destroy();
+          zag.updateProps({
+            id: hook.el.id,
+            disabled: getBoolean(hook.el, "disabled"),
+            invalid: getBoolean(hook.el, "invalid"),
+            readOnly: getBoolean(hook.el, "readonly"),
+            required: getBoolean(hook.el, "required"),
+            name: formSubmitName2(hook.el),
+            dir: getDir(hook.el),
+            allowDrop: hook.el.dataset.allowDrop === void 0 ? true : hook.el.dataset.allowDrop !== "false",
+            preventDocumentDrop: hook.el.dataset.preventDocumentDrop === void 0 ? true : hook.el.dataset.preventDocumentDrop !== "false",
+            maxFiles: (_a4 = getNumber(hook.el, "maxFiles")) != null ? _a4 : 1,
+            maxFileSize: (_b = getNumber(hook.el, "maxFileSize")) != null ? _b : Number.POSITIVE_INFINITY,
+            minFileSize: (_c = getNumber(hook.el, "minFileSize")) != null ? _c : 0,
+            accept: getString(hook.el, "accept"),
+            directory: getBoolean(hook.el, "directory")
+          });
+          zag.render();
+          zag.syncFormSubmitInputs({
+            forSubmit: hook.fieldTouched === true || getBoolean(hook.el, "fieldUsed")
+          });
+        },
+        destroy(hook, zag) {
+          var _a4;
+          (_a4 = hook.unbindSubmitIntent) == null ? void 0 : _a4.call(hook);
+          zag.cleanupPreviews();
         }
-      };
+      });
     }
   });
 
@@ -26526,16 +27002,15 @@ ${err}`);
     const getAnchorPosition = defaultPosition == null && positioning ? (details) => anchorPointFromPositioning(positioning, details, defaultSize, getDir(el)) : void 0;
     return { defaultPosition, getAnchorPosition };
   }
-  var anatomy15, parts15, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId7, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl7, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine15, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
+  var anatomy15, parts15, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId7, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl7, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine15, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_QB2YSZP6();
-      init_chunk_PE34YET2();
-      init_chunk_C4KEB3WL();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_SBGJ6WBJ();
+      init_chunk_KHEHQE65();
+      init_chunk_VOKBRZCH();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -26788,7 +27263,7 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.header) != null ? _b : `float:${ctx.id}:header`;
       };
-      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId7(ctx));
+      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId7(ctx));
       getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
       getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
       getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
@@ -27152,7 +27627,7 @@ ${err}`);
               if (computed("hasSpecifiedPosition")) return;
               const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
               if (prop("persistRect") && hasPrevRect) return;
-              const triggerRect = getTriggerEl4(scope);
+              const triggerRect = getTriggerEl5(scope);
               const boundaryRect = getBoundaryRect(scope, (_a4 = prop("getBoundaryEl")) == null ? void 0 : _a4(), false);
               let anchorPosition = (_b = prop("getAnchorPosition")) == null ? void 0 : _b({
                 triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
@@ -27348,7 +27823,7 @@ ${err}`);
               if (prop("restoreFocus") === false) return;
               raf(() => {
                 var _a4, _b;
-                const element = (_b = (_a4 = prop("finalFocusEl")) == null ? void 0 : _a4()) != null ? _b : getTriggerEl4(scope);
+                const element = (_b = (_a4 = prop("finalFocusEl")) == null ? void 0 : _a4()) != null ? _b : getTriggerEl5(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -27366,7 +27841,6 @@ ${err}`);
         }
       });
       FloatingPanel = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine15, props);
         }
@@ -27432,11 +27906,12 @@ ${err}`);
         }
       };
       FALLBACK_DEFAULT_SIZE = { width: 320, height: 240 };
-      FloatingPanelHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      FloatingPanelHook = createZagLiveHook({
+        key: "floatingPanel",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const size3 = parseSize(el.dataset.size);
           const defaultSize = parseSize(el.dataset.defaultSize);
           const anchorProps = buildAnchorProps(el);
@@ -27501,43 +27976,29 @@ ${err}`);
               });
             }
           });
-          zag.init();
-          this.floatingPanel = zag;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:floating-panel:set-open", (event) => {
+          dom2.add("corex:floating-panel:set-open", (event) => {
             const { open } = event.detail;
             zag.api.setOpen(open);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("floating_panel_set_open", (payload) => {
+          server.add("floating_panel_set_open", (payload) => {
             if (!payload || typeof payload !== "object") return;
             const o2 = payload;
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (typeof o2.open === "boolean") zag.api.setOpen(o2.open);
           });
+          return zag;
         },
-        updated() {
-          var _a4;
-          const el = this.el;
+        update(hook, zag) {
+          const el = hook.el;
           const anchorProps = buildAnchorProps(el);
-          (_a4 = this.floatingPanel) == null ? void 0 : _a4.updateProps({
+          zag.updateProps({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
             getAnchorPosition: anchorProps.getAnchorPosition
           });
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          this.domRegistry = void 0;
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          this.handleRegistry = void 0;
-          (_c = this.floatingPanel) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -27560,12 +28021,8 @@ ${err}`);
       deselectable: getBoolean(el, "deselectable"),
       typeahead: getBoolean(el, "typeahead"),
       onValueChange: (details) => {
-        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        if (redirectOn && firstValue) {
-          const itemEl = el.querySelector(
-            `[data-scope="listbox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-          );
-          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+        if (redirectOn) {
+          redirectCollectionItem(el, "listbox", firstSelectedValue(details.value), liveSocket);
         }
         notifyChange({
           el,
@@ -27586,15 +28043,13 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_DDT7N35T();
-      init_chunk_SGRHPBNS();
-      init_chunk_HZLPIQBD();
-      init_chunk_YUSIPE4B();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_XGL2LWL4();
+      init_chunk_NU3NDRI3();
+      init_chunk_4JICR5HJ();
+      init_chunk_QCFVFTGB();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -27613,7 +28068,6 @@ ${err}`);
         getCollection() {
           return collection(zagListCollectionConfig(this.options, this.hasGroups));
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
           return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props), {
@@ -27681,83 +28135,55 @@ ${err}`);
           }
         }
       };
-      ListboxHook = {
-        mounted() {
-          var _a4, _b;
-          const el = this.el;
-          const allItems = safeParseJson((_a4 = el.dataset.items) != null ? _a4 : "[]", []);
-          const hasGroups = allItems.some((item) => Boolean(item.group));
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          const zag = new Listbox(el, __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(el, this.liveSocket, pushEvent)), {
+      ListboxHook = createZagLiveHook({
+        key: "listbox",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const { items: allItems, hasGroups } = initCollectionItems(el, hook);
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
+          const zag = new Listbox(el, __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(el, hook.liveSocket, pushEvent)), {
             collection: buildCollection(allItems, hasGroups)
           }), readStringListControlledZagProps(el, "value", "defaultValue")));
-          zag.hasGroups = hasGroups;
-          zag.setOptions(allItems);
-          zag.init();
-          this.listbox = zag;
-          this.lastItemsJson = (_b = el.dataset.items) != null ? _b : "[]";
-          const emitValue = (respondTo) => {
-            const value = zag.api.value;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
+          applyItems(zag, allItems, hasGroups);
+          const emitValue = createValueEmitter(
+            { el, pushEvent, canPushServer: canPush },
+            {
+              getValue: () => zag.api.value,
               serverEventName: "listbox_value_response",
-              serverPayload: { id: el.id, value },
-              el,
-              domEventName: "listbox-value",
-              domDetail: { id: el.id, value }
-            });
-          };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:listbox:set-value", (event) => {
+              domEventName: "listbox-value"
+            }
+          );
+          dom2.add("corex:listbox:set-value", (event) => {
             zag.api.setValue(event.detail.value);
           });
-          domRegistry.add("corex:listbox:value", (event) => {
+          dom2.add("corex:listbox:value", (event) => {
             emitValue(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("listbox_set_value", (payload) => {
+          server.add("listbox_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setValue(payload.value);
           });
-          registry.add("listbox_value", (payload) => {
+          server.add("listbox_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitValue(parseRespondTo(payload));
           });
+          return zag;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-        },
-        updated() {
-          var _a4;
-          if (!this.listbox) return;
-          try {
-            const newItemsJson = (_a4 = this.el.dataset.items) != null ? _a4 : "[]";
-            if (newItemsJson !== this.lastItemsJson) {
-              this.lastItemsJson = newItemsJson;
-              const newItems = safeParseJson(newItemsJson, []);
-              const hasGroups = newItems.some((item) => Boolean(item.group));
-              this.listbox.hasGroups = hasGroups;
-              this.listbox.setOptions(newItems);
-            }
-            this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
-              collection: this.listbox.getCollection()
-            }), readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)));
-          } finally {
-            this.beforeAttrs = void 0;
+        update(hook, zag) {
+          const itemsChanged = refreshItemsIfChanged(hook.el, hook, zag);
+          const propsApplied = zag.updateProps(
+            __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook))), {
+              collection: zag.getCollection()
+            }), readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)),
+            { force: itemsChanged }
+          );
+          if (!propsApplied || itemsChanged) {
+            zag.render();
           }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.listbox) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -27920,6 +28346,31 @@ ${err}`);
     }
     return contentSize < rootSize ? rootSize / speed : contentSize / speed;
   }
+  function sanitizeClone(source) {
+    const clone = source.cloneNode(true);
+    const nodes = [clone, ...Array.from(clone.querySelectorAll("*"))];
+    for (const node of nodes) {
+      if (!(node instanceof HTMLElement)) continue;
+      if (node.hasAttribute("id")) node.removeAttribute("id");
+      if (node.hasAttribute("phx-hook")) node.removeAttribute("phx-hook");
+      if (node.hasAttribute("name")) node.removeAttribute("name");
+      for (const attr of Array.from(node.attributes)) {
+        if (attr.name.startsWith(PHX_ATTR_PREFIX)) {
+          node.removeAttribute(attr.name);
+        }
+      }
+      if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement || node instanceof HTMLSelectElement || node instanceof HTMLTextAreaElement) {
+        node.disabled = true;
+        node.tabIndex = -1;
+      } else if (node instanceof HTMLAnchorElement) {
+        node.removeAttribute("href");
+        node.tabIndex = -1;
+      } else if (node.hasAttribute("tabindex")) {
+        node.tabIndex = -1;
+      }
+    }
+    return clone;
+  }
   function readMarqueeProps(el) {
     return {
       id: el.id,
@@ -27937,12 +28388,12 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy16, parts16, dom, getEdgePositionStyles, getMarqueeTranslate, machine16, Marquee, MarqueeHook;
+  var anatomy16, parts16, dom, getEdgePositionStyles, getMarqueeTranslate, machine16, PHX_ATTR_PREFIX, Marquee, MarqueeHook;
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -28171,12 +28622,39 @@ ${err}`);
           }
         }
       });
+      PHX_ATTR_PREFIX = "phx-";
       Marquee = class extends Component {
         constructor() {
           super(...arguments);
           __publicField(this, "items", null);
+          __publicField(this, "contentResizeObserver", null);
+          __publicField(this, "resizeRaf", 0);
+          __publicField(this, "settleGeneration", 0);
+          __publicField(this, "init", () => {
+            try {
+              this.machine.start();
+              this.api = this.initApi();
+              this.render();
+              this.unsubscribe = this.machine.subscribe(() => {
+                this.api = this.initApi();
+                this.render();
+              });
+              void this.settleAndSyncClones();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
+          });
+          __publicField(this, "destroy", () => {
+            var _a4;
+            this.settleGeneration += 1;
+            this.teardownContentObserver();
+            this.el.removeAttribute("data-loading");
+            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
+            this.unsubscribe = void 0;
+            this.clearSpreadPropsCleanups();
+            this.machine.stop();
+          });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine16, props);
         }
@@ -28188,9 +28666,7 @@ ${err}`);
             'template[data-part="items-template"]'
           );
           if (templateEl) {
-            this.items = Array.from(templateEl.content.children).map(
-              (el) => el.cloneNode(true)
-            );
+            this.items = Array.from(templateEl.content.children).map((el) => sanitizeClone(el));
             templateEl.remove();
           }
           if (!this.items) return;
@@ -28200,7 +28676,6 @@ ${err}`);
           root.setAttribute("data-scope", "marquee");
           root.setAttribute("data-part", "root");
           root.id = `marquee:${this.el.id}`;
-          root.style.cssText = "display:flex;flex-direction:row;position:relative;overflow:hidden;width:100%";
           this.el.appendChild(root);
           const edgeStart = document.createElement("div");
           root.appendChild(edgeStart);
@@ -28209,16 +28684,14 @@ ${err}`);
           viewport.setAttribute("data-scope", "marquee");
           viewport.setAttribute("data-part", "viewport");
           viewport.id = `marquee:${this.el.id}:viewport`;
-          viewport.style.cssText = "display:flex;width:100%";
           root.appendChild(viewport);
           const content = document.createElement("div");
           content.setAttribute("data-scope", "marquee");
           content.setAttribute("data-part", "content");
           content.setAttribute("data-index", "0");
           content.id = `marquee:${this.el.id}:content:0`;
-          content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
           viewport.appendChild(content);
-          this.fillContent(content);
+          this.fillPrimaryContent(content);
           const edgeEnd = document.createElement("div");
           root.appendChild(edgeEnd);
           this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
@@ -28231,6 +28704,7 @@ ${err}`);
             this.buildDom();
           }
           this.render();
+          void this.settleAndSyncClones();
         }
         render() {
           if (!this.items) return;
@@ -28255,11 +28729,20 @@ ${err}`);
             if (!contentEl) {
               contentEl = document.createElement("div");
               viewport.appendChild(contentEl);
-              this.fillContent(contentEl);
+              if (i2 === 0) {
+                this.fillPrimaryContent(contentEl);
+              } else {
+                this.fillCloneContent(contentEl);
+              }
             } else if (contentEl.querySelectorAll('[data-part="item"]').length === 0) {
-              this.fillContent(contentEl);
+              if (i2 === 0) {
+                this.fillPrimaryContent(contentEl);
+              } else {
+                this.fillCloneContent(contentEl);
+              }
             }
             this.spreadProps(contentEl, this.api.getContentProps({ index: i2 }));
+            contentEl.inert = false;
             contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
               this.spreadProps(itemEl, this.api.getItemProps());
             });
@@ -28267,7 +28750,96 @@ ${err}`);
           const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
           if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
         }
-        fillContent(contentEl) {
+        /** Rebuild clone tracks from the live primary items after layout/media settle. */
+        syncClonesFromPrimary() {
+          const primary = this.primaryContent();
+          if (!primary) return;
+          const liveItems = Array.from(
+            primary.querySelectorAll(':scope > [data-part="item"]')
+          );
+          if (liveItems.length === 0) return;
+          this.items = liveItems.map((el) => sanitizeClone(el));
+          const viewport = this.el.querySelector('[data-part="viewport"]');
+          if (!viewport) return;
+          const clones = Array.from(
+            viewport.querySelectorAll(':scope > [data-part="content"]:not([data-index="0"])')
+          );
+          for (const clone of clones) {
+            while (clone.firstChild) clone.removeChild(clone.firstChild);
+            this.fillCloneContent(clone);
+          }
+        }
+        settleAndSyncClones() {
+          return __async(this, null, function* () {
+            const generation = ++this.settleGeneration;
+            yield this.waitForMedia();
+            if (generation !== this.settleGeneration) return;
+            this.syncClonesFromPrimary();
+            this.render();
+            this.observePrimaryContent();
+          });
+        }
+        waitForMedia() {
+          return __async(this, null, function* () {
+            const primary = this.primaryContent();
+            if (!primary) return;
+            const imgs = Array.from(primary.querySelectorAll("img"));
+            yield Promise.all(
+              imgs.map((img) => {
+                if (typeof img.decode === "function") {
+                  return img.decode().catch(() => void 0);
+                }
+                if (img.complete) return Promise.resolve();
+                return new Promise((resolve) => {
+                  img.addEventListener("load", () => resolve(), { once: true });
+                  img.addEventListener("error", () => resolve(), { once: true });
+                });
+              })
+            );
+            const fonts = document.fonts;
+            if (fonts == null ? void 0 : fonts.ready) {
+              yield fonts.ready.catch(() => void 0);
+            }
+          });
+        }
+        observePrimaryContent() {
+          this.teardownContentObserver();
+          const primary = this.primaryContent();
+          if (!primary || typeof ResizeObserver === "undefined") return;
+          this.contentResizeObserver = new ResizeObserver(() => {
+            cancelAnimationFrame(this.resizeRaf);
+            this.resizeRaf = requestAnimationFrame(() => {
+              this.syncClonesFromPrimary();
+              this.render();
+            });
+          });
+          this.contentResizeObserver.observe(primary);
+        }
+        teardownContentObserver() {
+          var _a4;
+          (_a4 = this.contentResizeObserver) == null ? void 0 : _a4.disconnect();
+          this.contentResizeObserver = null;
+          cancelAnimationFrame(this.resizeRaf);
+          this.resizeRaf = 0;
+        }
+        primaryContent() {
+          return this.el.querySelector('[data-part="content"][data-index="0"]');
+        }
+        fillPrimaryContent(contentEl) {
+          if (!this.items) return;
+          const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+          if (ssrPreview) {
+            const liveItems = Array.from(
+              ssrPreview.querySelectorAll(':scope > [data-part="item"]')
+            );
+            if (liveItems.length > 0) {
+              liveItems.forEach((itemEl) => contentEl.appendChild(itemEl));
+              return;
+            }
+          }
+          this.fillCloneContent(contentEl);
+        }
+        fillCloneContent(contentEl) {
           if (!this.items) return;
           this.items.forEach((itemEl) => {
             contentEl.appendChild(itemEl.cloneNode(true));
@@ -28280,14 +28852,15 @@ ${err}`);
           }
         }
       };
-      MarqueeHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
+      MarqueeHook = createZagLiveHook({
+        key: "marquee",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
           const zag = new Marquee(el, __spreadProps(__spreadValues({}, readMarqueeProps(el)), {
             onPauseChange: (details) => {
               const eventName = getString(el, "onPauseChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
+              if (eventName && hook.liveSocket.main.isConnected()) {
                 pushEvent(eventName, { id: el.id, paused: details.paused });
               }
               const clientEventName = getString(el, "onPauseChangeClient");
@@ -28302,7 +28875,7 @@ ${err}`);
             },
             onLoopComplete: () => {
               const eventName = getString(el, "onLoopComplete");
-              if (eventName && this.liveSocket.main.isConnected()) {
+              if (eventName && hook.liveSocket.main.isConnected()) {
                 pushEvent(eventName, { id: el.id });
               }
               const clientEventName = getString(el, "onLoopCompleteClient");
@@ -28314,7 +28887,7 @@ ${err}`);
             },
             onComplete: () => {
               const eventName = getString(el, "onComplete");
-              if (eventName && this.liveSocket.main.isConnected()) {
+              if (eventName && hook.liveSocket.main.isConnected()) {
                 pushEvent(eventName, { id: el.id });
               }
               const clientEventName = getString(el, "onCompleteClient");
@@ -28326,51 +28899,27 @@ ${err}`);
             }
           }));
           zag.buildDom();
-          zag.init();
-          this.marquee = zag;
-          this.onPause = () => zag.api.pause();
-          this.onResume = () => zag.api.resume();
-          this.onTogglePause = () => zag.api.togglePause();
-          el.addEventListener("corex:marquee:pause", this.onPause);
-          el.addEventListener("corex:marquee:resume", this.onResume);
-          el.addEventListener("corex:marquee:toggle-pause", this.onTogglePause);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("marquee_pause", (payload) => {
-              if (!idMatches(el.id, readPayloadId(payload))) return;
-              zag.api.pause();
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("marquee_resume", (payload) => {
-              if (!idMatches(el.id, readPayloadId(payload))) return;
-              zag.api.resume();
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("marquee_toggle_pause", (payload) => {
-              if (!idMatches(el.id, readPayloadId(payload))) return;
-              zag.api.togglePause();
-            })
-          );
+          dom2.add("corex:marquee:pause", () => zag.api.pause());
+          dom2.add("corex:marquee:resume", () => zag.api.resume());
+          dom2.add("corex:marquee:toggle-pause", () => zag.api.togglePause());
+          server.add("marquee_pause", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.pause();
+          });
+          server.add("marquee_resume", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.resume();
+          });
+          server.add("marquee_toggle_pause", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.togglePause();
+          });
+          return zag;
         },
-        updated() {
-          const zag = this.marquee;
-          if (!zag) return;
-          zag.updateProps(readMarqueeProps(this.el));
-        },
-        destroyed() {
-          var _a4;
-          if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);
-          if (this.onResume) this.el.removeEventListener("corex:marquee:resume", this.onResume);
-          if (this.onTogglePause)
-            this.el.removeEventListener("corex:marquee:toggle-pause", this.onTogglePause);
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a4 = this.marquee) == null ? void 0 : _a4.destroy();
+        update(hook, zag) {
+          zag.updateProps(readMarqueeProps(hook.el));
         }
-      };
+      });
     }
   });
 
@@ -28520,11 +29069,12 @@ ${err}`);
     const isTypingAhead = computed("isTypingAhead");
     const composite = prop("composite");
     const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
     const anchorPoint = context.get("anchorPoint");
     const highlightedValue = context.get("highlightedValue");
     const triggerValue = context.get("triggerValue");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
-      placement: anchorPoint ? "bottom" : currentPlacement
+      placement: currentPlacement
     }));
     function getItemState(props) {
       return {
@@ -28680,7 +29230,8 @@ ${err}`);
         const current = value == null ? false : triggerValue === value;
         const triggerId = getTriggerId8(scope, value);
         return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, isSubmenu ? parts17.triggerItem.attrs : parts17.trigger.attrs), {
-          "data-placement": context.get("currentPlacement"),
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           type: "button",
           dir: prop("dir"),
           id: triggerId
@@ -28802,6 +29353,7 @@ ${err}`);
           "aria-activedescendant": computed("highlightedId") || void 0,
           "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue != null ? triggerValue : void 0) : getTriggerId8(scope, triggerValue != null ? triggerValue : void 0),
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           onPointerEnter(event) {
             if (event.pointerType !== "mouse") return;
             send({ type: "MENU_POINTERENTER" });
@@ -28992,19 +29544,21 @@ ${err}`);
     if (!targetId) return false;
     return elId === targetId || elId === `menu:${targetId}`;
   }
-  var anatomy17, parts17, clsx, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
+  var anatomy17, parts17, clsx, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl6, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_QB2YSZP6();
-      init_chunk_MHRYIVD2();
-      init_chunk_CBUVYVIR();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_C4KEB3WL();
-      init_chunk_HZLPIQBD();
-      init_chunk_YUSIPE4B();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_SBGJ6WBJ();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_XGL2LWL4();
+      init_chunk_NU3NDRI3();
+      init_chunk_4JICR5HJ();
+      init_chunk_QCFVFTGB();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -29083,15 +29637,15 @@ ${err}`);
       };
       getContentEl8 = (ctx) => ctx.getById(getContentId8(ctx));
       getPositionerEl6 = (ctx) => ctx.getById(getPositionerId6(ctx));
-      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId8(ctx));
+      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId8(ctx));
       getItemEl3 = (ctx, value) => value ? ctx.getById(getItemId6(ctx, value)) : null;
       getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
-      getTriggerEls3 = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
-      getContextTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
+      getTriggerEls3 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+      getContextTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
       getActiveTriggerEl2 = (ctx, value) => {
         var _a4;
         if (value == null) {
-          return (_a4 = getTriggerEl5(ctx)) != null ? _a4 : getTriggerEls3(ctx)[0];
+          return (_a4 = getTriggerEl6(ctx)) != null ? _a4 : getTriggerEls3(ctx)[0];
         }
         return ctx.getById(getTriggerId8(ctx, value));
       };
@@ -29325,7 +29879,7 @@ ${err}`);
             tags: ["closed"],
             effects: ["waitForLongPress"],
             on: {
-              "CONTROLLED.OPEN": { target: "open" },
+              "CONTROLLED.OPEN": { target: "open", actions: ["reposition"] },
               "CONTROLLED.CLOSE": { target: "closed", actions: ["focusTrigger"] },
               CONTEXT_MENU_CANCEL: [
                 {
@@ -29344,7 +29898,7 @@ ${err}`);
                 },
                 {
                   target: "open",
-                  actions: ["setTriggerValue", "invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen", "reposition"]
                 }
               ]
             }
@@ -29714,7 +30268,7 @@ ${err}`);
               return trackDismissableElement(getContentEl22, {
                 type: "menu",
                 defer: true,
-                exclude: [getTriggerEl5(scope), ...getTriggerEls3(scope)].filter(Boolean),
+                exclude: [getTriggerEl6(scope), ...getTriggerEls3(scope)].filter(Boolean),
                 onInteractOutside: prop("onInteractOutside"),
                 onRequestDismiss: prop("onRequestDismiss"),
                 onFocusOutside(event) {
@@ -30041,7 +30595,6 @@ ${err}`);
             this.machine.stop();
           });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine17, props);
         }
@@ -30084,12 +30637,7 @@ ${err}`);
             if (!childMenu) continue;
             const applyProps = () => {
               const disabled = triggerEl.hasAttribute("disabled");
-              const childTriggerProps = childMenu.api.getTriggerProps();
-              const itemProps = this.api.getItemProps({
-                value: childTriggerProps.id,
-                disabled: disabled || void 0
-              });
-              this.spreadProps(triggerEl, __spreadValues(__spreadValues({}, itemProps), childTriggerProps));
+              this.spreadProps(triggerEl, __spreadValues(__spreadValues({}, this.api.getTriggerItemProps(childMenu.api)), triggerDisabledAttrs(disabled)));
             };
             applyProps();
             this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
@@ -30168,21 +30716,19 @@ ${err}`);
           }
         }
       };
-      MenuHook = {
-        mounted() {
-          const el = this.el;
+      MenuHook = createZagLiveHook({
+        key: "menu",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
           if (el.hasAttribute("data-nested")) {
             return;
           }
-          const pushEvent = this.pushEvent.bind(this);
-          const liveSocket = this.liveSocket;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const liveSocket = hook.liveSocket;
           const buildOnSelect = () => (details) => {
             var _a4;
             if (getBoolean(el, "redirect") && details.value) {
-              const itemEl = el.querySelector(
-                `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
-              );
-              performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+              redirectCollectionItem(el, "menu", details.value, liveSocket);
             }
             notifyChange({
               el,
@@ -30221,8 +30767,6 @@ ${err}`);
               });
             }
           });
-          menu.init();
-          this.menu = menu;
           const nestedMenuElements = el.querySelectorAll(
             '[data-scope="menu"][data-nested="menu"]'
           );
@@ -30245,9 +30789,9 @@ ${err}`);
             menuByHookId.set(hookId, nestedMenu);
             nestedMenuInstances.push(nestedMenu);
           });
-          this.submenuWireTimer = setTimeout(() => {
-            this.submenuWireTimer = void 0;
-            const rootMenu = this.menu;
+          hook.submenuWireTimer = setTimeout(() => {
+            hook.submenuWireTimer = void 0;
+            const rootMenu = hook.menu;
             if (!rootMenu) return;
             nestedMenuInstances.forEach((nestedMenu) => {
               const nestedEl = nestedMenu.el;
@@ -30262,58 +30806,38 @@ ${err}`);
               wireSubmenuTriggersDeep(rootMenu);
             }
           }, 0);
-          this.onSetOpen = (event) => {
+          dom2.add("corex:menu:set-open", (event) => {
             const { open } = event.detail;
             if (menu.api.open !== open) menu.api.setOpen(open);
-          };
-          el.addEventListener("corex:menu:set-open", this.onSetOpen);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("menu_set_open", (payload) => {
-              if (!menuSetOpenMatches(el.id, payload)) return;
-              menu.api.setOpen(payload.open);
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("menu_open", (payload) => {
-              if (!menuSetOpenMatches(el.id, payload)) return;
-              this.pushEvent("menu_open_response", {
-                id: readPayloadId(payload),
-                open: menu.api.open
-              });
-            })
-          );
+          });
+          server.add("menu_set_open", (payload) => {
+            if (!menuSetOpenMatches(el.id, payload)) return;
+            menu.api.setOpen(payload.open);
+          });
+          server.add("menu_open", (payload) => {
+            if (!menuSetOpenMatches(el.id, payload)) return;
+            hook.pushEvent("menu_open_response", {
+              id: readPayloadId(payload),
+              open: menu.api.open
+            });
+          });
+          return menu;
         },
-        updated() {
-          if (this.el.hasAttribute("data-nested")) return;
-          if (!this.menu) return;
-          syncMenuPropsFromDom(this.menu);
-          renderMenuTree(this.menu);
-          if (this.menu.children.length > 0) {
-            wireSubmenuTriggersDeep(this.menu);
+        update(_hook, menu) {
+          syncMenuPropsFromDom(menu);
+          renderMenuTree(menu);
+          if (menu.children.length > 0) {
+            wireSubmenuTriggersDeep(menu);
           }
         },
-        destroyed() {
-          if (this.el.hasAttribute("data-nested")) return;
-          if (this.submenuWireTimer !== void 0) {
-            clearTimeout(this.submenuWireTimer);
-            this.submenuWireTimer = void 0;
+        destroy(hook, menu) {
+          if (hook.submenuWireTimer !== void 0) {
+            clearTimeout(hook.submenuWireTimer);
+            hook.submenuWireTimer = void 0;
           }
-          if (this.onSetOpen) {
-            this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          if (this.menu) {
-            destroyDescendantMenus(this.menu);
-            this.menu.destroy();
-            this.menu = void 0;
-          }
+          destroyDescendantMenus(menu);
         }
-      };
+      });
     }
   });
 
@@ -30544,7 +31068,11 @@ ${err}`);
             if (event.defaultPrevented) return;
             if (readOnly) return;
             if (isComposingEvent(event)) return;
-            const step = getEventStep(event) * prop("step");
+            const step = getEventStepValue(event, {
+              step: prop("step"),
+              largeStep: prop("largeStep"),
+              smallStep: prop("smallStep")
+            });
             const keyMap2 = {
               ArrowUp() {
                 send({ type: "INPUT.ARROW_UP", step });
@@ -30664,28 +31192,28 @@ ${err}`);
       }
     };
   }
-  function $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options = {}) {
+  function $1dfb119a85e764e5$var$getCachedNumberFormatter(locale, options = {}) {
+    var _a4;
     let { numberingSystem } = options;
     if (numberingSystem && locale.includes("-nu-")) {
       if (!locale.includes("-u-")) locale += "-u-";
       locale += `-nu-${numberingSystem}`;
     }
-    if (options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
-      var _UNITS_unit;
+    if (options.style === "unit" && !$1dfb119a85e764e5$var$supportsUnit) {
       let { unit, unitDisplay = "short" } = options;
       if (!unit) throw new Error('unit option must be provided with style: "unit"');
-      if (!((_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay])) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
+      if (!((_a4 = $1dfb119a85e764e5$var$UNITS[unit]) == null ? void 0 : _a4[unitDisplay])) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
       options = __spreadProps(__spreadValues({}, options), {
         style: "decimal"
       });
     }
     let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
-    if ($488c6ddbf4ef74c2$var$formatterCache.has(cacheKey)) return $488c6ddbf4ef74c2$var$formatterCache.get(cacheKey);
+    if ($1dfb119a85e764e5$var$formatterCache.has(cacheKey)) return $1dfb119a85e764e5$var$formatterCache.get(cacheKey);
     let numberFormatter = new Intl.NumberFormat(locale, options);
-    $488c6ddbf4ef74c2$var$formatterCache.set(cacheKey, numberFormatter);
+    $1dfb119a85e764e5$var$formatterCache.set(cacheKey, numberFormatter);
     return numberFormatter;
   }
-  function $488c6ddbf4ef74c2$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
+  function $1dfb119a85e764e5$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
     if (signDisplay === "auto") return numberFormat.format(num);
     else if (signDisplay === "never") return numberFormat.format(Math.abs(num));
     else {
@@ -30707,57 +31235,65 @@ ${err}`);
       } else return numberFormat.format(num);
     }
   }
-  function $6c7bd7858deea686$var$getNumberParserImpl(locale, options, value) {
-    let defaultParser = $6c7bd7858deea686$var$getCachedNumberParser(locale, options);
+  function $eb76cf4feb040f77$var$getNumberParserImpl(locale, options, value) {
+    let defaultParser = $eb76cf4feb040f77$var$getCachedNumberParser(locale, options);
     if (!locale.includes("-nu-") && !defaultParser.isValidPartialNumber(value)) {
-      for (let numberingSystem of $6c7bd7858deea686$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
-        let parser = $6c7bd7858deea686$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
+      for (let numberingSystem of $eb76cf4feb040f77$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
+        let parser = $eb76cf4feb040f77$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
         if (parser.isValidPartialNumber(value)) return parser;
       }
     }
     return defaultParser;
   }
-  function $6c7bd7858deea686$var$getCachedNumberParser(locale, options) {
+  function $eb76cf4feb040f77$var$getCachedNumberParser(locale, options) {
     let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
-    let parser = $6c7bd7858deea686$var$numberParserCache.get(cacheKey);
+    let parser = $eb76cf4feb040f77$var$numberParserCache.get(cacheKey);
     if (!parser) {
-      parser = new $6c7bd7858deea686$var$NumberParserImpl(locale, options);
-      $6c7bd7858deea686$var$numberParserCache.set(cacheKey, parser);
+      parser = new $eb76cf4feb040f77$var$NumberParserImpl(locale, options);
+      $eb76cf4feb040f77$var$numberParserCache.set(cacheKey, parser);
     }
     return parser;
   }
-  function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
-    var _allParts_find, _posAllParts_find, _decimalParts_find, _allParts_find1;
+  function $eb76cf4feb040f77$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
+    var _a4, _b, _c, _d, _e;
     let symbolFormatter = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
       // Resets so we get the full range of symbols
       minimumSignificantDigits: 1,
       maximumSignificantDigits: 21,
       roundingIncrement: 1,
       roundingPriority: "auto",
-      roundingMode: "halfExpand"
+      roundingMode: "halfExpand",
+      useGrouping: true
     }));
     let allParts = symbolFormatter.formatToParts(-10000.111);
     let posAllParts = symbolFormatter.formatToParts(10000.111);
-    let pluralParts = $6c7bd7858deea686$var$pluralNumbers.map((n2) => symbolFormatter.formatToParts(n2));
-    var _allParts_find_value;
-    let minusSign = (_allParts_find_value = (_allParts_find = allParts.find((p2) => p2.type === "minusSign")) === null || _allParts_find === void 0 ? void 0 : _allParts_find.value) !== null && _allParts_find_value !== void 0 ? _allParts_find_value : "-";
-    let plusSign = (_posAllParts_find = posAllParts.find((p2) => p2.type === "plusSign")) === null || _posAllParts_find === void 0 ? void 0 : _posAllParts_find.value;
-    if (!plusSign && ((originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "exceptZero" || (originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "always")) plusSign = "+";
+    let pluralParts = $eb76cf4feb040f77$var$pluralNumbers.map((n2) => symbolFormatter.formatToParts(n2));
+    let noNumeralUnits = pluralParts.map((p2, i2) => {
+      let unit = p2.find((p22) => p22.type === "unit");
+      if (unit && !p2.some((p22) => p22.type === "integer" || p22.type === "fraction")) return {
+        unit: unit.value,
+        value: $eb76cf4feb040f77$var$pluralNumbers[i2]
+      };
+      return null;
+    }).filter((p2) => !!p2);
+    let minusSign = (_b = (_a4 = allParts.find((p2) => p2.type === "minusSign")) == null ? void 0 : _a4.value) != null ? _b : "-";
+    let plusSign = (_c = posAllParts.find((p2) => p2.type === "plusSign")) == null ? void 0 : _c.value;
+    if (!plusSign && ((originalOptions == null ? void 0 : originalOptions.signDisplay) === "exceptZero" || (originalOptions == null ? void 0 : originalOptions.signDisplay) === "always")) plusSign = "+";
     let decimalParts = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })).formatToParts(1e-3);
-    let decimal = (_decimalParts_find = decimalParts.find((p2) => p2.type === "decimal")) === null || _decimalParts_find === void 0 ? void 0 : _decimalParts_find.value;
-    let group2 = (_allParts_find1 = allParts.find((p2) => p2.type === "group")) === null || _allParts_find1 === void 0 ? void 0 : _allParts_find1.value;
-    let allPartsLiterals = allParts.filter((p2) => !$6c7bd7858deea686$var$nonLiteralParts.has(p2.type)).map((p2) => $6c7bd7858deea686$var$escapeRegex(p2.value));
-    let pluralPartsLiterals = pluralParts.flatMap((p2) => p2.filter((p22) => !$6c7bd7858deea686$var$nonLiteralParts.has(p22.type)).map((p22) => $6c7bd7858deea686$var$escapeRegex(p22.value)));
+    let decimal = (_d = decimalParts.find((p2) => p2.type === "decimal")) == null ? void 0 : _d.value;
+    let group2 = (_e = allParts.find((p2) => p2.type === "group")) == null ? void 0 : _e.value;
+    let allPartsLiterals = allParts.filter((p2) => !$eb76cf4feb040f77$var$nonLiteralParts.has(p2.type)).map((p2) => $eb76cf4feb040f77$var$escapeRegex(p2.value));
+    let pluralPartsLiterals = pluralParts.flatMap((p2) => p2.filter((p22) => !$eb76cf4feb040f77$var$nonLiteralParts.has(p22.type)).map((p22) => $eb76cf4feb040f77$var$escapeRegex(p22.value)));
     let sortedLiterals = [
       .../* @__PURE__ */ new Set([
         ...allPartsLiterals,
         ...pluralPartsLiterals
       ])
     ].sort((a2, b2) => b2.length - a2.length);
-    let literals = sortedLiterals.length === 0 ? new RegExp("[\\p{White_Space}]", "gu") : new RegExp(`${sortedLiterals.join("|")}|[\\p{White_Space}]`, "gu");
+    let literals = sortedLiterals.length === 0 ? new RegExp("\\p{White_Space}|\\p{Cf}", "gu") : new RegExp(`${sortedLiterals.join("|")}|\\p{White_Space}|\\p{Cf}`, "gu");
     let numerals = [
       ...new Intl.NumberFormat(intlOptions.locale, {
         useGrouping: false
@@ -30776,14 +31312,16 @@ ${err}`);
       group: group2,
       literals,
       numeral,
-      index
+      numerals,
+      index,
+      noNumeralUnits
     };
   }
-  function $6c7bd7858deea686$var$replaceAll(str, find2, replace2) {
+  function $eb76cf4feb040f77$var$replaceAll(str, find2, replace2) {
     if (str.replaceAll) return str.replaceAll(find2, replace2);
     return str.split(find2).join(replace2);
   }
-  function $6c7bd7858deea686$var$escapeRegex(string) {
+  function $eb76cf4feb040f77$var$escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
   function machineState(api) {
@@ -30795,50 +31333,35 @@ ${err}`);
       valueAsNumber: api.valueAsNumber
     };
   }
-  function submitValueForHost(el, valueAsNumber) {
+  function submitValueForHost(el, valueAsNumber, displayValue = "") {
     var _a4;
     const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
-    if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
-    return formatSubmitValue(valueAsNumber, step);
-  }
-  function canonicalDatasetValue(el) {
-    var _a4, _b;
-    return (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "";
-  }
-  function hiddenSubmitValue(el, displayValue, valueAsNumber) {
-    var _a4;
-    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
-    if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
-      return submitValueForHost(el, valueAsNumber);
-    }
-    const canonical = canonicalDatasetValue(el);
-    if (canonical !== "") {
-      return formatSubmitValue(canonical, step);
-    }
-    const stripped = (displayValue != null ? displayValue : "").replace(/,/g, "");
-    if (stripped === "") return "";
-    return formatSubmitValue(stripped, step);
+    return resolveNumberInputSubmitValue(valueAsNumber, displayValue, step);
   }
   function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
+    var _a4;
     const valueInput = el.querySelector(
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (!valueInput) return;
-    const v2 = hiddenSubmitValue(el, value, valueAsNumber);
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    const v2 = resolveNumberInputSubmitValue(valueAsNumber, value, step);
     const changed = valueInput.value !== v2;
     if (changed) valueInput.value = v2;
     syncInputFormAssociation(valueInput, el);
     if (notifyForm && (changed || v2 !== "")) {
       markUsed(valueInput);
-      valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-      valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+      dispatchFormInputEvents(valueInput);
     }
   }
   function setZagValue(zag, value) {
     var _a4;
     const step = (_a4 = getNumber(zag.el, "step")) != null ? _a4 : 1;
     if (typeof value === "number") {
-      if (Number.isNaN(value)) return;
+      if (Number.isNaN(value)) {
+        zag.api.clearValue();
+        return;
+      }
       zag.machine.service.send({
         type: "VALUE.SET",
         value: formatDisplayValue(value, step)
@@ -30846,10 +31369,30 @@ ${err}`);
       return;
     }
     const trimmed = value.trim();
-    if (trimmed === "") return;
+    if (trimmed === "") {
+      zag.api.clearValue();
+      return;
+    }
     zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
   }
-  function buildMachineProps(el, pushEvent, canPush) {
+  function initialDisplayValue(el) {
+    var _a4, _b;
+    const binding = mountNumberBinding(el);
+    if ("value" in binding) return (_a4 = binding.value) != null ? _a4 : "";
+    return (_b = binding.defaultValue) != null ? _b : "";
+  }
+  function bindFormSubmitFlush(el, zag) {
+    const form = el.closest("form");
+    if (!form) return () => {
+    };
+    const onSubmit = () => {
+      var _a4;
+      syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", false, zag.api.valueAsNumber);
+    };
+    form.addEventListener("submit", onSubmit, true);
+    return () => form.removeEventListener("submit", onSubmit, true);
+  }
+  function buildMachineProps(el, pushEvent, canPush, hook) {
     var _a4;
     const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
     return __spreadProps(__spreadValues({
@@ -30866,9 +31409,14 @@ ${err}`);
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
       dir: getDir(el),
       onValueChange: (details) => {
-        var _a5;
+        var _a5, _b;
+        const next2 = (_a5 = details.value) != null ? _a5 : "";
+        const isMountEcho = hook.fieldTouched !== true && next2 === ((_b = hook.initialValue) != null ? _b : "");
+        if (!isMountEcho) {
+          hook.fieldTouched = true;
+        }
         if (details.value !== void 0) {
-          syncNumberInputValueInput(el, (_a5 = details.value) != null ? _a5 : "", true, details.valueAsNumber);
+          syncNumberInputValueInput(el, next2, !isMountEcho, details.valueAsNumber);
         }
         notifyChange({
           el,
@@ -30902,21 +31450,16 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
+  var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $1dfb119a85e764e5$var$formatterCache, $1dfb119a85e764e5$var$supportsSignDisplay, $1dfb119a85e764e5$var$supportsUnit, $1dfb119a85e764e5$var$UNITS, $1dfb119a85e764e5$export$cc77c4ff7e8673c5, $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX, $eb76cf4feb040f77$var$NUMBERING_SYSTEMS, $eb76cf4feb040f77$export$cd11ab140839f11d, $eb76cf4feb040f77$var$numberParserCache, $eb76cf4feb040f77$var$NumberParserImpl, $eb76cf4feb040f77$var$nonLiteralParts, $eb76cf4feb040f77$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_NB7M3GJN();
-      init_chunk_DH47S3VU();
-      init_chunk_PE34YET2();
-      init_chunk_2H6YHTHG();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_Z3EQ3GCO();
+      init_chunk_KHEHQE65();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -31033,23 +31576,23 @@ ${err}`);
       </svg>`;
         doc.body.appendChild(el);
       };
-      $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
-      $488c6ddbf4ef74c2$var$supportsSignDisplay = false;
+      $1dfb119a85e764e5$var$formatterCache = /* @__PURE__ */ new Map();
+      $1dfb119a85e764e5$var$supportsSignDisplay = false;
       try {
-        $488c6ddbf4ef74c2$var$supportsSignDisplay = new Intl.NumberFormat("de-DE", {
+        $1dfb119a85e764e5$var$supportsSignDisplay = new Intl.NumberFormat("de-DE", {
           signDisplay: "exceptZero"
         }).resolvedOptions().signDisplay === "exceptZero";
       } catch (e2) {
       }
-      $488c6ddbf4ef74c2$var$supportsUnit = false;
+      $1dfb119a85e764e5$var$supportsUnit = false;
       try {
-        $488c6ddbf4ef74c2$var$supportsUnit = new Intl.NumberFormat("de-DE", {
+        $1dfb119a85e764e5$var$supportsUnit = new Intl.NumberFormat("de-DE", {
           style: "unit",
           unit: "degree"
         }).resolvedOptions().style === "unit";
       } catch (e2) {
       }
-      $488c6ddbf4ef74c2$var$UNITS = {
+      $1dfb119a85e764e5$var$UNITS = {
         degree: {
           narrow: {
             default: "\xB0",
@@ -31059,17 +31602,24 @@ ${err}`);
           }
         }
       };
-      $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5 = class {
-        /** Formats a number value as a string, according to the locale and options provided to the constructor. */
+      $1dfb119a85e764e5$export$cc77c4ff7e8673c5 = class {
+        constructor(locale, options = {}) {
+          this.numberFormatter = $1dfb119a85e764e5$var$getCachedNumberFormatter(locale, options);
+          this.options = options;
+        }
+        /**
+        * Formats a number value as a string, according to the locale and options provided to the
+        * constructor.
+        */
         format(value) {
+          var _a4;
           let res = "";
-          if (!$488c6ddbf4ef74c2$var$supportsSignDisplay && this.options.signDisplay != null) res = $488c6ddbf4ef74c2$export$711b50b3c525e0f2(this.numberFormatter, this.options.signDisplay, value);
+          if (!$1dfb119a85e764e5$var$supportsSignDisplay && this.options.signDisplay != null) res = $1dfb119a85e764e5$export$711b50b3c525e0f2(this.numberFormatter, this.options.signDisplay, value);
           else res = this.numberFormatter.format(value);
-          if (this.options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
-            var _UNITS_unit;
+          if (this.options.style === "unit" && !$1dfb119a85e764e5$var$supportsUnit) {
             let { unit, unitDisplay = "short", locale } = this.resolvedOptions();
             if (!unit) return res;
-            let values = (_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay];
+            let values = (_a4 = $1dfb119a85e764e5$var$UNITS[unit]) == null ? void 0 : _a4[unitDisplay];
             res += values[locale] || values.default;
           }
           return res;
@@ -31107,23 +31657,19 @@ ${err}`);
         /** Returns the resolved formatting options based on the values passed to the constructor. */
         resolvedOptions() {
           let options = this.numberFormatter.resolvedOptions();
-          if (!$488c6ddbf4ef74c2$var$supportsSignDisplay && this.options.signDisplay != null) options = __spreadProps(__spreadValues({}, options), {
+          if (!$1dfb119a85e764e5$var$supportsSignDisplay && this.options.signDisplay != null) options = __spreadProps(__spreadValues({}, options), {
             signDisplay: this.options.signDisplay
           });
-          if (!$488c6ddbf4ef74c2$var$supportsUnit && this.options.style === "unit") options = __spreadProps(__spreadValues({}, options), {
+          if (!$1dfb119a85e764e5$var$supportsUnit && this.options.style === "unit") options = __spreadProps(__spreadValues({}, options), {
             style: "unit",
             unit: this.options.unit,
             unitDisplay: this.options.unitDisplay
           });
           return options;
         }
-        constructor(locale, options = {}) {
-          this.numberFormatter = $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options);
-          this.options = options;
-        }
       };
-      $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX = new RegExp("^.*\\(.*\\).*$");
-      $6c7bd7858deea686$var$NUMBERING_SYSTEMS = [
+      $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX = new RegExp("^.*\\(.*\\).*$");
+      $eb76cf4feb040f77$var$NUMBERING_SYSTEMS = [
         "latn",
         "arab",
         "hanidec",
@@ -31131,12 +31677,16 @@ ${err}`);
         "beng",
         "fullwide"
       ];
-      $6c7bd7858deea686$export$cd11ab140839f11d = class {
+      $eb76cf4feb040f77$export$cd11ab140839f11d = class {
+        constructor(locale, options = {}) {
+          this.locale = locale;
+          this.options = options;
+        }
         /**
         * Parses the given string to a number. Returns NaN if a valid number could not be parsed.
         */
         parse(value) {
-          return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).parse(value);
+          return $eb76cf4feb040f77$var$getNumberParserImpl(this.locale, this.options, value).parse(value);
         }
         /**
         * Returns whether the given string could potentially be a valid number. This should be used to
@@ -31144,7 +31694,7 @@ ${err}`);
         * of the minus/plus sign characters can be checked.
         */
         isValidPartialNumber(value, minValue, maxValue) {
-          return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).isValidPartialNumber(value, minValue, maxValue);
+          return $eb76cf4feb040f77$var$getNumberParserImpl(this.locale, this.options, value).isValidPartialNumber(value, minValue, maxValue);
         }
         /**
         * Returns a numbering system for which the given string is valid in the current locale.
@@ -31152,19 +31702,32 @@ ${err}`);
         * locale is returned.
         */
         getNumberingSystem(value) {
-          return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).options.numberingSystem;
-        }
-        constructor(locale, options = {}) {
-          this.locale = locale;
-          this.options = options;
+          return $eb76cf4feb040f77$var$getNumberParserImpl(this.locale, this.options, value).options.numberingSystem;
         }
       };
-      $6c7bd7858deea686$var$numberParserCache = /* @__PURE__ */ new Map();
-      $6c7bd7858deea686$var$NumberParserImpl = class {
+      $eb76cf4feb040f77$var$numberParserCache = /* @__PURE__ */ new Map();
+      $eb76cf4feb040f77$var$NumberParserImpl = class {
+        constructor(locale, options = {}) {
+          var _a4, _b;
+          this.locale = locale;
+          if (options.roundingIncrement !== 1 && options.roundingIncrement != null) {
+            if (options.maximumFractionDigits == null && options.minimumFractionDigits == null) {
+              options.maximumFractionDigits = 0;
+              options.minimumFractionDigits = 0;
+            } else if (options.maximumFractionDigits == null) options.maximumFractionDigits = options.minimumFractionDigits;
+            else if (options.minimumFractionDigits == null) options.minimumFractionDigits = options.maximumFractionDigits;
+          }
+          this.formatter = new Intl.NumberFormat(locale, options);
+          this.options = this.formatter.resolvedOptions();
+          this.symbols = $eb76cf4feb040f77$var$getSymbols(locale, this.formatter, this.options, options);
+          if (this.options.style === "percent" && (((_a4 = this.options.minimumFractionDigits) != null ? _a4 : 0) > 18 || ((_b = this.options.maximumFractionDigits) != null ? _b : 0) > 18)) console.warn("NumberParser cannot handle percentages with greater than 18 decimal places, please reduce the number in your options.");
+        }
         parse(value) {
+          var _a4, _b;
+          let isGroupSymbolAllowed = this.formatter.resolvedOptions().useGrouping;
           let fullySanitizedValue = this.sanitize(value);
-          if (this.symbols.group)
-            fullySanitizedValue = $6c7bd7858deea686$var$replaceAll(fullySanitizedValue, this.symbols.group, "");
+          if (!isGroupSymbolAllowed && this.symbols.group && fullySanitizedValue.includes(this.symbols.group)) return NaN;
+          else if (this.symbols.group) fullySanitizedValue = fullySanitizedValue.replaceAll(this.symbols.group, "");
           if (this.symbols.decimal) fullySanitizedValue = fullySanitizedValue.replace(this.symbols.decimal, ".");
           if (this.symbols.minusSign) fullySanitizedValue = fullySanitizedValue.replace(this.symbols.minusSign, "-");
           fullySanitizedValue = fullySanitizedValue.replace(this.symbols.numeral, this.symbols.index);
@@ -31184,62 +31747,49 @@ ${err}`);
           let newValue = fullySanitizedValue ? +fullySanitizedValue : NaN;
           if (isNaN(newValue)) return NaN;
           if (this.options.style === "percent") {
-            var _this_options_minimumFractionDigits, _this_options_maximumFractionDigits;
             let options = __spreadProps(__spreadValues({}, this.options), {
               style: "decimal",
-              minimumFractionDigits: Math.min(((_this_options_minimumFractionDigits = this.options.minimumFractionDigits) !== null && _this_options_minimumFractionDigits !== void 0 ? _this_options_minimumFractionDigits : 0) + 2, 20),
-              maximumFractionDigits: Math.min(((_this_options_maximumFractionDigits = this.options.maximumFractionDigits) !== null && _this_options_maximumFractionDigits !== void 0 ? _this_options_maximumFractionDigits : 0) + 2, 20)
+              minimumFractionDigits: Math.min(((_a4 = this.options.minimumFractionDigits) != null ? _a4 : 0) + 2, 20),
+              maximumFractionDigits: Math.min(((_b = this.options.maximumFractionDigits) != null ? _b : 0) + 2, 20)
             });
-            return new $6c7bd7858deea686$export$cd11ab140839f11d(this.locale, options).parse(new (0, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5)(this.locale, options).format(newValue));
+            return new $eb76cf4feb040f77$export$cd11ab140839f11d(this.locale, options).parse(new (0, $1dfb119a85e764e5$export$cc77c4ff7e8673c5)(this.locale, options).format(newValue));
           }
-          if (this.options.currencySign === "accounting" && $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX.test(value)) newValue = -1 * newValue;
+          if (this.options.currencySign === "accounting" && $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX.test(value)) newValue = -1 * newValue;
           return newValue;
         }
         sanitize(value) {
+          let isGroupSymbolAllowed = this.formatter.resolvedOptions().useGrouping;
+          if (this.symbols.noNumeralUnits.length > 0 && this.symbols.noNumeralUnits.find((obj) => obj.unit === value)) return this.symbols.noNumeralUnits.find((obj) => obj.unit === value).value.toString();
           value = value.replace(this.symbols.literals, "");
           if (this.symbols.minusSign) value = value.replace("-", this.symbols.minusSign);
           if (this.options.numberingSystem === "arab") {
             if (this.symbols.decimal) {
-              value = value.replace(",", this.symbols.decimal);
-              value = value.replace(String.fromCharCode(1548), this.symbols.decimal);
+              value = $eb76cf4feb040f77$var$replaceAll(value, ",", this.symbols.decimal);
+              value = $eb76cf4feb040f77$var$replaceAll(value, String.fromCharCode(1548), this.symbols.decimal);
             }
-            if (this.symbols.group) value = $6c7bd7858deea686$var$replaceAll(value, ".", this.symbols.group);
+            if (this.symbols.group && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, ".", this.symbols.group);
           }
-          if (this.symbols.group === "\u2019" && value.includes("'")) value = $6c7bd7858deea686$var$replaceAll(value, "'", this.symbols.group);
-          if (this.options.locale === "fr-FR" && this.symbols.group) {
-            value = $6c7bd7858deea686$var$replaceAll(value, " ", this.symbols.group);
-            value = $6c7bd7858deea686$var$replaceAll(value, /\u00A0/g, this.symbols.group);
+          if (this.symbols.group === "\u2019" && value.includes("'") && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, "'", this.symbols.group);
+          if (this.symbols.group === "'" && value.includes("\u2019") && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, "\u2019", this.symbols.group);
+          if (this.options.locale === "fr-FR" && this.symbols.group && isGroupSymbolAllowed) {
+            value = $eb76cf4feb040f77$var$replaceAll(value, " ", this.symbols.group);
+            value = $eb76cf4feb040f77$var$replaceAll(value, /\u00A0/g, this.symbols.group);
           }
           return value;
         }
         isValidPartialNumber(value, minValue = -Infinity, maxValue = Infinity) {
+          let isGroupSymbolAllowed = this.formatter.resolvedOptions().useGrouping;
           value = this.sanitize(value);
           if (this.symbols.minusSign && value.startsWith(this.symbols.minusSign) && minValue < 0) value = value.slice(this.symbols.minusSign.length);
           else if (this.symbols.plusSign && value.startsWith(this.symbols.plusSign) && maxValue > 0) value = value.slice(this.symbols.plusSign.length);
-          if (this.symbols.group && value.startsWith(this.symbols.group)) return false;
           if (this.symbols.decimal && value.indexOf(this.symbols.decimal) > -1 && this.options.maximumFractionDigits === 0) return false;
-          if (this.symbols.group) value = $6c7bd7858deea686$var$replaceAll(value, this.symbols.group, "");
+          if (this.symbols.group && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, this.symbols.group, "");
           value = value.replace(this.symbols.numeral, "");
           if (this.symbols.decimal) value = value.replace(this.symbols.decimal, "");
           return value.length === 0;
         }
-        constructor(locale, options = {}) {
-          this.locale = locale;
-          if (options.roundingIncrement !== 1 && options.roundingIncrement != null) {
-            if (options.maximumFractionDigits == null && options.minimumFractionDigits == null) {
-              options.maximumFractionDigits = 0;
-              options.minimumFractionDigits = 0;
-            } else if (options.maximumFractionDigits == null) options.maximumFractionDigits = options.minimumFractionDigits;
-            else if (options.minimumFractionDigits == null) options.minimumFractionDigits = options.maximumFractionDigits;
-          }
-          this.formatter = new Intl.NumberFormat(locale, options);
-          this.options = this.formatter.resolvedOptions();
-          this.symbols = $6c7bd7858deea686$var$getSymbols(locale, this.formatter, this.options, options);
-          var _this_options_minimumFractionDigits, _this_options_maximumFractionDigits;
-          if (this.options.style === "percent" && (((_this_options_minimumFractionDigits = this.options.minimumFractionDigits) !== null && _this_options_minimumFractionDigits !== void 0 ? _this_options_minimumFractionDigits : 0) > 18 || ((_this_options_maximumFractionDigits = this.options.maximumFractionDigits) !== null && _this_options_maximumFractionDigits !== void 0 ? _this_options_maximumFractionDigits : 0) > 18)) console.warn("NumberParser cannot handle percentages with greater than 18 decimal places, please reduce the number in your options.");
-        }
       };
-      $6c7bd7858deea686$var$nonLiteralParts = /* @__PURE__ */ new Set([
+      $eb76cf4feb040f77$var$nonLiteralParts = /* @__PURE__ */ new Set([
         "decimal",
         "fraction",
         "integer",
@@ -31247,7 +31797,7 @@ ${err}`);
         "plusSign",
         "group"
       ]);
-      $6c7bd7858deea686$var$pluralNumbers = [
+      $eb76cf4feb040f77$var$pluralNumbers = [
         0,
         4,
         2,
@@ -31265,7 +31815,7 @@ ${err}`);
         return new Intl.NumberFormat(locale, options);
       };
       createParser = (locale, options = {}) => {
-        return new $6c7bd7858deea686$export$cd11ab140839f11d(locale, options);
+        return new $eb76cf4feb040f77$export$cd11ab140839f11d(locale, options);
       };
       parseValue = (value, params) => {
         const { prop, computed } = params;
@@ -31290,6 +31840,7 @@ ${err}`);
       ({ not: not6, and: and7 } = guards3);
       machine18 = createMachine4({
         props({ props }) {
+          var _a4, _b;
           const step = getDefaultStep(props.step, props.formatOptions);
           return __spreadProps(__spreadValues({
             dir: "ltr",
@@ -31305,6 +31856,8 @@ ${err}`);
             max: Number.MAX_SAFE_INTEGER,
             spinOnPress: true
           }, props), {
+            largeStep: (_a4 = props.largeStep) != null ? _a4 : 10 * step,
+            smallStep: (_b = props.smallStep) != null ? _b : step / 10,
             translations: __spreadValues({
               incrementLabel: "increment value",
               decrementLabel: "decrease value"
@@ -31435,7 +31988,7 @@ ${err}`);
               },
               "INPUT.BLUR": [
                 {
-                  guard: and7("clampValueOnBlur", not6("isInRange")),
+                  guard: and7("clampValueOnBlur", not6("isValueEmpty"), not6("isInRange")),
                   target: "idle",
                   actions: ["setClampedValue", "clearHint", "invokeOnBlur", "invokeOnValueCommit"]
                 },
@@ -31518,6 +32071,7 @@ ${err}`);
             clampValueOnBlur: ({ prop }) => prop("clampValueOnBlur"),
             spinOnPress: ({ prop }) => !!prop("spinOnPress"),
             isInRange: ({ computed }) => !computed("isOutOfRange"),
+            isValueEmpty: ({ computed }) => computed("isValueEmpty"),
             isDecrementHint: ({ context, event }) => {
               var _a4;
               return ((_a4 = event.hint) != null ? _a4 : context.get("hint")) === "decrement";
@@ -31630,7 +32184,7 @@ ${err}`);
               context.set("value", formatValue(nextValue, { computed, prop }));
             },
             setRawValue({ context, event, prop, computed }) {
-              let nextValue = parseValue(event.value, { computed, prop });
+              let nextValue = typeof event.value === "number" ? event.value : parseValue(event.value, { computed, prop });
               if (!prop("allowOverflow")) nextValue = clampValue(nextValue, prop("min"), prop("max"));
               context.set("value", formatValue(nextValue, { computed, prop }));
             },
@@ -31719,7 +32273,6 @@ ${err}`);
         }
       });
       NumberInput = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine18, props);
         }
@@ -31727,7 +32280,7 @@ ${err}`);
           return this.zagConnect(connect18);
         }
         render() {
-          var _a4, _b, _c, _d, _e;
+          var _a4, _b, _c, _d;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="number-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -31749,7 +32302,11 @@ ${err}`);
             const visibleProps = __spreadValues({}, this.api.getInputProps());
             delete visibleProps.name;
             delete visibleProps.form;
+            const ssrAriaLabel = inputEl.getAttribute("aria-label");
             this.spreadProps(inputEl, visibleProps);
+            if (ssrAriaLabel && !inputEl.getAttribute("aria-label")) {
+              inputEl.setAttribute("aria-label", ssrAriaLabel);
+            }
             const formatted = (_b = this.api.value) != null ? _b : "";
             if (inputEl.value !== formatted) {
               inputEl.value = formatted;
@@ -31768,9 +32325,11 @@ ${err}`);
           );
           if (valueInputEl instanceof HTMLInputElement) {
             const step = (_c = getNumber(this.el, "step")) != null ? _c : 1;
-            const n2 = this.api.valueAsNumber;
-            const canonical = (_e = (_d = getString(this.el, "value")) != null ? _d : getString(this.el, "defaultValue")) != null ? _e : "";
-            const submit = Number.isFinite(n2) && !Number.isNaN(n2) ? formatSubmitValue(n2, step) : canonical;
+            const submit = resolveNumberInputSubmitValue(
+              this.api.valueAsNumber,
+              (_d = this.api.value) != null ? _d : "",
+              step
+            );
             syncHiddenInputValue(
               valueInputEl,
               this.el,
@@ -31781,23 +32340,17 @@ ${err}`);
           }
         }
       };
-      NumberInputHook = {
-        mounted() {
-          var _a4;
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
-          zag.init();
-          this.numberInput = zag;
-          const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", true, zag.api.valueAsNumber);
-          const valueInput = el.querySelector(
-            '[data-scope="number-input"][data-part="value-input"]'
-          );
-          if (valueInput) {
-            syncFormInput(valueInput, () => initialSubmit);
-          }
+      NumberInputHook = createZagLiveHook({
+        key: "numberInput",
+        controlledKeys: ["value", "defaultValue"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
+          hook.initialValue = initialDisplayValue(el);
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
+          const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
+          hook.unbindFormSubmit = bindFormSubmitFlush(el, zag);
           const emitState = (respondTo) => {
             const snapshot2 = machineState(zag.api);
             emitResponse({
@@ -31811,103 +32364,102 @@ ${err}`);
               domDetail: __spreadValues({ id: el.id }, snapshot2)
             });
           };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add(
-            "corex:number-input:set-value",
-            (event) => {
-              var _a5;
-              const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
-              if (typeof v2 === "number" && !Number.isNaN(v2)) setZagValue(zag, v2);
-              else if (typeof v2 === "string") setZagValue(zag, v2);
-            }
-          );
-          domRegistry.add("corex:number-input:clear-value", () => {
+          dom2.add("corex:number-input:set-value", (event) => {
+            var _a4;
+            const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            if (typeof v2 === "number" && !Number.isNaN(v2)) setZagValue(zag, v2);
+            else if (typeof v2 === "string") setZagValue(zag, v2);
+          });
+          dom2.add("corex:number-input:clear-value", () => {
             zag.api.clearValue();
           });
-          domRegistry.add("corex:number-input:increment", () => {
+          dom2.add("corex:number-input:increment", () => {
             zag.api.increment();
           });
-          domRegistry.add("corex:number-input:decrement", () => {
+          dom2.add("corex:number-input:decrement", () => {
             zag.api.decrement();
           });
-          domRegistry.add("corex:number-input:set-to-min", () => {
+          dom2.add("corex:number-input:set-to-min", () => {
             zag.api.setToMin();
           });
-          domRegistry.add("corex:number-input:set-to-max", () => {
+          dom2.add("corex:number-input:set-to-max", () => {
             zag.api.setToMax();
           });
-          domRegistry.add("corex:number-input:focus", () => {
+          dom2.add("corex:number-input:focus", () => {
             zag.api.focus();
           });
-          domRegistry.add("corex:number-input:state", (event) => {
+          dom2.add("corex:number-input:state", (event) => {
             emitState(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("number_input_set_value", (payload) => {
+          server.add("number_input_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
               setZagValue(zag, payload.value);
             }
           });
-          registry.add("number_input_clear_value", (payload) => {
+          server.add("number_input_clear_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.clearValue();
           });
-          registry.add("number_input_increment", (payload) => {
+          server.add("number_input_increment", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.increment();
           });
-          registry.add("number_input_decrement", (payload) => {
+          server.add("number_input_decrement", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.decrement();
           });
-          registry.add("number_input_set_to_min", (payload) => {
+          server.add("number_input_set_to_min", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setToMin();
           });
-          registry.add("number_input_set_to_max", (payload) => {
+          server.add("number_input_set_to_max", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setToMax();
           });
-          registry.add("number_input_focus", (payload) => {
+          server.add("number_input_focus", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.focus();
           });
-          registry.add("number_input_state", (payload) => {
+          server.add("number_input_state", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitState(parseRespondTo(payload));
           });
+          return zag;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["value", "defaultValue"]);
-        },
-        updated() {
+        afterInit(hook, zag) {
           var _a4, _b;
-          const el = this.el;
-          const zag = this.numberInput;
-          if (!zag) return;
-          try {
-            const valuePatch = readUpdatedServerNumber(el, this.beforeAttrs);
-            zag.updateProps(__spreadValues(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
-            syncNumberInputValueInput(
-              el,
-              (_b = (_a4 = zag.api.value) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "",
-              false,
-              zag.api.valueAsNumber
-            );
-          } finally {
-            this.beforeAttrs = void 0;
+          const el = hook.el;
+          const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber, (_a4 = zag.api.value) != null ? _a4 : "");
+          syncNumberInputValueInput(el, (_b = zag.api.value) != null ? _b : "", false, zag.api.valueAsNumber);
+          const valueInput = el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            syncFormInput(valueInput, () => initialSubmit);
           }
         },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.numberInput) == null ? void 0 : _c.destroy();
+        update(hook, zag) {
+          var _a4;
+          const el = hook.el;
+          if (getBoolean(el, "fieldUsed")) {
+            hook.fieldTouched = true;
+          }
+          const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+          if (valuePatch.value === "") {
+            zag.api.clearValue();
+            zag.updateProps(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
+          } else {
+            zag.updateProps(__spreadValues(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
+          }
+          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", false, zag.api.valueAsNumber);
+          zag.render();
+        },
+        destroy(hook) {
+          var _a4;
+          (_a4 = hook.unbindFormSubmit) == null ? void 0 : _a4.call(hook);
         }
-      };
+      });
     }
   });
 
@@ -32215,11 +32767,10 @@ ${err}`);
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_NB7M3GJN();
-      init_chunk_HZLPIQBD();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_Z3EQ3GCO();
+      init_chunk_4JICR5HJ();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy19 = createAnatomy("pagination").parts(
         "root",
         "item",
@@ -32446,7 +32997,6 @@ ${err}`);
       });
       clampPage = (page, totalPages) => Math.min(Math.max(page, 1), totalPages);
       Pagination = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine19, props);
         }
@@ -32529,83 +33079,69 @@ ${err}`);
           }
         }
       };
-      PaginationHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      PaginationHook = createZagLiveHook({
+        key: "pagination",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const pagination = new Pagination(el, buildPaginationProps(el, pushEvent, canPush));
-          pagination.init();
-          this.pagination = pagination;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:pagination:set-page", (event) => {
+          dom2.add("corex:pagination:set-page", (event) => {
             var _a4;
             const page = (_a4 = event.detail) == null ? void 0 : _a4.page;
             if (typeof page === "number") pagination.api.setPage(page);
           });
-          domRegistry.add(
-            "corex:pagination:set-page-size",
-            (event) => {
-              var _a4;
-              const pageSize = (_a4 = event.detail) == null ? void 0 : _a4.page_size;
-              if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
-            }
-          );
-          domRegistry.add("corex:pagination:go-to-next-page", () => {
+          dom2.add("corex:pagination:set-page-size", (event) => {
+            var _a4;
+            const pageSize = (_a4 = event.detail) == null ? void 0 : _a4.page_size;
+            if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
+          });
+          dom2.add("corex:pagination:go-to-next-page", () => {
             pagination.api.goToNextPage();
           });
-          domRegistry.add("corex:pagination:go-to-prev-page", () => {
+          dom2.add("corex:pagination:go-to-prev-page", () => {
             pagination.api.goToPrevPage();
           });
-          domRegistry.add("corex:pagination:go-to-first-page", () => {
+          dom2.add("corex:pagination:go-to-first-page", () => {
             pagination.api.goToFirstPage();
           });
-          domRegistry.add("corex:pagination:go-to-last-page", () => {
+          dom2.add("corex:pagination:go-to-last-page", () => {
             pagination.api.goToLastPage();
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("pagination_set_page", (payload) => {
+          server.add("pagination_set_page", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const page = readPayloadPage(payload);
             if (page != null) pagination.api.setPage(page);
           });
-          registry.add("pagination_set_page_size", (payload) => {
+          server.add("pagination_set_page_size", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const pageSize = readPayloadPageSize(payload);
             if (pageSize != null) pagination.api.setPageSize(pageSize);
           });
-          registry.add("pagination_go_to_next_page", (payload) => {
+          server.add("pagination_go_to_next_page", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             pagination.api.goToNextPage();
           });
-          registry.add("pagination_go_to_prev_page", (payload) => {
+          server.add("pagination_go_to_prev_page", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             pagination.api.goToPrevPage();
           });
-          registry.add("pagination_go_to_first_page", (payload) => {
+          server.add("pagination_go_to_first_page", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             pagination.api.goToFirstPage();
           });
-          registry.add("pagination_go_to_last_page", (payload) => {
+          server.add("pagination_go_to_last_page", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             pagination.api.goToLastPage();
           });
+          return pagination;
         },
-        updated() {
-          var _a4;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          (_a4 = this.pagination) == null ? void 0 : _a4.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.pagination) == null ? void 0 : _c.destroy();
+        update(hook, pagination) {
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
+          pagination.updateProps(buildPaginationPropsForUpdate(hook.el, pushEvent, canPush));
         }
-      };
+      });
     }
   });
 
@@ -32718,9 +33254,8 @@ ${err}`);
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -32831,7 +33366,6 @@ ${err}`);
         }
       });
       PasswordInput = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine20, props);
         }
@@ -32864,11 +33398,12 @@ ${err}`);
           if (indicatorEl) this.spreadProps(indicatorEl, this.api.getIndicatorProps());
         }
       };
-      PasswordInputHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      PasswordInputHook = createZagLiveHook({
+        key: "passwordInput",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const zag = new PasswordInput(el, {
             id: el.id,
             defaultVisible: getBoolean(el, "defaultVisible"),
@@ -32891,45 +33426,36 @@ ${err}`);
               });
             }
           });
-          zag.init();
-          this.passwordInput = zag;
-          this.handlers = [];
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add(
-            "corex:password-input:set-visible",
-            (event) => {
-              var _a4;
-              const vis = (_a4 = event.detail) == null ? void 0 : _a4.visible;
-              if (typeof vis === "boolean") zag.api.setVisible(vis);
-            }
-          );
-          domRegistry.add("corex:password-input:toggle-visible", () => {
+          hook.handlers = [];
+          dom2.add("corex:password-input:set-visible", (event) => {
+            var _a4;
+            const vis = (_a4 = event.detail) == null ? void 0 : _a4.visible;
+            if (typeof vis === "boolean") zag.api.setVisible(vis);
+          });
+          dom2.add("corex:password-input:toggle-visible", () => {
             zag.api.toggleVisible();
           });
-          domRegistry.add("corex:password-input:focus", () => {
+          dom2.add("corex:password-input:focus", () => {
             zag.api.focus();
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("password_input_set_visible", (payload) => {
+          server.add("password_input_set_visible", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const vis = readPayloadVisible(payload);
             if (typeof vis === "boolean") zag.api.setVisible(vis);
           });
-          registry.add("password_input_toggle_visible", (payload) => {
+          server.add("password_input_toggle_visible", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.toggleVisible();
           });
-          registry.add("password_input_focus", (payload) => {
+          server.add("password_input_focus", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.focus();
           });
+          return zag;
         },
-        updated() {
-          var _a4;
-          const el = this.el;
-          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps({
+        update(hook, zag) {
+          const el = hook.el;
+          zag.updateProps({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
@@ -32938,17 +33464,8 @@ ${err}`);
             name: getString(el, "name"),
             dir: getDir(el)
           });
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.passwordInput) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -32958,6 +33475,7 @@ ${err}`);
     PinInput: () => PinInputHook,
     padToCount: () => padToCount,
     parseValueWithEmpties: () => parseValueWithEmpties,
+    pinValueCommitKind: () => pinValueCommitKind,
     readDefaultValueList: () => readDefaultValueList,
     readPinValueList: () => readPinValueList,
     syncPinInputFormForPhoenix: () => syncPinInputFormForPhoenix
@@ -33065,7 +33583,7 @@ ${err}`);
           tabIndex: index === tabbableIndex ? 0 : -1,
           "data-disabled": dataAttr(disabled),
           "data-complete": dataAttr(complete),
-          "data-filled": dataAttr(context.get("value")[index] !== ""),
+          "data-filled": dataAttr(computed("_value")[index] !== ""),
           id: getInputId7(scope, index.toString()),
           "data-index": index,
           "data-ownedby": getRootId16(scope),
@@ -33075,7 +33593,7 @@ ${err}`);
           "data-invalid": dataAttr(invalid),
           enterKeyHint: index === valueLength - 1 ? "done" : "next",
           type: prop("mask") ? "password" : inputType,
-          defaultValue: context.get("value")[index] || "",
+          defaultValue: computed("_value")[index] || "",
           readOnly,
           autoCapitalize: "none",
           autoComplete: prop("otp") ? "one-time-code" : "off",
@@ -33198,10 +33716,13 @@ ${err}`);
     return nextValue != null ? nextValue : "";
   }
   function fill(value, count) {
-    return Array.from({ length: count }).fill("").map((v2, i2) => value[i2] || v2);
+    const length = count || value.length;
+    return Array.from({ length }).fill("").map((v2, i2) => value[i2] || v2);
   }
-  function sameStringList2(a2, b2) {
-    return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
+  function pinValueCommitKind(values) {
+    if (values.length === 0 || values.every((v2) => String(v2).trim() === "")) return "empty";
+    if (values.every((v2) => String(v2).trim() !== "")) return "complete";
+    return "partial";
   }
   function parseValueWithEmpties(raw) {
     return raw.split(",").map((v2) => v2.trim());
@@ -33234,6 +33755,7 @@ ${err}`);
     var _a4;
     const submitName = getString(el, "submitName");
     const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+    const fieldTouched = isFormFieldUsed(el, opts.fieldTouched === true);
     if (submitName) {
       setArrayValues(el, values, {
         onTouched,
@@ -33241,25 +33763,32 @@ ${err}`);
         submitName,
         fixedLength: count,
         notifyLiveView: opts.notifyLiveView,
-        fieldTouched: opts.notifyLiveView === true
+        fieldTouched
       });
       return;
     }
-    const hiddenInput = el.querySelector(
+    const hiddenInput2 = el.querySelector(
       '[data-scope="pin-input"][data-part="hidden-input"]'
     );
-    if (!hiddenInput) return;
+    if (!hiddenInput2) return;
     if (opts.notifyLiveView === false) {
-      setScalarValue(hiddenInput, values.join(""), { onTouched, markUsed: false });
+      setScalarValue(hiddenInput2, values.join(""), {
+        onTouched,
+        markUsed: false,
+        dispatch: false
+      });
       return;
     }
-    setScalarValue(hiddenInput, values.join(""), { onTouched });
+    setScalarValue(hiddenInput2, values.join(""), { onTouched });
   }
-  function zagNameForForm(el) {
+  function zagNameForForm2(el) {
     if (getString(el, "submitName")) return void 0;
     return getString(el, "name");
   }
-  function buildMachineProps2(el, pushEvent, canPush, initialValues, isFieldTouched, markFieldTouched) {
+  function sameStringList2(a2, b2) {
+    return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
+  }
+  function buildMachineProps2(el, pushEvent, canPush, initialValues, markFieldTouched, isEdited, markEdited) {
     var _a4;
     const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
     return __spreadProps(__spreadValues({
@@ -33274,19 +33803,27 @@ ${err}`);
       otp: getBoolean(el, "otp"),
       blurOnComplete: getBoolean(el, "blurOnComplete"),
       selectOnFocus: getBoolean(el, "selectOnFocus"),
-      name: zagNameForForm(el),
+      name: zagNameForForm2(el),
       form: getString(el, "submitName") ? void 0 : getString(el, "form"),
       dir: getDir(el),
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder"),
       onValueChange: (details) => {
-        const isMountEcho = !isFieldTouched() && sameStringList2(details.value, initialValues);
-        if (!isMountEcho) {
-          markFieldTouched();
+        if (!sameStringList2(details.value, initialValues)) {
+          markEdited();
         }
+        const kind = pinValueCommitKind(details.value);
         syncPinInputFormForPhoenix(el, details.value, void 0, {
-          notifyLiveView: !isMountEcho
+          notifyLiveView: false,
+          fieldTouched: false
         });
+        if (kind === "empty" && isEdited()) {
+          markFieldTouched();
+          syncPinInputFormForPhoenix(el, details.value, void 0, {
+            notifyLiveView: true,
+            fieldTouched: true
+          });
+        }
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -33301,6 +33838,12 @@ ${err}`);
         });
       },
       onValueComplete: (details) => {
+        markEdited();
+        markFieldTouched();
+        syncPinInputFormForPhoenix(el, details.value, void 0, {
+          notifyLiveView: true,
+          fieldTouched: true
+        });
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -33320,17 +33863,12 @@ ${err}`);
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_DH47S3VU();
-      init_chunk_PE34YET2();
-      init_chunk_OZ2OVCG5();
-      init_chunk_2H6YHTHG();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_KHEHQE65();
+      init_chunk_3IY2CPWD();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
@@ -33390,15 +33928,18 @@ ${err}`);
         },
         context({ prop, bindable: bindable2 }) {
           return {
-            value: bindable2(() => ({
-              value: prop("value"),
-              defaultValue: prop("defaultValue"),
-              isEqual,
-              onChange(value) {
-                var _a4;
-                (_a4 = prop("onValueChange")) == null ? void 0 : _a4({ value, valueAsString: value.join("") });
-              }
-            })),
+            value: bindable2(() => {
+              var _a4;
+              return {
+                value: prop("value") ? fill(prop("value"), prop("count")) : void 0,
+                defaultValue: fill((_a4 = prop("defaultValue")) != null ? _a4 : [], prop("count")),
+                isEqual,
+                onChange(value) {
+                  var _a5;
+                  (_a5 = prop("onValueChange")) == null ? void 0 : _a5({ value, valueAsString: value.join("") });
+                }
+              };
+            }),
             focusedIndex: bindable2(() => ({
               sync: true,
               defaultValue: -1
@@ -33512,7 +34053,7 @@ ${err}`);
         implementations: {
           guards: {
             autoFocus: ({ prop }) => !!prop("autoFocus"),
-            hasValue: ({ context }) => context.get("value")[context.get("focusedIndex")] !== "",
+            hasValue: ({ context, computed }) => computed("_value")[context.get("focusedIndex")] !== "",
             isValueComplete: ({ computed }) => computed("isValueComplete"),
             hasIndex: ({ event }) => event.index !== void 0
           },
@@ -33670,7 +34211,6 @@ ${err}`);
         }
       });
       PinInput = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine21, props);
         }
@@ -33678,7 +34218,7 @@ ${err}`);
           return this.zagConnect(connect21);
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c, _d, _e;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="pin-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -33701,27 +34241,36 @@ ${err}`);
               hiddenInputEl.removeAttribute("form");
             }
           }
-          stripZagSubmitNames(this.el, "pin-input");
+          stripZagSubmitNames(this.el, "pin-input", ["hidden-input", "input"]);
           const controlEl = this.el.querySelector(
             '[data-scope="pin-input"][data-part="control"]'
           );
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
-          this.api.items.forEach((i2) => {
-            const inputEl = this.el.querySelector(
+          const inputEls = Array.from(
+            this.el.querySelectorAll('[data-scope="pin-input"][data-part="input"]')
+          );
+          const count = Math.max((_d = (_c = this.api.items) == null ? void 0 : _c.length) != null ? _d : 0, inputEls.length);
+          for (let i2 = 0; i2 < count; i2 += 1) {
+            const inputEl = (_e = inputEls[i2]) != null ? _e : this.el.querySelector(
               `[data-scope="pin-input"][data-part="input"][data-index="${i2}"]`
             );
-            if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i2 }));
-          });
+            if (!inputEl) continue;
+            this.spreadProps(inputEl, this.api.getInputProps({ index: i2 }));
+            inputEl.removeAttribute("name");
+            inputEl.setAttribute("form", "");
+          }
         }
       };
-      PinInputHook = {
-        mounted() {
+      PinInputHook = createZagLiveHook({
+        key: "pinInput",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
           var _a4;
-          const el = this.el;
-          const hook = this;
-          hook.fieldTouched = false;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+          const el = hook.el;
+          hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
+          hook.hasEdited = hook.fieldTouched === true;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
           const binding = padStringListBinding(el, count);
           const initialValues = "value" in binding ? binding.value : binding.defaultValue;
@@ -33732,19 +34281,15 @@ ${err}`);
               pushEvent,
               canPush,
               initialValues,
-              () => hook.fieldTouched === true,
               () => {
                 hook.fieldTouched = true;
+              },
+              () => hook.hasEdited === true,
+              () => {
+                hook.hasEdited = true;
               }
             )
           );
-          try {
-            zag.init();
-            this.pinInput = zag;
-          } finally {
-            el.removeAttribute("data-loading");
-          }
-          syncPinInputFormForPhoenix(el, zag.api.value, void 0, { notifyLiveView: false });
           const emitValue = (respondTo) => {
             const api = zag.api;
             const value = api.value;
@@ -33760,40 +34305,65 @@ ${err}`);
               domDetail: { id: el.id, value, valueAsString }
             });
           };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:pin-input:set-value", (event) => {
+          const clearAndSync = () => {
+            hook.fieldTouched = true;
+            hook.hasEdited = true;
+            zag.api.clearValue();
+            syncPinInputFormForPhoenix(el, zag.api.value, void 0, {
+              notifyLiveView: true,
+              fieldTouched: true
+            });
+          };
+          hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            hook.fieldTouched = true;
+            hook.hasEdited = true;
+            syncPinInputFormForPhoenix(el, zag.api.value, void 0, {
+              notifyLiveView: false,
+              fieldTouched: true
+            });
+          });
+          dom2.add("corex:pin-input:set-value", (event) => {
             var _a5;
             const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
             if (Array.isArray(v2)) zag.api.setValue(v2);
           });
-          domRegistry.add("corex:pin-input:clear", () => {
-            zag.api.clearValue();
+          dom2.add("corex:pin-input:clear", () => {
+            clearAndSync();
           });
-          domRegistry.add("corex:pin-input:value", (event) => {
+          dom2.add("corex:pin-input:value", (event) => {
             emitValue(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("pin_input_set_value", (payload) => {
+          server.add("pin_input_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (Array.isArray(payload.value)) zag.api.setValue(payload.value);
           });
-          registry.add("pin_input_clear", (payload) => {
+          server.add("pin_input_clear", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            zag.api.clearValue();
+            clearAndSync();
           });
-          registry.add("pin_input_value", (payload) => {
+          server.add("pin_input_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitValue(parseRespondTo(payload));
           });
+          return zag;
         },
-        updated() {
+        afterInit(hook, zag) {
+          syncPinInputFormForPhoenix(hook.el, zag.api.value, void 0, {
+            notifyLiveView: false,
+            fieldTouched: hook.fieldTouched === true
+          });
+        },
+        update(hook, zag) {
           var _a4;
-          const el = this.el;
-          const zag = this.pinInput;
+          const el = hook.el;
+          if (getBoolean(el, "fieldUsed")) {
+            hook.fieldTouched = true;
+            hook.hasEdited = true;
+          }
           const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
-          zag == null ? void 0 : zag.updateProps({
+          const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+          const pinFocused = el.contains(document.activeElement);
+          zag.updateProps(__spreadValues({
             id: el.id,
             count,
             disabled: getBoolean(el, "disabled"),
@@ -33804,20 +34374,24 @@ ${err}`);
             otp: getBoolean(el, "otp"),
             blurOnComplete: getBoolean(el, "blurOnComplete"),
             selectOnFocus: getBoolean(el, "selectOnFocus"),
-            name: zagNameForForm(el),
+            name: zagNameForForm2(el),
             form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             type: getString(el, "type"),
             placeholder: getString(el, "placeholder")
+          }, valuePatch.value !== void 0 && !pinFocused ? { value: padToCount(valuePatch.value, count) } : {}));
+          syncPinInputFormForPhoenix(el, zag.api.value, void 0, {
+            notifyLiveView: false,
+            fieldTouched: hook.fieldTouched === true
           });
+          zag.render();
         },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.pinInput) == null ? void 0 : _c.destroy();
+        destroy(hook) {
+          var _a4;
+          (_a4 = hook.unbindSubmitIntent) == null ? void 0 : _a4.call(hook);
+          hook.unbindSubmitIntent = void 0;
         }
-      };
+      });
     }
   });
 
@@ -34069,15 +34643,12 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_MM3X6GKK();
-      init_chunk_PE34YET2();
-      init_chunk_DOKFN6DA();
-      init_chunk_YUSIPE4B();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_KHEHQE65();
+      init_chunk_QCFVFTGB();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -34325,7 +34896,6 @@ ${err}`);
         }
       });
       RadioGroup = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine22, props);
         }
@@ -34390,11 +34960,13 @@ ${err}`);
           });
         }
       };
-      RadioGroupHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      RadioGroupHook = createZagLiveHook({
+        key: "radioGroup",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const zag = new RadioGroup(el, __spreadProps(__spreadValues({
             id: el.id
           }, readStringControlledZagProps(el, "value", "defaultValue")), {
@@ -34429,8 +35001,7 @@ ${err}`);
                 );
                 if (checked) {
                   reapplyLiveViewValueInputUsage(checked);
-                  checked.dispatchEvent(new Event("input", { bubbles: true }));
-                  checked.dispatchEvent(new Event("change", { bubbles: true }));
+                  dispatchFormInputEvents(checked);
                 }
               }
               notifyChange({
@@ -34443,8 +35014,6 @@ ${err}`);
               });
             }
           }));
-          zag.init();
-          this.radioGroup = zag;
           queueMicrotask(() => {
             var _a4;
             if (!isCorexFormField(el)) return;
@@ -34454,86 +35023,65 @@ ${err}`);
             '[data-scope="radio-group"][data-part="value-input"]'
           );
           if (valueInput) syncInputFormAssociation(valueInput, el);
-          const emitValue = (respondTo) => {
-            const value = zag.api.value;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
+          const emitValue = createValueEmitter(
+            { el, pushEvent, canPushServer: canPush },
+            {
+              getValue: () => zag.api.value,
               serverEventName: "radio_group_value_response",
-              serverPayload: { id: el.id, value },
-              el,
-              domEventName: "radio-group-value",
-              domDetail: { id: el.id, value }
-            });
-          };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:radio-group:set-value", (event) => {
+              domEventName: "radio-group-value"
+            }
+          );
+          dom2.add("corex:radio-group:set-value", (event) => {
             zag.api.setValue(event.detail.value);
           });
-          domRegistry.add("corex:radio-group:clear-value", () => {
+          dom2.add("corex:radio-group:clear-value", () => {
             zag.api.clearValue();
           });
-          domRegistry.add("corex:radio-group:focus", () => {
+          dom2.add("corex:radio-group:focus", () => {
             zag.api.focus();
           });
-          domRegistry.add("corex:radio-group:value", (event) => {
+          dom2.add("corex:radio-group:value", (event) => {
             emitValue(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("radio_group_set_value", (payload) => {
+          server.add("radio_group_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.setValue(payload.value);
           });
-          registry.add("radio_group_clear_value", (payload) => {
+          server.add("radio_group_clear_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.clearValue();
           });
-          registry.add("radio_group_focus", (payload) => {
+          server.add("radio_group_focus", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.focus();
           });
-          registry.add("radio_group_value", (payload) => {
+          server.add("radio_group_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitValue(parseRespondTo(payload));
           });
+          return zag;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-        },
-        updated() {
+        update(hook, zag) {
           var _a4;
-          const el = this.el;
-          const zag = this.radioGroup;
-          try {
-            const valuePatch = readUpdatedServerString(el, this.beforeAttrs);
-            zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
-              id: el.id
-            }, valuePatch), {
-              name: getString(el, "name"),
-              disabled: getBoolean(el, "disabled"),
-              invalid: getBoolean(el, "invalid"),
-              required: getBoolean(el, "required"),
-              readOnly: getBoolean(el, "readonly"),
-              orientation: getString(el, "orientation"),
-              dir: getDir(el)
-            }));
-            if ("value" in valuePatch) {
-              syncRadioGroupValueInputForPhoenix(el, (_a4 = valuePatch.value) != null ? _a4 : null, { markUsed: false });
-            }
-          } finally {
-            this.beforeAttrs = void 0;
+          const el = hook.el;
+          const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
+          zag.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            name: getString(el, "name"),
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            readOnly: getBoolean(el, "readonly"),
+            orientation: getString(el, "orientation"),
+            dir: getDir(el)
+          }));
+          zag.render();
+          if ("value" in valuePatch) {
+            syncRadioGroupValueInputForPhoenix(el, (_a4 = valuePatch.value) != null ? _a4 : null, { markUsed: false });
           }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.radioGroup) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -34564,6 +35112,7 @@ ${err}`);
     const highlightedItem = context.get("highlightedItem");
     const selectedItems = computed("selectedItems");
     const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
     const ariaActiveDescendant = highlightedValue ? getItemId9(scope, highlightedValue) : void 0;
@@ -34599,7 +35148,7 @@ ${err}`);
       },
       focus() {
         var _a4;
-        (_a4 = getTriggerEl6(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+        (_a4 = getTriggerEl7(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
       },
       setOpen(nextOpen) {
         const open2 = state2.hasTag("open");
@@ -34651,7 +35200,7 @@ ${err}`);
             var _a4;
             if (event.defaultPrevented) return;
             if (disabled) return;
-            (_a4 = getTriggerEl6(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+            (_a4 = getTriggerEl7(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
           }
         }));
       },
@@ -34692,6 +35241,7 @@ ${err}`);
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "data-placeholder-shown": dataAttr(!computed("hasSelectedItems")),
           onClick(event) {
             if (!interactive) return;
@@ -34873,7 +35423,7 @@ ${err}`);
           // Let's forward the focus to the trigger.
           onFocus() {
             var _a4;
-            (_a4 = getTriggerEl6(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+            (_a4 = getTriggerEl7(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
           },
           "aria-labelledby": getLabelId13(scope)
         });
@@ -34894,6 +35444,7 @@ ${err}`);
         }, parts23.content.attrs), {
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           "data-activedescendant": ariaActiveDescendant,
           "aria-activedescendant": composite ? ariaActiveDescendant : void 0,
           "aria-multiselectable": prop("multiple") && composite ? true : void 0,
@@ -35054,12 +35605,8 @@ ${err}`);
       if (getBoolean(el, "controlled") && controlledValueMatchesServer(el, details.value)) {
         return;
       }
-      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-      if (getBoolean(el, "redirect") && firstValue) {
-        const itemEl = el.querySelector(
-          `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-        );
-        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      if (getBoolean(el, "redirect")) {
+        redirectCollectionItem(el, "select", firstSelectedValue(details.value), liveSocket);
       }
       syncSelectHiddenInputForPhoenix(el, details.value);
       notifyChange({
@@ -35089,24 +35636,22 @@ ${err}`);
     trigger.disabled = false;
     trigger.removeAttribute("disabled");
   }
-  var anatomy23, parts23, collection3, getRootId18, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine23, Select, SelectHook;
+  var anatomy23, parts23, collection3, getRootId18, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl7, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine23, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_MHRYIVD2();
-      init_chunk_CBUVYVIR();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_DOKFN6DA();
-      init_chunk_C4KEB3WL();
-      init_chunk_DDT7N35T();
-      init_chunk_SGRHPBNS();
-      init_chunk_HZLPIQBD();
-      init_chunk_YUSIPE4B();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_XGL2LWL4();
+      init_chunk_NU3NDRI3();
+      init_chunk_4JICR5HJ();
+      init_chunk_QCFVFTGB();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -35177,7 +35722,7 @@ ${err}`);
       };
       getHiddenSelectEl = (ctx) => ctx.getById(getHiddenSelectId(ctx));
       getContentEl9 = (ctx) => ctx.getById(getContentId9(ctx));
-      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId9(ctx));
+      getTriggerEl7 = (ctx) => ctx.getById(getTriggerId9(ctx));
       getClearTriggerEl3 = (ctx) => ctx.getById(getClearTriggerId3(ctx));
       getPositionerEl7 = (ctx) => ctx.getById(getPositionerId7(ctx));
       getItemEl4 = (ctx, id) => {
@@ -35634,7 +36179,7 @@ ${err}`);
               return trackDismissableElement(contentEl, {
                 type: "listbox",
                 defer: true,
-                exclude: [getTriggerEl6(scope), getClearTriggerEl3(scope)],
+                exclude: [getTriggerEl7(scope), getClearTriggerEl3(scope)],
                 onFocusOutside: prop("onFocusOutside"),
                 onPointerDownOutside: prop("onPointerDownOutside"),
                 onInteractOutside(event) {
@@ -35650,7 +36195,7 @@ ${err}`);
             computePlacement({ context, prop, scope }) {
               const positioning = prop("positioning");
               context.set("currentPlacement", positioning.placement);
-              const triggerEl = () => getTriggerEl6(scope);
+              const triggerEl = () => getTriggerEl7(scope);
               const positionerEl = () => getPositionerEl7(scope);
               return getPlacement(triggerEl, positionerEl, __spreadProps(__spreadValues({
                 defer: true
@@ -35697,7 +36242,7 @@ ${err}`);
           actions: {
             reposition({ context, prop, scope, event }) {
               const positionerEl = () => getPositionerEl7(scope);
-              getPlacement(getTriggerEl6(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+              getPlacement(getTriggerEl7(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 defer: true,
                 listeners: false,
                 onComplete(data) {
@@ -35741,7 +36286,7 @@ ${err}`);
             focusTriggerEl({ event, scope }) {
               if (!restoreFocusFn(event)) return;
               raf(() => {
-                const element = getTriggerEl6(scope);
+                const element = getTriggerEl7(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -35922,10 +36467,13 @@ ${err}`);
         setOptions(options) {
           this._options = Array.isArray(options) ? options : [];
         }
+        /** Refresh placeholder from host dataset (may change across LiveView morphs). */
+        refreshPlaceholder() {
+          this.placeholder = getString(this.el, "placeholder") || "";
+        }
         getCollection() {
           return collection3(zagListCollectionConfig(this.options, this.hasGroups));
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
           return new VanillaMachine(machine23, __spreadProps(__spreadValues({}, props), {
@@ -36030,13 +36578,13 @@ ${err}`);
           ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
             if (!el) return;
-            const method = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
-            this.spreadProps(el, this.api[method]());
+            this.spreadProps(el, this.api[partPropsMethod(part)]());
           });
           const valueText = this.el.querySelector(
-            '[data-scope="select"][data-part="item-text"]'
+            '[data-scope="select"][data-part="trigger"] [data-scope="select"][data-part="item-text"]'
           );
           if (valueText && this.el.dataset.updateTrigger !== "false") {
+            this.refreshPlaceholder();
             const valueAsString = this.api.valueAsString;
             if (this.api.value && this.api.value.length > 0 && !valueAsString) {
               const selectedValue = this.api.value[0];
@@ -36057,87 +36605,69 @@ ${err}`);
           }
         }
       };
-      SelectHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          const allItems = safeParseJson(el.dataset.items || "[]", []);
-          const hasGroups = allItems.some((item) => Boolean(item.group));
+      SelectHook = createZagLiveHook({
+        key: "select",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const onValueChange = createSelectOnValueChange(
-            () => this.el,
-            this.liveSocket,
+            () => hook.el,
+            hook.liveSocket,
             pushEvent,
             canPush
           );
-          this.onValueChange = onValueChange;
+          hook.onValueChange = onValueChange;
+          const { items: allItems, hasGroups } = initCollectionItems(el, hook);
           const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, onValueChange)), {
             collection: buildCollection2(allItems, hasGroups)
           }), readStringListControlledZagProps(el, "value", "defaultValue")));
-          selectComponent.hasGroups = hasGroups;
-          selectComponent.setOptions(allItems);
-          selectComponent.init();
-          this.select = selectComponent;
-          this.lastItemsJson = el.dataset.items || "[]";
-          this.handlers = [];
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:select:set-value", (event) => {
+          applyItems(selectComponent, allItems, hasGroups);
+          dom2.add("corex:select:set-value", (event) => {
             selectComponent.api.setValue(event.detail.value);
           });
-          domRegistry.add("corex:select:set-open", (event) => {
+          dom2.add("corex:select:set-open", (event) => {
             selectComponent.api.setOpen(event.detail.open);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("select_set_value", (payload) => {
+          server.add("select_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             selectComponent.api.setValue(payload.value);
           });
-          registry.add("select_set_open", (payload) => {
+          server.add("select_set_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (typeof payload.open !== "boolean") return;
             selectComponent.api.setOpen(payload.open);
           });
+          return selectComponent;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-        },
-        updated() {
-          if (!this.select) return;
-          try {
-            const newItemsJson = this.el.dataset.items || "[]";
-            if (newItemsJson !== this.lastItemsJson) {
-              this.lastItemsJson = newItemsJson;
-              const newItems = safeParseJson(newItemsJson, []);
-              const hasGroups = newItems.some((item) => Boolean(item.group));
-              this.select.hasGroups = hasGroups;
-              this.select.setOptions(newItems);
-            }
-            const valuePatch = readUpdatedServerStringList(this.el, this.beforeAttrs);
-            if (valuePatch.value !== void 0) {
-              syncControlledValueInputFromServer(this.el, valuePatch.value);
-            }
-            this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectLayoutProps(this.el)), {
-              collection: this.select.getCollection()
-            }), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
-            reapplySelectInteractiveState(this.el);
-          } finally {
-            this.beforeAttrs = void 0;
+        update(hook, select) {
+          var _a4;
+          const itemsChanged = refreshItemsIfChanged(hook.el, hook, select);
+          const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
+          if (valuePatch.value !== void 0) {
+            syncControlledValueInputFromServer(hook.el, valuePatch.value);
           }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
+          if (itemsChanged && valuePatch.value === void 0) {
+            const available = new Set(select.options.map((i2) => String(itemValue(i2))));
+            const current = ((_a4 = select.api.value) != null ? _a4 : []).map(String);
+            const next2 = current.filter((v2) => available.has(v2));
+            if (next2.length !== current.length) {
+              select.api.setValue(next2);
             }
           }
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.select) == null ? void 0 : _c.destroy();
+          const propsApplied = select.updateProps(
+            __spreadValues(__spreadProps(__spreadValues({}, selectLayoutProps(hook.el)), {
+              collection: select.getCollection()
+            }), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}),
+            { force: itemsChanged }
+          );
+          if (!propsApplied || itemsChanged) {
+            select.render();
+          }
+          reapplySelectInteractiveState(hook.el);
         }
-      };
+      });
     }
   });
 
@@ -36170,6 +36700,7 @@ ${err}`);
       },
       getLabelProps() {
         return normalize.label(__spreadProps(__spreadValues({}, parts24.label.attrs), {
+          dir: prop("dir"),
           id: getLabelId14(scope),
           "data-disabled": dataAttr(disabled),
           "data-required": dataAttr(required),
@@ -36184,12 +36715,14 @@ ${err}`);
       },
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
+          dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           id: getRootId19(scope)
         }));
       },
       getControlProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts24.control.attrs), {
+          dir: prop("dir"),
           tabIndex: disabled ? void 0 : 0,
           id: getControlId9(scope),
           role: "application",
@@ -36244,11 +36777,13 @@ ${err}`);
       },
       getGuideProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts24.guide.attrs), {
+          dir: prop("dir"),
           "data-disabled": dataAttr(disabled)
         }));
       },
       getClearTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({}, parts24.clearTrigger.attrs), {
+          dir: prop("dir"),
           type: "button",
           "aria-label": translations.clearTrigger,
           hidden: !context.get("paths").length || drawing,
@@ -36483,7 +37018,7 @@ ${err}`);
     if (easing) o2.easing = easing;
     return o2;
   }
-  function zagNameForForm2(el) {
+  function zagNameForForm3(el) {
     if (getString(el, "submitName")) return void 0;
     return getString(el, "name");
   }
@@ -36515,14 +37050,11 @@ ${err}`);
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_OZ2OVCG5();
-      init_chunk_2H6YHTHG();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_3IY2CPWD();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -36717,11 +37249,11 @@ ${err}`);
               segment.innerHTML = "";
               this.imageURL = "";
               this.paths = [];
-              const hiddenInput = this.el.querySelector(
+              const hiddenInput2 = this.el.querySelector(
                 '[data-scope="signature-pad"][data-part="hidden-input"]'
               );
-              if (hiddenInput && hiddenInput.value !== "") {
-                hiddenInput.value = "";
+              if (hiddenInput2 && hiddenInput2.value !== "") {
+                hiddenInput2.value = "";
               }
               return;
             }
@@ -36742,7 +37274,6 @@ ${err}`);
             }
           });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           this.name = props.name;
           return new VanillaMachine(machine24, props);
@@ -36798,31 +37329,31 @@ ${err}`);
             this.spreadProps(clearBtn, this.api.getClearTriggerProps());
             this.applyPartDir(clearBtn);
           }
-          const hiddenInput = rootEl.querySelector(
+          const hiddenInput2 = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="hidden-input"]'
           );
-          if (hiddenInput) {
+          if (hiddenInput2) {
             this.spreadProps(
-              hiddenInput,
+              hiddenInput2,
               this.api.getHiddenInputProps({
                 value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
               })
             );
-            this.applyPartDir(hiddenInput);
+            this.applyPartDir(hiddenInput2);
             if (getString(this.el, "submitName")) {
-              hiddenInput.removeAttribute("name");
-              hiddenInput.removeAttribute("form");
+              hiddenInput2.removeAttribute("name");
+              hiddenInput2.removeAttribute("form");
             }
           }
           stripZagSubmitNames(this.el, "signature-pad");
           this.syncPaths();
         }
       };
-      SignaturePadHook = {
-        mounted() {
-          const el = this.el;
-          const hook = this;
-          const pushEvent = this.pushEvent.bind(this);
+      SignaturePadHook = createZagLiveHook({
+        key: "signaturePad",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
           hook.padTouched = false;
           const markTouched = () => {
             hook.padTouched = true;
@@ -36830,7 +37361,7 @@ ${err}`);
           const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
           const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues({
             id: el.id,
-            name: zagNameForForm2(el),
+            name: zagNameForForm3(el),
             dir: getDir(el)
           }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
             drawing: buildDrawingOptions(el),
@@ -36844,7 +37375,7 @@ ${err}`);
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
                 const eventName = getString(el, "onDrawEnd");
-                if (eventName && this.liveSocket.main.isConnected()) {
+                if (eventName && hook.liveSocket.main.isConnected()) {
                   pushEvent(eventName, {
                     id: el.id,
                     paths: details.paths,
@@ -36867,8 +37398,6 @@ ${err}`);
               });
             }
           }));
-          signaturePad.init();
-          this.signaturePad = signaturePad;
           const syncForm = (paths, opts) => {
             syncSignatureFormForPhoenix(el, paths, {
               onPadTouched: () => {
@@ -36886,9 +37415,7 @@ ${err}`);
             const paths = (_a4 = signaturePad.api.paths) != null ? _a4 : [];
             syncForm(paths.length > 0 ? paths : [], { notifyLiveView: false, fieldTouched: true });
           });
-          this.onClear = (event) => {
-            const { id: targetId } = event.detail;
-            if (targetId && targetId !== el.id) return;
+          const clearPad = () => {
             signaturePad.api.clear();
             syncSignatureFormForPhoenix(el, [], {
               onPadTouched: markTouched,
@@ -36896,54 +37423,41 @@ ${err}`);
               fieldTouched: true
             });
           };
-          el.addEventListener("corex:signature-pad:clear", this.onClear);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("signature_pad_clear", (payload) => {
-              if (!idMatches(el.id, readPayloadId(payload))) return;
-              signaturePad.api.clear();
-              syncSignatureFormForPhoenix(el, [], {
-                onPadTouched: markTouched,
-                notifyLiveView: true,
-                fieldTouched: true
-              });
-            })
-          );
+          dom2.add("corex:signature-pad:clear", (event) => {
+            const { id: targetId } = event.detail;
+            if (targetId && targetId !== el.id) return;
+            clearPad();
+          });
+          server.add("signature_pad_clear", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            clearPad();
+          });
+          return signaturePad;
         },
-        updated() {
-          var _a4, _b;
-          const el = this.el;
-          (_a4 = this.signaturePad) == null ? void 0 : _a4.updateProps({
+        update(hook, signaturePad) {
+          const el = hook.el;
+          signaturePad.updateProps({
             id: el.id,
-            name: zagNameForForm2(el),
+            name: zagNameForForm3(el),
             dir: getDir(el),
             drawing: buildDrawingOptions(el)
           });
           const serverPaths = readFormFieldServerPaths(el);
-          if (serverPaths !== void 0 && !this.padTouched) {
-            (_b = this.signaturePad) == null ? void 0 : _b.setPaths(serverPaths);
+          if (serverPaths !== void 0 && !hook.padTouched) {
+            signaturePad.setPaths(serverPaths);
             syncSignatureFormForPhoenix(el, serverPaths, {
               onPadTouched: () => {
               },
               notifyLiveView: false,
-              fieldTouched: isFormFieldUsed(el, this.padTouched)
+              fieldTouched: isFormFieldUsed(el, hook.padTouched)
             });
           }
         },
-        destroyed() {
-          var _a4, _b;
-          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
-          if (this.onClear) {
-            this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_b = this.signaturePad) == null ? void 0 : _b.destroy();
+        destroy(hook) {
+          var _a4;
+          (_a4 = hook.unbindSubmitIntent) == null ? void 0 : _a4.call(hook);
         }
-      };
+      });
     }
   });
 
@@ -37065,13 +37579,11 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_MM3X6GKK();
-      init_chunk_YUSIPE4B();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_QCFVFTGB();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -37237,7 +37749,6 @@ ${err}`);
         }
       });
       Switch = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine25, props);
         }
@@ -37277,12 +37788,14 @@ ${err}`);
           }
         }
       };
-      SwitchHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
+      SwitchHook = createZagLiveHook({
+        key: "switchComponent",
+        controlledKeys: ["checked"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
+          const switchComponent = new Switch(el, __spreadProps(__spreadValues({
             id: el.id
           }, (() => {
             const binding = mountCheckedBinding(el);
@@ -37312,90 +37825,68 @@ ${err}`);
                 '[data-scope="switch"][data-part="hidden-input"]'
               );
               if (input) {
-                input.checked = details.checked === true;
-                input.dispatchEvent(new Event("input", { bubbles: true }));
-                input.dispatchEvent(new Event("change", { bubbles: true }));
+                syncCheckedHiddenInput(input, details.checked === true, { markUsed: false });
               }
             }
           }));
-          zagSwitch.init();
-          this.zagSwitch = zagSwitch;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:switch:set-checked", (event) => {
+          dom2.add("corex:switch:set-checked", (event) => {
             const { checked } = event.detail;
-            zagSwitch.api.setChecked(checked);
+            switchComponent.api.setChecked(checked);
           });
-          domRegistry.add("corex:switch:toggle-checked", () => {
-            zagSwitch.api.toggleChecked();
+          dom2.add("corex:switch:toggle-checked", () => {
+            switchComponent.api.toggleChecked();
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("switch_set_checked", (payload) => {
+          server.add("switch_set_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const checked = readPayloadChecked(payload);
-            if (typeof checked === "boolean") zagSwitch.api.setChecked(checked);
+            if (typeof checked === "boolean") switchComponent.api.setChecked(checked);
           });
-          registry.add("switch_toggle_checked", (payload) => {
+          server.add("switch_toggle_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            zagSwitch.api.toggleChecked();
+            switchComponent.api.toggleChecked();
           });
-          registry.add("switch_checked", (payload) => {
-            if (!idMatches(el.id, readPayloadId(payload))) return;
-            if (!canPush()) return;
-            this.pushEvent("switch_checked_response", {
-              id: el.id,
-              value: zagSwitch.api.checked
-            });
-          });
-          registry.add("switch_focused", (payload) => {
+          server.add("switch_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("switch_focused_response", {
+            hook.pushEvent("switch_checked_response", {
               id: el.id,
-              value: zagSwitch.api.focused
+              value: switchComponent.api.checked
             });
           });
-          registry.add("switch_disabled", (payload) => {
+          server.add("switch_focused", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("switch_disabled_response", {
+            hook.pushEvent("switch_focused_response", {
               id: el.id,
-              value: zagSwitch.api.disabled
+              value: switchComponent.api.focused
             });
           });
+          server.add("switch_disabled", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            hook.pushEvent("switch_disabled_response", {
+              id: el.id,
+              value: switchComponent.api.disabled
+            });
+          });
+          return switchComponent;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
-        },
-        updated() {
-          const zagSwitch = this.zagSwitch;
-          if (!zagSwitch) return;
-          try {
-            const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
-            zagSwitch.updateProps(__spreadProps(__spreadValues({
-              id: this.el.id
-            }, "checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {}), {
-              disabled: getBoolean(this.el, "disabled"),
-              name: getString(this.el, "name"),
-              form: getString(this.el, "form"),
-              value: getString(this.el, "value"),
-              dir: getDir(this.el),
-              invalid: getBoolean(this.el, "invalid"),
-              required: getBoolean(this.el, "required"),
-              readOnly: getBoolean(this.el, "readonly")
-            }));
-          } finally {
-            this.beforeAttrs = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.zagSwitch) == null ? void 0 : _c.destroy();
+        update(hook, switchComponent) {
+          const checkedPatch = readUpdatedServerChecked(hook.el, hook.beforeAttrs);
+          switchComponent.updateProps(__spreadProps(__spreadValues({
+            id: hook.el.id
+          }, "checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {}), {
+            disabled: getBoolean(hook.el, "disabled"),
+            name: getString(hook.el, "name"),
+            form: getString(hook.el, "form"),
+            value: getString(hook.el, "value"),
+            dir: getDir(hook.el),
+            invalid: getBoolean(hook.el, "invalid"),
+            required: getBoolean(hook.el, "required"),
+            readOnly: getBoolean(hook.el, "readonly")
+          }));
         }
-      };
+      });
     }
   });
 
@@ -37828,18 +38319,20 @@ ${err}`);
   function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
     syncTagsArrayInputsForPhoenix(el, values, onTouched, opts);
   }
+  function readUpdatedServerTags(el, before) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    if (!datasetKeyChanged(before, el, "tags")) {
+      return {};
+    }
+    return { value: parseJsonTags(el, "tags") };
+  }
   function sameStringList3(a2, b2) {
     return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
   }
   function parseJsonTags(el, key) {
-    const raw = el.dataset[key];
-    if (!raw || raw.trim() === "") return [];
-    try {
-      const v2 = JSON.parse(raw);
-      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
-    } catch (e2) {
-      return [];
-    }
+    return parseJsonStringList(el.dataset[key]);
   }
   function blurBehavior(el) {
     return getString(el, "blurBehavior", ["add", "clear"]);
@@ -37857,7 +38350,7 @@ ${err}`);
     const v2 = input == null ? void 0 : input.getAttribute("placeholder");
     return typeof v2 === "string" && v2 !== "" ? v2 : void 0;
   }
-  function zagNameForForm3(el) {
+  function zagNameForForm4(el) {
     if (getString(el, "submitName")) return void 0;
     return getString(el, "name");
   }
@@ -37865,16 +38358,12 @@ ${err}`);
   var init_tags_input = __esm({
     "../priv/static/tags-input.mjs"() {
       "use strict";
-      init_chunk_7BZGUIUZ();
-      init_chunk_2H6YHTHG();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_3BEM4I52();
-      init_chunk_DOKFN6DA();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_UFCM6256();
+      init_chunk_F544AH56();
+      init_chunk_NUQOKDPA();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy26 = createAnatomy("tagsInput").parts(
         "root",
         "label",
@@ -38039,6 +38528,9 @@ ${err}`);
           isOverflowing: ({ context, prop }) => context.get("value").length > prop("max")
         },
         watch({ track, context, action, computed, refs }) {
+          track([() => computed("valueAsString")], () => {
+            action(["dispatchChangeEvent"]);
+          });
           track([() => context.get("editedTagValue")], () => {
             action(["syncEditedTagInputValue"]);
           });
@@ -38369,7 +38861,9 @@ ${err}`);
               send({ type: "EXTERNAL_BLUR", id: event.id });
             },
             dispatchChangeEvent({ scope, computed }) {
-              dispatchInputEvent(scope, computed("valueAsString"));
+              queueMicrotask(() => {
+                dispatchInputEvent(scope, computed("valueAsString"));
+              });
             },
             highlightNextTag({ context, scope }) {
               var _a4;
@@ -38647,7 +39141,6 @@ ${err}`);
       DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
       DEFAULT_TAG_EDITED_TEMPLATE = "Editing tag %{tag}. Press enter to save or escape to cancel.";
       TagsInput = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine26, props);
         }
@@ -38768,13 +39261,14 @@ ${err}`);
           }
         }
       };
-      TagsInputHook = {
-        mounted() {
-          const el = this.el;
-          const hook = this;
+      TagsInputHook = createZagLiveHook({
+        key: "tagsInput",
+        controlledKeys: ["tags"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
           hook.fieldTouched = false;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const blur = blurBehavior(el);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
@@ -38788,7 +39282,7 @@ ${err}`);
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            name: zagNameForForm3(el),
+            name: zagNameForForm4(el),
             form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             addOnPaste: getBoolean(el, "addOnPaste"),
@@ -38847,8 +39341,6 @@ ${err}`);
               });
             }
           }));
-          zag.init();
-          this.tagsInput = zag;
           const syncForm = (values, opts = {}) => {
             syncTagsInputFormForPhoenix(el, values, void 0, {
               notifyLiveView: opts.notifyLiveView,
@@ -38862,66 +39354,63 @@ ${err}`);
             hook.fieldTouched = true;
             syncForm(zag.api.value, { notifyLiveView: false });
           });
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:tags-input:set-value", (event) => {
+          dom2.add("corex:tags-input:set-value", (event) => {
             var _a4;
             const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
             if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string"))
               zag.api.setValue(v2);
           });
-          domRegistry.add("corex:tags-input:clear-value", () => {
+          dom2.add("corex:tags-input:clear-value", () => {
             zag.api.clearValue();
           });
-          domRegistry.add("corex:tags-input:add-value", (event) => {
+          dom2.add("corex:tags-input:add-value", (event) => {
             var _a4;
             const tag = (_a4 = event.detail) == null ? void 0 : _a4.value;
             if (typeof tag === "string" && tag !== "") zag.api.addValue(tag);
           });
-          domRegistry.add("corex:tags-input:remove-value", (event) => {
+          dom2.add("corex:tags-input:remove-value", (event) => {
             var _a4;
             const tag = (_a4 = event.detail) == null ? void 0 : _a4.value;
             if (typeof tag !== "string" || tag === "") return;
             zag.api.setValue(zag.api.value.filter((t2) => t2 !== tag));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("tags_input_set_value", (payload) => {
+          server.add("tags_input_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const v2 = readPayloadStringArray(payload);
             if (v2) zag.api.setValue(v2);
           });
-          registry.add("tags_input_clear_value", (payload) => {
+          server.add("tags_input_clear_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.clearValue();
           });
-          registry.add("tags_input_add_value", (payload) => {
+          server.add("tags_input_add_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const tag = readPayloadValue(payload);
             if (tag !== "") zag.api.addValue(tag);
           });
-          registry.add("tags_input_remove_value", (payload) => {
+          server.add("tags_input_remove_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const tag = readPayloadValue(payload);
             if (tag === "") return;
             zag.api.setValue(zag.api.value.filter((t2) => t2 !== tag));
           });
+          return zag;
         },
-        updated() {
-          var _a4, _b;
-          const el = this.el;
+        update(hook, zag) {
+          const el = hook.el;
           const blur = blurBehavior(el);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
-          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
+          const valuePatch = readUpdatedServerTags(el, hook.beforeAttrs);
+          zag.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
           }, resolveZagTagsInputTranslations(el)), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            name: zagNameForForm3(el),
+            name: zagNameForForm4(el),
             form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             addOnPaste: getBoolean(el, "addOnPaste"),
@@ -38929,17 +39418,13 @@ ${err}`);
             allowOverflow: getBoolean(el, "allowOverflow")
           }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
             autoFocus: getBoolean(el, "autoFocus")
-          }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
-          (_b = this.tagsInput) == null ? void 0 : _b.render();
+          }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
         },
-        destroyed() {
-          var _a4, _b, _c, _d;
-          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
-          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
-          (_d = this.tagsInput) == null ? void 0 : _d.destroy();
+        destroy(hook) {
+          var _a4;
+          (_a4 = hook.unbindSubmitIntent) == null ? void 0 : _a4.call(hook);
         }
-      };
+      });
     }
   });
 
@@ -38993,7 +39478,7 @@ ${err}`);
         var _a4;
         const value = context.get("value");
         if (!value) return;
-        (_a4 = getTriggerEl7(scope, value)) == null ? void 0 : _a4.focus();
+        (_a4 = getTriggerEl8(scope, value)) == null ? void 0 : _a4.focus();
       },
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
@@ -39162,16 +39647,14 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy27, parts27, getRootId22, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine27, Tabs, TabsHook;
+  var anatomy27, parts27, getRootId22, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine27, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_PE34YET2();
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_KHEHQE65();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -39196,7 +39679,7 @@ ${err}`);
       };
       getListEl = (ctx) => ctx.getById(getListId(ctx));
       getContentEl10 = (ctx, value) => ctx.getById(getContentId10(ctx, value));
-      getTriggerEl7 = (ctx, value) => value != null ? ctx.getById(getTriggerId10(ctx, value)) : null;
+      getTriggerEl8 = (ctx, value) => value != null ? ctx.getById(getTriggerId10(ctx, value)) : null;
       getIndicatorEl3 = (ctx) => ctx.getById(getIndicatorId3(ctx));
       getElements2 = (ctx) => {
         const ownerId = CSS.escape(getListId(ctx));
@@ -39461,7 +39944,7 @@ ${err}`);
               const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               if (!value) return;
-              const triggerEl = getTriggerEl7(scope, value);
+              const triggerEl = getTriggerEl8(scope, value);
               if (!triggerEl) return;
               context.set("indicatorRect", getRectByValue(scope, value));
             },
@@ -39487,21 +39970,25 @@ ${err}`);
               const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               const exec = () => {
-                const triggerEl = getTriggerEl7(scope, context.get("value"));
+                const triggerEl = getTriggerEl8(scope, context.get("value"));
                 if (!triggerEl) return;
                 const rect = getOffsetRect2(triggerEl);
                 context.set("indicatorRect", (prev2) => isEqual(prev2, rect) ? prev2 : rect);
               };
               exec();
               const triggerEls = getElements2(scope);
-              const indicatorCleanup = callAll(...triggerEls.map((el) => resizeObserverBorderBox.observe(el, exec)));
+              const listEl = getListEl(scope);
+              const indicatorCleanup = callAll(
+                ...triggerEls.map((el) => resizeObserverBorderBox.observe(el, exec)),
+                ...listEl ? [resizeObserverBorderBox.observe(listEl, exec)] : []
+              );
               refs.set("indicatorCleanup", indicatorCleanup);
             },
             navigateIfNeeded({ context, prop, scope }) {
               var _a4;
               const value = context.get("value");
               if (!value) return;
-              const triggerEl = getTriggerEl7(scope, value);
+              const triggerEl = getTriggerEl8(scope, value);
               if (isAnchorElement(triggerEl)) {
                 (_a4 = prop("navigate")) == null ? void 0 : _a4({ value, node: triggerEl, href: triggerEl.href });
               }
@@ -39510,20 +39997,16 @@ ${err}`);
         }
       });
       Tabs = class extends Component {
-        constructor() {
-          super(...arguments);
-          __publicField(this, "updateProps", (props) => {
-            super.updateProps(this.withDomIds(props));
-          });
-        }
         withDomIds(props) {
           var _a4;
           const id = (_a4 = props.id) != null ? _a4 : this.el.id;
           return __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine27, this.withDomIds(props));
+        }
+        updateProps(props) {
+          return super.updateProps(this.withDomIds(props));
         }
         initApi() {
           return this.zagConnect(connect27);
@@ -39556,11 +40039,13 @@ ${err}`);
           });
         }
       };
-      TabsHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      TabsHook = createZagLiveHook({
+        key: "tabs",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const tabs = new Tabs(el, __spreadProps(__spreadValues(__spreadValues({
             id: el.id
           }, readStringControlledZagProps(el, "value", "defaultValue")), readTabsLayoutProps(el)), {
@@ -39585,56 +40070,37 @@ ${err}`);
               });
             }
           }));
-          tabs.init();
-          this.tabs = tabs;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:tabs:set-value", (event) => {
+          dom2.add("corex:tabs:set-value", (event) => {
             tabs.api.setValue(event.detail.value);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("tabs_set_value", (payload) => {
+          server.add("tabs_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             tabs.api.setValue(payload.value);
           });
-          registry.add("tabs_value", (payload) => {
+          server.add("tabs_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("tabs_value_response", {
+            hook.pushEvent("tabs_value_response", {
               id: el.id,
               value: tabs.api.value
             });
           });
-          registry.add("tabs_focused_value", (payload) => {
+          server.add("tabs_focused_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("tabs_focused_value_response", {
+            hook.pushEvent("tabs_focused_value_response", {
               id: el.id,
               value: tabs.api.focusedValue
             });
           });
+          return tabs;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-        },
-        updated() {
-          var _a4;
-          try {
-            (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({
-              id: this.el.id
-            }, readStringControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)), readTabsLayoutProps(this.el)));
-          } finally {
-            this.beforeAttrs = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.tabs) == null ? void 0 : _c.destroy();
+        update(hook, tabs) {
+          tabs.updateProps(__spreadValues(__spreadValues({
+            id: hook.el.id
+          }, readStringControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)), readTabsLayoutProps(hook.el)));
         }
-      };
+      });
     }
   });
 
@@ -39946,6 +40412,20 @@ ${err}`);
       }
     };
   }
+  function syncTimerDir(el) {
+    const dir = getDir(el);
+    if (dir) {
+      el.setAttribute("dir", dir);
+      el.querySelectorAll("[data-scope='timer']").forEach((node) => {
+        node.setAttribute("dir", dir);
+      });
+    } else {
+      el.removeAttribute("dir");
+      el.querySelectorAll("[data-scope='timer'][dir]").forEach((node) => {
+        node.removeAttribute("dir");
+      });
+    }
+  }
   function buildTimerProps(el, pushEvent, canPush) {
     return __spreadValues({
       id: el.id,
@@ -39954,8 +40434,6 @@ ${err}`);
       targetMs: getNumber(el, "targetMs"),
       autoStart: getBoolean(el, "autoStart"),
       interval: getNumber(el, "interval"),
-      dir: getDir(el),
-      orientation: getString(el, "orientation"),
       translations: parseTimerTranslations(el)
     }, buildTimerCallbacks(el, pushEvent, canPush));
   }
@@ -39963,12 +40441,11 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_NB7M3GJN();
-      init_chunk_6MIECCPA();
-      init_chunk_PE34YET2();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_Z3EQ3GCO();
+      init_chunk_V2LDXRRO();
+      init_chunk_KHEHQE65();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy28 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -40145,7 +40622,6 @@ ${err}`);
         }
       });
       Timer2 = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine28, props);
         }
@@ -40169,6 +40645,14 @@ ${err}`);
             );
             if (itemEl) {
               this.spreadProps(itemEl, this.api.getItemProps({ type }));
+              if (type === "days") {
+                const days = Number(this.api.time.days);
+                if (days > 99) {
+                  itemEl.setAttribute("data-plain", String(days));
+                } else {
+                  itemEl.removeAttribute("data-plain");
+                }
+              }
             }
             const labelEl = this.el.querySelector(
               `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
@@ -40194,19 +40678,19 @@ ${err}`);
           applyTimerItemVisibility(this.el, this.api);
         }
       };
-      TimerHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      TimerHook = createZagLiveHook({
+        key: "timer",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const identity2 = readIdentityRaw(el);
-          this.lastStartMsRaw = identity2.startMs;
-          this.lastTargetMsRaw = identity2.targetMs;
-          this.lastCountdownRaw = identity2.countdown;
-          this.lastIntervalRaw = identity2.interval;
+          hook.lastStartMsRaw = identity2.startMs;
+          hook.lastTargetMsRaw = identity2.targetMs;
+          hook.lastCountdownRaw = identity2.countdown;
+          hook.lastIntervalRaw = identity2.interval;
           const zag = new Timer2(el, buildTimerProps(el, pushEvent, canPush));
-          zag.init();
-          this.timer = zag;
+          syncTimerDir(el);
           const emitState = (respondTo) => {
             const snapshot2 = machineState2(zag.api);
             emitResponse({
@@ -40220,91 +40704,82 @@ ${err}`);
               domDetail: __spreadValues({ id: el.id }, snapshot2)
             });
           };
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:timer:start", () => {
+          dom2.add("corex:timer:start", () => {
             zag.api.start();
           });
-          domRegistry.add("corex:timer:pause", () => {
+          dom2.add("corex:timer:pause", () => {
             zag.api.pause();
           });
-          domRegistry.add("corex:timer:resume", () => {
+          dom2.add("corex:timer:resume", () => {
             zag.api.resume();
           });
-          domRegistry.add("corex:timer:reset", () => {
+          dom2.add("corex:timer:reset", () => {
             zag.api.reset();
           });
-          domRegistry.add("corex:timer:restart", () => {
+          dom2.add("corex:timer:restart", () => {
             zag.api.restart();
           });
-          domRegistry.add("corex:timer:state", (event) => {
+          dom2.add("corex:timer:state", (event) => {
             emitState(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("timer_start", (payload) => {
+          server.add("timer_start", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.start();
           });
-          registry.add("timer_pause", (payload) => {
+          server.add("timer_pause", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.pause();
           });
-          registry.add("timer_resume", (payload) => {
+          server.add("timer_resume", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.resume();
           });
-          registry.add("timer_reset", (payload) => {
+          server.add("timer_reset", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.reset();
           });
-          registry.add("timer_restart", (payload) => {
+          server.add("timer_restart", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zag.api.restart();
           });
-          registry.add("timer_state", (payload) => {
+          server.add("timer_state", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitState(parseRespondTo(payload));
           });
+          return zag;
         },
-        updated() {
-          var _a4;
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+        update(hook, zag) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const patch = __spreadValues({
             id: el.id,
             translations: parseTimerTranslations(el)
           }, buildTimerCallbacks(el, pushEvent, canPush));
           const startMsRaw = el.dataset.startMs;
-          if (startMsRaw !== this.lastStartMsRaw) {
+          if (startMsRaw !== hook.lastStartMsRaw) {
             patch.startMs = getNumber(el, "startMs");
-            this.lastStartMsRaw = startMsRaw;
+            hook.lastStartMsRaw = startMsRaw;
           }
           const targetMsRaw = el.dataset.targetMs;
-          if (targetMsRaw !== this.lastTargetMsRaw) {
+          if (targetMsRaw !== hook.lastTargetMsRaw) {
             patch.targetMs = getNumber(el, "targetMs");
-            this.lastTargetMsRaw = targetMsRaw;
+            hook.lastTargetMsRaw = targetMsRaw;
           }
           const countdownRaw = el.dataset.countdown;
-          if (countdownRaw !== this.lastCountdownRaw) {
+          if (countdownRaw !== hook.lastCountdownRaw) {
             patch.countdown = getBoolean(el, "countdown");
-            this.lastCountdownRaw = countdownRaw;
+            hook.lastCountdownRaw = countdownRaw;
           }
           const intervalRaw = el.dataset.interval;
-          if (intervalRaw !== this.lastIntervalRaw) {
+          if (intervalRaw !== hook.lastIntervalRaw) {
             patch.interval = getNumber(el, "interval");
-            this.lastIntervalRaw = intervalRaw;
+            hook.lastIntervalRaw = intervalRaw;
           }
-          (_a4 = this.timer) == null ? void 0 : _a4.updateProps(patch);
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.timer) == null ? void 0 : _c.destroy();
+          syncTimerDir(el);
+          zag.updateProps(patch);
         }
-      };
+      });
     }
   });
 
@@ -40646,6 +41121,13 @@ ${err}`);
       }
     };
   }
+  function measureLayoutHeight(el) {
+    const prevHeight = el.style.height;
+    el.style.height = "auto";
+    const height = el.offsetHeight;
+    el.style.height = prevHeight;
+    return height;
+  }
   function setHeight(parent, item) {
     const { id, height } = item;
     parent.context.set("heights", (prev2) => {
@@ -40884,15 +41366,20 @@ ${err}`);
     return action != null && typeof action === "object" && action.labelHtml === true;
   }
   function createToastGroup(container, options) {
-    var _a4, _b, _c;
+    var _a4, _b, _c, _d, _e;
     const groupId = (_a4 = options == null ? void 0 : options.id) != null ? _a4 : container.id;
-    const store2 = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
-      placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom",
+    if (toastGroups.has(groupId)) {
+      disposeToastGroup(groupId);
+    }
+    const store2 = (_e = options == null ? void 0 : options.store) != null ? _e : createToastStore({
+      placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom-end",
       overlap: options == null ? void 0 : options.overlap,
       max: options == null ? void 0 : options.max,
       gap: options == null ? void 0 : options.gap,
-      offsets: options == null ? void 0 : options.offsets,
-      pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
+      offsets: (_c = options == null ? void 0 : options.offsets) != null ? _c : "1rem",
+      pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle,
+      // Match Zag shared toast.css open transitions (400ms height/translate/scale).
+      removeDelay: (_d = options == null ? void 0 : options.removeDelay) != null ? _d : 400
     });
     const group2 = new ToastGroup(container, { id: groupId, store: store2, dir: getDir(container) });
     group2.init();
@@ -40961,6 +41448,31 @@ ${err}`);
     if (spec.labelHtml) action.labelHtml = true;
     return action;
   }
+  function readFlashToasts(el) {
+    const specs = [
+      {
+        type: "info",
+        fallbackTitle: "Success",
+        title: el.getAttribute("data-flash-info-title"),
+        duration: el.getAttribute("data-flash-info-duration")
+      },
+      {
+        type: "error",
+        fallbackTitle: "Error",
+        title: el.getAttribute("data-flash-error-title"),
+        duration: el.getAttribute("data-flash-error-duration")
+      }
+    ];
+    return specs.flatMap((spec) => {
+      const body = el.getAttribute(`data-flash-${spec.type}`);
+      return body ? [__spreadProps(__spreadValues({}, spec), { body })] : [];
+    });
+  }
+  function parseToastDuration(duration) {
+    if (duration === "Infinity" || duration === Infinity) return Infinity;
+    if (typeof duration === "string") return parseInt(duration, 10) || void 0;
+    return duration;
+  }
   function buildRuntime(self2) {
     return {
       pushEvent: (event, payload) => {
@@ -40972,14 +41484,14 @@ ${err}`);
       redirectCtx: { liveSocket: self2.liveSocket }
     };
   }
-  var anatomy29, parts29, getRegionId, getRegionEl, getRootId24, getRootEl9, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, not11, machine29, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, parseActionSpec, loadingMeta, ToastHook;
+  var anatomy29, parts29, getRegionId, getRegionEl, getRootId24, getRootEl9, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, not11, machine29, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, parseActionSpec, loadingMeta, ToastGroupHandle, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_6MIECCPA();
-      init_chunk_CBUVYVIR();
-      init_chunk_ZSA4KI2Y();
-      init_chunk_6AOEC32Q();
+      init_chunk_V2LDXRRO();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_6L36XW7I();
       anatomy29 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -41426,10 +41938,7 @@ ${err}`);
                 const rootEl = getRootEl9(scope);
                 if (!rootEl) return;
                 const syncHeight = () => {
-                  const originalHeight = rootEl.style.height;
-                  rootEl.style.height = "auto";
-                  const height = rootEl.getBoundingClientRect().height;
-                  rootEl.style.height = originalHeight;
+                  const height = measureLayoutHeight(rootEl);
                   const item = { id: prop("id"), height };
                   setHeight(prop("parent"), item);
                 };
@@ -41459,10 +41968,7 @@ ${err}`);
               queueMicrotask(() => {
                 const rootEl = getRootEl9(scope);
                 if (!rootEl) return;
-                const originalHeight = rootEl.style.height;
-                rootEl.style.height = "auto";
-                const height = rootEl.getBoundingClientRect().height;
-                rootEl.style.height = originalHeight;
+                const height = measureLayoutHeight(rootEl);
                 context.set("initialHeight", height);
                 const item = { id: prop("id"), height };
                 setHeight(prop("parent"), item);
@@ -41543,13 +42049,10 @@ ${err}`);
           __publicField(this, "hadAction", false);
           __publicField(this, "duration");
           __publicField(this, "showLoading");
-          __publicField(this, "updateProps", (props) => {
-            Object.assign(this.latestProps, props);
-            super.updateProps(
-              props
-            );
-          });
           __publicField(this, "destroy", () => {
+            var _a4;
+            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
+            this.unsubscribe = void 0;
             this.clearSpreadPropsCleanups();
             this.machine.stop();
             this.el.remove();
@@ -41560,12 +42063,11 @@ ${err}`);
           this.hadAction = Boolean((_b = props.action) == null ? void 0 : _b.label);
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
-          this.el.classList.add("toast-item");
           this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
-      <div data-scope="toast" data-part="progressbar"></div>
 
       <div data-scope="toast" data-part="content">
+        <div data-scope="toast" data-part="progressbar"></div>
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
@@ -41590,7 +42092,10 @@ ${err}`);
             loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')
           };
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        updateProps(props) {
+          Object.assign(this.latestProps, props);
+          return super.updateProps(props);
+        }
         initMachine(props) {
           return new VanillaMachine(machine29, props);
         }
@@ -41706,7 +42211,6 @@ ${err}`);
             return g2;
           })();
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(group.machine, props);
         }
@@ -41722,7 +42226,6 @@ ${err}`);
             let item = this.toastComponents.get(toastData.id);
             if (!item) {
               const el = document.createElement("div");
-              el.classList.add("toast-item");
               el.setAttribute("data-scope", "toast");
               el.setAttribute("data-part", "root");
               this.groupEl.appendChild(el);
@@ -41735,10 +42238,14 @@ ${err}`);
             } else {
               item.duration = toastData.duration;
               item.showLoading = ((_a4 = toastData.meta) == null ? void 0 : _a4.loading) === true;
-              item.updateProps(__spreadProps(__spreadValues({}, toastData), {
+              const changed = item.updateProps(__spreadProps(__spreadValues({}, toastData), {
                 parent: this.machine.service,
                 index
               }));
+              if (!changed) {
+                item.api = item.initApi();
+                item.render();
+              }
             }
           });
           for (const [id, comp] of this.toastComponents) {
@@ -41751,14 +42258,46 @@ ${err}`);
       };
       parseActionSpec = parseServerActionSpec;
       loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
-      ToastHook = {
-        mounted() {
+      ToastGroupHandle = class {
+        constructor(el, options) {
+          this.el = el;
+          this.options = options;
+        }
+        init() {
+          createToastGroup(this.el, this.options);
+          this.el.setAttribute("data-ready", "");
+          this.createFlashToasts();
+        }
+        destroy() {
+          disposeToastGroup(this.options.id);
+        }
+        createFlashToasts() {
+          const store2 = getToastStore(this.options.id);
+          if (!store2) return;
+          for (const { type, body, title, duration, fallbackTitle } of readFlashToasts(this.el)) {
+            try {
+              store2.create({
+                title: title || fallbackTitle,
+                description: body,
+                type,
+                id: generateId(void 0, "toast"),
+                duration: parseToastDuration(duration != null ? duration : void 0)
+              });
+            } catch (error) {
+              console.error(`Failed to create flash ${type} toast:`, error);
+            }
+          }
+        }
+      };
+      ToastHook = createZagLiveHook({
+        key: "toastGroup",
+        mount(hook, { dom: dom2, server }) {
           var _a4;
-          const el = this.el;
+          const el = hook.el;
           if (!el.id) {
             el.id = generateId(el, "toast");
           }
-          this.groupId = el.id;
+          hook.groupId = el.id;
           const parseOffsets = (offsetsString) => {
             if (!offsetsString) return void 0;
             try {
@@ -41767,15 +42306,7 @@ ${err}`);
               return offsetsString;
             }
           };
-          const parseDuration = (duration) => {
-            if (duration === "Infinity" || duration === Infinity) {
-              return Infinity;
-            }
-            if (typeof duration === "string") {
-              return parseInt(duration, 10) || void 0;
-            }
-            return duration;
-          };
+          const parseDuration = parseToastDuration;
           const parsePriority = (raw) => {
             if (raw === void 0 || raw === null) return void 0;
             const n2 = typeof raw === "string" ? parseInt(raw, 10) : raw;
@@ -41790,8 +42321,8 @@ ${err}`);
             "bottom",
             "bottom-end"
           ])) != null ? _a4 : "bottom-end";
-          createToastGroup(el, {
-            id: this.groupId,
+          const group2 = new ToastGroupHandle(el, {
+            id: hook.groupId,
             placement,
             overlap: getBoolean(el, "overlap"),
             max: getNumber(el, "max"),
@@ -41799,41 +42330,7 @@ ${err}`);
             offsets: parseOffsets(getString(el, "offset")),
             pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
           });
-          el.setAttribute("data-ready", "");
-          const store2 = getToastStore(this.groupId);
-          const flashInfo = el.getAttribute("data-flash-info");
-          const flashInfoTitle = el.getAttribute("data-flash-info-title");
-          const flashError = el.getAttribute("data-flash-error");
-          const flashErrorTitle = el.getAttribute("data-flash-error-title");
-          const flashInfoDuration = el.getAttribute("data-flash-info-duration");
-          const flashErrorDuration = el.getAttribute("data-flash-error-duration");
-          if (store2 && flashInfo) {
-            try {
-              store2.create({
-                title: flashInfoTitle || "Success",
-                description: flashInfo,
-                type: "info",
-                id: generateId(void 0, "toast"),
-                duration: parseDuration(flashInfoDuration != null ? flashInfoDuration : void 0)
-              });
-            } catch (error) {
-              console.error("Failed to create flash info toast:", error);
-            }
-          }
-          if (store2 && flashError) {
-            try {
-              store2.create({
-                title: flashErrorTitle || "Error",
-                description: flashError,
-                type: "error",
-                id: generateId(void 0, "toast"),
-                duration: parseDuration(flashErrorDuration != null ? flashErrorDuration : void 0)
-              });
-            } catch (error) {
-              console.error("Failed to create flash error toast:", error);
-            }
-          }
-          const rt = buildRuntime(this);
+          const rt = buildRuntime(hook);
           const buildCreateOptions = (payload, trusted) => {
             var _a5;
             const spec = trusted ? parseServerActionSpec(payload.action) : parseDomActionSpec(payload.action);
@@ -41872,10 +42369,10 @@ ${err}`);
             if (pr !== void 0) patch.priority = pr;
             return patch;
           };
-          const matchesGroup = (payload) => typeof payload.groupId === "string" && payload.groupId === this.groupId;
+          const matchesGroup = (payload) => typeof payload.group_id === "string" && payload.group_id === hook.groupId;
           const handleDismissPayload = (payload) => {
             if (!matchesGroup(payload)) return;
-            const st = getToastStore(payload.groupId);
+            const st = getToastStore(payload.group_id);
             if (!st) return;
             try {
               st.dismiss(payload.id);
@@ -41885,7 +42382,7 @@ ${err}`);
           };
           const handleRemovePayload = (payload) => {
             if (!matchesGroup(payload)) return;
-            const st = getToastStore(payload.groupId);
+            const st = getToastStore(payload.group_id);
             if (!st) return;
             try {
               st.remove(payload.id);
@@ -41893,87 +42390,49 @@ ${err}`);
               console.error("Failed to remove toast:", error);
             }
           };
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("toast-create", (payload) => {
-              if (!matchesGroup(payload)) return;
-              const st = getToastStore(payload.groupId);
-              if (!st) return;
-              try {
-                st.create(buildCreateOptions(payload, true));
-              } catch (error) {
-                console.error("Failed to create toast:", error);
-              }
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("toast-update", (payload) => {
-              if (!matchesGroup(payload) || !payload.id) return;
-              const st = getToastStore(payload.groupId);
-              if (!st) return;
-              try {
-                st.update(payload.id, buildUpdatePatch(payload, true));
-              } catch (error) {
-                console.error("Failed to update toast:", error);
-              }
-            })
-          );
-          this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
-          this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
-          const onToastCreate = (event) => {
-            const { detail } = event;
-            if (!matchesGroup(detail)) return;
-            const st = getToastStore(detail.groupId);
+          const createToast = (payload, trusted) => {
+            if (!matchesGroup(payload)) return;
+            const st = getToastStore(payload.group_id);
             if (!st) return;
             try {
-              st.create(buildCreateOptions(detail, false));
+              st.create(buildCreateOptions(payload, trusted));
             } catch (error) {
               console.error("Failed to create toast:", error);
             }
           };
-          const onToastUpdate = (event) => {
-            const { detail } = event;
-            if (!matchesGroup(detail) || !detail.id) return;
-            const st = getToastStore(detail.groupId);
+          const updateToast = (payload, trusted) => {
+            if (!matchesGroup(payload) || !payload.id) return;
+            const st = getToastStore(payload.group_id);
             if (!st) return;
             try {
-              st.update(detail.id, buildUpdatePatch(detail, false));
+              st.update(payload.id, buildUpdatePatch(payload, trusted));
             } catch (error) {
               console.error("Failed to update toast:", error);
             }
           };
-          const onToastDismiss = (event) => {
-            handleDismissPayload(event.detail);
-          };
-          const onToastRemove = (event) => {
-            handleRemovePayload(event.detail);
-          };
-          const domListeners = [];
-          const addDom = (name, fn) => {
-            el.addEventListener(name, fn);
-            domListeners.push({ el, name, fn });
-          };
-          this.domListeners = domListeners;
-          addDom("corex:toast:create", onToastCreate);
-          addDom("corex:toast:update", onToastUpdate);
-          addDom("corex:toast:dismiss", onToastDismiss);
-          addDom("corex:toast:remove", onToastRemove);
-        },
-        destroyed() {
-          var _a4;
-          for (const { el, name, fn } of (_a4 = this.domListeners) != null ? _a4 : []) {
-            el.removeEventListener(name, fn);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          if (this.groupId) {
-            disposeToastGroup(this.groupId);
-          }
+          server.add("toast_create", (payload) => createToast(payload, true));
+          server.add("toast_update", (payload) => updateToast(payload, true));
+          server.add("toast_dismiss", handleDismissPayload);
+          server.add("toast_remove", handleRemovePayload);
+          dom2.add(
+            "corex:toast:create",
+            (event) => createToast(event.detail, false)
+          );
+          dom2.add(
+            "corex:toast:update",
+            (event) => updateToast(event.detail, false)
+          );
+          dom2.add(
+            "corex:toast:dismiss",
+            (event) => handleDismissPayload(event.detail)
+          );
+          dom2.add(
+            "corex:toast:remove",
+            (event) => handleRemovePayload(event.detail)
+          );
+          return group2;
         }
-      };
+      });
     }
   });
 
@@ -42030,10 +42489,12 @@ ${err}`);
     const hasAriaLabel = !!prop("aria-label");
     const open = state2.matches("open", "closing");
     const triggerValue = context.get("triggerValue");
+    const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
     const contentId = getContentId11(scope);
     const disabled = prop("disabled");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
-      placement: context.get("currentPlacement")
+      placement: currentPlacement
     }));
     return {
       open,
@@ -42152,7 +42613,8 @@ ${err}`);
           "data-instant": dataAttr(instant),
           role: hasAriaLabel ? void 0 : "tooltip",
           id: hasAriaLabel ? void 0 : contentId,
-          "data-placement": context.get("currentPlacement"),
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
           onPointerEnter() {
             send({ type: "content.pointer.move" });
           },
@@ -42163,41 +42625,6 @@ ${err}`);
             pointerEvents: prop("interactive") ? "auto" : "none"
           }
         }));
-      }
-    };
-  }
-  function createZagLiveHook(config) {
-    return {
-      mounted() {
-        const component = config.mount(this);
-        component.init();
-        this[config.key] = component;
-      },
-      beforeUpdate() {
-        var _a4;
-        if (config.controlledKeys) {
-          this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
-        }
-        (_a4 = config.beforeUpdate) == null ? void 0 : _a4.call(config, this);
-      },
-      updated() {
-        var _a4;
-        const component = this[config.key];
-        if (!component) return;
-        try {
-          (_a4 = config.update) == null ? void 0 : _a4.call(config, this, component);
-        } finally {
-          this.beforeAttrs = void 0;
-        }
-      },
-      destroyed() {
-        var _a4;
-        const component = this[config.key];
-        if (!component) return;
-        (_a4 = config.destroy) == null ? void 0 : _a4.call(config, this, component);
-        component.destroy();
-        this[config.key] = void 0;
-        this.beforeAttrs = void 0;
       }
     };
   }
@@ -42257,16 +42684,15 @@ ${err}`);
       interactive: getBoolean(el, "interactive")
     }, createTooltipCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket));
   }
-  var anatomy30, parts30, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and11, not12, machine30, Tooltip, TooltipHook;
+  var anatomy30, parts30, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getTriggerEl9, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and11, not12, machine30, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_MHRYIVD2();
-      init_chunk_C4KEB3WL();
-      init_chunk_YUSIPE4B();
-      init_chunk_TKOH2OAC();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_X7GOMWQ5();
+      init_chunk_VOKBRZCH();
+      init_chunk_QCFVFTGB();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy30 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts30 = anatomy30.build();
       getTriggerId11 = (scope, value) => {
@@ -42287,10 +42713,15 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.positioner) != null ? _b : `tooltip:${scope.id}:popper`;
       };
+      getTriggerEl9 = (scope) => scope.getById(getTriggerId11(scope));
       getPositionerEl8 = (scope) => scope.getById(getPositionerId8(scope));
-      getTriggerEls4 = (scope) => queryAll(scope.getDoc(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
+      getTriggerEls4 = (scope) => queryAll(scope.getRootNode(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
       getActiveTriggerEl3 = (scope, value) => {
-        return value == null ? getTriggerEls4(scope)[0] : scope.getById(getTriggerId11(scope, value));
+        var _a4;
+        if (value == null) {
+          return (_a4 = getTriggerEl9(scope)) != null ? _a4 : getTriggerEls4(scope)[0];
+        }
+        return scope.getById(getTriggerId11(scope, value));
       };
       store = createStore({
         id: null,
@@ -42583,8 +43014,8 @@ ${err}`);
             reposition: ({ context, event, prop, scope }) => {
               if (event.type !== "positioning.set") return;
               const getPositionerEl22 = () => getPositionerEl8(scope);
-              const getTriggerEl8 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
-              getPlacement(getTriggerEl8, getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+              const getTriggerEl22 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 listeners: false,
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -42595,8 +43026,8 @@ ${err}`);
               var _a4;
               const triggerValue = (_a4 = event.value) != null ? _a4 : context.get("triggerValue");
               const getPositionerEl22 = () => getPositionerEl8(scope);
-              const getTriggerEl8 = () => getActiveTriggerEl3(scope, triggerValue);
-              return getPlacement(getTriggerEl8, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
+              const getTriggerEl22 = () => getActiveTriggerEl3(scope, triggerValue);
+              return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
                 }
@@ -42638,8 +43069,8 @@ ${err}`);
                 context.set("currentPlacement", prop("positioning").placement);
               }
               const getPositionerEl22 = () => getPositionerEl8(scope);
-              const getTriggerEl8 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
-              return getPlacement(getTriggerEl8, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
+              const getTriggerEl22 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 defer: true,
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -42707,7 +43138,6 @@ ${err}`);
         }
       });
       Tooltip = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine30, props);
         }
@@ -42751,35 +43181,20 @@ ${err}`);
       };
       TooltipHook = createZagLiveHook({
         key: "tooltip",
-        mount(hook) {
+        mount(hook, { dom: dom2, server }) {
           const el = hook.el;
           const tooltip = new Tooltip(el, tooltipProps(el, hook));
-          hook.onSetOpen = (event) => {
-            const { open } = event.detail;
-            tooltip.api.setOpen(open);
-          };
-          el.addEventListener("corex:tooltip:set-open", hook.onSetOpen);
-          hook.handlers = [];
-          hook.handlers.push(
-            hook.handleEvent("tooltip_set_open", (payload) => {
-              if (!idMatches(el.id, readPayloadId(payload))) return;
-              tooltip.api.setOpen(payload.open);
-            })
-          );
+          dom2.add("corex:tooltip:set-open", (event) => {
+            tooltip.api.setOpen(event.detail.open);
+          });
+          server.add("tooltip_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            tooltip.api.setOpen(payload.open);
+          });
           return tooltip;
         },
         update(hook, tooltip) {
           tooltip.updateProps(tooltipProps(hook.el, hook));
-        },
-        destroy(hook) {
-          if (hook.onSetOpen) {
-            hook.el.removeEventListener("corex:tooltip:set-open", hook.onSetOpen);
-          }
-          if (hook.handlers) {
-            for (const handler of hook.handlers) {
-              hook.removeHandleEvent(handler);
-            }
-          }
         }
       });
     }
@@ -42835,11 +43250,9 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
       parts31 = anatomy31.build();
       machine31 = createMachine({
@@ -42886,7 +43299,6 @@ ${err}`);
         }
       });
       Toggle = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine31, props);
         }
@@ -42905,15 +43317,17 @@ ${err}`);
           }
         }
       };
-      ToggleHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      ToggleHook = createZagLiveHook({
+        key: "toggle",
+        controlledKeys: ["pressed"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const controlled = getBoolean(el, "controlled");
           const pressedFromDataset = getBooleanValue(el, "pressed");
           const defaultPressedFromDataset = getBooleanValue(el, "defaultPressed");
-          const zagToggle = new Toggle(el, __spreadProps(__spreadValues({
+          const toggle = new Toggle(el, __spreadProps(__spreadValues({
             id: el.id
           }, controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true }), {
             disabled: getBoolean(el, "disabled"),
@@ -42929,62 +43343,43 @@ ${err}`);
               });
             }
           }));
-          zagToggle.init();
-          this.zagToggle = zagToggle;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:toggle:set-pressed", (event) => {
+          dom2.add("corex:toggle:set-pressed", (event) => {
             var _a4;
             const p2 = (_a4 = event.detail) == null ? void 0 : _a4.pressed;
-            if (typeof p2 === "boolean") zagToggle.api.setPressed(p2);
+            if (typeof p2 === "boolean") toggle.api.setPressed(p2);
           });
-          domRegistry.add("corex:toggle:toggle-pressed", () => {
-            zagToggle.api.setPressed(!zagToggle.api.pressed);
+          dom2.add("corex:toggle:toggle-pressed", () => {
+            toggle.api.setPressed(!toggle.api.pressed);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("toggle_set_pressed", (payload) => {
+          server.add("toggle_set_pressed", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const pressed = readPayloadPressed(payload);
-            if (typeof pressed === "boolean") zagToggle.api.setPressed(pressed);
+            if (typeof pressed === "boolean") toggle.api.setPressed(pressed);
           });
-          registry.add("toggle_toggle_pressed", (payload) => {
+          server.add("toggle_toggle_pressed", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            zagToggle.api.setPressed(!zagToggle.api.pressed);
+            toggle.api.setPressed(!toggle.api.pressed);
           });
-          registry.add("toggle_pressed", (payload) => {
+          server.add("toggle_pressed", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("toggle_pressed_response", {
+            hook.pushEvent("toggle_pressed_response", {
               id: el.id,
-              value: zagToggle.api.pressed
+              value: toggle.api.pressed
             });
           });
+          return toggle;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["pressed"]);
-        },
-        updated() {
-          var _a4;
-          try {
-            const pressedPatch = readPressedControlledZagUpdate(this.el, this.beforeAttrs);
-            (_a4 = this.zagToggle) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-              id: this.el.id
-            }, pressedPatch), {
-              disabled: getBoolean(this.el, "disabled"),
-              dir: getDir(this.el)
-            }));
-          } finally {
-            this.beforeAttrs = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.zagToggle) == null ? void 0 : _c.destroy();
+        update(hook, toggle) {
+          const pressedPatch = readPressedControlledZagUpdate(hook.el, hook.beforeAttrs);
+          toggle.updateProps(__spreadProps(__spreadValues({
+            id: hook.el.id
+          }, pressedPatch), {
+            disabled: getBoolean(hook.el, "disabled"),
+            dir: getDir(hook.el)
+          }));
         }
-      };
+      });
     }
   });
 
@@ -43138,11 +43533,9 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_BGER3KYP();
-      init_chunk_TKOH2OAC();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_F2ZOUSGC();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy32 = createAnatomy("toggle-group").parts("root", "item");
       parts32 = anatomy32.build();
       getRootId25 = (ctx) => {
@@ -43342,7 +43735,6 @@ ${err}`);
         }
       });
       ToggleGroup = class extends Component {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine32, props);
         }
@@ -43358,8 +43750,7 @@ ${err}`);
           const items = this.el.querySelectorAll(
             '[data-scope="toggle-group"][data-part="item"]'
           );
-          for (let i2 = 0; i2 < items.length; i2++) {
-            const itemEl = items[i2];
+          for (const itemEl of items) {
             const value = getString(itemEl, "value");
             if (!value) continue;
             const disabled = getBoolean(itemEl, "disabled");
@@ -43367,11 +43758,13 @@ ${err}`);
           }
         }
       };
-      ToggleGroupHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+      ToggleGroupHook = createZagLiveHook({
+        key: "toggleGroup",
+        controlledKeys: ["value"],
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const props = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
@@ -43394,56 +43787,37 @@ ${err}`);
             }
           });
           const toggleGroup = new ToggleGroup(el, props);
-          toggleGroup.init();
-          this.toggleGroup = toggleGroup;
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add("corex:toggle-group:set-value", (event) => {
+          dom2.add("corex:toggle-group:set-value", (event) => {
             const { value } = event.detail;
             toggleGroup.api.setValue(value);
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add("toggle-group_set_value", (payload) => {
+          server.add("toggle_group_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             const value = readToggleGroupPayloadValue(payload);
             if (value) toggleGroup.api.setValue(value);
           });
-          registry.add("toggle-group:value", (payload) => {
+          server.add("toggle-group:value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (!canPush()) return;
-            this.pushEvent("toggle-group:value_response", {
+            hook.pushEvent("toggle-group:value_response", {
               id: el.id,
               value: toggleGroup.api.value
             });
           });
+          return toggleGroup;
         },
-        beforeUpdate() {
-          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-        },
-        updated() {
-          var _a4;
-          try {
-            (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)), {
-              deselectable: getBoolean(this.el, "deselectable"),
-              loopFocus: getBoolean(this.el, "loopFocus"),
-              rovingFocus: getBoolean(this.el, "rovingFocus"),
-              disabled: getBoolean(this.el, "disabled"),
-              multiple: getBoolean(this.el, "multiple"),
-              orientation: getString(this.el, "orientation"),
-              dir: getDir(this.el)
-            }));
-          } finally {
-            this.beforeAttrs = void 0;
-          }
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.toggleGroup) == null ? void 0 : _c.destroy();
+        update(hook, toggleGroup) {
+          toggleGroup.updateProps(__spreadProps(__spreadValues({}, readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)), {
+            deselectable: getBoolean(hook.el, "deselectable"),
+            loopFocus: getBoolean(hook.el, "loopFocus"),
+            rovingFocus: getBoolean(hook.el, "rovingFocus"),
+            disabled: getBoolean(hook.el, "disabled"),
+            multiple: getBoolean(hook.el, "multiple"),
+            orientation: getString(hook.el, "orientation"),
+            dir: getDir(hook.el)
+          }));
         }
-      };
+      });
     }
   });
 
@@ -44063,12 +44437,11 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_4AOGROPJ();
-      init_chunk_SGRHPBNS();
-      init_chunk_HZLPIQBD();
-      init_chunk_77HPO22C();
-      init_chunk_LNVRIZ4K();
-      init_chunk_6AOEC32Q();
+      init_chunk_PWP4CBA7();
+      init_chunk_NU3NDRI3();
+      init_chunk_4JICR5HJ();
+      init_chunk_EAQ6WQNO();
+      init_chunk_6L36XW7I();
       anatomy33 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
@@ -44757,7 +45130,6 @@ ${err}`);
           this.treeCollection = treeCollection;
           this.updateProps({ collection: treeCollection });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine33, __spreadValues({}, props));
         }
@@ -44857,15 +45229,16 @@ ${err}`);
         }
       };
       BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
-      TreeViewHook = {
-        mounted() {
+      TreeViewHook = createZagLiveHook({
+        key: "treeView",
+        mount(hook, { dom: dom2, server }) {
           var _a4, _b, _c, _d, _e;
-          const el = this.el;
-          const self2 = this;
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
+          const el = hook.el;
+          const self2 = hook;
+          const pushEvent = hook.pushEvent.bind(hook);
+          const canPush = () => canPushEvent(hook.liveSocket);
           const rootNode = parseRootNode(el);
-          this.lastDataTree = el.dataset.tree;
+          hook.lastDataTree = el.dataset.tree;
           self2.lastExpanded = (_a4 = getStringList(el, "defaultExpandedValue")) != null ? _a4 : [];
           self2.lastSelected = (_b = getStringList(el, "defaultSelectedValue")) != null ? _b : [];
           self2.lastExpandedAttr = readExpandedAttr(el);
@@ -44887,7 +45260,7 @@ ${err}`);
               ) : null;
               const isItem = !!itemEl;
               if (redirectOn && isItem) {
-                performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
+                performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: hook.liveSocket });
               }
               const next2 = (_b2 = details.selectedValue) != null ? _b2 : [];
               const previousSelectedValue = (_c2 = self2.lastSelected) != null ? _c2 : [];
@@ -44942,8 +45315,6 @@ ${err}`);
               });
             }
           });
-          treeView.init();
-          this.treeView = treeView;
           prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
           const hookApi = { el, pushEvent, canPushServer: canPush };
           const emitSelectedValue = createValueEmitter(hookApi, {
@@ -44956,59 +45327,50 @@ ${err}`);
             serverEventName: "tree_view_expanded_value_response",
             domEventName: "tree-view-expanded-value"
           });
-          const domRegistry = createDomEventRegistry(el);
-          this.domRegistry = domRegistry;
-          domRegistry.add(
-            "corex:tree-view:set-expanded-value",
-            (event) => {
-              treeView.api.setExpandedValue(event.detail.value);
-            }
-          );
-          domRegistry.add(
-            "corex:tree-view:set-selected-value",
-            (event) => {
-              treeView.api.setSelectedValue(event.detail.value);
-            }
-          );
-          domRegistry.add("corex:tree-view:value", (event) => {
+          dom2.add("corex:tree-view:set-expanded-value", (event) => {
+            treeView.api.setExpandedValue(event.detail.value);
+          });
+          dom2.add("corex:tree-view:set-selected-value", (event) => {
+            treeView.api.setSelectedValue(event.detail.value);
+          });
+          dom2.add("corex:tree-view:value", (event) => {
             emitSelectedValue(parseRespondTo(event.detail));
           });
-          domRegistry.add("corex:tree-view:expanded-value", (event) => {
+          dom2.add("corex:tree-view:expanded-value", (event) => {
             emitExpandedValue(parseRespondTo(event.detail));
           });
-          const registry = createHookHandleEventRegistry(this);
-          this.handleRegistry = registry;
-          registry.add(
+          server.add(
             "tree_view_set_expanded_value",
             (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
               treeView.api.setExpandedValue(payload.value);
             }
           );
-          registry.add(
+          server.add(
             "tree_view_set_selected_value",
             (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
               treeView.api.setSelectedValue(payload.value);
             }
           );
-          registry.add("tree_view_value", (payload) => {
+          server.add("tree_view_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitSelectedValue(parseRespondTo(payload));
           });
-          registry.add("tree_view_expanded_value", (payload) => {
+          server.add("tree_view_expanded_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             emitExpandedValue(parseRespondTo(payload));
           });
+          return treeView;
         },
-        updated() {
+        update(hook, treeView) {
           var _a4, _b;
-          const { el } = this;
-          const tv = this.treeView;
+          const { el } = hook;
+          const tv = treeView;
           if (!tv) return;
           const rawTree = el.dataset.tree;
-          if (rawTree != null && rawTree !== this.lastDataTree) {
-            this.lastDataTree = rawTree;
+          if (rawTree != null && rawTree !== hook.lastDataTree) {
+            hook.lastDataTree = rawTree;
             tv.replaceRootNode(parseRootNode(el));
           }
           const interaction = readTreeViewInteractionProps(el);
@@ -45016,21 +45378,15 @@ ${err}`);
           const expanded = (_b = getStringList(el, "defaultExpandedValue")) != null ? _b : [];
           const expandedAttr = readExpandedAttr(el);
           const selectedAttr = readSelectedAttr(el);
-          const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
-          const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
-          this.lastExpandedAttr = expandedAttr;
-          this.lastSelectedAttr = selectedAttr;
+          const expandedAttrChanged = expandedAttr !== hook.lastExpandedAttr;
+          const selectedAttrChanged = selectedAttr !== hook.lastSelectedAttr;
+          hook.lastExpandedAttr = expandedAttr;
+          hook.lastSelectedAttr = selectedAttr;
           tv.updateProps(interaction);
           if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
           if (selectedAttrChanged) tv.api.setSelectedValue(selected);
-        },
-        destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.treeView) == null ? void 0 : _c.destroy();
         }
-      };
+      });
     }
   });
 
@@ -45210,7 +45566,7 @@ ${err}`);
           const el = this.el;
           const state2 = this;
           const run = () => __async(this, null, function* () {
-            var _a5, _b, _c;
+            var _a5, _b, _c, _d;
             try {
               const mod2 = yield importFn();
               const real = mod2[exportName];
@@ -45231,9 +45587,13 @@ ${err}`);
                 (_b = real.destroyed) == null ? void 0 : _b.call(this);
                 return;
               }
+              if (state2._pendingBeforeUpdate) {
+                state2._pendingBeforeUpdate = false;
+                (_c = real.beforeUpdate) == null ? void 0 : _c.call(this);
+              }
               if (state2._pendingUpdated) {
                 state2._pendingUpdated = false;
-                (_c = real.updated) == null ? void 0 : _c.call(this);
+                (_d = real.updated) == null ? void 0 : _d.call(this);
               }
             } catch (error) {
               console.error(`Lazy hook: failed to load "${exportName}"`, error);
@@ -45273,8 +45633,13 @@ ${err}`);
         (_b = (_a5 = this._realHook) == null ? void 0 : _a5.reconnected) == null ? void 0 : _b.call(this);
       },
       beforeUpdate() {
-        var _a5, _b;
-        (_b = (_a5 = this._realHook) == null ? void 0 : _a5.beforeUpdate) == null ? void 0 : _b.call(this);
+        var _a5;
+        const state2 = this;
+        if ((_a5 = state2._realHook) == null ? void 0 : _a5.beforeUpdate) {
+          state2._realHook.beforeUpdate.call(this);
+        } else if (state2._mountPromise) {
+          state2._pendingBeforeUpdate = true;
+        }
       }
     };
   }

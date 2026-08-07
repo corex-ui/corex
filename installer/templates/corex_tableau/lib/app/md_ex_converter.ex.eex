@@ -1,5 +1,11 @@
 defmodule <%= @app_module %>.MDExConverter do
+  @moduledoc false
+
+  alias <%= @app_module %>.Markdown.CodeBlocks
+
   def convert(_filepath, _front_matter, body, %{site: %{config: config}}) do
-    MDEx.to_html!(body, config.markdown[:mdex])
+    body
+    |> MDEx.to_html!(config.markdown[:mdex])
+    |> CodeBlocks.transform()
   end
 end

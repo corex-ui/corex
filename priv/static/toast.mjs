@@ -1,10 +1,10 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-6MIECCPA.mjs";
+} from "./chunks/chunk-V2LDXRRO.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-CBUVYVIR.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   AnimationFrame,
   Component,
@@ -17,6 +17,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   ensureProps,
   generateId,
@@ -29,9 +30,9 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
   "group",
   "root",
@@ -42,7 +43,7 @@ var anatomy = createAnatomy("toast").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.dom.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.dom.mjs
 var getRegionId = (placement) => `toast-group:${placement}`;
 var getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
 var getRootId = (ctx) => `toast:${ctx.id}`;
@@ -51,7 +52,7 @@ var getTitleId = (ctx) => `toast:${ctx.id}:title`;
 var getDescriptionId = (ctx) => `toast:${ctx.id}:description`;
 var getCloseTriggerId = (ctx) => `toast${ctx.id}:close`;
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.utils.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.utils.mjs
 var defaultTimeouts = {
   info: 5e3,
   error: 5e3,
@@ -223,7 +224,7 @@ function getGhostAfterStyle() {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast-group.connect.mjs
 function groupConnect(service, normalize) {
   const { context, prop, send, refs, computed } = service;
   return {
@@ -282,7 +283,7 @@ function groupConnect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast-group.machine.mjs
 var { guards, createMachine: createMachine2 } = setup();
 var { and } = guards;
 var groupMachine = createMachine2({
@@ -532,7 +533,7 @@ var groupMachine = createMachine2({
   }
 });
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope, context, computed } = service;
   const translations = prop("translations");
@@ -647,7 +648,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -815,10 +816,7 @@ var machine = createMachine({
           const rootEl = getRootEl(scope);
           if (!rootEl) return;
           const syncHeight = () => {
-            const originalHeight = rootEl.style.height;
-            rootEl.style.height = "auto";
-            const height = rootEl.getBoundingClientRect().height;
-            rootEl.style.height = originalHeight;
+            const height = measureLayoutHeight(rootEl);
             const item = { id: prop("id"), height };
             setHeight(prop("parent"), item);
           };
@@ -848,10 +846,7 @@ var machine = createMachine({
         queueMicrotask(() => {
           const rootEl = getRootEl(scope);
           if (!rootEl) return;
-          const originalHeight = rootEl.style.height;
-          rootEl.style.height = "auto";
-          const height = rootEl.getBoundingClientRect().height;
-          rootEl.style.height = originalHeight;
+          const height = measureLayoutHeight(rootEl);
           context.set("initialHeight", height);
           const item = { id: prop("id"), height };
           setHeight(prop("parent"), item);
@@ -888,6 +883,13 @@ var machine = createMachine({
     }
   }
 });
+function measureLayoutHeight(el) {
+  const prevHeight = el.style.height;
+  el.style.height = "auto";
+  const height = el.offsetHeight;
+  el.style.height = prevHeight;
+  return height;
+}
 function setHeight(parent, item) {
   const { id, height } = item;
   parent.context.set("heights", (prev) => {
@@ -900,7 +902,7 @@ function setHeight(parent, item) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.store.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.store.mjs
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
 };
@@ -1143,7 +1145,7 @@ var isHttpResponse = (data) => {
   return data && typeof data === "object" && "ok" in data && typeof data.ok === "boolean" && "status" in data && typeof data.status === "number";
 };
 
-// ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/index.mjs
 var group = {
   connect: groupConnect,
   machine: groupMachine
@@ -1175,12 +1177,11 @@ var ToastItem = class extends Component {
     this.hadAction = Boolean(props.action?.label);
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
-    this.el.classList.add("toast-item");
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
-      <div data-scope="toast" data-part="progressbar"></div>
 
       <div data-scope="toast" data-part="content">
+        <div data-scope="toast" data-part="progressbar"></div>
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
@@ -1205,13 +1206,10 @@ var ToastItem = class extends Component {
       loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')
     };
   }
-  updateProps = (props) => {
+  updateProps(props) {
     Object.assign(this.latestProps, props);
-    super.updateProps(
-      props
-    );
-  };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return super.updateProps(props);
+  }
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1299,6 +1297,8 @@ var ToastItem = class extends Component {
     }
   }
   destroy = () => {
+    this.unsubscribe?.();
+    this.unsubscribe = void 0;
     this.clearSpreadPropsCleanups();
     this.machine.stop();
     this.el.remove();
@@ -1319,7 +1319,6 @@ var ToastGroup = class extends Component {
       return g;
     })();
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(group.machine, props);
   }
@@ -1334,7 +1333,6 @@ var ToastGroup = class extends Component {
       let item = this.toastComponents.get(toastData.id);
       if (!item) {
         const el = document.createElement("div");
-        el.classList.add("toast-item");
         el.setAttribute("data-scope", "toast");
         el.setAttribute("data-part", "root");
         this.groupEl.appendChild(el);
@@ -1348,11 +1346,15 @@ var ToastGroup = class extends Component {
       } else {
         item.duration = toastData.duration;
         item.showLoading = toastData.meta?.loading === true;
-        item.updateProps({
+        const changed = item.updateProps({
           ...toastData,
           parent: this.machine.service,
           index
         });
+        if (!changed) {
+          item.api = item.initApi();
+          item.render();
+        }
       }
     });
     for (const [id, comp] of this.toastComponents) {
@@ -1375,13 +1377,18 @@ var ToastGroup = class extends Component {
 };
 function createToastGroup(container, options) {
   const groupId = options?.id ?? container.id;
+  if (toastGroups.has(groupId)) {
+    disposeToastGroup(groupId);
+  }
   const store = options?.store ?? createToastStore({
-    placement: options?.placement ?? "bottom",
+    placement: options?.placement ?? "bottom-end",
     overlap: options?.overlap,
     max: options?.max,
     gap: options?.gap,
-    offsets: options?.offsets,
-    pauseOnPageIdle: options?.pauseOnPageIdle
+    offsets: options?.offsets ?? "1rem",
+    pauseOnPageIdle: options?.pauseOnPageIdle,
+    // Match Zag shared toast.css open transitions (400ms height/translate/scale).
+    removeDelay: options?.removeDelay ?? 400
   });
   const group2 = new ToastGroup(container, { id: groupId, store, dir: getDir(container) });
   group2.init();
@@ -1454,6 +1461,62 @@ function buildZagAction(spec, rt) {
   return action;
 }
 var loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
+var ToastGroupHandle = class {
+  constructor(el, options) {
+    this.el = el;
+    this.options = options;
+  }
+  init() {
+    createToastGroup(this.el, this.options);
+    this.el.setAttribute("data-ready", "");
+    this.createFlashToasts();
+  }
+  destroy() {
+    disposeToastGroup(this.options.id);
+  }
+  createFlashToasts() {
+    const store = getToastStore(this.options.id);
+    if (!store) return;
+    for (const { type, body, title, duration, fallbackTitle } of readFlashToasts(this.el)) {
+      try {
+        store.create({
+          title: title || fallbackTitle,
+          description: body,
+          type,
+          id: generateId(void 0, "toast"),
+          duration: parseToastDuration(duration ?? void 0)
+        });
+      } catch (error) {
+        console.error(`Failed to create flash ${type} toast:`, error);
+      }
+    }
+  }
+};
+function readFlashToasts(el) {
+  const specs = [
+    {
+      type: "info",
+      fallbackTitle: "Success",
+      title: el.getAttribute("data-flash-info-title"),
+      duration: el.getAttribute("data-flash-info-duration")
+    },
+    {
+      type: "error",
+      fallbackTitle: "Error",
+      title: el.getAttribute("data-flash-error-title"),
+      duration: el.getAttribute("data-flash-error-duration")
+    }
+  ];
+  return specs.flatMap((spec) => {
+    const body = el.getAttribute(`data-flash-${spec.type}`);
+    return body ? [{ ...spec, body }] : [];
+  });
+}
+function parseToastDuration(duration) {
+  if (duration === "Infinity" || duration === Infinity) return Infinity;
+  if (typeof duration === "string") return parseInt(duration, 10) || void 0;
+  return duration;
+}
 function buildRuntime(self) {
   return {
     pushEvent: (event, payload) => {
@@ -1465,13 +1528,14 @@ function buildRuntime(self) {
     redirectCtx: { liveSocket: self.liveSocket }
   };
 }
-var ToastHook = {
-  mounted() {
-    const el = this.el;
+var ToastHook = createZagLiveHook({
+  key: "toastGroup",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     if (!el.id) {
       el.id = generateId(el, "toast");
     }
-    this.groupId = el.id;
+    hook.groupId = el.id;
     const parseOffsets = (offsetsString) => {
       if (!offsetsString) return void 0;
       try {
@@ -1480,15 +1544,7 @@ var ToastHook = {
         return offsetsString;
       }
     };
-    const parseDuration = (duration) => {
-      if (duration === "Infinity" || duration === Infinity) {
-        return Infinity;
-      }
-      if (typeof duration === "string") {
-        return parseInt(duration, 10) || void 0;
-      }
-      return duration;
-    };
+    const parseDuration = parseToastDuration;
     const parsePriority = (raw) => {
       if (raw === void 0 || raw === null) return void 0;
       const n = typeof raw === "string" ? parseInt(raw, 10) : raw;
@@ -1503,8 +1559,8 @@ var ToastHook = {
       "bottom",
       "bottom-end"
     ]) ?? "bottom-end";
-    createToastGroup(el, {
-      id: this.groupId,
+    const group2 = new ToastGroupHandle(el, {
+      id: hook.groupId,
       placement,
       overlap: getBoolean(el, "overlap"),
       max: getNumber(el, "max"),
@@ -1512,41 +1568,7 @@ var ToastHook = {
       offsets: parseOffsets(getString(el, "offset")),
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
     });
-    el.setAttribute("data-ready", "");
-    const store = getToastStore(this.groupId);
-    const flashInfo = el.getAttribute("data-flash-info");
-    const flashInfoTitle = el.getAttribute("data-flash-info-title");
-    const flashError = el.getAttribute("data-flash-error");
-    const flashErrorTitle = el.getAttribute("data-flash-error-title");
-    const flashInfoDuration = el.getAttribute("data-flash-info-duration");
-    const flashErrorDuration = el.getAttribute("data-flash-error-duration");
-    if (store && flashInfo) {
-      try {
-        store.create({
-          title: flashInfoTitle || "Success",
-          description: flashInfo,
-          type: "info",
-          id: generateId(void 0, "toast"),
-          duration: parseDuration(flashInfoDuration ?? void 0)
-        });
-      } catch (error) {
-        console.error("Failed to create flash info toast:", error);
-      }
-    }
-    if (store && flashError) {
-      try {
-        store.create({
-          title: flashErrorTitle || "Error",
-          description: flashError,
-          type: "error",
-          id: generateId(void 0, "toast"),
-          duration: parseDuration(flashErrorDuration ?? void 0)
-        });
-      } catch (error) {
-        console.error("Failed to create flash error toast:", error);
-      }
-    }
-    const rt = buildRuntime(this);
+    const rt = buildRuntime(hook);
     const buildCreateOptions = (payload, trusted) => {
       const spec = trusted ? parseServerActionSpec(payload.action) : parseDomActionSpec(payload.action);
       const base = {
@@ -1585,10 +1607,10 @@ var ToastHook = {
       if (pr !== void 0) patch.priority = pr;
       return patch;
     };
-    const matchesGroup = (payload) => typeof payload.groupId === "string" && payload.groupId === this.groupId;
+    const matchesGroup = (payload) => typeof payload.group_id === "string" && payload.group_id === hook.groupId;
     const handleDismissPayload = (payload) => {
       if (!matchesGroup(payload)) return;
-      const st = getToastStore(payload.groupId);
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
         st.dismiss(payload.id);
@@ -1598,7 +1620,7 @@ var ToastHook = {
     };
     const handleRemovePayload = (payload) => {
       if (!matchesGroup(payload)) return;
-      const st = getToastStore(payload.groupId);
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
         st.remove(payload.id);
@@ -1606,86 +1628,49 @@ var ToastHook = {
         console.error("Failed to remove toast:", error);
       }
     };
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("toast-create", (payload) => {
-        if (!matchesGroup(payload)) return;
-        const st = getToastStore(payload.groupId);
-        if (!st) return;
-        try {
-          st.create(buildCreateOptions(payload, true));
-        } catch (error) {
-          console.error("Failed to create toast:", error);
-        }
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("toast-update", (payload) => {
-        if (!matchesGroup(payload) || !payload.id) return;
-        const st = getToastStore(payload.groupId);
-        if (!st) return;
-        try {
-          st.update(payload.id, buildUpdatePatch(payload, true));
-        } catch (error) {
-          console.error("Failed to update toast:", error);
-        }
-      })
-    );
-    this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
-    this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
-    const onToastCreate = (event) => {
-      const { detail } = event;
-      if (!matchesGroup(detail)) return;
-      const st = getToastStore(detail.groupId);
+    const createToast = (payload, trusted) => {
+      if (!matchesGroup(payload)) return;
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
-        st.create(buildCreateOptions(detail, false));
+        st.create(buildCreateOptions(payload, trusted));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
     };
-    const onToastUpdate = (event) => {
-      const { detail } = event;
-      if (!matchesGroup(detail) || !detail.id) return;
-      const st = getToastStore(detail.groupId);
+    const updateToast = (payload, trusted) => {
+      if (!matchesGroup(payload) || !payload.id) return;
+      const st = getToastStore(payload.group_id);
       if (!st) return;
       try {
-        st.update(detail.id, buildUpdatePatch(detail, false));
+        st.update(payload.id, buildUpdatePatch(payload, trusted));
       } catch (error) {
         console.error("Failed to update toast:", error);
       }
     };
-    const onToastDismiss = (event) => {
-      handleDismissPayload(event.detail);
-    };
-    const onToastRemove = (event) => {
-      handleRemovePayload(event.detail);
-    };
-    const domListeners = [];
-    const addDom = (name, fn) => {
-      el.addEventListener(name, fn);
-      domListeners.push({ el, name, fn });
-    };
-    this.domListeners = domListeners;
-    addDom("corex:toast:create", onToastCreate);
-    addDom("corex:toast:update", onToastUpdate);
-    addDom("corex:toast:dismiss", onToastDismiss);
-    addDom("corex:toast:remove", onToastRemove);
-  },
-  destroyed() {
-    for (const { el, name, fn } of this.domListeners ?? []) {
-      el.removeEventListener(name, fn);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    if (this.groupId) {
-      disposeToastGroup(this.groupId);
-    }
+    server.add("toast_create", (payload) => createToast(payload, true));
+    server.add("toast_update", (payload) => updateToast(payload, true));
+    server.add("toast_dismiss", handleDismissPayload);
+    server.add("toast_remove", handleRemovePayload);
+    dom.add(
+      "corex:toast:create",
+      (event) => createToast(event.detail, false)
+    );
+    dom.add(
+      "corex:toast:update",
+      (event) => updateToast(event.detail, false)
+    );
+    dom.add(
+      "corex:toast:dismiss",
+      (event) => handleDismissPayload(event.detail)
+    );
+    dom.add(
+      "corex:toast:remove",
+      (event) => handleRemovePayload(event.detail)
+    );
+    return group2;
   }
-};
+});
 export {
   ToastHook as Toast,
   parseActionSpec,

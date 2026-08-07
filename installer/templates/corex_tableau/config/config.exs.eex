@@ -17,16 +17,19 @@ config :<%= @otp_app %>, :mcp_enabled, false
 config :<%= @otp_app %>, :mcp_port, 4004
 
 config :esbuild,
-  version: "0.25.5",
+  version: "0.25.12",
   default: [
     args: ~w(js/site.js --bundle --format=esm --splitting --target=es2022 --outdir=../_site/js),
     cd: Path.expand("../assets", __DIR__),
     env: %{
       "NODE_PATH" =>
-        Enum.join([
-          Path.expand("../deps", __DIR__),
-          Path.expand("../node_modules", __DIR__)
-        ], ":")
+        Enum.join(
+          [
+            Path.expand("../deps", __DIR__),
+            Path.expand("../node_modules", __DIR__)
+          ],
+          ":"
+        )
     }
   ]
 
@@ -53,13 +56,13 @@ config :tableau, :config,
     mdex: [
       extension: [
         table: true,
-        header_ids: "",
+        header_id_prefix: "",
         tasklist: true,
         strikethrough: true,
         autolink: true,
         footnotes: true
       ],
-      render: [unsafe: true],
+      render: [unsafe: true], # trusted authors only — sanitize or set unsafe: false for user content
       syntax_highlight: nil
     ]
   ]
@@ -68,7 +71,13 @@ config :tableau, Tableau.PageExtension, enabled: true
 config :tableau, Tableau.PostExtension, enabled: true
 config :tableau, Tableau.DataExtension, enabled: true
 config :tableau, Tableau.SitemapExtension, enabled: true
-
+<%= unless @lang do %>
+config :tableau, Tableau.TagExtension,
+  enabled: true,
+  layout: <%= @app_module %>.TagLayout,
+  permalink: "/tags",
+  tags: %{}
+<% end %>
 config :tableau, Tableau.RSSExtension,
   enabled: true,
   title: "<%= @app_module %>",
@@ -76,12 +85,16 @@ config :tableau, Tableau.RSSExtension,
 <%= if @design do %>
 config :corex_design,
   output: "assets/corex",
-  default_theme: :neo,
+  default_theme: :<%= @default_theme %>,
   default_mode: :light,
-  themes: nil,
+  themes: <%= "[" <> Enum.map_join(@themes, ", ", &":#{&1}") <> "]" %>,
+  modes: [:light, :dark],
   scales: [],
-  components: <%= inspect(@components) %>,
-  semantics: nil
+  components: [
+<%= Enum.map_join(@components, ",\n", &("    " <> inspect(&1))) %>
+  ],
+  semantics: [:accent, :brand, :alert]<%= if @a11y do %>,
+  accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]<% end %>
 <% end %>
 config :phoenix, json_library: Jason
 <%= if @lang do %>

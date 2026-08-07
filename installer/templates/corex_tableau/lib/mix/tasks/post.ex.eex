@@ -32,7 +32,7 @@ defmodule Mix.Tasks.<%= @app_module %>.Gen.Post do
     layout: <%= @app_module %>.PostLayout
     title: "#{post_title}"
     date: #{post_date} #{post_time}
-    permalink: /blog/:title/
+    permalink: <%= if @lang do %>/en/blog/:title/<% else %>/blog/:title/<% end %>
     ---
     """
 

@@ -46,10 +46,10 @@ Full deps / `locale.js` / `Module.create` paste lives in [Tableau: optional loca
   <:label class="sr-only">{~t"Language"}</:label>
   <:item :let={item}>{item.label}</:item>
   <:trigger>
-    <.heroicon name="hero-language" class="icon" />
+    <.heroicon name="hero-language" />
   </:trigger>
   <:item_indicator>
-    <.heroicon name="hero-check" class="icon" />
+    <.heroicon name="hero-check" />
   </:item_indicator>
 </.select>
 ```

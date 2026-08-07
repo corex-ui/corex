@@ -76,7 +76,8 @@ defmodule Corex.TimerTest do
           %{}
         )
 
-      assert html =~ "timer-skeleton"
+      assert html =~ ~S(id="timer-sk")
+      assert html =~ ~S(data-part="action-trigger")
       assert html =~ ~S(data-timer-segment)
     end
   end

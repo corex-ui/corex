@@ -32,6 +32,10 @@ e2e-*.tar
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
 
+# Ignore fingerprinted digests next to canonical static sources.
+/priv/static/**/*-[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9].*
+/priv/static/**/*.gz
+
 # In case you use Node.js/npm, you want to ignore these.
 npm-debug.log
 

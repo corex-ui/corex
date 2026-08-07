@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/date-picker";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
 type ZagDatePickerTranslations = NonNullable<Props["translations"]>;
 
@@ -122,9 +122,10 @@ export function applyInputAriaIfNeeded(
   }
 }
 
-export class DatePicker extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class DatePicker extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -347,70 +348,77 @@ export class DatePicker extends Component<Props, Api> {
     );
     if (content) this.spreadProps(content, this.api.getContentProps());
 
-    if (this.api.open) {
-      const dayView = this.getDayView();
-      const monthView = this.getMonthView();
-      const yearView = this.getYearView();
-      if (dayView) dayView.hidden = this.api.view !== "day";
-      if (monthView) monthView.hidden = this.api.view !== "month";
-      if (yearView) yearView.hidden = this.api.view !== "year";
+    const dayView = this.getDayView();
+    const monthView = this.getMonthView();
+    const yearView = this.getYearView();
 
-      if (this.api.view === "day" && dayView) {
-        const viewControl = dayView.querySelector<HTMLElement>('[data-part="view-control"]');
-        if (viewControl)
-          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-        const prevTrigger = dayView.querySelector<HTMLElement>('[data-part="prev-trigger"]');
-        if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-        const viewTrigger = dayView.querySelector<HTMLElement>('[data-part="view-trigger"]');
-        if (viewTrigger) {
-          this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
-          viewTrigger.textContent = this.api.visibleRangeText.start;
-        }
-        const nextTrigger = dayView.querySelector<HTMLElement>('[data-part="next-trigger"]');
-        if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
-        const table = dayView.querySelector<HTMLElement>("table");
-        if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
-        const thead = dayView.querySelector<HTMLElement>("thead");
-        if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
-        this.renderDayTableHeader();
-        this.renderDayTableBody();
-      } else if (this.api.view === "month" && monthView) {
-        const viewControl = monthView.querySelector<HTMLElement>('[data-part="view-control"]');
-        if (viewControl)
-          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
-        const prevTrigger = monthView.querySelector<HTMLElement>('[data-part="prev-trigger"]');
-        if (prevTrigger)
-          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
-        const viewTrigger = monthView.querySelector<HTMLElement>('[data-part="view-trigger"]');
-        if (viewTrigger) {
-          this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
-          viewTrigger.textContent = String(this.api.visibleRange.start.year);
-        }
-        const nextTrigger = monthView.querySelector<HTMLElement>('[data-part="next-trigger"]');
-        if (nextTrigger)
-          this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
-        const table = monthView.querySelector<HTMLElement>("table");
-        if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
-        this.renderMonthTableBody();
-      } else if (this.api.view === "year" && yearView) {
-        const viewControl = yearView.querySelector<HTMLElement>('[data-part="view-control"]');
-        if (viewControl)
-          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-        const prevTrigger = yearView.querySelector<HTMLElement>('[data-part="prev-trigger"]');
-        if (prevTrigger)
-          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
-        const decadeText = yearView.querySelector<HTMLElement>('[data-part="decade"]');
-        if (decadeText) {
-          const decade = this.api.getDecade();
-          decadeText.textContent = `${decade.start} - ${decade.end}`;
-        }
-        const nextTrigger = yearView.querySelector<HTMLElement>('[data-part="next-trigger"]');
-        if (nextTrigger)
-          this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
-        const table = yearView.querySelector<HTMLElement>("table");
-        if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
-        this.renderYearTableBody();
+    // When closed, hide all views so view-controls cannot flash after select.
+    if (!this.api.open) {
+      if (dayView) dayView.hidden = true;
+      if (monthView) monthView.hidden = true;
+      if (yearView) yearView.hidden = true;
+      return;
+    }
+
+    if (dayView) dayView.hidden = this.api.view !== "day";
+    if (monthView) monthView.hidden = this.api.view !== "month";
+    if (yearView) yearView.hidden = this.api.view !== "year";
+
+    if (this.api.view === "day" && dayView) {
+      const viewControl = dayView.querySelector<HTMLElement>('[data-part="view-control"]');
+      if (viewControl)
+        this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+      const prevTrigger = dayView.querySelector<HTMLElement>('[data-part="prev-trigger"]');
+      if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+      const viewTrigger = dayView.querySelector<HTMLElement>('[data-part="view-trigger"]');
+      if (viewTrigger) {
+        this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
+        viewTrigger.textContent = this.api.visibleRangeText.start;
       }
+      const nextTrigger = dayView.querySelector<HTMLElement>('[data-part="next-trigger"]');
+      if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+      const table = dayView.querySelector<HTMLElement>("table");
+      if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+      const thead = dayView.querySelector<HTMLElement>("thead");
+      if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
+      this.renderDayTableHeader();
+      this.renderDayTableBody();
+    } else if (this.api.view === "month" && monthView) {
+      const viewControl = monthView.querySelector<HTMLElement>('[data-part="view-control"]');
+      if (viewControl)
+        this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
+      const prevTrigger = monthView.querySelector<HTMLElement>('[data-part="prev-trigger"]');
+      if (prevTrigger)
+        this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
+      const viewTrigger = monthView.querySelector<HTMLElement>('[data-part="view-trigger"]');
+      if (viewTrigger) {
+        this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
+        viewTrigger.textContent = String(this.api.visibleRange.start.year);
+      }
+      const nextTrigger = monthView.querySelector<HTMLElement>('[data-part="next-trigger"]');
+      if (nextTrigger)
+        this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
+      const table = monthView.querySelector<HTMLElement>("table");
+      if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
+      this.renderMonthTableBody();
+    } else if (this.api.view === "year" && yearView) {
+      const viewControl = yearView.querySelector<HTMLElement>('[data-part="view-control"]');
+      if (viewControl)
+        this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+      const prevTrigger = yearView.querySelector<HTMLElement>('[data-part="prev-trigger"]');
+      if (prevTrigger)
+        this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
+      const decadeText = yearView.querySelector<HTMLElement>('[data-part="decade"]');
+      if (decadeText) {
+        const decade = this.api.getDecade();
+        decadeText.textContent = `${decade.start} - ${decade.end}`;
+      }
+      const nextTrigger = yearView.querySelector<HTMLElement>('[data-part="next-trigger"]');
+      if (nextTrigger)
+        this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
+      const table = yearView.querySelector<HTMLElement>("table");
+      if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
+      this.renderYearTableBody();
     }
   }
 }

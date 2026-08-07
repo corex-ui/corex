@@ -1,52 +1,49 @@
 defmodule Corex.Design.Config.Resolved do
-  @moduledoc false
+  @moduledoc """
+  The `config :corex_design` entry after defaults are applied.
+  """
 
-  alias Corex.Design.ThemeDefinition.Resolved, as: ThemeResolved
+  alias Corex.Design.Keys
 
-  def normalize(config) when is_list(config), do: resolved_options(config)
-  def normalize(config) when is_map(config), do: resolved_options(config)
+  @type t :: %__MODULE__{
+          output: String.t() | nil,
+          default_theme: atom(),
+          default_mode: atom(),
+          themes: term() | nil,
+          modes: term() | nil,
+          scales: keyword(),
+          components: [String.t()] | nil,
+          semantics: [atom() | String.t()] | nil,
+          accessibility: false | true | [atom()]
+        }
 
-  def resolved_options(config \\ Corex.Design.design_config()) do
-    config = normalize_input(config)
+  defstruct output: nil,
+            default_theme: :uno,
+            default_mode: :light,
+            themes: nil,
+            modes: nil,
+            scales: [],
+            components: nil,
+            semantics: nil,
+            accessibility: false
 
-    case Map.get(config, :theme) do
-      module when is_atom(module) and module != nil ->
-        if theme_module_ready?(module) do
-          module
-          |> ThemeResolved.to_flat_config()
-          |> ThemeResolved.to_options_keyword()
-        else
-          flatten_options(config)
-        end
+  @doc """
+  Builds the resolved config from a keyword list or map.
+  """
+  @spec new(keyword() | map()) :: t()
+  def new(config) when is_list(config), do: config |> Map.new() |> new()
 
-      _ ->
-        flatten_options(config)
-    end
+  def new(config) when is_map(config) do
+    %__MODULE__{
+      output: Keys.get(config, :output),
+      default_theme: Keys.get(config, :default_theme, :uno),
+      default_mode: Keys.get(config, :default_mode, :light),
+      themes: Keys.get(config, :themes),
+      modes: Keys.get(config, :modes),
+      scales: Keys.get(config, :scales) || [],
+      components: Keys.get(config, :components),
+      semantics: Keys.get(config, :semantics),
+      accessibility: Keys.get(config, :accessibility, false)
+    }
   end
-
-  def theme_module_ready?(module) when is_atom(module) and module != nil do
-    Code.ensure_loaded?(module) and
-      function_exported?(module, :output, 0) and
-      function_exported?(module, :scales, 0) and
-      function_exported?(module, :themes, 0)
-  end
-
-  defp normalize_input(list) when is_list(list), do: Map.new(list)
-  defp normalize_input(map) when is_map(map), do: map
-
-  defp flatten_options(config) do
-    [
-      output: Map.get(config, :output),
-      default_theme: Map.get(config, :default_theme, :neo),
-      default_mode: Map.get(config, :default_mode, :light),
-      themes: Map.get(config, :themes),
-      scales: normalize_scales(Map.get(config, :scales, [])),
-      components: Map.get(config, :components),
-      semantics: Map.get(config, :semantics)
-    ]
-  end
-
-  defp normalize_scales(list) when is_list(list), do: list
-  defp normalize_scales(map) when is_map(map), do: Map.to_list(map)
-  defp normalize_scales(_), do: []
 end

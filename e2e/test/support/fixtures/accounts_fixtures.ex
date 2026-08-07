@@ -12,7 +12,7 @@ defmodule E2e.AccountsFixtures do
       attrs
       |> Enum.into(%{
         birth_date: ~D[1990-01-15],
-        country: "some country",
+        country: "fra",
         name: "some name",
         signature: ["M0,0L1,1Z"],
         terms: true,

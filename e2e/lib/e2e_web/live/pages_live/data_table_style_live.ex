@@ -13,7 +13,18 @@ defmodule E2eWeb.DataTableStyleLive do
     %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
     %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"},
     %{id: 4, name: "Diana", email: "diana@example.com", role: "Manager", status: "Active"},
-    %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"}
+    %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"},
+    %{id: 6, name: "Frank", email: "frank@example.com", role: "User", status: "Active"},
+    %{id: 7, name: "Grace", email: "grace@example.com", role: "Manager", status: "Active"},
+    %{id: 8, name: "Henry", email: "henry@example.com", role: "User", status: "Inactive"},
+    %{id: 9, name: "Ivy", email: "ivy@example.com", role: "Admin", status: "Active"},
+    %{id: 10, name: "Jack", email: "jack@example.com", role: "User", status: "Active"},
+    %{id: 11, name: "Kate", email: "kate@example.com", role: "Manager", status: "Inactive"},
+    %{id: 12, name: "Leo", email: "leo@example.com", role: "User", status: "Active"},
+    %{id: 13, name: "Mia", email: "mia@example.com", role: "Admin", status: "Active"},
+    %{id: 14, name: "Noah", email: "noah@example.com", role: "User", status: "Inactive"},
+    %{id: 15, name: "Olivia", email: "olivia@example.com", role: "Manager", status: "Active"},
+    %{id: 16, name: "Paul", email: "paul@example.com", role: "User", status: "Active"}
   ]
 
   @color_variants [
@@ -42,7 +53,8 @@ defmodule E2eWeb.DataTableStyleLive do
      |> assign(:style_selected, [])
      |> assign(:color_variants, @color_variants)
      |> assign(:size_variants, @size_variants)
-     |> assign(:max_width_variants, DemoScales.max_width_variants("data-table"))}
+     |> assign(:max_width_variants, DemoScales.max_width_variants("data-table"))
+     |> assign(:max_height_variants, DemoScales.max_height_variants("data-table"))}
   end
 
   @impl true
@@ -95,7 +107,7 @@ defmodule E2eWeb.DataTableStyleLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_color_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-space-lg w-full">
               <.style_table
                 :for={{modifier, id} <- @color_variants}
                 id={id}
@@ -114,7 +126,7 @@ defmodule E2eWeb.DataTableStyleLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_size_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-space-lg w-full">
               <.style_table
                 :for={{modifier, id} <- @size_variants}
                 id={id}
@@ -134,10 +146,31 @@ defmodule E2eWeb.DataTableStyleLive do
         >
           <:preview>
             <div {DemoScales.preview_scroll_attrs()}>
-              <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+              <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
                 <p class="typo ui-size-sm font-medium">{variant.label}</p>
                 <.style_table
                   id={"data-table-styling-max-w-#{variant.id}"}
+                  class={DemoScales.join_modifiers("data-table", variant.modifier)}
+                  rows={@style_rows}
+                  data_table_sort={@data_table_sort}
+                  selected={@style_selected}
+                />
+              </div>
+            </div>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="data-table-styling-max-height"
+          title="Max height"
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_height_code_tabs()}
+        >
+          <:preview>
+            <div {DemoScales.preview_scroll_attrs()}>
+              <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
+                <p class="typo ui-size-sm font-medium">{variant.label}</p>
+                <.style_table
+                  id={"data-table-styling-max-h-#{variant.id}"}
                   class={DemoScales.join_modifiers("data-table", variant.modifier)}
                   rows={@style_rows}
                   data_table_sort={@data_table_sort}

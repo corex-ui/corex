@@ -1,9 +1,5 @@
 defmodule Mix.Tasks.Corex.Design.Code do
-  use Mix.Task
-
   @shortdoc "Generate and copy Makeup syntax highlighting stylesheet to your project"
-
-  @default_path "assets/css/code_highlight.css"
 
   @moduledoc """
   Generates the full Makeup syntax highlighting stylesheet and writes it to your project.
@@ -32,6 +28,10 @@ defmodule Mix.Tasks.Corex.Design.Code do
 
   Works with or without Corex Design. For unstyled projects, import only the highlight file.
   """
+
+  use Mix.Task
+
+  @default_path "assets/css/code_highlight.css"
 
   @impl Mix.Task
   def run(args) do

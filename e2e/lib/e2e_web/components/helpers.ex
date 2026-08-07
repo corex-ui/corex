@@ -713,9 +713,9 @@ defmodule E2eWeb.Helpers do
 
   def site_nav_menu_items do
     Corex.Tree.new([
+      menu_item(~t"Components", ~p"/accordion/anatomy", ~p"/accordion/anatomy"),
       menu_item(~t"Showcase", ~p"/showcases", ~p"/showcases"),
-      menu_item(~t"Blog", ~p"/blog", ~p"/blog"),
-      menu_item(~t"Hex Doc", @hexdocs_url, @hexdocs_url, new_tab: true, redirect: :href)
+      menu_item(~t"Blog", ~p"/blog", ~p"/blog")
     ])
   end
 end

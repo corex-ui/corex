@@ -162,17 +162,17 @@ defmodule Corex.TagsInput do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input ui-accent ui-size-lg` or `tags-input ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and tag chips. Variant modifiers control input surface treatment. Default is subtle; add `tags-input ui-solid` for a filled typing field.
+  Semantic modifiers set palette variables for focus and accent ink on the typing field and tag chips. The typing surface stays the shared `ui-input` treatment. Tags input has no variant axis.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for tags input ink and fill. Does not change surface treatment by itself.
+  Palette for focus and accent ink on the typing field and tag chips.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -182,15 +182,6 @@ defmodule Corex.TagsInput do
   | Alert | `tags-input ui-alert` |
   | Info | `tags-input ui-info` |
   | Success | `tags-input ui-success` |
-
-  ### Variant
-
-  Visual treatment of the typing input surface. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `tags-input` or `tags-input ui-accent` |
-  | Solid | `tags-input ui-accent ui-solid` |
 
   ### Size
 
@@ -208,9 +199,11 @@ defmodule Corex.TagsInput do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, :api
+
   import Corex.Api.Doc
 
-  import Corex.Helpers, only: [validate_value!: 1]
+  import Corex.Component, only: [form_control_attrs: 1]
 
   alias Corex.Selectors
 
@@ -229,38 +222,29 @@ defmodule Corex.TagsInput do
   }
 
   alias Corex.TagsInput.Connect
+
   alias Corex.TagsInput.Translation, as: TagsInputTranslation
+
   alias Phoenix.HTML.Form
+
   alias Phoenix.LiveView
+
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string, required: false)
+  form_control_attrs(
+    except: [:controlled],
+    docs: [
+      field:
+        "Form field; sets id, name, form, value from the field value, and errors when used_input?/1"
+    ]
+  )
 
   attr(:value, :list,
     default: [],
     doc: "Initial list of tag strings; JSON-encoded for the hook"
   )
 
-  attr(:disabled, :boolean, default: false)
-  attr(:read_only, :boolean, default: false)
-  attr(:invalid, :boolean, default: nil)
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:required, :boolean, default: false)
-  attr(:name, :string, default: nil)
-  attr(:form, :string, default: nil)
-
   attr(:errors, :list, default: [], doc: "Error messages when not using field=")
-
-  attr(:field, Phoenix.HTML.FormField,
-    default: nil,
-    doc:
-      "Form field; sets id, name, form, value from the field value, and errors when used_input?/1"
-  )
 
   attr(:dir, :string,
     default: nil,
@@ -340,65 +324,18 @@ defmodule Corex.TagsInput do
   end
 
   defp tags_input_render(assigns, form_field, field_used) do
-    assigns =
-      assigns
-      |> Corex.FormField.require_id!("Corex component (tags-input)")
-      |> assign_new(:dir, fn -> "ltr" end)
-      |> assign(:value_list, validate_value!(assigns.value))
-      |> normalize_tags_input_translation()
-      |> Corex.FormField.assign_list_submit()
-
-    connect_props =
-      Connect.props(%Props{
-        id: assigns.id,
-        form_field: form_field,
-        field_used: field_used,
-        value: assigns.value,
-        disabled: assigns.disabled,
-        read_only: assigns.read_only,
-        invalid: assigns.invalid,
-        required: assigns.required,
-        name: assigns.name,
-        form: assigns.form,
-        dir: assigns.dir,
-        max: assigns.max,
-        delimiter: assigns.delimiter,
-        blur_behavior: assigns.blur_behavior,
-        add_on_paste: assigns.add_on_paste,
-        allow_duplicates: assigns.allow_duplicates,
-        allow_overflow: assigns.allow_overflow,
-        editable: assigns.editable,
-        auto_focus: assigns.auto_focus,
-        on_value_change: assigns.on_value_change,
-        on_value_change_client: assigns.on_value_change_client,
-        on_input_value_change: assigns.on_input_value_change,
-        on_input_value_change_client: assigns.on_input_value_change_client,
-        on_highlight_change: assigns.on_highlight_change,
-        on_highlight_change_client: assigns.on_highlight_change_client,
-        on_value_invalid: assigns.on_value_invalid,
-        on_value_invalid_client: assigns.on_value_invalid_client,
-        translation: assigns.translation,
-        submit_name: assigns.submit_name
-      })
-
-    assigns =
-      assign(assigns,
-        connect_props: connect_props,
-        empty_array_name: if(field_used, do: assigns.submit_name)
-      )
+    assigns = prepare_tags_input(assigns, form_field, field_used)
 
     ~H"""
     <div
       id={@id}
       phx-hook="TagsInput"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {@connect_props}
     >
       <div
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})}
-        {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}
+        {Connect.mounted_root(%Root{id: @id, dir: @dir, read_only: @read_only})}
       >
         <div
           :if={@submit_name}
@@ -439,12 +376,11 @@ defmodule Corex.TagsInput do
         <label
           :if={@label != []}
           class={Map.get(Enum.at(@label, 0), :class)}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
-          {Connect.label(%Label{id: @id, dir: @dir})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir})}
         >
           {render_slot(@label)}
         </label>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir})} {Connect.control(%Control{id: @id, dir: @dir})}>
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir})}>
             <span
               :for={{tag, index} <- Enum.with_index(@value_list)}
               phx-mounted={
@@ -537,25 +473,15 @@ defmodule Corex.TagsInput do
               />
             </span>
             <input
-              phx-mounted={Connect.ignore_main_input(%MainInput{id: @id, dir: @dir, placeholder: @placeholder_resolved})}
-              {Connect.main_input(%MainInput{id: @id, dir: @dir, placeholder: @placeholder_resolved})}
+              {Connect.mounted_main_input(%MainInput{id: @id, dir: @dir, placeholder: @placeholder_resolved})}
             />
         </div>
         <input
           :if={@name}
-          phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id})}
-          {Connect.hidden_input(%HiddenInput{id: @id})}
+          {Connect.mounted_hidden_input(%HiddenInput{id: @id})}
         />
       </div>
-      <div
-        :if={@error != [] and !Enum.empty?(@errors)}
-        :for={msg <- @errors}
-        class={Map.get(Enum.at(@error, 0), :class, nil)}
-        data-scope="tags-input"
-        data-part="error"
-      >
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="tags-input" errors={@errors} error={@error} />
       <div
         id={"tags-input:#{@id}:templates"}
         style="display: none;"
@@ -581,6 +507,59 @@ defmodule Corex.TagsInput do
     """
   end
 
+  defp prepare_tags_input(assigns, form_field, field_used) do
+    assigns =
+      assigns
+      |> Corex.FormField.require_id!("Corex component (tags-input)")
+      |> assign_new(:dir, fn -> "ltr" end)
+      |> assign(:value_list, coerce_string_list(assigns.value))
+      |> normalize_tags_input_translation()
+      |> Corex.FormField.assign_list_submit()
+
+    connect_props =
+      Connect.props(%Props{
+        id: assigns.id,
+        form_field: form_field,
+        field_used: field_used,
+        value: assigns.value,
+        disabled: assigns.disabled,
+        read_only: assigns.read_only,
+        invalid: assigns.invalid,
+        required: assigns.required,
+        name: assigns.name,
+        form: assigns.form,
+        dir: assigns.dir,
+        max: assigns.max,
+        delimiter: assigns.delimiter,
+        blur_behavior: assigns.blur_behavior,
+        add_on_paste: assigns.add_on_paste,
+        allow_duplicates: assigns.allow_duplicates,
+        allow_overflow: assigns.allow_overflow,
+        editable: assigns.editable,
+        auto_focus: assigns.auto_focus,
+        on_value_change: assigns.on_value_change,
+        on_value_change_client: assigns.on_value_change_client,
+        on_input_value_change: assigns.on_input_value_change,
+        on_input_value_change_client: assigns.on_input_value_change_client,
+        on_highlight_change: assigns.on_highlight_change,
+        on_highlight_change_client: assigns.on_highlight_change_client,
+        on_value_invalid: assigns.on_value_invalid,
+        on_value_invalid_client: assigns.on_value_invalid_client,
+        translation: assigns.translation,
+        submit_name: assigns.submit_name
+      })
+
+    assign(assigns,
+      connect_props: connect_props,
+      empty_array_name: empty_array_name(field_used, assigns.submit_name)
+    )
+  end
+
+  defp empty_array_name(field_used, submit_name) when field_used not in [nil, false],
+    do: submit_name
+
+  defp empty_array_name(_field_used, _submit_name), do: nil
+
   api_doc(~S"""
   Replace all tags from `phx-click`. Dispatches `corex:tags-input:set-value` with `detail.value` as a string list.
 
@@ -602,11 +581,14 @@ defmodule Corex.TagsInput do
   ```
   """)
 
+  @spec set_value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(tags_input_id, value) when is_binary(tags_input_id) and is_list(value) do
-    v = Corex.Helpers.validate_value!(value)
+    v = Corex.Value.coerce_string_list(value, "Corex.TagsInput.set_value/2")
 
     JS.dispatch("corex:tags-input:set-value",
-      to: "##{tags_input_id}",
+      to: Selectors.css_id(tags_input_id),
       detail: %{value: v},
       bubbles: false
     )
@@ -624,7 +606,7 @@ defmodule Corex.TagsInput do
 
   def set_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_list(value) do
-    v = Corex.Helpers.validate_value!(value)
+    v = Corex.Value.coerce_string_list(value, "Corex.TagsInput.set_value/2")
 
     LiveView.push_event(socket, "tags_input_set_value", %{
       id: tags_input_id,
@@ -644,9 +626,11 @@ defmodule Corex.TagsInput do
   ```
   """)
 
+  @spec clear_value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_value(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear_value(tags_input_id) when is_binary(tags_input_id) do
     JS.dispatch("corex:tags-input:clear-value",
-      to: "##{tags_input_id}",
+      to: Selectors.css_id(tags_input_id),
       bubbles: false
     )
   end
@@ -678,10 +662,13 @@ defmodule Corex.TagsInput do
   ```
   """)
 
+  @spec add_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec add_value(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def add_value(tags_input_id, value)
       when is_binary(tags_input_id) and is_binary(value) and value != "" do
     JS.dispatch("corex:tags-input:add-value",
-      to: "##{tags_input_id}",
+      to: Selectors.css_id(tags_input_id),
       detail: %{value: value},
       bubbles: false
     )
@@ -715,10 +702,13 @@ defmodule Corex.TagsInput do
   ```
   """)
 
+  @spec remove_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec remove_value(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def remove_value(tags_input_id, value)
       when is_binary(tags_input_id) and is_binary(value) and value != "" do
     JS.dispatch("corex:tags-input:remove-value",
-      to: "##{tags_input_id}",
+      to: Selectors.css_id(tags_input_id),
       detail: %{value: value},
       bubbles: false
     )

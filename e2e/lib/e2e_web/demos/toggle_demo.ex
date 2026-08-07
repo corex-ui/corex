@@ -3,8 +3,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   alias E2eWeb.DemoScales
 
-  import E2eWeb.ModeToggle
-
   def minimal_code do
     ~S"""
     <.toggle class="toggle">
@@ -37,7 +35,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   def with_indicator_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4 items-center justify-center">
+    <div class="flex flex-wrap gap-space-lg items-center justify-center">
       <.toggle id="toggle-anatomy-indicator-label" class="toggle">
         <:indicator><.heroicon name="hero-bold" /></:indicator>
         Bold
@@ -60,16 +58,13 @@ defmodule E2eWeb.Demos.ToggleDemo do
   end
 
   def dual_label_example(assigns) do
-    assigns = assign_new(assigns, :mode, fn -> "light" end)
+    _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-center justify-center">
-      <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
-        <span>lorem</span>
-        <span data-pressed>donec</span>
-      </.toggle>
-      <.mode_toggle id="toggle-anatomy-mode" mode={@mode} />
-    </div>
+    <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
+      <span>lorem</span>
+      <span data-pressed>donec</span>
+    </.toggle>
     """
   end
 
@@ -113,7 +108,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-lg items-center w-full max-w-4xl">
       <.toggle id="toggle-style-c-default" class="toggle">Default</.toggle>
       <.toggle id="toggle-style-c-accent" class="toggle ui-accent">Accent</.toggle>
       <.toggle id="toggle-style-c-brand" class="toggle ui-brand">Brand</.toggle>
@@ -133,7 +128,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-lg items-center w-full max-w-4xl">
       <.toggle id="toggle-style-variant-subtle" class="toggle">Subtle (default)</.toggle>
       <.toggle id="toggle-style-variant-solid" class="toggle ui-solid">Solid</.toggle>
     </div>
@@ -185,7 +180,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-center w-full max-w-4xl">
       <.toggle id="toggle-style-sm" class="toggle ui-size-sm" pressed>SM</.toggle>
       <.toggle id="toggle-style-md" class="toggle ui-size-md" pressed>MD</.toggle>
       <.toggle id="toggle-style-lg" class="toggle ui-size-lg" pressed>LG</.toggle>
@@ -209,7 +204,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-lg items-center w-full max-w-4xl">
       <.toggle id="toggle-style-radius-none" class="toggle ui-rounded-none" pressed>
         None
       </.toggle>
@@ -222,20 +217,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
       </.toggle>
     </div>
     """
-  end
-
-  def styling_width_code do
-    label = DemoScales.block_demo_label()
-
-    DemoScales.width_layout_variants("toggle")
-    |> Enum.map(fn %{modifier: modifier} ->
-      class = DemoScales.join_modifiers("toggle", modifier)
-
-      """
-      <.toggle class="#{class}" pressed>#{label}</.toggle>
-      """
-    end)
-    |> DemoScales.join_code()
   end
 
   def styling_max_width_code do
@@ -252,31 +233,12 @@ defmodule E2eWeb.Demos.ToggleDemo do
     |> DemoScales.join_code()
   end
 
-  def styling_width_example(assigns) do
-    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("toggle"))
-
-    ~H"""
-    <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo ui-size-sm font-medium">{variant.label}</p>
-        <.toggle
-          id={"toggle-style-width-#{variant.id}"}
-          class={DemoScales.join_modifiers("toggle", variant.modifier)}
-          pressed
-        >
-          {DemoScales.block_demo_label()}
-        </.toggle>
-      </div>
-    </div>
-    """
-  end
-
   def styling_max_width_example(assigns) do
     assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("toggle"))
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.toggle
           id={"toggle-style-max-#{variant.id}"}
@@ -303,7 +265,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-lg items-center w-full max-w-4xl">
       <.toggle id="toggle-style-disabled-off" class="toggle" disabled>Disabled</.toggle>
       <.toggle id="toggle-style-disabled-on" class="toggle ui-accent" pressed disabled>
         Disabled
@@ -316,7 +278,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
     ~S"""
     <.action class="button ui-size-sm" phx-click="toggle_api_on">Pressed</.action>
     <.action class="button ui-size-sm" phx-click="toggle_api_off">Not pressed</.action>
-    <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
+    <.toggle id="toggle-api-srv" class="toggle">
       duis
     </.toggle>
     """

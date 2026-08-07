@@ -8,8 +8,20 @@
     path={@path}
     id="collapsible-styling-page"
     title={~t"Collapsible · Style"}
-    subtitle={~t"Density and trigger colors via modifier classes on the collapsible root."}
+    subtitle={
+      ~t"Semantic colors, visual variants, density, and max-width via modifier classes on the collapsible root."
+    }
   >
+    <.demo_section
+      id="collapsible-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.CollapsibleDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="collapsible-styling-color"
       title={~t"Semantic"}
@@ -68,6 +80,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.CollapsibleDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.CollapsibleDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="collapsible" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

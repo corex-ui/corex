@@ -235,6 +235,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -274,7 +275,9 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -296,7 +299,8 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -351,7 +355,8 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <form
       action={~p"/tags-input/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.tags_input
         name="tags_native[tags]"
@@ -389,6 +394,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.tags_input field={f[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -413,6 +419,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       action={~p"/tags-input/form"}
       method="post"
       id="tags-input-native-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.tags_input
@@ -438,7 +445,8 @@ defmodule E2eWeb.Demos.TagsInputDemo do
      
       phx-change="validate"
       phx-submit="save"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -496,6 +504,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -589,7 +598,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:tags-input:set-value",
@@ -614,7 +623,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_tags_set_value_server" class="button ui-size-sm">
         Set lorem and duis
       </.action>
@@ -703,7 +712,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_add_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.TagsInput.add_value(@id, "duis")} class="button ui-size-sm">
         Add duis
       </.action>
@@ -719,7 +728,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_tags_add_value_server" class="button ui-size-sm">
         Add duis
       </.action>
@@ -733,7 +742,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_add_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:tags-input:add-value",
@@ -837,7 +846,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={Corex.TagsInput.set_value(@id, ["lorem", "duis"])}
         class="button ui-size-sm"
@@ -854,7 +863,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_clear_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.TagsInput.clear_value(@id)} class="button ui-size-sm">
         Clear all
       </.action>
@@ -871,7 +880,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_clear_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:tags-input:clear-value", to: "##{@id}", bubbles: false)}
         class="button ui-size-sm"
@@ -902,7 +911,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_tags_clear_all_server" class="button ui-size-sm">Clear all</.action>
       <.action phx-click="api_tags_clear_lorem_server" class="button ui-size-sm">Clear lorem</.action>
     </div>
@@ -1109,19 +1118,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_trigger_heex do
     ~S"""
-    <.tags_input class="tags-input w-full ui-accent" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-brand" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-alert" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-success" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-info" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1131,43 +1128,9 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full items-center">
-      <.tags_input
-        id="tags-style-trigger-accent"
-        class="tags-input w-full ui-accent"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-brand"
-        class="tags-input w-full ui-brand"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-alert"
-        class="tags-input w-full ui-alert"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-success"
-        class="tags-input w-full ui-success"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-info"
-        class="tags-input w-full ui-info"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-    </div>
+    <.tags_input id="tags-style-trigger-default" class="tags-input w-full" value={@demo_tags}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
     """
   end
 
@@ -1295,7 +1258,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tags_input
           id={"tags-style-max-#{variant.id}"}
@@ -1318,6 +1281,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.tags_input field={f[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -1338,7 +1302,9 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1358,7 +1324,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1460,7 +1426,9 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.tags_input
         id="tags-input-live-form-ecto-invalid-tags"
         field={@ecto_invalid_form[:tags]}
@@ -1485,7 +1453,12 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_preview_live_ecto_invalid(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form
+      for={@form}
+      phx-change="validate_invalid"
+      phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.tags_input
         id="tags-input-live-form-ecto-invalid-tags"
         field={@form[:tags]}

@@ -9,9 +9,19 @@
     id="editable-styling-page"
     title={~t"Editable · Style"}
     subtitle={
-      ~t"Semantic colors, density, corner radius, and width via modifier classes on the editable root."
+      ~t"Semantic colors, visual variants, density, corner radius, and width on the editable root."
     }
   >
+    <.demo_section
+      id="editable-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.EditableDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.EditableDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="editable-styling-color"
       title={~t"Semantic"}
@@ -70,19 +80,6 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.EditableDemo.styling_radius_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="editable-styling-width"
-      title={~t"Width"}
-      code={E2eWeb.Demos.EditableDemo.styling_width_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="editable" axis={:width} />
-      </:description>
-      <:preview>
-        <E2eWeb.Demos.EditableDemo.styling_width_example />
       </:preview>
     </.demo_section>
 

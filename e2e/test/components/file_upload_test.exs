@@ -64,6 +64,37 @@ defmodule E2eWeb.FileUploadTest do
     end
   end
 
+  describe "playground" do
+    feature "attach file shows item in list", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(FileUpload, :file_upload, :playground)
+        |> FileUpload.wait_host_file_upload_ready("file-upload-playground")
+        |> FileUpload.attach_fixture("file-upload-playground")
+        |> FileUpload.see_file_name("file-upload-playground", "sample.txt")
+        |> FileUpload.wait_item_count("file-upload-playground", 1)
+
+      assert has?(
+               session,
+               css(
+                 ~S|#file-upload-playground [data-scope="file-upload"][data-part="item"]|,
+                 count: 1,
+                 visible: :any
+               )
+             )
+    end
+
+    feature "delete item removes it from list", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(FileUpload, :file_upload, :playground)
+      |> FileUpload.wait_host_file_upload_ready("file-upload-playground")
+      |> FileUpload.attach_fixture("file-upload-playground")
+      |> FileUpload.see_file_name("file-upload-playground", "sample.txt")
+      |> FileUpload.click_delete_item("file-upload-playground", "sample.txt")
+      |> FileUpload.refute_file_name("file-upload-playground", "sample.txt")
+    end
+  end
+
   describe "events" do
     feature "events page mounts upload hosts", %{session: session} do
       session =
@@ -79,6 +110,23 @@ defmodule E2eWeb.FileUploadTest do
                  visible: :any
                )
              )
+    end
+
+    feature "attach file triggers server event log", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(FileUpload, :file_upload, :events)
+        |> FileUpload.prepare_live_form()
+        |> FileUpload.wait_host_file_upload_ready("file-upload-events-server")
+
+      before_count = FileUpload.log_row_count(session, "file-upload-events-log-server")
+
+      session
+      |> FileUpload.attach_fixture("file-upload-events-server")
+      |> FileUpload.see_file_name("file-upload-events-server", "sample.txt")
+      |> FileUpload.wait_log_rows_grew("file-upload-events-log-server", before_count,
+        timeout: 10_000
+      )
     end
   end
 

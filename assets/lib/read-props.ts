@@ -49,18 +49,34 @@ export function readCheckedControlledZagUpdate(
   return readUpdatedServerChecked(el, before);
 }
 
+export function parseDatasetValueList(raw: string | undefined): string[] {
+  if (raw === undefined) return [];
+  const trimmed = raw.trim();
+  if (trimmed === "") return [];
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown;
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+        return parsed as string[];
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+  return trimmed
+    .split(",")
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0);
+}
+
 export function getJsonStringList(el: HTMLElement, datasetKey: string): string[] | undefined {
   const raw = el.dataset[datasetKey];
   if (raw === undefined) return undefined;
   if (!raw || raw.trim() === "") return [];
   const trimmed = raw.trim();
   if (!trimmed.startsWith("[")) return undefined;
-  try {
-    const v = JSON.parse(trimmed) as unknown;
-    return Array.isArray(v) && v.every((x) => typeof x === "string") ? (v as string[]) : [];
-  } catch {
-    return [];
-  }
+  return parseDatasetValueList(raw);
 }
 
 export function readFormFieldServerPaths(
@@ -104,7 +120,7 @@ export function isZagValueControlled(el: HTMLElement): boolean {
 }
 
 export function readDatasetStringList(el: HTMLElement, datasetKey: string): string[] {
-  return getJsonStringList(el, datasetKey) ?? getStringList(el, datasetKey) ?? [];
+  return parseDatasetValueList(el.dataset[datasetKey]);
 }
 
 export function readUpdatedServerStringList(
@@ -237,8 +253,12 @@ export function readUpdatedServerNumber(
   const raw =
     getString(el, "value") ??
     (getBoolean(el, "formField") ? getString(el, "defaultValue") : undefined);
-  if (raw === undefined || raw === "") {
+  if (raw === undefined) {
     return base;
+  }
+
+  if (raw === "") {
+    return { ...base, value: "" };
   }
 
   return {
@@ -287,21 +307,6 @@ export function readPressedControlledZagUpdate(
   }
 
   return { pressed: getBoolean(el, "pressed") };
-}
-
-export function readEditControlledZagUpdate(
-  el: HTMLElement,
-  before?: DatasetSnapshot
-): { edit: boolean } | Record<string, never> {
-  if (!getBoolean(el, "controlled")) {
-    return {};
-  }
-
-  if (!datasetKeyChanged(before, el, "edit")) {
-    return {};
-  }
-
-  return { edit: getBoolean(el, "edit") };
 }
 
 type NumZag =

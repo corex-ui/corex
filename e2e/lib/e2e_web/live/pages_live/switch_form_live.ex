@@ -16,7 +16,7 @@ defmodule E2eWeb.SwitchFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Switch · Form")
+     |> assign(:page_title, "Switch · Live Form")
      |> assign(:form_ecto, SwitchDemo.form_ecto())
      |> assign(:live_phoenix_heex, SwitchDemo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, SwitchDemo.form_doc_live_phoenix_elixir())
@@ -256,7 +256,7 @@ defmodule E2eWeb.SwitchFormLive do
       <.demo_page
         path={@path}
         id="switch-form-live-page"
-        title={~t"Switch · Form"}
+        title={~t"Switch · Live Form"}
       >
         <.demo_section
           id="switch-live-form-phoenix-section"

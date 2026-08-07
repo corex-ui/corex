@@ -8,6 +8,7 @@ defmodule Corex.Editable.Anatomy do
     defstruct [
       :id,
       form_field: false,
+      field_used: false,
       value: "",
       disabled: false,
       read_only: false,
@@ -28,6 +29,7 @@ defmodule Corex.Editable.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             form_field: boolean(),
+            field_used: boolean(),
             value: String.t(),
             disabled: boolean(),
             read_only: boolean(),
@@ -113,12 +115,12 @@ defmodule Corex.Editable.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            name: String.t(),
+            name: String.t() | nil,
             value: String.t() | nil,
             form: String.t() | nil
           }
 
-    @ignored_attrs ["id", "name", "value", "form"]
+    @ignored_attrs ["id", "name", "value", "form", "type", "hidden", "tabindex", "aria-hidden"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -249,11 +251,16 @@ defmodule Corex.Editable.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, orientation: "horizontal"]
+    defstruct [:id, :dir, orientation: "horizontal", read_only: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t(),
+            read_only: boolean()
+          }
 
-    @ignored_attrs ["id", "dir", "data-orientation"]
+    @ignored_attrs ["id", "dir", "data-orientation", "data-readonly"]
     def ignored_attrs, do: @ignored_attrs
   end
 

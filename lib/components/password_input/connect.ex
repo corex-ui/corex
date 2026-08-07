@@ -1,5 +1,9 @@
 defmodule Corex.PasswordInput.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.PasswordInput.Anatomy.{
@@ -13,8 +17,8 @@ defmodule Corex.PasswordInput.Connect do
   }
 
   alias Corex.FormField
+
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
@@ -26,12 +30,12 @@ defmodule Corex.PasswordInput.Connect do
       "id" => assigns.id,
       "data-value" => nil,
       "data-default-value" => value_dataset,
-      "data-default-visible" => get_boolean(assigns.visible),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-required" => get_boolean(assigns.required),
-      "data-ignore-password-managers" => get_boolean(assigns.ignore_password_managers),
+      "data-default-visible" => presence_attr(assigns.visible),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-required" => presence_attr(assigns.required),
+      "data-ignore-password-managers" => presence_attr(assigns.ignore_password_managers),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => Map.get(assigns, :dir),
@@ -87,7 +91,7 @@ defmodule Corex.PasswordInput.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}",
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -117,7 +121,7 @@ defmodule Corex.PasswordInput.Connect do
     base = %{
       "data-scope" => "password-input",
       "data-part" => "input",
-      "disabled" => get_boolean(assigns.disabled),
+      "disabled" => presence_attr(assigns.disabled),
       "id" => "p-input-#{assigns.id}-input",
       "name" => Map.get(assigns, :name),
       "form" => if(Map.get(assigns, :form_field, false), do: nil, else: Map.get(assigns, :form)),

@@ -156,17 +156,17 @@ defmodule Corex.Toggle do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle ui-accent ui-size-lg` or `toggle ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the root trigger. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `ui-solid` for a filled on state.
+  Semantic modifiers set palette variables for the filled on state. Off stays neutral. On always fills (`--ctl-fill`, or ink when no semantic role is set).
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for toggle ink and fill. Does not change surface treatment by itself.
+  Palette variables for the filled on state.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -176,15 +176,6 @@ defmodule Corex.Toggle do
   | Alert | `toggle ui-alert` |
   | Info | `toggle ui-info` |
   | Success | `toggle ui-success` |
-
-  ### Variant
-
-  Visual treatment of the root trigger. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `toggle` or `toggle ui-accent` |
-  | Solid | `toggle ui-accent ui-solid` |
 
   ### Size
 
@@ -215,6 +206,7 @@ defmodule Corex.Toggle do
 
   import Corex.Api.Doc
 
+  alias Corex.Selectors
   alias Corex.Toggle.Anatomy.{Indicator, Props, Root}
   alias Corex.Toggle.Connect
   alias Phoenix.LiveView
@@ -250,15 +242,14 @@ defmodule Corex.Toggle do
   def toggle(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "toggle-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("toggle")
       |> assign_new(:dir, fn -> "ltr" end)
 
     ~H"""
     <div
       id={@id}
       phx-hook="Toggle"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -271,14 +262,12 @@ defmodule Corex.Toggle do
       })}
     >
       <button
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, pressed: @pressed, disabled: @disabled})}
-        {Connect.root(%Root{id: @id, dir: @dir, pressed: @pressed, disabled: @disabled})}
+        {Connect.mounted_root(%Root{id: @id, dir: @dir, pressed: @pressed, disabled: @disabled})}
       >
         <span
           :if={@indicator != []}
           class={Map.get(Enum.at(@indicator, 0), :class)}
-          phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, pressed: @pressed, disabled: @disabled})}
-          {Connect.indicator(%Indicator{id: @id, dir: @dir, pressed: @pressed, disabled: @disabled})}
+          {Connect.mounted_indicator(%Indicator{id: @id, dir: @dir, pressed: @pressed, disabled: @disabled})}
         >
           {render_slot(@indicator)}
         </span>
@@ -306,9 +295,12 @@ defmodule Corex.Toggle do
   ```
   """)
 
+  @spec set_pressed(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_pressed(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def set_pressed(toggle_id, pressed) when is_binary(toggle_id) and is_boolean(pressed) do
     JS.dispatch("corex:toggle:set-pressed",
-      to: "##{toggle_id}",
+      to: Selectors.css_id(toggle_id),
       detail: %{pressed: pressed},
       bubbles: false
     )
@@ -353,9 +345,11 @@ defmodule Corex.Toggle do
   ```
   """)
 
+  @spec toggle_pressed(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec toggle_pressed(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def toggle_pressed(toggle_id) when is_binary(toggle_id) do
     JS.dispatch("corex:toggle:toggle-pressed",
-      to: "##{toggle_id}",
+      to: Selectors.css_id(toggle_id),
       bubbles: false
     )
   end

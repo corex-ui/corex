@@ -491,6 +491,75 @@ defmodule Corex.ComboboxTest do
     end
   end
 
+  describe "set_value/2" do
+    test "returns JS command with list of values" do
+      js = Corex.Combobox.set_value("my-combobox", ["bel", "deu"])
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "accepts single binary via parse_string_list" do
+      js = Corex.Combobox.set_value("my-combobox", "bel")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "accepts comma-separated binary" do
+      js = Corex.Combobox.set_value("my-combobox", "bel,deu")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "accepts empty list" do
+      js = Corex.Combobox.set_value("my-combobox", [])
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "accepts empty binary" do
+      js = Corex.Combobox.set_value("my-combobox", "")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "warns and drops invalid list values" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.JS{} = Corex.Combobox.set_value("my-combobox", [1, 2, 3])
+        end)
+
+      assert log =~ "Corex.Combobox.set_value/2"
+      assert log =~ "value must be a list of strings"
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket with list of values" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Combobox.set_value(socket, "my-combobox", ["bel"])
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "accepts single binary" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Combobox.set_value(socket, "my-combobox", "bel")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "accepts empty list" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Combobox.set_value(socket, "my-combobox", [])
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "warns and drops invalid list values" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %Phoenix.LiveView.Socket{} =
+                   Corex.Combobox.set_value(socket, "my-combobox", [1, 2, 3])
+        end)
+
+      assert log =~ "value must be a list of strings"
+    end
+  end
+
   describe "set_open/2" do
     test "returns JS command when open is true" do
       js = Corex.Combobox.set_open("my-combobox", true)

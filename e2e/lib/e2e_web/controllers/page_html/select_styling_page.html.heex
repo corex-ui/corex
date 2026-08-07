@@ -9,9 +9,19 @@
     id="select-styling-page"
     title={~t"Select · Style"}
     subtitle={
-      ~t"Semantic colors, density, typography, radius, and width utilities via modifier classes on the select root."
+      ~t"Semantic colors, visual variants, density, corner radius, and max-width via modifier classes on the select root."
     }
   >
+    <.demo_section
+      id="select-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.SelectDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SelectDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="select-styling-color"
       title={~t"Semantic"}
@@ -83,6 +93,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.SelectDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SelectDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

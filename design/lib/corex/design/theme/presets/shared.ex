@@ -1,107 +1,119 @@
 defmodule Corex.Design.Theme.Presets.Shared do
   @moduledoc false
 
-  def typography(overrides) when is_map(overrides), do: overrides
+  alias Corex.Design.Color, as: DesignColor
+  alias Corex.Design.Filter
 
-  def role_fill(palette, lightness) do
+  @dimension_scale_keys ~w(
+    space_scale size_scale text_scale radius_scale container_scale shadow_scale blur_scale
+    ring_width ring_offset border_width duration_fast duration_normal duration_slow
+    opacity_disabled opacity_backdrop
+  )a
+
+  @radius_steps ~w(xs sm md lg xl 2xl 3xl 4xl full)a
+
+  @font_roles ~w(sans display mono code serif)a
+
+  def l(lightness, opts \\ []) when is_number(lightness) and is_list(opts) do
+    seed = Keyword.get(opts, :seed, :neutral)
+    states = Keyword.get(opts, :states)
+
+    base = %{
+      kind: :l,
+      seed: seed,
+      l: DesignColor.normalize_l!(lightness)
+    }
+
+    if is_map(states) do
+      Map.put(base, :states, normalize_states(states, lightness))
+    else
+      Map.put(base, :states, %{})
+    end
+  end
+
+  def contrast(opts) when is_list(opts) do
     %{
-      palette: palette,
-      lightness: lightness,
-      states: %{
-        muted: lightness + 3,
-        default: lightness,
-        hover: lightness - 4,
-        active: lightness - 7
-      },
-      component: true
+      kind: :contrast,
+      seed: Keyword.fetch!(opts, :seed),
+      against: Keyword.fetch!(opts, :against),
+      target: Keyword.fetch!(opts, :target) * 1.0
     }
   end
 
-  def base_role(lightness) do
-    %{
-      palette: :base,
-      lightness: lightness,
-      states: %{
-        muted: lightness + 3,
-        default: lightness,
-        hover: lightness - 4,
-        active: lightness - 7
-      },
-      component: true
-    }
-  end
+  def fill(lightness, opts \\ []) when is_number(lightness) do
+    delta = Keyword.get(opts, :delta, 0.03)
+    seed = Keyword.get(opts, :seed, :neutral)
+    muted = clamp_l(lightness + delta)
+    hover = clamp_l(lightness - delta - 0.01)
+    active = clamp_l(lightness - delta - 0.04)
 
-  def light_roles(base_lightness, fills) when is_map(fills) do
-    Map.merge(
-      %{base: base_role(base_lightness)},
-      Map.new(fills, fn {role, lightness} -> {role, role_fill(role, lightness)} end)
+    l(lightness,
+      seed: seed,
+      states: %{
+        muted: muted,
+        default: lightness,
+        hover: hover,
+        active: active
+      }
     )
   end
 
-  def dark_roles(base_lightness, fills) when is_map(fills) do
-    dark_fills =
-      Map.new(fills, fn {role, lightness} ->
-        {role, role_fill(role, lightness)}
-      end)
-
-    Map.put(dark_fills, :base, base_role(base_lightness))
+  def mode(tokens) when is_map(tokens) do
+    tokens
+    |> stringify_keys()
+    |> maybe_put_role_contrast()
+    |> maybe_put_role_text()
   end
 
-  def light_on do
-    %{
-      page: %{palette: :base, against: :page, ratio: 8},
-      muted: %{palette: :base, against: :page, ratio: 5.15},
-      link: %{palette: :info, against: :page, ratio: 6},
-      control: %{palette: :base, against: :control, ratio: 8}
-    }
+  def dimensions(scales, radius, fonts)
+      when is_map(scales) and is_map(radius) and is_map(fonts) do
+    scales
+    |> Map.take(@dimension_scale_keys)
+    |> Map.put(:radius, Map.take(radius, @radius_steps))
+    |> Map.put(:font, Map.take(fonts, @font_roles))
   end
 
-  def dark_on do
-    %{
-      page: %{palette: :base, against: :page, ratio: 12},
-      muted: %{palette: :base, against: :page, ratio: 6},
-      link: %{palette: :info, against: :page, ratio: 7.5},
-      control: %{palette: :base, against: :control, ratio: 12}
-    }
+  def font_stack(families) when is_map(families) do
+    Map.take(families, @font_roles)
   end
 
-  def light_tokens(border_ratio, focus_ratio, shadow_ratio) do
-    %{
-      border: %{palette: :base, against: :control, ratio: border_ratio},
-      focus: %{palette: :base, against: :control, ratio: focus_ratio},
-      shadow: %{palette: :base, against: :page, ratio: shadow_ratio}
-    }
+  defp stringify_keys(tokens) do
+    Map.new(tokens, fn {k, v} -> {to_string(k), v} end)
   end
 
-  def dark_tokens(border_ratio, focus_ratio, shadow_ratio) do
-    %{
-      border: %{palette: :base, against: :control, ratio: border_ratio},
-      focus: %{palette: :base, against: :control, ratio: focus_ratio},
-      shadow: %{palette: :base, against: :page, ratio: shadow_ratio}
-    }
+  defp maybe_put_role_contrast(tokens) do
+    Enum.reduce(Filter.default_semantics(), tokens, fn role, acc ->
+      role_s = Atom.to_string(role)
+      key = "#{role_s}-contrast"
+
+      if Map.has_key?(acc, role_s) and not Map.has_key?(acc, key) do
+        Map.put(acc, key, contrast(seed: :neutral, against: role, target: 7.0))
+      else
+        acc
+      end
+    end)
   end
 
-  def surface_light(page, raised, control_lightness, control_states) do
-    %{
-      page: %{palette: :base, lightness: page},
-      raised: %{palette: :base, lightness: raised},
-      control: %{
-        palette: :base,
-        lightness: control_lightness,
-        states: control_states
-      }
-    }
+  defp maybe_put_role_text(tokens) do
+    Enum.reduce(Filter.default_semantics(), tokens, fn role, acc ->
+      role_s = Atom.to_string(role)
+      key = "#{role_s}-text"
+
+      if Map.has_key?(acc, role_s) and not Map.has_key?(acc, key) do
+        Map.put(acc, key, contrast(seed: role, against: :ui, target: 4.6))
+      else
+        acc
+      end
+    end)
   end
 
-  def surface_dark(page, raised, control_lightness, control_states) do
-    %{
-      page: %{palette: :base, lightness: page},
-      raised: %{palette: :base, lightness: raised},
-      control: %{
-        palette: :base,
-        lightness: control_lightness,
-        states: control_states
-      }
-    }
+  defp normalize_states(states, default_l) do
+    states
+    |> Map.put_new(:default, default_l)
+    |> Map.new(fn {k, v} -> {k, DesignColor.normalize_l!(v)} end)
+  end
+
+  defp clamp_l(value) when is_number(value) do
+    value |> max(0.0) |> min(1.0)
   end
 end

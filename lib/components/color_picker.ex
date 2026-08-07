@@ -8,10 +8,10 @@ defmodule Corex.ColorPicker do
   ```heex
   <.color_picker
     value="rgb(25, 9, 192, 0.9)"
-    label="Select Color (RGBA)"
     presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
-    class="color-picker"
-  />
+    class="color-picker">
+    <:label>Select Color (RGBA)</:label>
+  </.color_picker>
   ```
 
   ## Style
@@ -94,7 +94,9 @@ defmodule Corex.ColorPicker do
   <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button ui-size-sm">
     Set red
   </.action>
-  <.color_picker id="color-picker-api" value="#000000" label="Color" class="color-picker" />
+  <.color_picker id="color-picker-api" value="#000000" class="color-picker">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```elixir
@@ -122,9 +124,9 @@ defmodule Corex.ColorPicker do
   <.color_picker
     class="color-picker"
     value="#3b82f6"
-    label="Color"
-    on_value_change="color_value_changed"
-  />
+    on_value_change="color_value_changed">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```elixir
@@ -139,9 +141,9 @@ defmodule Corex.ColorPicker do
   <.color_picker
     class="color-picker"
     value="#3b82f6"
-    label="Color"
-    on_open_change="color_open_changed"
-  />
+    on_open_change="color_open_changed">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```elixir
@@ -172,9 +174,9 @@ defmodule Corex.ColorPicker do
     id="color-picker-events-client"
     class="color-picker"
     value="#3b82f6"
-    label="Color"
-    on_value_change_client="color-value-changed"
-  />
+    on_value_change_client="color-value-changed">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```javascript
@@ -190,9 +192,9 @@ defmodule Corex.ColorPicker do
     id="color-picker-open-events-client"
     class="color-picker"
     value="#3b82f6"
-    label="Color"
-    on_open_change_client="color-open-changed"
-  />
+    on_open_change_client="color-open-changed">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```javascript
@@ -221,13 +223,13 @@ defmodule Corex.ColorPicker do
         for={@form}
         action="/color-picker/form"
         method="post"
+        class="flex flex-col gap-space-lg w-full max-w-xl"
       >
         <.color_picker
           field={f[:color]}
-          label="Color"
           class="color-picker"
-          presets={["#ff0000", "#00ff00", "#0000ff"]}
-        >
+          presets={["#ff0000", "#00ff00", "#0000ff"]}>
+          <:label>Color</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
@@ -274,13 +276,13 @@ defmodule Corex.ColorPicker do
         for={@form}
         action="/color-picker/form"
         method="post"
+        class="flex flex-col gap-space-lg w-full max-w-xl"
       >
         <.color_picker
           field={f[:color]}
-          label="Color"
           class="color-picker"
-          presets={["#ff0000", "#00ff00", "#0000ff"]}
-        >
+          presets={["#ff0000", "#00ff00", "#0000ff"]}>
+          <:label>Color</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
@@ -376,14 +378,15 @@ defmodule Corex.ColorPicker do
       <form
         action="/color-picker/form"
         method="post"
+        class="flex flex-col gap-space-lg w-full max-w-xl"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <.color_picker
           name="color_picker_form[color]"
           value="#3b82f6"
-          label="Color"
-          class="color-picker"
-        />
+          class="color-picker">
+          <:label>Color</:label>
+        </.color_picker>
         <.action type="submit" class="button ui-accent">
           Submit
         </.action>
@@ -405,6 +408,7 @@ defmodule Corex.ColorPicker do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
 
@@ -438,33 +442,28 @@ defmodule Corex.ColorPicker do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string, required: false, doc: "The id of the color picker")
+  form_control_attrs(
+    except: [:form, :controlled],
+    docs: [
+      id: "The id of the color picker",
+      field: "A form field, e.g. f[:color] or @form[:color]",
+      name: "The name attribute for form submission"
+    ]
+  )
 
   attr(:value, :string,
     default: "#000000",
     doc: "Initial color string sent as `data-default-value` for the hook"
   )
 
-  attr(:name, :string, default: nil, doc: "The name attribute for form submission")
-  attr(:label, :string, default: "Select Color", doc: "Label for the color picker trigger")
   attr(:close_on_select, :boolean, default: true)
   attr(:open_auto_focus, :boolean, default: true)
-  attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: nil)
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:read_only, :boolean, default: false)
-  attr(:required, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:positioning, :map, default: %Corex.Positioning{fit_viewport: false})
+  attr(:positioning, Corex.Positioning, default: %Corex.Positioning{fit_viewport: false})
   attr(:presets, :list, default: [])
   attr(:class, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
-  attr(:on_value_change_client, :string, default: nil)
+  attr(:on_value_change_client, :any, default: nil)
   attr(:on_value_change_end, :string, default: nil)
   attr(:on_value_change_end_client, :string, default: nil)
   attr(:on_open_change, :string, default: nil)
@@ -484,9 +483,11 @@ defmodule Corex.ColorPicker do
   )
 
   attr(:errors, :list, default: [], doc: "Error messages to display (non-field API)")
-  attr(:field, Phoenix.HTML.FormField, doc: "A form field, e.g. f[:color] or @form[:color]")
-
   attr(:rest, :global)
+
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
   slot :error, required: false do
     attr(:class, :string, required: false)
@@ -502,81 +503,26 @@ defmodule Corex.ColorPicker do
   end
 
   def color_picker(assigns) do
-    translation = Translation.resolve(assigns.translation)
-
-    assigns =
-      assigns
-      |> Corex.FormField.require_id!("Corex component (color-picker)")
-      |> assign_new(:form_field, fn -> false end)
-      |> assign_new(:errors, fn -> [] end)
-      |> assign_new(:invalid, fn -> false end)
-      |> assign(:translation, translation)
-      |> assign(:dir, assigns.dir || "ltr")
-
-    initial_value = initial_value(assigns)
-    initial = Initial.parse(initial_value)
-    value_str = initial.hex_value || "#000000"
-
-    assigns =
-      assigns
-      |> assign(:initial, initial)
-      |> assign(:open?, false)
-      |> assign(:value_str, value_str)
+    assigns = prepare_color_picker(assigns)
 
     ~H"""
     <div
       id={@id}
       phx-hook="ColorPicker"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       class={@class || "color-picker"}
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        form_field: @form_field,
-        value: @value,
-        name: @name,
-        close_on_select: @close_on_select,
-        open_auto_focus: @open_auto_focus,
-        disabled: @disabled,
-        invalid: @invalid,
-        read_only: @read_only,
-        required: @required,
-        dir: @dir,
-        positioning: @positioning,
-        on_value_change: @on_value_change,
-        on_value_change_client: @on_value_change_client,
-        on_value_change_end: @on_value_change_end,
-        on_value_change_end_client: @on_value_change_end_client,
-        on_open_change: @on_open_change,
-        on_open_change_client: @on_open_change_client,
-        on_format_change: @on_format_change,
-        on_format_change_client: @on_format_change_client,
-        on_pointer_down_outside: @on_pointer_down_outside,
-        on_pointer_down_outside_client: @on_pointer_down_outside_client,
-        on_focus_outside: @on_focus_outside,
-        on_focus_outside_client: @on_focus_outside_client,
-        on_interact_outside: @on_interact_outside,
-        on_interact_outside_client: @on_interact_outside_client
-      })}
-      data-label={@label}
-      data-presets={Corex.Json.encode!(@presets)}
+      {@connect_props}
+      data-presets={@presets_json}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba, dir: @dir})} {Connect.root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba, dir: @dir})}>
-        <label phx-mounted={Connect.ignore_label(%Label{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, required: @required, dir: @dir})} {Connect.label(%Label{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, required: @required, dir: @dir})}>{@label}</label>
-        <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name || @id})} {Connect.hidden_input(%HiddenInput{id: @id, name: @name || @id})} />
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: @open?})} {Connect.control(%Control{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: @open?})}>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: @open?, value_str: @value_str, content_id: "color-picker:#{@id}:content", label_id: "color-picker:#{@id}:label", dir: @dir})} {Connect.trigger(%Trigger{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: @open?, value_str: @value_str, content_id: "color-picker:#{@id}:content", label_id: "color-picker:#{@id}:label", dir: @dir})}>
-            <div phx-mounted={Connect.ignore_transparency_grid(%TransparencyGrid{id: @id, size: "10px", variant: "trigger"})} {Connect.transparency_grid(%TransparencyGrid{id: @id, size: "10px", variant: "trigger"})}></div>
+      <div {Connect.mounted_root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba, dir: @dir})}>
+        <label :if={@label != []} {Connect.mounted_label(%Label{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, required: @required, dir: @dir})}>{render_slot(@label)}</label>
+        <input {Connect.mounted_hidden_input(%HiddenInput{id: @id, name: @name || @id})} />
+        <div {Connect.mounted_control(%Control{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: false})}>
+          <button {Connect.mounted_trigger(%Trigger{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: false, value_str: @value_str, content_id: "color-picker:#{@id}:content", label_id: "color-picker:#{@id}:label", dir: @dir})}>
+            <div {Connect.mounted_transparency_grid(%TransparencyGrid{id: @id, size: "10px", variant: "trigger"})}></div>
             <div
-              phx-mounted={Connect.ignore_swatch(%Swatch{
-                id: @id,
-                color: @initial.value_rgba,
-                value: @initial.hex_value,
-                checked: @initial.hex_value != nil,
-                variant: "main"
-              })}
-              {Connect.swatch(%Swatch{
+              {Connect.mounted_swatch(%Swatch{
                 id: @id,
                 color: @initial.value_rgba,
                 value: @initial.hex_value,
@@ -610,22 +556,22 @@ defmodule Corex.ColorPicker do
             })}
           />
         </div>
-        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir})} {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
-          <div phx-mounted={Connect.ignore_content(%Content{id: @id, open: @open?, dir: @dir})} {Connect.content(%Content{id: @id, open: @open?, dir: @dir})}>
-            <div phx-mounted={Connect.ignore_area(%Area{picker_id: @id, dir: @dir})} {Connect.area(%Area{picker_id: @id, dir: @dir})}>
-              <div phx-mounted={Connect.ignore_area_background(%AreaBackground{picker_id: @id})} {Connect.area_background(%AreaBackground{picker_id: @id})}></div>
-              <div phx-mounted={Connect.ignore_area_thumb(%AreaThumb{picker_id: @id})} {Connect.area_thumb(%AreaThumb{picker_id: @id})}></div>
+        <div {Connect.mounted_positioner(%Positioner{id: @id, dir: @dir})}>
+          <div {Connect.mounted_content(%Content{id: @id, open: false, dir: @dir})}>
+            <div {Connect.mounted_area(%Area{picker_id: @id, dir: @dir})}>
+              <div {Connect.mounted_area_background(%AreaBackground{picker_id: @id})}></div>
+              <div {Connect.mounted_area_thumb(%AreaThumb{picker_id: @id})}></div>
             </div>
             <div data-scope="color-picker" data-part="pickers">
               <div data-scope="color-picker" data-part="sliders">
-                <div phx-mounted={Connect.ignore_channel_slider(%ChannelSlider{picker_id: @id, channel: "hue"})} {Connect.channel_slider(%ChannelSlider{picker_id: @id, channel: "hue"})}>
-                  <div phx-mounted={Connect.ignore_channel_slider_track(%ChannelSliderTrack{picker_id: @id, channel: "hue"})} {Connect.channel_slider_track(%ChannelSliderTrack{picker_id: @id, channel: "hue"})}></div>
-                  <div phx-mounted={Connect.ignore_channel_slider_thumb(%ChannelSliderThumb{picker_id: @id, channel: "hue"})} {Connect.channel_slider_thumb(%ChannelSliderThumb{picker_id: @id, channel: "hue"})}></div>
+                <div {Connect.mounted_channel_slider(%ChannelSlider{picker_id: @id, channel: "hue"})}>
+                  <div {Connect.mounted_channel_slider_track(%ChannelSliderTrack{picker_id: @id, channel: "hue"})}></div>
+                  <div {Connect.mounted_channel_slider_thumb(%ChannelSliderThumb{picker_id: @id, channel: "hue"})}></div>
                 </div>
-                <div phx-mounted={Connect.ignore_channel_slider(%ChannelSlider{picker_id: @id, channel: "alpha"})} {Connect.channel_slider(%ChannelSlider{picker_id: @id, channel: "alpha"})}>
-                  <div phx-mounted={Connect.ignore_transparency_grid(%TransparencyGrid{id: @id, size: "12px", variant: "alpha"})} {Connect.transparency_grid(%TransparencyGrid{id: @id, size: "12px", variant: "alpha"})}></div>
-                  <div phx-mounted={Connect.ignore_channel_slider_track(%ChannelSliderTrack{picker_id: @id, channel: "alpha"})} {Connect.channel_slider_track(%ChannelSliderTrack{picker_id: @id, channel: "alpha"})}></div>
-                  <div phx-mounted={Connect.ignore_channel_slider_thumb(%ChannelSliderThumb{picker_id: @id, channel: "alpha"})} {Connect.channel_slider_thumb(%ChannelSliderThumb{picker_id: @id, channel: "alpha"})}></div>
+                <div {Connect.mounted_channel_slider(%ChannelSlider{picker_id: @id, channel: "alpha"})}>
+                  <div {Connect.mounted_transparency_grid(%TransparencyGrid{id: @id, size: "12px", variant: "alpha"})}></div>
+                  <div {Connect.mounted_channel_slider_track(%ChannelSliderTrack{picker_id: @id, channel: "alpha"})}></div>
+                  <div {Connect.mounted_channel_slider_thumb(%ChannelSliderThumb{picker_id: @id, channel: "alpha"})}></div>
                 </div>
               </div>
             </div>
@@ -671,32 +617,19 @@ defmodule Corex.ColorPicker do
                 />
               </div>
             </div>
-            <div phx-mounted={Connect.ignore_swatch_group(%SwatchGroup{picker_id: @id})} {Connect.swatch_group(%SwatchGroup{picker_id: @id})}>
+            <div {Connect.mounted_swatch_group(%SwatchGroup{picker_id: @id})}>
               <button
                 :for={{preset, pidx} <- Enum.with_index(@presets)}
-                phx-mounted={Connect.ignore_swatch_trigger(%SwatchTrigger{
-                  id: @id,
-                  value: normalize_preset_value(preset),
-                  checked: preset_checked?(preset, @initial.hex_value),
-                  index: pidx
-                })}
-                {Connect.swatch_trigger(%SwatchTrigger{
+                {Connect.mounted_swatch_trigger(%SwatchTrigger{
                   id: @id,
                   value: normalize_preset_value(preset),
                   checked: preset_checked?(preset, @initial.hex_value),
                   index: pidx
                 })}
               >
-                <div phx-mounted={Connect.ignore_transparency_grid(%TransparencyGrid{id: @id, size: "var(--spacing-mini)", variant: "preset-#{pidx}"})} {Connect.transparency_grid(%TransparencyGrid{id: @id, size: "var(--spacing-mini)", variant: "preset-#{pidx}"})}></div>
+                <div {Connect.mounted_transparency_grid(%TransparencyGrid{id: @id, size: "var(--spacing-mini)", variant: "preset-#{pidx}"})}></div>
                 <div
-                  phx-mounted={Connect.ignore_preset_swatch(%PresetSwatch{
-                    id: @id,
-                    color: preset_color(preset),
-                    value: normalize_preset_value(preset),
-                    checked: preset_checked?(preset, @initial.hex_value),
-                    index: pidx
-                  })}
-                  {Connect.preset_swatch(%PresetSwatch{
+                  {Connect.mounted_preset_swatch(%PresetSwatch{
                     id: @id,
                     color: preset_color(preset),
                     value: normalize_preset_value(preset),
@@ -709,16 +642,62 @@ defmodule Corex.ColorPicker do
           </div>
         </div>
       </div>
-      <div
-        :if={@error != [] and !Enum.empty?(@errors)}
-        :for={msg <- @errors}
-        data-scope="color-picker"
-        data-part="error"
-      >
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="color-picker" errors={@errors} error={@error} />
     </div>
     """
+  end
+
+  defp prepare_color_picker(assigns) do
+    translation = Translation.resolve(assigns.translation)
+
+    assigns =
+      assigns
+      |> Corex.FormField.require_id!("Corex component (color-picker)")
+      |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:errors, fn -> [] end)
+      |> assign_new(:invalid, fn -> false end)
+      |> assign(:translation, translation)
+      |> assign(:dir, assigns.dir || "ltr")
+
+    initial_value = initial_value(assigns)
+    initial = Initial.parse(initial_value)
+    value_str = initial.hex_value || fallback_value_str(assigns)
+
+    connect_props =
+      Connect.props(%Props{
+        id: assigns.id,
+        form_field: assigns.form_field,
+        value: assigns.value,
+        name: assigns.name,
+        close_on_select: assigns.close_on_select,
+        open_auto_focus: assigns.open_auto_focus,
+        disabled: assigns.disabled,
+        invalid: assigns.invalid,
+        read_only: assigns.read_only,
+        required: assigns.required,
+        dir: assigns.dir,
+        positioning: assigns.positioning,
+        on_value_change: assigns.on_value_change,
+        on_value_change_client: assigns.on_value_change_client,
+        on_value_change_end: assigns.on_value_change_end,
+        on_value_change_end_client: assigns.on_value_change_end_client,
+        on_open_change: assigns.on_open_change,
+        on_open_change_client: assigns.on_open_change_client,
+        on_format_change: assigns.on_format_change,
+        on_format_change_client: assigns.on_format_change_client,
+        on_pointer_down_outside: assigns.on_pointer_down_outside,
+        on_pointer_down_outside_client: assigns.on_pointer_down_outside_client,
+        on_focus_outside: assigns.on_focus_outside,
+        on_focus_outside_client: assigns.on_focus_outside_client,
+        on_interact_outside: assigns.on_interact_outside,
+        on_interact_outside_client: assigns.on_interact_outside_client
+      })
+
+    assigns
+    |> assign(:initial, initial)
+    |> assign(:value_str, value_str)
+    |> assign(:connect_props, connect_props)
+    |> assign(:presets_json, Corex.Dataset.encode_json(assigns.presets))
   end
 
   defp form_field_to_color_value(%Phoenix.HTML.FormField{} = field) do
@@ -735,6 +714,9 @@ defmodule Corex.ColorPicker do
   end
 
   defp initial_value(_), do: nil
+
+  defp fallback_value_str(%{form_field: true}), do: nil
+  defp fallback_value_str(_), do: "#000000"
 
   defp normalize_preset_value(preset) when is_binary(preset) do
     case Initial.parse(preset) do
@@ -761,7 +743,9 @@ defmodule Corex.ColorPicker do
 
   ```heex
   <.action phx-click={Corex.ColorPicker.set_value("my-color-picker", "#226677")}>Set</.action>
-  <.color_picker id="my-color-picker" class="color-picker" label="Color" value="#000000" />
+  <.color_picker id="my-color-picker" class="color-picker" value="#000000">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```javascript
@@ -774,6 +758,9 @@ defmodule Corex.ColorPicker do
   ```
   """)
 
+  @spec set_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
     JS.dispatch("corex:color-picker:set-value",
       to: "##{color_picker_id}",
@@ -787,7 +774,9 @@ defmodule Corex.ColorPicker do
 
   ```heex
   <.action phx-click="pick_color" phx-value-value="#226677">Set</.action>
-  <.color_picker id="my-color-picker" class="color-picker" label="Color" value="#000000" />
+  <.color_picker id="my-color-picker" class="color-picker" value="#000000">
+    <:label>Color</:label>
+  </.color_picker>
   ```
 
   ```elixir

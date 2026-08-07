@@ -1,11 +1,10 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { mountCheckedBinding, readUpdatedServerChecked } from "../lib/read-props";
+import { createZagLiveHook } from "../lib/zag-live-hook";
+import { syncCheckedHiddenInput } from "../lib/phoenix-form-bridge";
 import {
   checkedChangePayload,
   idMatches,
@@ -13,24 +12,21 @@ import {
   readPayloadId,
   readPayloadChecked,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 
 type SwitchHookState = {
-  zagSwitch?: Switch;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
+  switchComponent?: Switch;
 };
 
 export { checkedChangePayload };
 
-const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    const zagSwitch = new Switch(el, {
+const SwitchHook = createZagLiveHook<SwitchHookState, Switch>({
+  key: "switchComponent",
+  controlledKeys: ["checked"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    const switchComponent = new Switch(el, {
       id: el.id,
       ...(() => {
         const binding = mountCheckedBinding(el);
@@ -61,104 +57,78 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
         const input = el.querySelector<HTMLInputElement>(
           '[data-scope="switch"][data-part="hidden-input"]'
         );
-
         if (input) {
-          input.checked = details.checked === true;
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-          input.dispatchEvent(new Event("change", { bubbles: true }));
+          syncCheckedHiddenInput(input, details.checked === true, { markUsed: false });
         }
       },
     });
 
-    zagSwitch.init();
-    this.zagSwitch = zagSwitch;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ checked: boolean }>>("corex:switch:set-checked", (event) => {
+    dom.add<CustomEvent<{ checked: boolean }>>("corex:switch:set-checked", (event) => {
       const { checked } = event.detail;
-      zagSwitch.api.setChecked(checked);
+      switchComponent.api.setChecked(checked);
     });
 
-    domRegistry.add("corex:switch:toggle-checked", () => {
-      zagSwitch.api.toggleChecked();
+    dom.add("corex:switch:toggle-checked", () => {
+      switchComponent.api.toggleChecked();
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("switch_set_checked", (payload: unknown) => {
+    server.add("switch_set_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const checked = readPayloadChecked(payload);
-      if (typeof checked === "boolean") zagSwitch.api.setChecked(checked);
+      if (typeof checked === "boolean") switchComponent.api.setChecked(checked);
     });
 
-    registry.add("switch_toggle_checked", (payload: unknown) => {
+    server.add("switch_toggle_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      zagSwitch.api.toggleChecked();
+      switchComponent.api.toggleChecked();
     });
 
-    registry.add("switch_checked", (payload: unknown) => {
-      if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("switch_checked_response", {
-        id: el.id,
-        value: zagSwitch.api.checked,
-      });
-    });
-
-    registry.add("switch_focused", (payload: unknown) => {
+    server.add("switch_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("switch_focused_response", {
+      hook.pushEvent("switch_checked_response", {
         id: el.id,
-        value: zagSwitch.api.focused,
+        value: switchComponent.api.checked,
       });
     });
 
-    registry.add("switch_disabled", (payload: unknown) => {
+    server.add("switch_focused", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("switch_disabled_response", {
+      hook.pushEvent("switch_focused_response", {
         id: el.id,
-        value: zagSwitch.api.disabled,
+        value: switchComponent.api.focused,
       });
     });
-  },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
-  },
-
-  updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    const zagSwitch = this.zagSwitch;
-    if (!zagSwitch) return;
-
-    try {
-      const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
-
-      zagSwitch.updateProps({
-        id: this.el.id,
-        ...("checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {}),
-        disabled: getBoolean(this.el, "disabled"),
-        name: getString(this.el, "name"),
-        form: getString(this.el, "form"),
-        value: getString(this.el, "value"),
-        dir: getDir(this.el),
-        invalid: getBoolean(this.el, "invalid"),
-        required: getBoolean(this.el, "required"),
-        readOnly: getBoolean(this.el, "readonly"),
+    server.add("switch_disabled", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      hook.pushEvent("switch_disabled_response", {
+        id: el.id,
+        value: switchComponent.api.disabled,
       });
-    } finally {
-      this.beforeAttrs = undefined;
-    }
+    });
+
+    return switchComponent;
   },
 
-  destroyed(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.zagSwitch?.destroy();
+  update(hook, switchComponent) {
+    const checkedPatch = readUpdatedServerChecked(hook.el, hook.beforeAttrs);
+
+    switchComponent.updateProps({
+      id: hook.el.id,
+      ...("checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {}),
+      disabled: getBoolean(hook.el, "disabled"),
+      name: getString(hook.el, "name"),
+      form: getString(hook.el, "form"),
+      value: getString(hook.el, "value"),
+      dir: getDir(hook.el),
+      invalid: getBoolean(hook.el, "invalid"),
+      required: getBoolean(hook.el, "required"),
+      readOnly: getBoolean(hook.el, "readonly"),
+    });
   },
-};
+});
 
 export { SwitchHook as Switch };

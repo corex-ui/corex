@@ -9,9 +9,19 @@
     id="tree-view-styling-page"
     title={~t"Tree view · Style"}
     subtitle={
-      ~t"Semantic colors, density steps, radius, and text utilities via modifier classes on the tree view."
+      ~t"Semantic colors, density, and max-width via modifier classes on the tree view root."
     }
   >
+    <.demo_section
+      id="tree-view-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.TreeViewDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="tree-view-styling-color"
       title={~t"Semantic"}
@@ -26,28 +36,6 @@
     </.demo_section>
 
     <.demo_section
-      id="tree-view-style-variant"
-      title={~t"Variant"}
-      code={E2eWeb.Demos.TreeViewDemo.styling_variant_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="tree-view" axis={:variant} />
-      </:description>
-      <:preview><E2eWeb.Demos.TreeViewDemo.styling_variant_example /></:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="tree-view-style-variant-matrix"
-      title={~t"Semantic × variant"}
-      code={E2eWeb.Demos.TreeViewDemo.styling_variant_matrix_code()}
-    >
-      <:description>
-        <.variant_matrix_description host="tree-view" />
-      </:description>
-      <:preview><E2eWeb.Demos.TreeViewDemo.styling_variant_matrix_example /></:preview>
-    </.demo_section>
-
-    <.demo_section
       id="tree-view-styling-size"
       title={~t"Size"}
       code={E2eWeb.Demos.TreeViewDemo.styling_size_code()}
@@ -57,19 +45,6 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_size_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="tree-view-styling-radius"
-      title={~t"Rounded"}
-      code={E2eWeb.Demos.TreeViewDemo.styling_radius_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="tree-view" axis={:radius} />
-      </:description>
-      <:preview>
-        <E2eWeb.Demos.TreeViewDemo.styling_radius_example />
       </:preview>
     </.demo_section>
 

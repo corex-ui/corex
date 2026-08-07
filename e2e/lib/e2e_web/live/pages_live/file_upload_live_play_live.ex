@@ -51,7 +51,7 @@ defmodule E2eWeb.FileUploadLivePlayLive do
               id="file-upload-live-playground"
               class="file-upload"
               upload={@uploads.play}
-              field={:play}
+              upload_name={:play}
               dir={@dir}
             >
               <:label>Files</:label>

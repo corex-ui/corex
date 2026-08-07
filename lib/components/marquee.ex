@@ -49,6 +49,17 @@ defmodule Corex.Marquee do
 
   <!-- tabs-close -->
 
+  ## Interactive content
+
+  The marquee keeps a seamless loop by rendering duplicate copies of each item.
+  Only the primary copy stays live: nested Corex components keep their ids and hooks.
+  Duplicate copies are decorative (`aria-hidden`), with ids, `phx-hook`, and form `name`
+  attributes stripped and focusable controls disabled so they cannot steal focus or
+  confuse Zag wiring. Clones stay hoverable so native `title` tooltips still work.
+
+  Prefer non-interactive chips or static markup in a scrolling marquee when every
+  card on screen must respond to input. Put interactive demos in a static grid instead.
+
   ## API
 
   Requires a stable `id` on `<.marquee>`.
@@ -100,7 +111,9 @@ defmodule Corex.Marquee do
 
   Stack modifiers on the host (`class` on `<.marquee>`).
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Attrs: `duration`, `speed`, `spacing`, `auto_fill`, `pause_on_interaction`, `paused`, `delay`, `loop_count`, `reverse`, `respect_reduced_motion`, and the `on_*` event hooks above.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
 
@@ -135,6 +148,7 @@ defmodule Corex.Marquee do
 
   alias Corex.Marquee.Anatomy.{Item, Props}
   alias Corex.Marquee.Connect
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -150,6 +164,11 @@ defmodule Corex.Marquee do
   attr(:side, :string, default: "end", values: ["start", "end", "top", "bottom"])
   attr(:speed, :integer, default: 100, doc: "Animation speed in pixels per second")
   attr(:spacing, :string, default: "1rem", doc: "Spacing between items")
+
+  attr(:auto_fill, :boolean,
+    default: true,
+    doc: "When true, duplicates content tracks until the viewport is filled for a seamless loop"
+  )
 
   attr(:pause_on_interaction, :boolean,
     default: false,
@@ -210,7 +229,7 @@ defmodule Corex.Marquee do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "marquee-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("marquee")
       |> assign(:items, items)
       |> assign(:items_count, items_count)
       |> assign(:orientation, orient)
@@ -224,6 +243,7 @@ defmodule Corex.Marquee do
       side: assigns.side,
       speed: assigns.speed,
       spacing: assigns.spacing,
+      auto_fill: assigns.auto_fill,
       pause_on_interaction: assigns.pause_on_interaction,
       paused: assigns.paused,
       delay: assigns.delay,
@@ -290,8 +310,10 @@ defmodule Corex.Marquee do
   ```
   """)
 
+  @spec pause(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec pause(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def pause(marquee_id) when is_binary(marquee_id) do
-    JS.dispatch("corex:marquee:pause", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("corex:marquee:pause", to: Selectors.css_id(marquee_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -319,7 +341,7 @@ defmodule Corex.Marquee do
 
   def pause(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
-    LiveView.push_event(socket, "marquee_pause", %{marquee_id: marquee_id})
+    LiveView.push_event(socket, "marquee_pause", %{id: marquee_id})
   end
 
   api_doc(~S"""
@@ -346,8 +368,10 @@ defmodule Corex.Marquee do
   ```
   """)
 
+  @spec resume(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec resume(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def resume(marquee_id) when is_binary(marquee_id) do
-    JS.dispatch("corex:marquee:resume", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("corex:marquee:resume", to: Selectors.css_id(marquee_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -376,7 +400,7 @@ defmodule Corex.Marquee do
 
   def resume(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
-    LiveView.push_event(socket, "marquee_resume", %{marquee_id: marquee_id})
+    LiveView.push_event(socket, "marquee_resume", %{id: marquee_id})
   end
 
   api_doc(~S"""
@@ -402,8 +426,10 @@ defmodule Corex.Marquee do
   ```
   """)
 
+  @spec toggle_pause(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec toggle_pause(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def toggle_pause(marquee_id) when is_binary(marquee_id) do
-    JS.dispatch("corex:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("corex:marquee:toggle-pause", to: Selectors.css_id(marquee_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -431,6 +457,6 @@ defmodule Corex.Marquee do
 
   def toggle_pause(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
-    LiveView.push_event(socket, "marquee_toggle_pause", %{marquee_id: marquee_id})
+    LiveView.push_event(socket, "marquee_toggle_pause", %{id: marquee_id})
   end
 end

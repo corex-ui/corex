@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.NavigateDemo do
   use E2eWeb, :html
 
-  alias E2eWeb.DemoScales
-
   def anatomy_minimal_code do
     ~S"""
     <.navigate to="/about">About</.navigate>
@@ -159,54 +157,41 @@ defmodule E2eWeb.Demos.NavigateDemo do
     """
   end
 
-  def styling_variant_code do
+  def styling_nav_code do
     ~S"""
-    <.navigate class="link" to="#">Subtle (default)</.navigate>
-    <.navigate class="link ui-solid" to="#">Solid</.navigate>
+    <nav class="flex flex-wrap items-center gap-space" aria-label="Example">
+      <.navigate class="link ui-nav" to="#" aria-current="page">Overview</.navigate>
+      <.navigate class="link ui-nav" to="#">Docs</.navigate>
+      <.navigate class="link ui-nav" to="#" aria-current="location">API</.navigate>
+      <.navigate class="link ui-nav ui-accent" to="#" aria-current="page">Accent current</.navigate>
+    </nav>
     """
   end
 
-  def styling_variant_example(assigns) do
+  def styling_nav_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space">
-      <.navigate id="navigate-style-variant-subtle" class="link" to="#">Subtle (default)</.navigate>
-      <.navigate id="navigate-style-variant-solid" class="link ui-solid" to="#">
-        Solid
+    <nav class="flex flex-wrap items-center gap-space" aria-label="Example">
+      <.navigate id="navigate-style-nav-current" class="link ui-nav" to="#" aria-current="page">
+        Overview
       </.navigate>
-    </div>
-    """
-  end
-
-  def styling_variant_matrix_code do
-    for semantic <- DemoScales.styling_semantic_axis_steps("link"),
-        variant <- DemoScales.styling_variant_axis_steps("link") do
-      class = DemoScales.join_matrix_modifiers("link", semantic.modifier, variant.modifier)
-
-      ~s(<.navigate class="#{class}" to="#">#{semantic.label}</.navigate>)
-    end
-    |> DemoScales.join_code()
-  end
-
-  def styling_variant_matrix_example(assigns) do
-    assigns =
-      assigns
-      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("link"))
-      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("link"))
-
-    ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space items-center min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
-          <.navigate
-            :for={variant <- @matrix_variants}
-            class={DemoScales.join_matrix_modifiers("link", semantic.modifier, variant.modifier)}
-            to="#"
-          >
-            {semantic.label}
-          </.navigate>
-        </div>
-      </div>
-    </div>
+      <.navigate id="navigate-style-nav" class="link ui-nav" to="#">Docs</.navigate>
+      <.navigate
+        id="navigate-style-nav-location"
+        class="link ui-nav"
+        to="#"
+        aria-current="location"
+      >
+        API
+      </.navigate>
+      <.navigate
+        id="navigate-style-nav-accent-current"
+        class="link ui-nav ui-accent"
+        to="#"
+        aria-current="page"
+      >
+        Accent current
+      </.navigate>
+    </nav>
     """
   end
 

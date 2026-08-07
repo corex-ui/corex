@@ -74,7 +74,7 @@ defmodule E2eWeb.App.Aside do
     assigns = assign(assigns, :badges, badges) |> assign(:id_base, id_base)
 
     ~H"""
-    <div :if={@badges != []} class="flex shrink-0 items-center gap-1">
+    <div :if={@badges != []} class="flex shrink-0 items-center gap-space">
       <.aside_menu_tree_badge
         :for={kind <- @badges}
         kind={kind}
@@ -90,43 +90,10 @@ defmodule E2eWeb.App.Aside do
 
   def aside_menu_tree_label_row(assigns) do
     ~H"""
-    <span class="flex w-full min-w-0 items-center gap-2">
+    <span class="flex w-full min-w-0 items-center gap-space-sm">
       <span class="min-w-0 flex-1 truncate">{@node.label}</span>
       <.aside_menu_tree_meta node={@node} tip_scope={@tip_scope} />
     </span>
-    """
-  end
-
-  attr(:path, :string, required: true)
-  attr(:site_nav_tree_id, :string, default: "site-nav-menu")
-  attr(:tree_class, :string, default: "tree-view navigation max-w-3xs")
-
-  def drawer_site_nav_tree(assigns) do
-    assigns =
-      assigns
-      |> assign(:full_path, E2eWeb.Path.with_current_locale(assigns.path))
-      |> assign(:items, site_nav_menu_items())
-
-    ~H"""
-    <.tree_view
-      id={@site_nav_tree_id}
-      class={@tree_class}
-      redirect
-      value={[@full_path]}
-      expanded_value={[]}
-      items={@items}
-    >
-      <:item :let={item}>
-        <span class="flex min-w-0 items-center gap-1.5">
-          <span class="min-w-0 truncate">{item.label}</span>
-          <.heroicon
-            :if={item.new_tab}
-            name="hero-arrow-top-right-on-square"
-            class="icon shrink-0"
-          />
-        </span>
-      </:item>
-    </.tree_view>
     """
   end
 

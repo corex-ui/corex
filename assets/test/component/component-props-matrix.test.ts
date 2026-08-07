@@ -60,16 +60,8 @@ describe("timer visibility matrix", () => {
     if (segments) root.dataset.segments = segments;
     if (collapse) root.dataset.collapseLeadingZeros = collapse;
     if (countdown) root.dataset.countdown = "true";
-    const nums = mutableNumbers(timeVals);
-    const hidden = computeItemHidden(
-      root,
-      timerTime({
-        days: nums[0],
-        hours: nums[1],
-        minutes: nums[2],
-        seconds: nums[3],
-      })
-    );
+    const [days = 0, hours = 0, minutes = 0, seconds = 0] = mutableNumbers(timeVals);
+    const hidden = computeItemHidden(root, timerTime({ days, hours, minutes, seconds }));
     expect(hidden).toEqual(expectedHidden);
   });
 });

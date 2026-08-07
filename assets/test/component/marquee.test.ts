@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { Marquee } from "../../components/marquee";
 
+function collectIds(root: ParentNode): string[] {
+  return Array.from(root.querySelectorAll("[id]"))
+    .map((el) => el.id)
+    .filter((id) => id.length > 0);
+}
+
 describe("Marquee", () => {
   it("buildDom appends root before removing ssr-preview", () => {
     const el = document.createElement("div");
@@ -22,6 +28,62 @@ describe("Marquee", () => {
     expect(el.querySelector('[data-scope="marquee"][data-part="root"]')).toBeTruthy();
     expect(el.querySelectorAll('[data-part="content"]').length).toBe(1);
     expect(el.querySelectorAll('[data-part="item"]').length).toBe(2);
+    c.destroy();
+  });
+
+  it("adopts live ssr-preview items as content copy 0", () => {
+    const el = document.createElement("div");
+    el.id = "marquee-adopt";
+    el.dataset.duration = "20";
+    el.innerHTML = `
+      <div data-part="ssr-preview" data-orientation="horizontal">
+        <div data-part="item" id="live-item-a">
+          <button id="live-btn" phx-hook="Combobox" name="country">A</button>
+        </div>
+        <div data-part="item" id="live-item-b">B</div>
+      </div>
+      <template data-part="items-template">
+        <div data-part="item" id="live-item-a">
+          <button id="live-btn" phx-hook="Combobox" name="country">A</button>
+        </div>
+        <div data-part="item" id="live-item-b">B</div>
+      </template>
+    `;
+    const liveItemA = el.querySelector("#live-item-a") as HTMLElement;
+    const liveBtn = el.querySelector("#live-btn") as HTMLElement;
+    const c = new Marquee(el, { id: el.id, autoFill: false });
+    c.buildDom();
+    c.init();
+
+    const primary = el.querySelector<HTMLElement>('[data-part="content"][data-index="0"]');
+    expect(primary).toBeTruthy();
+    expect(primary!.querySelector("#live-item-a")).toBe(liveItemA);
+    expect(primary!.querySelector("#live-btn")).toBe(liveBtn);
+    expect(liveBtn.getAttribute("phx-hook")).toBe("Combobox");
+    expect(liveBtn.getAttribute("name")).toBe("country");
+
+    const clones = Array.from(
+      el.querySelectorAll<HTMLElement>('[data-part="content"]:not([data-index="0"])')
+    );
+    expect(clones.length).toBeGreaterThan(0);
+    for (const clone of clones) {
+      expect(clone.inert).toBe(false);
+      expect(clone.getAttribute("aria-hidden")).toBe("true");
+      expect(clone.querySelector("#live-item-a")).toBeNull();
+      expect(clone.querySelector("#live-btn")).toBeNull();
+      expect(clone.querySelector("[phx-hook]")).toBeNull();
+      expect(clone.querySelector("[name]")).toBeNull();
+      const cloneBtn = clone.querySelector("button");
+      expect(cloneBtn).toBeTruthy();
+      expect((cloneBtn as HTMLButtonElement).disabled).toBe(true);
+      expect((cloneBtn as HTMLButtonElement).tabIndex).toBe(-1);
+    }
+
+    const ids = collectIds(el);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toContain("live-item-a");
+    expect(ids).toContain("live-btn");
+
     c.destroy();
   });
 
@@ -47,6 +109,15 @@ describe("Marquee", () => {
         .length
     ).toBe(c.api.contentCount);
     expect(el.hasAttribute("data-loading")).toBe(false);
+
+    const cloneContents = el.querySelectorAll<HTMLElement>(
+      '[data-part="content"]:not([data-index="0"])'
+    );
+    cloneContents.forEach((content) => {
+      expect(content.inert).toBe(false);
+      expect(content.getAttribute("aria-hidden")).toBe("true");
+    });
+
     c.destroy();
   });
 
@@ -67,6 +138,102 @@ describe("Marquee", () => {
     c.ensureDom();
     expect(el.querySelector('[data-scope="marquee"][data-part="root"]')).toBeTruthy();
     expect(el.querySelectorAll('[data-part="item"]').length).toBeGreaterThan(0);
+    c.destroy();
+  });
+
+  it("syncClonesFromPrimary keeps primary and clone item trees in sync after images", async () => {
+    const pixel = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    const el = document.createElement("div");
+    el.id = "marquee-images";
+    el.dataset.duration = "20";
+    el.style.width = "240px";
+    el.innerHTML = `
+      <div data-part="ssr-preview" data-orientation="horizontal">
+        <div data-part="item">
+          <img src="${pixel}" width="48" height="44" alt="" title="Elixir" style="width:48px;height:44px" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="64" height="44" alt="" title="Phoenix" style="width:64px;height:44px" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="40" height="44" alt="" title="Tableau" style="width:40px;height:44px" />
+        </div>
+      </div>
+      <template data-part="items-template">
+        <div data-part="item">
+          <img src="${pixel}" width="16" height="16" alt="" title="Elixir" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="16" height="16" alt="" title="Phoenix" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="16" height="16" alt="" title="Tableau" />
+        </div>
+      </template>
+    `;
+
+    const c = new Marquee(el, { id: el.id, autoFill: false });
+    c.buildDom();
+    c.init();
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    c.syncClonesFromPrimary();
+    c.render();
+
+    const primary = el.querySelector<HTMLElement>('[data-part="content"][data-index="0"]');
+    const clone = el.querySelector<HTMLElement>('[data-part="content"]:not([data-index="0"])');
+    expect(primary).toBeTruthy();
+    expect(clone).toBeTruthy();
+    expect(clone!.inert).toBe(false);
+    expect(clone!.getAttribute("aria-hidden")).toBe("true");
+
+    const primaryImgs = Array.from(primary!.querySelectorAll("img"));
+    const cloneImgs = Array.from(clone!.querySelectorAll("img"));
+    expect(cloneImgs.length).toBe(primaryImgs.length);
+    expect(cloneImgs.length).toBe(3);
+
+    primaryImgs.forEach((img, i) => {
+      const cloneImg = cloneImgs[i];
+      expect(cloneImg).toBeDefined();
+      expect(cloneImg!.getAttribute("title")).toBe(img.getAttribute("title"));
+      expect(cloneImg!.getAttribute("width")).toBe(img.getAttribute("width"));
+      expect(cloneImg!.getAttribute("height")).toBe(img.getAttribute("height"));
+      expect(cloneImg!.getAttribute("style")).toBe(img.getAttribute("style"));
+    });
+
+    // Stale template sizes must not remain on clones after sync from primary.
+    expect(cloneImgs.every((img) => img.getAttribute("width") !== "16")).toBe(true);
+
+    c.destroy();
+  });
+
+  it("autoFill true still yields aria-hidden clones after sync", async () => {
+    const el = document.createElement("div");
+    el.id = "marquee-autofill";
+    el.dataset.duration = "20";
+    el.style.width = "80px";
+    el.innerHTML = `
+      <template data-part="items-template">
+        <span data-part="item" style="display:inline-block;width:60px">A</span>
+        <span data-part="item" style="display:inline-block;width:60px">B</span>
+      </template>
+    `;
+    const c = new Marquee(el, { id: el.id, autoFill: true });
+    c.buildDom();
+    c.init();
+    c.syncClonesFromPrimary();
+    c.render();
+
+    expect(c.api.contentCount).toBeGreaterThanOrEqual(2);
+    const clones = el.querySelectorAll<HTMLElement>('[data-part="content"]:not([data-index="0"])');
+    expect(clones.length).toBeGreaterThan(0);
+    clones.forEach((content) => {
+      expect(content.inert).toBe(false);
+      expect(content.getAttribute("aria-hidden")).toBe("true");
+    });
+
     c.destroy();
   });
 });

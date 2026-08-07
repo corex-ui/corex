@@ -15,16 +15,26 @@ defmodule Corex.ColorPicker.Initial do
           green_value: String.t() | nil,
           blue_value: String.t() | nil
         }
-  def parse(nil), do: empty(nil)
+  def parse(nil), do: parse("#000000")
 
-  def parse(""), do: empty(nil)
+  def parse(""), do: parse("#000000")
 
   def parse(str) when is_binary(str) do
     str = String.trim(str)
-    parse_hex(str) || parse_rgba(str) || parse_rgb(str) || empty(nil)
+
+    case str do
+      "" ->
+        parse("#000000")
+
+      _ ->
+        case parse_hex(str) || parse_rgba(str) || parse_rgb(str) do
+          nil -> empty()
+          parsed -> parsed
+        end
+    end
   end
 
-  defp empty(_swatch_fallback) do
+  defp empty do
     %{
       swatch_style: nil,
       value_rgba: nil,

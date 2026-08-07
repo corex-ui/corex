@@ -8,7 +8,7 @@ Explicit anchors. Import `link.css` when using Corex Design.
 
 ```heex
 <.navigate to="/about" class="link">About</.navigate>
-<.navigate to={~p"/dashboard"} type="navigate" class="link link--accent">Dashboard</.navigate>
+<.navigate to={~p"/dashboard"} type="navigate" class="link ui-accent">Dashboard</.navigate>
 <.navigate to={~p"/items?page=2"} type="patch" class="link">Page 2</.navigate>
 <.navigate to="https://example.com" external class="link">External</.navigate>
 ```
@@ -26,14 +26,14 @@ Icon-only links need `aria_label`. `external` only valid with `type="href"`.
 Actions and form submit. Can bind imperative API:
 
 ```heex
-<.action class="button button--accent" phx-click={Corex.Dialog.open("my-dialog")}>
+<.action class="button ui-accent" phx-click={Corex.Dialog.set_open("my-dialog", true)}>
   Open
 </.action>
 ```
 
 ## Redirect on select — list components
 
-Set `redirect` on the component. Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`.
+Set `redirect` on the component. Build flat list items with `Corex.List.new/1` or `Corex.List.Item.new/1`; build `menu` / `tree_view` items with `Corex.Tree.new/1` or `Corex.Tree.Item.new/1`.
 
 **Component attr:** `redirect` (boolean) — navigate when user selects an item.
 
@@ -45,7 +45,7 @@ Set `redirect` on the component. Build items with `Corex.List.new/1` or `Corex.L
 | `:redirect` | `:href` (default), `:patch`, `:navigate`, or `false` |
 | `:new_tab` | Open external link in new tab |
 
-Components supporting `redirect`: `select`, `menu`, `combobox`, `listbox`, `pagination`.
+Components supporting `redirect`: `select`, `menu`, `combobox`, `listbox`, `tree_view`, `pagination`.
 
 ### Language switcher example
 
@@ -65,7 +65,7 @@ items =
 ```heex
 <.select
   id="language-switch"
-  class="select select--sm"
+  class="select ui-size-sm"
   items={items}
   value={[current_dest]}
   redirect
@@ -111,7 +111,7 @@ Corex.List.Item.new(%{
 |------|-----|
 | Static link in markup | `<.navigate>` |
 | Button action / submit | `<.action>` |
-| Pick destination from list (locale, menu, theme) | `redirect` on select/menu/combobox |
+| Pick destination from list (locale, menu, theme, tree) | `redirect` on select/menu/combobox/tree_view |
 | Server logic before navigate | `on_value_change` + `redirect/2` in `handle_event` instead of `redirect` attr |
 
 ## References

@@ -1,18 +1,27 @@
 defmodule Corex.Design.Bundle.Components do
   @moduledoc false
 
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components, as: Registry
+  alias Corex.Design.Emit.Css
   alias Corex.Design.Write
 
   @entry_header "/* Corex generated components - do not edit */\n"
   @import_pattern ~r/@import\s+"\.\/([^"]+)\.css";/
+  @apply_pattern ~r/@apply\s+([^;]+);/
 
-  def resolve_ids(nil), do: ComponentLayout.ids()
+  @utility_deps %{
+    "scrollbar" => "scrollbar",
+    "scrollbar--sm" => "scrollbar",
+    "scrollbar--md" => "scrollbar",
+    "scrollbar--lg" => "scrollbar"
+  }
 
-  def resolve_ids(ids) when is_list(ids) do
+  def resolve_ids!(nil), do: Registry.ids()
+
+  def resolve_ids!(ids) when is_list(ids) do
     ids
     |> Enum.map(&to_string/1)
-    |> Enum.flat_map(&expand_id/1)
+    |> Enum.flat_map(&expand_id!/1)
     |> Enum.uniq()
   end
 
@@ -41,15 +50,23 @@ defmodule Corex.Design.Bundle.Components do
   end
 
   def write_entry!(output_dir, ids) do
-    body =
-      ids
-      |> Enum.sort()
-      |> Enum.map_join("\n", &"@import \"./components/#{&1}.css\";")
+    paths = ids |> Enum.sort() |> Enum.map(&"./components/#{&1}.css")
 
-    Write.atomic!(Path.join(output_dir, "components.css"), @entry_header <> body <> "\n")
+    Write.atomic!(Path.join(output_dir, "components.css"), [@entry_header, Css.imports(paths)])
   end
 
-  defp expand_id(id) do
+  defp expand_id!(id) do
+    case expand_id_result(id) do
+      {:ok, ids} ->
+        ids
+
+      {:error, missing} ->
+        raise ArgumentError,
+              "config :corex_design, components: #{id} requires #{missing}, but design/priv/css/components/#{missing}.css is missing"
+    end
+  end
+
+  defp expand_id_result(id) do
     static_root =
       :corex_design
       |> :code.priv_dir()
@@ -57,18 +74,19 @@ defmodule Corex.Design.Bundle.Components do
       |> Path.join("css")
 
     path = Path.join([static_root, "components", "#{id}.css"])
-    deps = import_deps(path)
-    [id | deps]
-  end
 
-  defp import_deps(path) do
     if File.exists?(path) do
-      path
-      |> File.read!()
-      |> parse_import_deps()
-      |> Enum.flat_map(&expand_id/1)
+      content = File.read!(path)
+      deps = parse_import_deps(content) ++ parse_apply_deps(content)
+
+      Enum.reduce_while(deps, {:ok, [id]}, fn dep, {:ok, acc} ->
+        case expand_id_result(dep) do
+          {:ok, nested} -> {:cont, {:ok, acc ++ nested}}
+          {:error, _} = err -> {:halt, err}
+        end
+      end)
     else
-      []
+      {:error, id}
     end
   end
 
@@ -77,5 +95,14 @@ defmodule Corex.Design.Bundle.Components do
     |> Regex.scan(content)
     |> Enum.map(fn [_, dep] -> dep end)
     |> Enum.reject(&(&1 in ["../main"]))
+  end
+
+  defp parse_apply_deps(content) do
+    @apply_pattern
+    |> Regex.scan(content)
+    |> Enum.flat_map(fn [_, names] -> String.split(names) end)
+    |> Enum.map(&Map.get(@utility_deps, &1))
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
   end
 end

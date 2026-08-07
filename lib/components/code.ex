@@ -20,6 +20,12 @@ defmodule Corex.Code do
 
   Only `makeup` is required. Add the lexer packages you need; without a lexer, code renders as plain escaped text.
 
+  ## Security
+
+  Highlighted output is injected with `Phoenix.HTML.raw/1`. Treat the `code` attr as
+  **trusted** (developer-authored or sanitized). Do not pass untrusted user input —
+  an HTML-capable Makeup lexer can emit markup into the page.
+
   ## Anatomy
 
   ### Basic Usage

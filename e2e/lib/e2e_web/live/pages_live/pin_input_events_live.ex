@@ -71,7 +71,7 @@ defmodule E2eWeb.PinInputEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.pin_input
                 id="pin-input-events-server"
                 count={4}
@@ -107,7 +107,7 @@ defmodule E2eWeb.PinInputEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.pin_input
                 id="pin-input-events-client"
                 count={4}

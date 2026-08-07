@@ -20,10 +20,10 @@ defmodule Corex.Toast.PayloadTest do
   end
 
   describe "create_server_data/5" do
-    test "includes groupId" do
+    test "includes group_id" do
       detail = Payload.create_server_data("g1", "Hi", "Body", :info, [])
 
-      assert detail.groupId == "g1"
+      assert detail.group_id == "g1"
       assert detail.title == "Hi"
     end
   end

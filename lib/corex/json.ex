@@ -1,21 +1,31 @@
 defmodule Corex.Json do
-  @moduledoc false
+  @moduledoc """
+  OTP `:json` wrapper that encodes `nil` as `null` and decodes `null` back to `nil`.
 
+  The single encoder for the `corex` package. `corex_mcp` carries a byte-compatible
+  copy because it does not depend on `corex`.
+  """
+
+  @spec encoder() :: module()
   def encoder, do: __MODULE__
 
+  @spec encode!(term()) :: String.t()
   def encode!(term) do
     IO.iodata_to_binary(encode_to_iodata!(term))
   end
 
+  @spec encode_to_iodata!(term()) :: iodata()
   def encode_to_iodata!(term) do
     :json.encode(term, &encode_value/2)
   end
 
+  @spec decode!(iodata()) :: term()
   def decode!(iodata) when is_binary(iodata) or is_list(iodata) do
     binary = if is_list(iodata), do: IO.iodata_to_binary(iodata), else: iodata
     binary |> :json.decode() |> normalize_decode()
   end
 
+  @spec decode(iodata()) :: {:ok, term()} | {:error, Exception.t()}
   def decode(iodata) when is_binary(iodata) or is_list(iodata) do
     {:ok, decode!(iodata)}
   rescue

@@ -9,9 +9,19 @@
     id="combobox-styling-page"
     title={~t"Combobox · Style"}
     subtitle={
-      ~t"Semantic colors, density, corner radius, and width utilities on the combobox root."
+      ~t"Semantic colors, visual variants, density, corner radius, and max-width on the combobox root."
     }
   >
+    <.demo_section
+      id="combobox-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.ComboboxDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="combobox-styling-color"
       title={~t"Semantic"}
@@ -61,7 +71,7 @@
     </.demo_section>
 
     <.demo_section
-      id="combobox-styling-rounded"
+      id="combobox-styling-radius"
       title={~t"Rounded"}
       code={E2eWeb.Demos.ComboboxDemo.styling_rounded_code()}
     >
@@ -83,6 +93,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.ComboboxDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="combobox-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.ComboboxDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="combobox" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

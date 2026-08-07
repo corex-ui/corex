@@ -21,6 +21,7 @@ config :corex_web,
       alerts: true,
       footnotes: true
     ],
+    # trusted authors only — sanitize or set unsafe: false for user content
     render: [unsafe: true],
     syntax_highlight: nil
   ]
@@ -55,7 +56,7 @@ config :corex_web, E2e.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.25.4",
+  version: "0.25.12",
   e2e: [
     args: ~w(js/app.js
       --bundle
@@ -81,7 +82,8 @@ config :corex_design,
   default_theme: :neo,
   default_mode: :light,
   themes: nil,
-  scales: []
+  scales: [],
+  accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]
 
 config :tailwind,
   version: "4.1.12",

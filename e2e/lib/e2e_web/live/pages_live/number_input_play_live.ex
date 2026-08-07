@@ -8,7 +8,10 @@ defmodule E2eWeb.NumberInputPlayLive do
       disabled: false,
       invalid: false,
       read_only: false,
-      dir: "ltr"
+      dir: "ltr",
+      min: 0.0,
+      max: 100.0,
+      step: 0.1
     }
   end
 
@@ -26,6 +29,27 @@ defmodule E2eWeb.NumberInputPlayLive do
 
   def handle_event("control_changed", %{"value" => [value], "id" => id}, socket) do
     {:noreply, update_control(socket, id, value)}
+  end
+
+  def handle_event("min_changed", %{"value" => value}, socket) do
+    {:noreply, update(socket, :controls, &Map.put(&1, :min, parse_float(value, &1.min)))}
+  end
+
+  def handle_event("max_changed", %{"value" => value}, socket) do
+    {:noreply, update(socket, :controls, &Map.put(&1, :max, parse_float(value, &1.max)))}
+  end
+
+  def handle_event("step_changed", %{"value" => value}, socket) do
+    step = parse_float(value, socket.assigns.controls.step)
+    step = if step <= 0, do: 0.1, else: step
+    {:noreply, update(socket, :controls, &Map.put(&1, :step, step))}
+  end
+
+  defp parse_float(value, fallback) do
+    case Float.parse(to_string(value)) do
+      {num, _} -> num
+      :error -> fallback
+    end
   end
 
   defp update_control(socket, "disabled", true),
@@ -62,6 +86,55 @@ defmodule E2eWeb.NumberInputPlayLive do
             value={[@controls.dir]}
           />
 
+          <.number_input
+            id="number-input-min"
+            class="number-input ui-size-sm max-w-3xs"
+            value={to_string(@controls.min)}
+            step={0.1}
+            on_value_change="min_changed"
+          >
+            <:label>Min</:label>
+            <:decrement_trigger>
+              <.heroicon name="hero-chevron-down" class="icon" />
+            </:decrement_trigger>
+            <:increment_trigger>
+              <.heroicon name="hero-chevron-up" class="icon" />
+            </:increment_trigger>
+          </.number_input>
+
+          <.number_input
+            id="number-input-max"
+            class="number-input ui-size-sm max-w-3xs"
+            value={to_string(@controls.max)}
+            step={0.1}
+            on_value_change="max_changed"
+          >
+            <:label>Max</:label>
+            <:decrement_trigger>
+              <.heroicon name="hero-chevron-down" class="icon" />
+            </:decrement_trigger>
+            <:increment_trigger>
+              <.heroicon name="hero-chevron-up" class="icon" />
+            </:increment_trigger>
+          </.number_input>
+
+          <.number_input
+            id="number-input-step"
+            class="number-input ui-size-sm max-w-3xs"
+            value={to_string(@controls.step)}
+            step={0.1}
+            min={0.1}
+            on_value_change="step_changed"
+          >
+            <:label>Step</:label>
+            <:decrement_trigger>
+              <.heroicon name="hero-chevron-down" class="icon" />
+            </:decrement_trigger>
+            <:increment_trigger>
+              <.heroicon name="hero-chevron-up" class="icon" />
+            </:increment_trigger>
+          </.number_input>
+
           <.switch
             class="switch ui-size-sm"
             id="disabled"
@@ -91,8 +164,10 @@ defmodule E2eWeb.NumberInputPlayLive do
           <.number_input
             id="number-input-playground"
             class="number-input max-w-2xs"
-            value="1234.5"
-            step={0.1}
+            value="12.5"
+            min={@controls.min}
+            max={@controls.max}
+            step={@controls.step}
             dir={@controls.dir}
             disabled={@controls.disabled}
             read_only={@controls.read_only}

@@ -19,6 +19,8 @@ defmodule E2eWeb.FormPatternsLive do
      |> assign(:custom_error_elixir, FormPatternsDemo.custom_error_elixir())
      |> assign(:invalid_on_error_heex, FormPatternsDemo.invalid_on_error_heex())
      |> assign(:invalid_on_error_elixir, FormPatternsDemo.invalid_on_error_elixir())
+     |> assign(:custom_form_submitted, false)
+     |> assign(:invalid_form_submitted, false)
      |> assign_forms()}
   end
 
@@ -51,20 +53,29 @@ defmodule E2eWeb.FormPatternsLive do
   end
 
   defp assign_form(socket, form_key, params, form_as, form_id) do
+    params = PatternsForm.normalize_avatar_params(params)
+    action = form_error_action(socket, form_key)
+
     form =
       %PatternsForm{}
       |> PatternsForm.changeset_validate(params)
-      |> Phoenix.Component.to_form(as: form_as, id: form_id, action: :validate)
+      |> Map.put(:action, action)
+      |> Phoenix.Component.to_form(as: form_as, id: form_id, action: action)
 
     assign(socket, form_key, form)
   end
 
   defp save_form(socket, params, form_key, form_id, form_as) do
+    params = PatternsForm.normalize_avatar_params(params)
+    submitted_key = form_submitted_key(form_key)
+    socket = assign(socket, submitted_key, true)
+
     case PatternsForm.changeset_validate(%PatternsForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
 
         socket
+        |> assign(submitted_key, false)
         |> Toast.create(
           "layout-toast",
           "Submitted",
@@ -85,9 +96,21 @@ defmodule E2eWeb.FormPatternsLive do
         assign(
           socket,
           form_key,
-          Phoenix.Component.to_form(changeset, as: form_as, id: form_id, action: :insert)
+          Phoenix.Component.to_form(
+            Map.put(changeset, :action, :insert),
+            as: form_as,
+            id: form_id,
+            action: :insert
+          )
         )
     end
+  end
+
+  defp form_submitted_key(:custom_form), do: :custom_form_submitted
+  defp form_submitted_key(:invalid_form), do: :invalid_form_submitted
+
+  defp form_error_action(socket, form_key) do
+    if socket.assigns[form_submitted_key(form_key)], do: :insert, else: :validate
   end
 
   def render(assigns) do

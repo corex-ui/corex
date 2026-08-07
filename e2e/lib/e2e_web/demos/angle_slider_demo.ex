@@ -134,7 +134,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_modifiers_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4">
+    <div class="flex flex-wrap gap-space-lg">
       <.angle_slider
         id="angle-slider-style-color-default"
         class="angle-slider"
@@ -191,7 +191,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-end gap-4">
+    <div class="flex flex-wrap items-end gap-space-lg">
       <.angle_slider
         id="angle-slider-style-sm"
         class="angle-slider ui-size-sm"
@@ -230,7 +230,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_states_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4">
+    <div class="flex flex-wrap gap-space-lg">
       <.angle_slider
         id="angle-slider-style-disabled"
         class="angle-slider"
@@ -264,7 +264,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_markers_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4">
+    <div class="flex flex-wrap gap-space-lg">
       <.angle_slider
         id="angle-slider-style-markers"
         class="angle-slider"
@@ -324,7 +324,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4">
+    <div class="flex flex-wrap gap-space-lg">
       <.angle_slider
         id="angle-slider-style-variant-subtle"
         class="angle-slider"
@@ -431,7 +431,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.angle_slider
           id={"angle-slider-style-width-#{variant.id}"}
@@ -449,7 +449,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.angle_slider
           id={"angle-slider-style-max-#{variant.id}"}
@@ -501,7 +501,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.AngleSlider.set_value(@id, 0.0)} class="button ui-size-sm">
         Set to 0°
       </.action>
@@ -564,7 +564,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:angle-slider:set-value",
@@ -645,7 +645,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event} value="0" class="button ui-size-sm">Server: 0°</.action>
       <.action phx-click={@event} value="90" class="button ui-size-sm">Server: 90°</.action>
       <.action phx-click={@event} value="180" class="button ui-size-sm">Server: 180°</.action>
@@ -714,7 +714,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change="angle_slider_changed"
     >
-      <:label>on change</:label>
+      <:label>On Change</:label>
     </.angle_slider>
 
     <.angle_slider
@@ -723,7 +723,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       value={90.0}
       on_value_change_end="angle_slider_change_ended"
     >
-      <:label>on end</:label>
+      <:label>On End</:label>
     </.angle_slider>
     """
   end
@@ -742,7 +742,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change_client="angle-slider-changed"
     >
-      <:label>on_value_change_client</:label>
+      <:label>On Change</:label>
     </.angle_slider>
 
     <.angle_slider
@@ -751,7 +751,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       value={90.0}
       on_value_change_end_client="angle-slider-change-ended"
     >
-      <:label>on_value_change_end_client</:label>
+      <:label>On End</:label>
     </.angle_slider>
     """
   end
@@ -856,6 +856,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.angle_slider
         field={@form[:angle]}
@@ -896,7 +897,9 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -919,7 +922,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -980,7 +984,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -1043,7 +1048,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
      
       phx-change="validate_angle"
       phx-submit="save_angle"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -1136,7 +1142,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
      
       phx-change="validate_angle_range"
       phx-submit="save_angle_range"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -1234,7 +1241,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <form
       action={~p"/angle-slider/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.angle_slider
         name="angle_slider_form[angle]"
@@ -1268,6 +1276,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.angle_slider
         field={f[:angle]}
@@ -1302,6 +1311,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.angle_slider
         field={f[:angle]}
@@ -1335,6 +1345,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       action={~p"/angle-slider/form"}
       method="post"
       id="angle-slider-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.angle_slider
@@ -1362,6 +1373,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       phx-change="validate_basic"
       phx-submit="save_basic"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.angle_slider
         id="angle-slider-live-form-changeset-angle"
@@ -1398,6 +1410,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       phx-change="validate_validate"
       phx-submit="save_validate"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.angle_slider
         id="angle-slider-live-form-validate-angle"
@@ -1440,6 +1453,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.angle_slider
         field={f[:angle]}
@@ -1464,7 +1478,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -1572,7 +1586,9 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_doc_live_ecto_controlled_heex do
     ~S"""
-    <.form for={@validate_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form for={@validate_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         id="angle-slider-live-form-validate-controlled-angle"
         field={@validate_controlled_form[:angle]}
@@ -1595,7 +1611,9 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@validate_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@validate_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         id="angle-slider-live-form-validate-invalid-angle"
         field={@validate_invalid_form[:angle]}
@@ -1622,7 +1640,12 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_preview_live_validate_controlled(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form
+      for={@form}
+      phx-change="validate_controlled"
+      phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         id="angle-slider-live-form-validate-controlled-angle"
         field={@form[:angle]}
@@ -1652,7 +1675,12 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_preview_live_validate_invalid(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form
+      for={@form}
+      phx-change="validate_invalid"
+      phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.angle_slider
         id="angle-slider-live-form-validate-invalid-angle"
         field={@form[:angle]}

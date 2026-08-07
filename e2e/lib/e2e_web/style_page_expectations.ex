@@ -1,7 +1,7 @@
 defmodule E2eWeb.StylePageExpectations do
   @moduledoc false
 
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components
 
   @style_pages [
     {"accordion/accordion_styling_page.html.heex", "accordion"},
@@ -45,6 +45,30 @@ defmodule E2eWeb.StylePageExpectations do
     {"tree_view/tree_view_styling_page.html.heex", "tree-view"}
   ]
 
+  @canonical_preview_layout_ids ~W(
+    accordion
+    collapsible
+    tabs
+    floating-panel
+    select
+    combobox
+    editable
+    pin-input
+    timer
+    dialog
+    listbox
+    tree-view
+    date-picker
+    color-picker
+  )
+
+  @leaf_matrix_layout_ids ~W(
+    button
+    toggle
+    toggle-group
+    pagination
+  )
+
   @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel)
   @skip_max_width_only ~W(pin-input)
 
@@ -61,6 +85,22 @@ defmodule E2eWeb.StylePageExpectations do
   }
 
   def style_pages, do: @style_pages
+
+  def canonical_preview_layout_ids, do: @canonical_preview_layout_ids
+
+  def leaf_matrix_layout_ids, do: @leaf_matrix_layout_ids
+
+  def no_variant_layout_ids, do: Components.no_variant_hosts()
+
+  def no_radius_layout_ids, do: Components.no_radius_hosts()
+
+  def matrix_layout_ids do
+    no_variant = MapSet.new(no_variant_layout_ids())
+
+    (@leaf_matrix_layout_ids ++ @canonical_preview_layout_ids)
+    |> Enum.reject(&MapSet.member?(no_variant, &1))
+    |> Enum.uniq()
+  end
 
   def fit_max_width_block_demo_layout_ids, do: @fit_max_width_block_demo
 
@@ -82,7 +122,7 @@ defmodule E2eWeb.StylePageExpectations do
   end
 
   def sizing_expectations(layout_id) do
-    case ComponentLayout.host_width(layout_id) do
+    case Components.host_width(layout_id) do
       :fit -> %{width: true, max_width: true}
       _ -> %{width: false, max_width: true}
     end

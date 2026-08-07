@@ -1,0 +1,242 @@
+defmodule <%= @app_module %>.Accessibility do
+  use Phoenix.Component
+  use Corex
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
+<% end %>
+  alias Corex.Design.Accessibility
+
+  def head_script do
+    Phoenix.HTML.raw("""
+    <script>
+      (() => {
+        const a11yAxes = #{Jason.encode!(Enum.map(Accessibility.axes(), &Atom.to_string/1))};
+        const a11yDefaults = #{Jason.encode!(Accessibility.defaults())};
+        const a11yValues = #{Jason.encode!(Map.new(Accessibility.axes(), fn axis -> {Atom.to_string(axis), Accessibility.values(axis)} end))};
+
+        const readA11y = () => {
+          const raw = localStorage.getItem("phx:a11y") || "";
+          const parsed = Object.fromEntries(new URLSearchParams(raw).entries());
+          const next = { ...a11yDefaults };
+          for (const axis of a11yAxes) {
+            const value = parsed[axis];
+            if (value && (a11yValues[axis] || []).includes(value)) next[axis] = value;
+          }
+          return next;
+        };
+
+        const writeA11y = (state) => {
+          const params = new URLSearchParams();
+          for (const axis of a11yAxes) params.set(axis, state[axis]);
+          const encoded = params.toString();
+          localStorage.setItem("phx:a11y", encoded);
+          for (const axis of a11yAxes) {
+            document.documentElement.setAttribute("data-" + axis, state[axis]);
+          }
+        };
+
+        const syncA11yControls = (state) => {
+          for (const axis of a11yAxes) {
+            const el = document.getElementById("a11y-" + axis);
+            if (!el) continue;
+            el.dispatchEvent(
+              new CustomEvent("corex:toggle-group:set-value", {
+                bubbles: false,
+                detail: { value: [state[axis]] },
+              })
+            );
+          }
+        };
+
+        if (a11yAxes.length) {
+          const initial = readA11y();
+          writeA11y(initial);
+          const controlReady = (axis) => {
+            const el = document.getElementById("a11y-" + axis);
+            return el && !el.hasAttribute("data-loading");
+          };
+          const syncWhenReady = () => {
+            if (a11yAxes.every(controlReady)) {
+              syncA11yControls(initial);
+              return true;
+            }
+            return false;
+          };
+          if (!syncWhenReady()) {
+            const observer = new MutationObserver(() => {
+              if (syncWhenReady()) observer.disconnect();
+            });
+            observer.observe(document.documentElement, {
+              childList: true,
+              subtree: true,
+              attributes: true,
+              attributeFilter: ["data-loading"],
+            });
+          }
+
+          window.addEventListener("storage", (e) => {
+            if (e.key === "phx:a11y" && e.newValue != null) {
+              const state = readA11y();
+              writeA11y(state);
+              syncA11yControls(state);
+            }
+          });
+
+          for (const axis of a11yAxes) {
+            window.addEventListener("phx:set-a11y-" + axis, (e) => {
+              const value = e.detail?.value;
+              const next = Array.isArray(value) && value[0] ? value[0] : a11yDefaults[axis];
+              if (!(a11yValues[axis] || []).includes(next)) return;
+              writeA11y({ ...readA11y(), [axis]: next });
+            });
+          }
+
+          window.addEventListener("phx:set-a11y-reset", () => {
+            const state = { ...a11yDefaults };
+            writeA11y(state);
+            syncA11yControls(state);
+          });
+        }
+      })();
+    </script>
+    """)
+  end
+
+  def data_attrs do
+    Accessibility.defaults()
+    |> Accessibility.sanitize()
+    |> Map.new(fn {key, value} -> {"data-#{key}", value} end)
+  end
+
+  def accessibility_dialog_id, do: "a11y-dialog"
+
+  attr(:trigger_class, :string,
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+  )
+
+  def accessibility_panel(assigns) do
+    assigns = assign(assigns, :axes, Accessibility.axes())
+
+    ~H"""
+    <.dialog
+      :if={@axes != []}
+      id={accessibility_dialog_id()}
+      class="dialog ui-rounded-xl"
+      modal
+      prevent_scroll
+      animation="instant"
+      final_focus={"dialog:#{accessibility_dialog_id()}:trigger"}
+    >
+      <:trigger
+        class={@trigger_class}
+<%= if @lang do %>        aria_label={~t"Accessibility"}
+<% else %>        aria_label="Accessibility"
+<% end %>      >
+        <.accessibility_icon />
+      </:trigger>
+      <:title><%= if @lang do %>{~t"Accessibility"}<% else %>Accessibility<% end %></:title>
+      <:description>
+        <%= if @lang do %>{~t"To enable Corex Accessibility, see the"}<% else %>To enable Corex Accessibility, see the<% end %>{" "}
+        <.navigate
+          class="link ui-size-sm"
+          to="https://hexdocs.pm/corex/accessibility.html"
+          external
+        >
+          <%= if @lang do %>{~t"documentation"}<% else %>documentation<% end %>
+          <.heroicon name="hero-arrow-top-right-on-square" />
+        </.navigate>.
+      </:description>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:close_trigger>
+      <:content>
+        <div class="flex w-full flex-col gap-space-lg">
+          <div class="grid w-full grid-cols-1 gap-space sm:grid-cols-2">
+            <div :for={axis <- @axes} class="flex min-w-0 flex-col gap-space-sm">
+              <.toggle_group
+                id={"a11y-#{axis}"}
+                class="toggle-group ui-size-sm ui-width-full"
+                multiple={false}
+                deselectable={false}
+                value={[]}
+                on_value_change_client={"phx:set-a11y-#{axis}"}
+              >
+                <:label>{axis_label(axis)}</:label>
+                <:item :for={value <- Accessibility.values(axis)} value={value}>
+                  {value_label(axis, value)}
+                </:item>
+              </.toggle_group>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <.action
+              type="button"
+              class="button ui-ghost ui-alert ui-size-sm ui-width-fit"
+              onclick="window.dispatchEvent(new CustomEvent('phx:set-a11y-reset'))"
+            >
+              <%= if @lang do %>{~t"Reset"}<% else %>Reset<% end %>
+            </.action>
+          </div>
+        </div>
+      </:content>
+    </.dialog>
+    """
+  end
+
+  attr(:class, :string,
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+  )
+
+  def accessibility_open_button(assigns) do
+    ~H"""
+    <.action
+      type="button"
+      class={@class}
+<%= if @lang do %>      aria-label={~t"Accessibility"}
+<% else %>      aria-label="Accessibility"
+<% end %>      phx-click={Corex.Dialog.set_open(accessibility_dialog_id(), true)}
+    >
+      <.accessibility_icon />
+    </.action>
+    """
+  end
+
+  def accessibility_icon(assigns) do
+    ~H"""
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      aria-hidden="true"
+    >
+      <path
+        fill="currentColor"
+        d="M256 48c114.953 0 208 93.029 208 208 0 114.953-93.029 208-208 208-114.953 0-208-93.029-208-208 0-114.953 93.029-208 208-208m0-40C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 56C149.961 64 64 149.961 64 256s85.961 192 192 192 192-85.961 192-192S362.039 64 256 64zm0 44c19.882 0 36 16.118 36 36s-16.118 36-36 36-36-16.118-36-36 16.118-36 36-36zm117.741 98.023c-28.712 6.779-55.511 12.748-82.14 15.807.851 101.023 12.306 123.052 25.037 155.621 3.617 9.26-.957 19.698-10.217 23.315-9.261 3.617-19.699-.957-23.316-10.217-8.705-22.308-17.086-40.636-22.261-78.549h-9.686c-5.167 37.851-13.534 56.208-22.262 78.549-3.615 9.255-14.05 13.836-23.315 10.217-9.26-3.617-13.834-14.056-10.217-23.315 12.713-32.541 24.185-54.541 25.037-155.621-26.629-3.058-53.428-9.027-82.141-15.807-8.6-2.031-13.926-10.648-11.895-19.249s10.647-13.926 19.249-11.895c96.686 22.829 124.283 22.783 220.775 0 8.599-2.03 17.218 3.294 19.249 11.895 2.029 8.601-3.297 17.219-11.897 19.249z"
+      />
+    </svg>
+    """
+  end
+
+  defp axis_label(:text), do: <%= if @lang do %>~t"Zoom"<% else %>"Zoom"<% end %>
+  defp axis_label(:contrast), do: <%= if @lang do %>~t"Contrast"<% else %>"Contrast"<% end %>
+  defp axis_label(:motion), do: <%= if @lang do %>~t"Motion"<% else %>"Motion"<% end %>
+  defp axis_label(:cursor), do: <%= if @lang do %>~t"Cursor"<% else %>"Cursor"<% end %>
+  defp axis_label(:focus), do: <%= if @lang do %>~t"Focus"<% else %>"Focus"<% end %>
+  defp axis_label(:links), do: <%= if @lang do %>~t"Links"<% else %>"Links"<% end %>
+  defp axis_label(axis), do: axis |> Atom.to_string() |> String.capitalize()
+
+  defp value_label(:text, "md"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp value_label(:text, "lg"), do: <%= if @lang do %>~t"Larger"<% else %>"Larger"<% end %>
+  defp value_label(:contrast, "normal"), do: <%= if @lang do %>~t"Standard"<% else %>"Standard"<% end %>
+  defp value_label(:contrast, "more"), do: <%= if @lang do %>~t"High"<% else %>"High"<% end %>
+  defp value_label(:motion, "system"), do: <%= if @lang do %>~t"Full"<% else %>"Full"<% end %>
+  defp value_label(:motion, "reduce"), do: <%= if @lang do %>~t"Reduced"<% else %>"Reduced"<% end %>
+  defp value_label(:cursor, "normal"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp value_label(:cursor, "large"), do: <%= if @lang do %>~t"Large"<% else %>"Large"<% end %>
+  defp value_label(:focus, "normal"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp value_label(:focus, "strong"), do: <%= if @lang do %>~t"Strong"<% else %>"Strong"<% end %>
+  defp value_label(:links, "normal"), do: <%= if @lang do %>~t"Default"<% else %>"Default"<% end %>
+  defp value_label(:links, "underline"), do: <%= if @lang do %>~t"Underline"<% else %>"Underline"<% end %>
+  defp value_label(_axis, value), do: value |> String.capitalize()
+end

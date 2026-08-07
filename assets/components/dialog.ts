@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/dialog";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { stripHiddenFromProps } from "../lib/animation";
 import { getString } from "../lib/util";
 
@@ -34,9 +34,10 @@ function syncDialogContentAriaRefs(rootEl: HTMLElement, contentEl: HTMLElement):
   }
 }
 
-export class Dialog extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Dialog extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

@@ -120,7 +120,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/listbox/anatomy", "#listbox-anatomy-page"},
     {"/en/listbox/api", "#listbox-api-page"},
     {"/en/listbox/events", "#listbox-events-page"},
-    {"/en/listbox/patterns", "#listbox-patterns-stream"},
+    {"/en/listbox/patterns", "#listbox-patterns-page"},
     {"/en/listbox/style", "#listbox-styling-page"},
     {"/en/marquee/anatomy", "#marquee-anatomy-page"},
     {"/en/marquee/api", "#marquee-api-page"},

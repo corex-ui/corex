@@ -1,0 +1,43 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme inline {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+  --spacing: var(--spacing);
+  --container-9xs: var(--container-9xs);
+  --container-8xs: var(--container-8xs);
+  --container-7xs: var(--container-7xs);
+  --container-6xs: var(--container-6xs);
+  --container-5xs: var(--container-5xs);
+  --container-4xs: var(--container-4xs);
+  --container-3xs: var(--container-3xs);
+  --container-2xs: var(--container-2xs);
+  --container-xs: var(--container-xs);
+  --container-sm: var(--container-sm);
+  --container-md: var(--container-md);
+  --container-lg: var(--container-lg);
+  --container-xl: var(--container-xl);
+  --container-2xl: var(--container-2xl);
+  --container-3xl: var(--container-3xl);
+  --container-4xl: var(--container-4xl);
+  --container-5xl: var(--container-5xl);
+  --container-6xl: var(--container-6xl);
+  --container-7xl: var(--container-7xl);
+  --container-8xl: var(--container-8xl);
+  --container-9xl: var(--container-9xl);
+  --spacing-space-sm: var(--spacing-space-sm);
+  --spacing-space-md: var(--spacing-space-md);
+  --spacing-space-lg: var(--spacing-space-lg);
+  --spacing-space-xl: var(--spacing-space-xl);
+  --spacing-size-sm: var(--spacing-size-sm);
+  --spacing-size-md: var(--spacing-size-md);
+  --spacing-size-lg: var(--spacing-size-lg);
+  --spacing-size-xl: var(--spacing-size-xl);
+  --spacing-space: var(--spacing-space-md);
+  --spacing-size: var(--spacing-size-md);
+}

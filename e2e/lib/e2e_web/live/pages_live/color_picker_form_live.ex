@@ -13,7 +13,7 @@ defmodule E2eWeb.ColorPickerFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Color Picker · Form")
+     |> assign(:page_title, "Color Picker · Live Form")
      |> assign(:form_ecto, ColorPickerDemo.form_ecto())
      |> assign(:live_phoenix_heex, ColorPickerDemo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, ColorPickerDemo.form_doc_live_phoenix_elixir())
@@ -157,7 +157,7 @@ defmodule E2eWeb.ColorPickerFormLive do
       <.demo_page
         path={@path}
         id="color-picker-form-live-page"
-        title={~t"Color Picker form"}
+        title={~t"Color Picker · Live Form"}
       >
         <.demo_section
           id="color-picker-live-form-phoenix-section"

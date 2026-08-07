@@ -74,7 +74,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.toggle_group
                 id={@id_server}
                 class="toggle-group"
@@ -112,7 +112,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.toggle_group
                 id={@id_client}
                 class="toggle-group"

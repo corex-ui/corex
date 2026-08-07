@@ -19,7 +19,28 @@ describe("isFormFieldUsed", () => {
 });
 
 describe("syncTagsArrayInputsForPhoenix", () => {
-  it("creates hidden inputs with submit name[] per tag", () => {
+  it("creates hidden inputs with submit name[] per tag when field is touched", () => {
+    const root = el({ submitName: "post[tags][]" });
+    root.innerHTML = `
+      <div data-scope="tags-input" data-part="root">
+        <div data-scope="tags-input" data-part="array-inputs"></div>
+      </div>
+    `;
+
+    syncTagsArrayInputsForPhoenix(root, ["alpha", "beta"], undefined, {
+      fieldTouched: true,
+    });
+
+    const inputs = root.querySelectorAll<HTMLInputElement>(
+      '[data-scope="tags-input"][data-part="array-input"]'
+    );
+    expect(inputs).toHaveLength(2);
+    expect(inputs[0]!.name).toBe("post[tags][]");
+    expect(inputs[0]!.value).toBe("alpha");
+    expect(inputs[1]!.value).toBe("beta");
+  });
+
+  it("omits submit names on tag values when untouched", () => {
     const root = el({ submitName: "post[tags][]" });
     root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
@@ -33,7 +54,7 @@ describe("syncTagsArrayInputsForPhoenix", () => {
       '[data-scope="tags-input"][data-part="array-input"]'
     );
     expect(inputs).toHaveLength(2);
-    expect(inputs[0]!.name).toBe("post[tags][]");
+    expect(inputs[0]!.name).toBe("");
     expect(inputs[0]!.value).toBe("alpha");
     expect(inputs[1]!.value).toBe("beta");
   });
@@ -83,11 +104,12 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     form.appendChild(root);
     document.body.appendChild(form);
 
-    syncTagsArrayInputsForPhoenix(root, ["alpha"]);
+    syncTagsArrayInputsForPhoenix(root, ["alpha"], undefined, { fieldTouched: true });
 
     const input = root.querySelector<HTMLInputElement>(
       '[data-scope="tags-input"][data-part="array-input"]'
     )!;
+    expect(input.name).toBe("post[tags][]");
     expect(input.hasAttribute("form")).toBe(false);
     form.remove();
   });

@@ -21,6 +21,7 @@ defmodule Corex.New.ScaffoldHelper do
       quote do
         use Gettext, backend: MyAppWeb.Gettext
         import Phoenix.HTML
+        import MyAppWeb.CoreComponents
         alias Phoenix.LiveView.JS
         alias MyAppWeb.Layouts
         unquote(verified_routes())
@@ -109,6 +110,16 @@ defmodule Corex.New.ScaffoldHelper do
   import_config "#{config_env()}.exs"
   """
 
+  @stock_page_controller_ex """
+  defmodule MyAppWeb.PageController do
+    use MyAppWeb, :controller
+
+    def home(conn, _params) do
+      render(conn, :home)
+    end
+  end
+  """
+
   def write_phoenix_scaffold!(install_dir) do
     File.mkdir_p!(Path.join(install_dir, "lib/my_app_web"))
     File.mkdir_p!(Path.join(install_dir, "config"))
@@ -123,6 +134,19 @@ defmodule Corex.New.ScaffoldHelper do
     File.write!(Path.join(install_dir, "config/config.exs"), @stock_config_exs)
     File.write!(Path.join(install_dir, "assets/js/app.js"), "// app\n")
     File.write!(Path.join(install_dir, "assets/css/app.css"), "/* css */\n")
+
+    File.mkdir_p!(Path.join(install_dir, "lib/my_app_web/components"))
+
+    File.write!(
+      Path.join(install_dir, "lib/my_app_web/components/core_components.ex"),
+      "defmodule MyAppWeb.CoreComponents do\nend\n"
+    )
+
+    page_controller =
+      Path.join(install_dir, "lib/my_app_web/controllers/page_controller.ex")
+
+    File.mkdir_p!(Path.dirname(page_controller))
+    File.write!(page_controller, @stock_page_controller_ex)
 
     home =
       Path.join([
@@ -149,7 +173,8 @@ defmodule Corex.New.ScaffoldHelper do
         lang: false,
         design: true,
         tailwind: true,
-        mcp: true
+        mcp: true,
+        usage_rules: true
       ],
       overrides
     )

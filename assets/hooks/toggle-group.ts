@@ -1,21 +1,14 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { ToggleGroup } from "../components/toggle-group";
 import type { ValueChangeDetails, Props } from "@zag-js/toggle-group";
 import type { Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readStringListControlledZagUpdate } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type ToggleGroupHookState = {
   toggleGroup?: ToggleGroup;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
 };
 
 export function valueChangePayload(
@@ -36,11 +29,13 @@ export function readToggleGroupPayloadValue(payload: unknown): string[] | undefi
   return undefined;
 }
 
-const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const ToggleGroupHook = createZagLiveHook<ToggleGroupHookState, ToggleGroup>({
+  key: "toggleGroup",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const props: Props = {
       id: el.id,
       ...(getBoolean(el, "controlled")
@@ -66,62 +61,42 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
     };
 
     const toggleGroup = new ToggleGroup(el, props);
-    toggleGroup.init();
-    this.toggleGroup = toggleGroup;
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: string[] }>>("corex:toggle-group:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string[] }>>("corex:toggle-group:set-value", (event) => {
       const { value } = event.detail;
       toggleGroup.api.setValue(value);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("toggle-group_set_value", (payload: unknown) => {
+    server.add("toggle_group_set_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const value = readToggleGroupPayloadValue(payload);
       if (value) toggleGroup.api.setValue(value);
     });
 
-    registry.add("toggle-group:value", (payload: unknown) => {
+    server.add("toggle-group:value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("toggle-group:value_response", {
+      hook.pushEvent("toggle-group:value_response", {
         id: el.id,
         value: toggleGroup.api.value,
       });
     });
+
+    return toggleGroup;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  update(hook, toggleGroup) {
+    toggleGroup.updateProps({
+      ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs),
+      deselectable: getBoolean(hook.el, "deselectable"),
+      loopFocus: getBoolean(hook.el, "loopFocus"),
+      rovingFocus: getBoolean(hook.el, "rovingFocus"),
+      disabled: getBoolean(hook.el, "disabled"),
+      multiple: getBoolean(hook.el, "multiple"),
+      orientation: getString<Orientation>(hook.el, "orientation"),
+      dir: getDir(hook.el),
+    });
   },
-
-  updated(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
-    try {
-      this.toggleGroup?.updateProps({
-        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
-        deselectable: getBoolean(this.el, "deselectable"),
-        loopFocus: getBoolean(this.el, "loopFocus"),
-        rovingFocus: getBoolean(this.el, "rovingFocus"),
-        disabled: getBoolean(this.el, "disabled"),
-        multiple: getBoolean(this.el, "multiple"),
-        orientation: getString<Orientation>(this.el, "orientation"),
-        dir: getDir(this.el),
-      });
-    } finally {
-      this.beforeAttrs = undefined;
-    }
-  },
-
-  destroyed(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.toggleGroup?.destroy();
-  },
-};
+});
 
 export { ToggleGroupHook as ToggleGroup };

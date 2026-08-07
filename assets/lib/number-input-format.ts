@@ -46,6 +46,26 @@ export function formatSubmitValue(value: string | number | undefined | null, ste
   return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n);
 }
 
+/** Hidden form value from Zag state — never resurrects data-default-value. */
+export function resolveNumberInputSubmitValue(
+  valueAsNumber: number | undefined,
+  displayValue: string,
+  step: number
+): string {
+  if (
+    valueAsNumber !== undefined &&
+    Number.isFinite(valueAsNumber) &&
+    !Number.isNaN(valueAsNumber)
+  ) {
+    return formatSubmitValue(valueAsNumber, step);
+  }
+
+  const stripped = (displayValue ?? "").replace(/,/g, "").trim();
+  if (stripped === "") return "";
+
+  return formatSubmitValue(stripped, step);
+}
+
 export function formatDisplayValue(
   value: string | number | undefined | null,
   step: number

@@ -42,10 +42,52 @@ defmodule Corex.Integration.CodeGeneratorCase do
       mix_run!(["corex.design.build"], app_root_path, env: [{"MIX_ENV", "dev"}])
     end
 
-    mix_run!(["compile"], app_root_path)
-    mix_run!(["format"], app_root_path)
+    mix_run!(["compile"], app_root_path, env: [{"MIX_ENV", "dev"}])
 
     {app_root_path, output}
+  end
+
+  def generate_corex_tableau_app(tmp_dir, app_name, opts \\ [])
+      when is_binary(app_name) and is_list(opts) do
+    app_path = Path.expand(app_name, tmp_dir)
+    integration_root = Corex.Integration.Paths.integration_root()
+    app_root_path = Path.expand(app_name, tmp_dir)
+    local_corex = Corex.Integration.Paths.corex_repo_root()
+
+    ensure_corex_mjs!(local_corex)
+
+    output =
+      mix_run!(
+        ["corex.tableau.new", app_path, "--no-install", "--dev", local_corex] ++ opts,
+        integration_root
+      )
+
+    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(
+      integration_root,
+      app_root_path
+    )
+
+    mix_run!(["deps.get"], app_root_path)
+
+    unless "--no-design" in opts do
+      mix_run!(["corex.design.build"], app_root_path, env: [{"MIX_ENV", "dev"}])
+    end
+
+    mix_run!(["compile"], app_root_path, env: [{"MIX_ENV", "dev"}])
+
+    {app_root_path, output}
+  end
+
+  defp ensure_corex_mjs!(corex_root) do
+    mjs = Path.join([corex_root, "priv", "static", "corex.mjs"])
+
+    unless File.exists?(mjs) do
+      mix_run!(["assets.build"], corex_root, env: [{"MIX_ENV", "dev"}])
+    end
+
+    unless File.exists?(mjs) do
+      raise "expected Corex bundle at #{mjs} after mix assets.build"
+    end
   end
 
   def generate_corex_app_dev_corex(tmp_dir, app_name, opts \\ [])
@@ -181,7 +223,9 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def assert_no_compilation_warnings(app_path) do
-    mix_run!(["do", "clean", "compile", "--warnings-as-errors"], app_path)
+    mix_run!(["do", "clean", "compile", "--warnings-as-errors"], app_path,
+      env: [{"MIX_ENV", "dev"}]
+    )
   end
 
   def drop_test_database(app_path) when is_binary(app_path) do
@@ -354,10 +398,24 @@ defmodule Corex.Integration.CodeGeneratorCase do
       refute c =~ ~s(@import "../corex/components.css";)
       refute c =~ "toggle-group.css"
       refute c =~ "tags-input.css"
+      refute c =~ "corex-base.css"
     end)
 
     assert_file(app_css, fn c ->
       refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
+    end)
+
+    assert_file(Path.join(base, "mix.exs"), fn c ->
+      refute c =~ "{:daisyui"
+    end)
+
+    refute_file(Path.join([base, "assets", "vendor", "daisyui.js"]))
+    refute_file(Path.join([base, "assets", "vendor", "daisyui-theme.js"]))
+    refute_file(Path.join([base, "lib", web, "components", "core_components.ex"]))
+
+    assert_file(Path.join(base, "lib/#{web}.ex"), fn c ->
+      assert c =~ "use Corex"
+      refute c =~ "CoreComponents"
     end)
 
     design_dir = Path.join([base, "assets", "corex"])
@@ -422,7 +480,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(Path.join([base, "priv/gettext/fr/LC_MESSAGES/default.po"]))
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
-    assert_file(home, ~s(~t"Corex for Phoenix"))
+    assert_file(home, ~s(~t"The Phoenix UI with a"))
 
     layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
     assert_file(layouts, ~s(~t"Language"))
@@ -431,8 +489,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
-    design_dir = Path.join([base, "assets", "corex"])
-    refute_dir(design_dir)
+    mix = File.read!(Path.join(base, "mix.exs"))
+    refute mix =~ ~r/\{:corex_design,/
+    refute mix =~ ":corex_design"
+    config = File.read!(Path.join(base, "config/config.exs"))
+    refute config =~ "config :corex_design"
   end
 
   def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
@@ -454,8 +515,24 @@ defmodule Corex.Integration.CodeGeneratorCase do
     app_css = Path.join([base, "assets", "css", "app.css"])
 
     assert_file(app_css, fn c ->
-      refute c =~ ~s(@import "../corex/)
-      refute c =~ ~s(@import '../corex/)
+      assert c =~ ~s(@import "../corex/corex.css")
+      refute c =~ "corex-base.css"
+    end)
+
+    assert_file(Path.join([base, "assets", "corex", "corex.css"]))
+    refute_file(Path.join([base, "assets", "css", "corex-base.css"]))
+
+    gitignore = Path.join(base, ".gitignore")
+
+    if File.exists?(gitignore) do
+      refute File.read!(gitignore) =~ ~r{^/?assets/corex/?$}m
+    end
+
+    refute_file(Path.join([base, "lib", web, "components", "core_components.ex"]))
+
+    assert_file(Path.join(base, "lib/#{web}.ex"), fn c ->
+      assert c =~ "use Corex"
+      refute c =~ "CoreComponents"
     end)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
@@ -488,14 +565,19 @@ defmodule Corex.Integration.CodeGeneratorCase do
     layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
 
     assert_file(layouts, fn c ->
-      assert c =~ ~r/def\s+app\b[\s\S]*?sticky top-0 z-10/,
+      assert c =~ ~r/def\s+app\b[\s\S]*?sticky top-0 z-20/,
              "Layouts.app missing Tailwind header shell"
 
-      assert c =~ ~r/def\s+app\b[\s\S]*?border-b border-border bg-layer/,
+      assert c =~ ~r/def\s+app\b[\s\S]*?border-b border-border bg-surface/,
              "Layouts.app missing header border styling"
 
-      assert c =~ ~r/def\s+app\b[\s\S]*?border-t border-border bg-layer/,
+      assert c =~ ~r/def\s+app\b[\s\S]*?border-t border-border bg-surface/,
              "Layouts.app missing footer shell"
+
+      assert c =~ ~s(id="site-nav-dialog")
+      assert c =~ "Components"
+      assert c =~ "Hexdocs"
+      refute c =~ ~S[~p"/design"]
     end)
   end
 end

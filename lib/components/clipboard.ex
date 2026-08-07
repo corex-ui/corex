@@ -163,6 +163,7 @@ defmodule Corex.Clipboard do
 
   alias Corex.Clipboard.Anatomy.{Control, Copied, Copy, Input, Label, Props, Root, Trigger}
   alias Corex.Clipboard.Connect
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -255,7 +256,7 @@ defmodule Corex.Clipboard do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "clipboard-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("clipboard")
 
     trigger_button_class =
       case assigns.trigger do
@@ -269,8 +270,7 @@ defmodule Corex.Clipboard do
     <div
       id={@id}
       phx-hook="Clipboard"
-      data-loading  
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}    
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -284,40 +284,35 @@ defmodule Corex.Clipboard do
         input_aria_label: @input_aria_label
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})} class={@root_class}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation})} class={@root_class}>
         <label
           :for={label <- @label}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})}
-          {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir, orientation: @orientation})}
           class={Map.get(label, :class, nil)}
         >
           {render_slot(label)}
         </label>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})} class={@control_class}>
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation})} class={@control_class}>
           <input
             :if={@input}
             class={@input_class}
-            phx-mounted={Connect.ignore_input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
-            {Connect.input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
+            {Connect.mounted_input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
             aria-label="Text to copy"
           />
           <button
-            phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
-            {Connect.trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
+            {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
             aria-label="Copy"
             class={@trigger_button_class}
           >
             <span
               :if={@copy != []}
-              phx-mounted={Connect.ignore_copy_part(%Copy{id: @id, dir: @dir, orientation: @orientation})}
-              {Connect.copy_part(%Copy{id: @id, dir: @dir, orientation: @orientation})}
+              {Connect.mounted_copy_part(%Copy{id: @id, dir: @dir, orientation: @orientation})}
             >
               {render_slot(@copy)}
             </span>
             <span
               :if={@copied != []}
-              phx-mounted={Connect.ignore_copied_part(%Copied{id: @id, dir: @dir, orientation: @orientation})}
-              {Connect.copied_part(%Copied{id: @id, dir: @dir, orientation: @orientation})}
+              {Connect.mounted_copied_part(%Copied{id: @id, dir: @dir, orientation: @orientation})}
             >
               {render_slot(@copied)}
             </span>
@@ -348,9 +343,11 @@ defmodule Corex.Clipboard do
   ```
   """)
 
+  @spec copy(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec copy(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def copy(clipboard_id) when is_binary(clipboard_id) do
     JS.dispatch("corex:clipboard:copy",
-      to: "##{clipboard_id}",
+      to: Selectors.css_id(clipboard_id),
       bubbles: false
     )
   end
@@ -403,9 +400,12 @@ defmodule Corex.Clipboard do
   ```
   """)
 
+  @spec set_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(clipboard_id, value) when is_binary(clipboard_id) and is_binary(value) do
     JS.dispatch("corex:clipboard:set-value",
-      to: "##{clipboard_id}",
+      to: Selectors.css_id(clipboard_id),
       detail: %{value: value},
       bubbles: false
     )

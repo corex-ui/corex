@@ -25,7 +25,7 @@ defmodule E2eWeb.FileUploadApiLive do
       >
         <.demo_section
           id="file-upload-api-open-phx"
-          title="open_file_picker (Phoenix binding)"
+          title="Open File Picker (Client Binding)"
           code_tabs={[
             %{
               value: "heex",
@@ -40,7 +40,7 @@ defmodule E2eWeb.FileUploadApiLive do
 
         <.demo_section
           id="file-upload-api-open-server"
-          title={~t"open_file_picker (push_event from LiveView)"}
+          title={~t"Open File Picker (Server)"}
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_open_server_heex()},
             %{
@@ -56,7 +56,7 @@ defmodule E2eWeb.FileUploadApiLive do
 
         <.demo_section
           id="file-upload-api-open-js"
-          title={~t"open_file_picker (CustomEvent from JavaScript)"}
+          title={~t"Open File Picker (Client JS)"}
           code_tabs={[
             %{value: "js", label: ~t"JS", language: :js, code: Demo.api_open_client_js()}
           ]}

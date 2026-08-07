@@ -1,18 +1,16 @@
 defmodule Corex.ToggleGroup.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
+
   alias Corex.ToggleGroup.Anatomy.{Item, Props, Root}
 
   alias Phoenix.LiveView.JS
 
   alias Corex.ValueBinding
-
-  import Corex.Helpers,
-    only: [
-      get_boolean: 1,
-      maybe_put_data_dir_from: 2,
-      maybe_put_dir_from: 2
-    ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -21,19 +19,19 @@ defmodule Corex.ToggleGroup.Connect do
 
     %{
       "id" => assigns.id,
-      "data-deselectable" => get_boolean(assigns.deselectable),
-      "data-loop-focus" => get_boolean(assigns.loopFocus),
-      "data-roving-focus" => get_boolean(assigns.rovingFocus),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-deselectable" => presence_attr(assigns.deselectable),
+      "data-loop-focus" => presence_attr(assigns.loopFocus),
+      "data-roving-focus" => presence_attr(assigns.rovingFocus),
+      "data-controlled" => presence_attr(assigns.controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-multiple" => get_boolean(assigns.multiple),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-multiple" => presence_attr(assigns.multiple),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
-    |> maybe_put_data_dir_from(assigns)
+    |> put_data_dir_attr_from_assigns(assigns)
   end
 
   @spec root(Root.t()) :: map()
@@ -47,7 +45,7 @@ defmodule Corex.ToggleGroup.Connect do
         "data-disabled" => assigns.disabled,
         "style" => "outline: none;"
       }
-      |> maybe_put_dir_from(assigns)
+      |> put_dir_attr_from_assigns(assigns)
 
     case Map.get(assigns, :aria_labelledby) do
       id when is_binary(id) -> Map.put(base, "aria-labelledby", id)
@@ -80,7 +78,7 @@ defmodule Corex.ToggleGroup.Connect do
       "id" => "toggle-group:#{assigns.id}:#{value}",
       "aria-label" => aria_label
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_item(assigns) do

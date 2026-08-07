@@ -2,7 +2,7 @@ defmodule Corex.Integration.CodeGeneration.CorexDesignOffTest do
   use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "--no-design" do
-    test "produces class-free starter and Layouts.corex def" do
+    test "produces static corex export without corex_design dep" do
       with_installer_tmp("corex_design_off", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-design"])
 

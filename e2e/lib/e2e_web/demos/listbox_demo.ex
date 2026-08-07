@@ -139,6 +139,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     }>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
+        <% Code.ensure_loaded!(Flagpack) %>
         <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
@@ -154,7 +155,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.listbox id="listbox-anatomy-extended" class="listbox" items={@items}>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
+        <Flagpack.flag name={flag_name(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -179,7 +180,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       }
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
+        <Flagpack.flag name={flag_name(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -198,7 +199,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       items={@items}
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
+        <Flagpack.flag name={flag_name(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -206,10 +207,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_demo_heex do
+  def patterns_dynamic_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
@@ -217,7 +218,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
           Reset
         </.action>
       </div>
-      <.listbox class="listbox" items={Corex.List.new(@items_list)}>
+      <.listbox class="listbox" items={Corex.List.new(@items)}>
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -226,9 +227,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_elixir do
+  def patterns_dynamic_elixir do
     ~S'''
-    defmodule MyAppWeb.ListboxStreamDemoLive do
+    defmodule MyAppWeb.ListboxDynamicDemoLive do
       use MyAppWeb, :live_view
 
       @impl true
@@ -239,38 +240,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
           %{value: "3", label: "Cherry"}
         ]
 
-        socket =
-          socket
-          |> stream_configure(:items, dom_id: &("listbox:stream-listbox:item:" <> to_string(&1.value)))
-          |> stream(:items, initial)
-          |> assign(:items_list, initial)
-          |> assign(:next_id, 4)
-
-        if connected?(socket) do
-          Process.send_after(self(), :add_timestamp_item, 3_000)
-        end
-
-        {:ok, socket}
-      end
-
-      @impl true
-      def handle_info(:add_timestamp_item, socket) do
-        Process.send_after(self(), :add_timestamp_item, 10_000)
-        id = to_string(socket.assigns.next_id)
-
-        time =
-          DateTime.utc_now()
-          |> DateTime.truncate(:second)
-          |> DateTime.to_time()
-          |> Time.to_string()
-
-        item = %{value: id, label: "Item " <> id <> " @ " <> time}
-
-        {:noreply,
+        {:ok,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
-         |> assign(:next_id, socket.assigns.next_id + 1)}
+         |> assign(:items, initial)
+         |> assign(:next_id, 4)}
       end
 
       @impl true
@@ -280,8 +253,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:items, socket.assigns.items ++ [item])
          |> assign(:next_id, socket.assigns.next_id + 1)}
       end
 
@@ -295,16 +267,15 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream(:items, initial, reset: true)
-         |> assign(:items_list, initial)
+         |> assign(:items, initial)
          |> assign(:next_id, 4)}
       end
 
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-            <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+            <div class="flex flex-wrap gap-space-sm">
               <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
@@ -312,7 +283,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
                 Reset
               </.action>
             </div>
-            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+            <.listbox id="patterns-dynamic" class="listbox" items={Corex.List.new(@items)}>
               <:label>Choose an item</:label>
               <:empty>No items</:empty>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -324,10 +295,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
     '''
   end
 
-  def patterns_stream_grouped_demo_heex do
+  def patterns_dynamic_grouped_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action
           phx-click="add_to_group"
           phx-value-group="Europe"
@@ -348,7 +319,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </div>
       <.listbox
         class="listbox"
-        items={Corex.List.new(@grouped_items_list)}
+        items={Corex.List.new(@grouped_items)}
       >
         <:label>Choose a country</:label>
         <:empty>No items</:empty>
@@ -358,9 +329,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_grouped_elixir do
+  def patterns_dynamic_grouped_elixir do
     ~S'''
-    defmodule MyAppWeb.ListboxStreamGroupedDemoLive do
+    defmodule MyAppWeb.ListboxDynamicGroupedDemoLive do
       use MyAppWeb, :live_view
 
       @impl true
@@ -371,14 +342,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
           %{value: "g3", label: "Germany", group: "Europe"}
         ]
 
-        socket =
-          socket
-          |> stream_configure(:grouped_items, dom_id: &("listbox:stream-grouped-listbox:item:" <> to_string(&1.value)))
-          |> stream(:grouped_items, initial)
-          |> assign(:grouped_items_list, initial)
-          |> assign(:next_grouped_id, 4)
-
-        {:ok, socket}
+        {:ok,
+         socket
+         |> assign(:grouped_items, initial)
+         |> assign(:next_grouped_id, 4)}
       end
 
       @impl true
@@ -389,8 +356,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:grouped_items, item)
-         |> assign(:grouped_items_list, socket.assigns.grouped_items_list ++ [item])
+         |> assign(:grouped_items, socket.assigns.grouped_items ++ [item])
          |> assign(:next_grouped_id, n + 1)}
       end
 
@@ -404,16 +370,15 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream(:grouped_items, initial, reset: true)
-         |> assign(:grouped_items_list, initial)
+         |> assign(:grouped_items, initial)
          |> assign(:next_grouped_id, 4)}
       end
 
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-            <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+            <div class="flex flex-wrap gap-space-sm">
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
@@ -433,9 +398,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
               </.action>
             </div>
             <.listbox
-              id="stream-grouped-listbox"
+              id="patterns-dynamic-grouped"
               class="listbox"
-              items={Corex.List.new(@grouped_items_list)}
+              items={Corex.List.new(@grouped_items)}
             >
               <:label>Choose a country</:label>
               <:empty>No items</:empty>
@@ -497,7 +462,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full items-center">
+        <div class="flex flex-col gap-space w-full items-center">
           <div class="w-full max-w-md">
             <.listbox
               id="listbox-patterns-controlled-field"
@@ -723,6 +688,32 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S|value={["fra"]}|
   end
 
+  def styling_canonical_code do
+    items = styling_items_attr()
+    value = styling_value_attr()
+
+    """
+    <.listbox class="listbox" #{items} #{value}>
+      <:label>Subtle (default)</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_minimal())
+      |> assign(:value, ["fra"])
+
+    ~H"""
+    <.listbox id="listbox-style-canonical" class="listbox" items={@items} value={@value}>
+      <:label>Subtle (default)</:label>
+      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
   def styling_color_code do
     items = styling_items_attr()
     value = styling_value_attr()
@@ -762,7 +753,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       |> assign(:value, ["fra"])
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.listbox id="listbox-style-color-default" class="listbox" items={@items} value={@value}>
         <:label>Default</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
@@ -816,93 +807,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def styling_variant_code do
-    items = styling_items_attr()
-    value = styling_value_attr()
-
-    """
-    <.listbox class="listbox" #{items} #{value}>
-      <:label>Subtle (default)</:label>
-      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-    </.listbox>
-    <.listbox class="listbox ui-solid" #{items} #{value}>
-      <:label>Solid</:label>
-      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-    </.listbox>
-
-    """
-  end
-
-  def styling_variant_example(assigns) do
-    assigns =
-      assigns
-      |> assign(:items, items_minimal())
-      |> assign(:value, ["fra"])
-
-    ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
-      <.listbox id="listbox-style-variant-subtle" class="listbox" items={@items} value={@value}>
-        <:label>Subtle (default)</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-      </.listbox>
-      <.listbox
-        id="listbox-style-variant-solid"
-        class="listbox ui-solid"
-        items={@items}
-        value={@value}
-      >
-        <:label>Solid</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-      </.listbox>
-    </div>
-    """
-  end
-
-  def styling_variant_matrix_code do
-    items = styling_items_attr()
-    value = styling_value_attr()
-
-    for semantic <- DemoScales.styling_semantic_axis_steps("listbox"),
-        variant <- DemoScales.styling_variant_axis_steps("listbox") do
-      class = DemoScales.join_matrix_modifiers("listbox", semantic.modifier, variant.modifier)
-
-      """
-      <.listbox class="#{class}" #{items} #{value}>
-        <:label>#{semantic.label}</:label>
-        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-      </.listbox>
-      """
-    end
-    |> DemoScales.join_code()
-  end
-
-  def styling_variant_matrix_example(assigns) do
-    assigns =
-      assigns
-      |> assign(:items, items_minimal())
-      |> assign(:value, ["fra"])
-      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("listbox"))
-      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("listbox"))
-
-    ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
-          <.listbox
-            :for={variant <- @matrix_variants}
-            class={DemoScales.join_matrix_modifiers("listbox", semantic.modifier, variant.modifier)}
-            items={@items}
-            value={@value}
-          >
-            <:label>{semantic.label}</:label>
-            <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-          </.listbox>
-        </div>
-      </div>
-    </div>
-    """
-  end
-
   def styling_size_code do
     items = styling_items_attr()
 
@@ -930,7 +834,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.listbox id="listbox-style-size-sm" class="listbox ui-size-sm" items={@items}>
         <:label>SM</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
@@ -982,10 +886,82 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.listbox
           id={"listbox-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("listbox", variant.modifier)}
+          items={@items}
+          value={@value}
+        >
+          <:label>{variant.label}</:label>
+          <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        </.listbox>
+      </div>
+    </div>
+    """
+  end
+
+  def items_scrollable do
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"},
+      %{label: "Italy", value: "ita"},
+      %{label: "Spain", value: "esp"},
+      %{label: "Portugal", value: "prt"},
+      %{label: "Poland", value: "pol"},
+      %{label: "Sweden", value: "swe"},
+      %{label: "Norway", value: "nor"},
+      %{label: "Denmark", value: "dnk"},
+      %{label: "Finland", value: "fin"},
+      %{label: "Ireland", value: "irl"},
+      %{label: "Greece", value: "grc"}
+    ])
+  end
+
+  defp styling_max_height_items_attr do
+    ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}, %{label: "Netherlands", value: "nld"}, %{label: "Switzerland", value: "che"}, %{label: "Austria", value: "aut"}, %{label: "Italy", value: "ita"}, %{label: "Spain", value: "esp"}, %{label: "Portugal", value: "prt"}, %{label: "Poland", value: "pol"}, %{label: "Sweden", value: "swe"}, %{label: "Norway", value: "nor"}, %{label: "Denmark", value: "dnk"}, %{label: "Finland", value: "fin"}, %{label: "Ireland", value: "irl"}, %{label: "Greece", value: "grc"}])}|
+  end
+
+  def styling_max_height_code do
+    items = styling_max_height_items_attr()
+    value = styling_value_attr()
+
+    slots = """
+      <:label>Label</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    """
+
+    DemoScales.max_height_variants("listbox")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("listbox", modifier)
+
+      """
+      <.listbox class="#{class}" #{items} #{value}>
+      #{slots}
+      </.listbox>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_scrollable())
+      |> assign(:value, ["fra"])
+      |> assign(:max_height_variants, DemoScales.max_height_variants("listbox"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.listbox
+          id={"listbox-style-max-h-#{variant.id}"}
           class={DemoScales.join_modifiers("listbox", variant.modifier)}
           items={@items}
           value={@value}
@@ -1029,7 +1005,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.listbox id="listbox-style-rounded-none" class="listbox ui-rounded-none" items={@items}>
         <:label>None</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>

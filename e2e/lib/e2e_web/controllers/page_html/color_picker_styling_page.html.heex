@@ -9,9 +9,19 @@
     id="color-picker-styling-page"
     title={~t"Color Picker · Style"}
     subtitle={
-      ~t"Semantic colors on the control-row inputs, density, and corner radius via modifier classes on the color picker root."
+      ~t"Semantic colors, visual variants, density, corner radius, and max-width via modifier classes on the color picker root."
     }
   >
+    <.demo_section
+      id="color-picker-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.ColorPickerDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ColorPickerDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="color-picker-styling-color"
       title={~t"Semantic"}
@@ -61,7 +71,7 @@
     </.demo_section>
 
     <.demo_section
-      id="color-picker-styling-rounded"
+      id="color-picker-styling-radius"
       title={~t"Rounded"}
       code={E2eWeb.Demos.ColorPickerDemo.styling_rounded_code()}
     >

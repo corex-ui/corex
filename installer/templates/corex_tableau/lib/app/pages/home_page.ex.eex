@@ -7,18 +7,154 @@ defmodule <%= @app_module %>.HomePage do
 
   def template(assigns) do
     ~H"""
-    <.layout_heading class="layout-heading">
-      <:title>{~t"Corex for Tableau"}</:title>
-      <:subtitle>{~t"Accessible components and design tokens for static sites"}</:subtitle>
-      <:actions>
-        <.navigate class="button" external to="https://hexdocs.pm/corex">
-          {~t"Hex Doc"} <.heroicon name="hero-arrow-top-right-on-square" />
-        </.navigate>
-        <.navigate class="button" external to="https://corex.gigalixirapp.com/">
-          {~t"Demo Site"} <.heroicon name="hero-arrow-top-right-on-square" />
-        </.navigate>
-      </:actions>
-    </.layout_heading>
+    <div id="home" class="w-full text-ink">
+      <section
+        class="relative isolate flex min-h-[calc(100dvh-var(--spacing-size-lg))] w-full flex-col justify-center overflow-x-hidden py-size-xl"
+        aria-labelledby="home-hero-heading"
+      >
+        <div class="relative z-1 mx-auto grid w-full max-w-7xl grid-cols-1 items-start justify-items-center gap-space-xl px-space-xl lg:grid-cols-2 lg:justify-items-start lg:gap-space-xl">
+          <div class="flex w-full max-w-xl flex-col items-center gap-space-lg text-center lg:max-w-none lg:items-start lg:text-start">
+            <h1
+              id="home-hero-heading"
+              class="display m-0 text-balance text-4xl tracking-tighter text-ink sm:text-5xl lg:text-6xl xl:text-7xl"
+            >
+              {~t"The Phoenix UI with a"} <span class="text-brand-text">{~t"real API"}</span>.
+            </h1>
+
+            <p class="m-0 max-w-xl text-pretty text-lg text-ink-muted">
+              {~t"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
+              <.navigate to="https://zagjs.com" class="link" external>
+                Zag.js <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              {~t"state machines."}
+            </p>
+
+            <ul
+              class="m-0 mt-space-sm grid w-full max-w-xl list-none grid-cols-1 gap-x-size-sm gap-y-space-lg p-0 sm:grid-cols-2"
+              aria-label={~t"Highlights"}
+            >
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">{~t"Server & client API."}</strong>
+                  {~t"Drive every component from LiveView or JavaScript and listen back from either side."}
+                </span>
+              </li>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">{~t"LiveView-native."}</strong>
+                  {~t"Update props at runtime without resetting component state."}
+                </span>
+              </li>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">{~t"Truly unstyled."}</strong>
+                  {~t"Bring your own CSS or opt into Corex Design tokens, themes and modes."}
+                </span>
+              </li>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">{~t"Accessible by default."}</strong>
+                  {~t"Keyboard, focus and ARIA wired in by Zag.js state machines."}
+                </span>
+              </li>
+            </ul>
+
+            <div class="mt-space-sm flex flex-wrap items-center justify-center gap-space lg:justify-start">
+              <.navigate
+                to="https://corex.gigalixirapp.com/"
+                class="button ui-accent ui-solid ui-size-lg"
+                external
+              >
+                {~t"Demo site"} <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              <.navigate
+                to="https://hexdocs.pm/corex/installation.html"
+                class="button ui-ghost ui-size-lg"
+                external
+              >
+                {~t"Visit Hexdocs"} <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+            </div>
+          </div>
+
+          <div class="relative flex w-fit max-w-full flex-col gap-space overflow-hidden rounded-md border border-border bg-surface p-space shadow-md lg:justify-self-start">
+            <h2 class="sr-only">{~t"Interactive preview"}</h2>
+
+            <div class="flex flex-wrap items-center gap-space-sm">
+              <span class="badge ui-ghost ui-size-sm">
+                <.heroicon name="hero-command-line" /> {~t"API"}
+              </span>
+              <.action
+                phx-click={Corex.Accordion.set_value("home-accordion", "anatomy")}
+                class="button ui-size-sm"
+              >
+                <.heroicon name="hero-chevron-right" /> {~t"Open first"}
+              </.action>
+              <.action
+                phx-click={
+                  Corex.Accordion.set_value("home-accordion", ["anatomy", "machine", "replace"])
+                }
+                class="button ui-size-sm"
+              >
+                <.heroicon name="hero-square-3-stack-3d" /> {~t"Open all"}
+              </.action>
+              <.action
+                phx-click={Corex.Accordion.set_value("home-accordion", [])}
+                class="button ui-size-sm"
+              >
+                <.heroicon name="hero-x-mark" /> {~t"Close all"}
+              </.action>
+            </div>
+
+            <span class="badge ui-ghost ui-size-sm self-start">
+              <.heroicon name="hero-bars-3-bottom-left" /> {~t"Accordion"}
+            </span>
+
+            <.accordion
+              id="home-accordion"
+              class="accordion"
+              value="machine"
+              items={
+                Corex.Content.new([
+                  %{
+                    value: "anatomy",
+                    label: ~t"Anatomy & slots",
+                    content: ~t"Structure, custom slots, and compound mode for full control."
+                  },
+                  %{
+                    value: "machine",
+                    label: ~t"State machines",
+                    content: ~t"Zag.js powers accessibility, keyboard, and focus."
+                  },
+                  %{
+                    value: "replace",
+                    label: ~t"Replace this page",
+                    content:
+                      ~t"Keep the shell (header, footer, Design tokens) and ship your product UI."
+                  }
+                ])
+              }
+            >
+              <:indicator>
+                <.heroicon name="hero-chevron-right" />
+              </:indicator>
+            </.accordion>
+          </div>
+        </div>
+      </section>
+    </div>
     """
   end
 end
@@ -54,18 +190,154 @@ end
 
   def template(assigns) do
     ~H"""
-    <.layout_heading class="layout-heading">
-      <:title>Corex for Tableau</:title>
-      <:subtitle>Accessible components and design tokens for static sites</:subtitle>
-      <:actions>
-        <.navigate class="button" external to="https://hexdocs.pm/corex">
-          Hex Doc <.heroicon name="hero-arrow-top-right-on-square" />
-        </.navigate>
-        <.navigate class="button" external to="https://corex.gigalixirapp.com/">
-          Demo Site <.heroicon name="hero-arrow-top-right-on-square" />
-        </.navigate>
-      </:actions>
-    </.layout_heading>
+    <div id="home" class="w-full text-ink">
+      <section
+        class="relative isolate flex min-h-[calc(100dvh-var(--spacing-size-lg))] w-full flex-col justify-center overflow-x-hidden py-size-xl"
+        aria-labelledby="home-hero-heading"
+      >
+        <div class="relative z-1 mx-auto grid w-full max-w-7xl grid-cols-1 items-start justify-items-center gap-space-xl px-space-xl lg:grid-cols-2 lg:justify-items-start lg:gap-space-xl">
+          <div class="flex w-full max-w-xl flex-col items-center gap-space-lg text-center lg:max-w-none lg:items-start lg:text-start">
+            <h1
+              id="home-hero-heading"
+              class="display m-0 text-balance text-4xl tracking-tighter text-ink sm:text-5xl lg:text-6xl xl:text-7xl"
+            >
+              The Phoenix UI with a <span class="text-brand-text">real API</span>.
+            </h1>
+
+            <p class="m-0 max-w-xl text-pretty text-lg text-ink-muted">
+              Accessible, unstyled Phoenix components with a full server-and-client API, powered by
+              <.navigate to="https://zagjs.com" class="link" external>
+                Zag.js <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              state machines.
+            </p>
+
+            <ul
+              class="m-0 mt-space-sm grid w-full max-w-xl list-none grid-cols-1 gap-x-size-sm gap-y-space-lg p-0 sm:grid-cols-2"
+              aria-label="Highlights"
+            >
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">Server & client API.</strong>
+                  Drive every component from LiveView or JavaScript and listen back from either side.
+                </span>
+              </li>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">LiveView-native.</strong>
+                  Update props at runtime without resetting component state.
+                </span>
+              </li>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">Truly unstyled.</strong>
+                  Bring your own CSS or opt into Corex Design tokens, themes and modes.
+                </span>
+              </li>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
+                <span>
+                  <strong class="font-semibold text-ink">Accessible by default.</strong>
+                  Keyboard, focus and ARIA wired in by Zag.js state machines.
+                </span>
+              </li>
+            </ul>
+
+            <div class="mt-space-sm flex flex-wrap items-center justify-center gap-space lg:justify-start">
+              <.navigate
+                to="https://corex.gigalixirapp.com/"
+                class="button ui-accent ui-solid ui-size-lg"
+                external
+              >
+                Demo site <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              <.navigate
+                to="https://hexdocs.pm/corex/installation.html"
+                class="button ui-ghost ui-size-lg"
+                external
+              >
+                Visit Hexdocs <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+            </div>
+          </div>
+
+          <div class="relative flex w-fit max-w-full flex-col gap-space overflow-hidden rounded-md border border-border bg-surface p-space shadow-md lg:justify-self-start">
+            <h2 class="sr-only">Interactive preview</h2>
+
+            <div class="flex flex-wrap items-center gap-space-sm">
+              <span class="badge ui-ghost ui-size-sm">
+                <.heroicon name="hero-command-line" /> API
+              </span>
+              <.action
+                phx-click={Corex.Accordion.set_value("home-accordion", "anatomy")}
+                class="button ui-size-sm"
+              >
+                <.heroicon name="hero-chevron-right" /> Open first
+              </.action>
+              <.action
+                phx-click={
+                  Corex.Accordion.set_value("home-accordion", ["anatomy", "machine", "replace"])
+                }
+                class="button ui-size-sm"
+              >
+                <.heroicon name="hero-square-3-stack-3d" /> Open all
+              </.action>
+              <.action
+                phx-click={Corex.Accordion.set_value("home-accordion", [])}
+                class="button ui-size-sm"
+              >
+                <.heroicon name="hero-x-mark" /> Close all
+              </.action>
+            </div>
+
+            <span class="badge ui-ghost ui-size-sm self-start">
+              <.heroicon name="hero-bars-3-bottom-left" /> Accordion
+            </span>
+
+            <.accordion
+              id="home-accordion"
+              class="accordion"
+              value="machine"
+              items={
+                Corex.Content.new([
+                  %{
+                    value: "anatomy",
+                    label: "Anatomy & slots",
+                    content: "Structure, custom slots, and compound mode for full control."
+                  },
+                  %{
+                    value: "machine",
+                    label: "State machines",
+                    content: "Zag.js powers accessibility, keyboard, and focus."
+                  },
+                  %{
+                    value: "replace",
+                    label: "Replace this page",
+                    content:
+                      "Keep the shell (header, footer, Design tokens) and ship your product UI."
+                  }
+                ])
+              }
+            >
+              <:indicator>
+                <.heroicon name="hero-chevron-right" />
+              </:indicator>
+            </.accordion>
+          </div>
+        </div>
+      </section>
+    </div>
     """
   end
 end

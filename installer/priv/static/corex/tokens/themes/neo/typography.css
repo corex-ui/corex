@@ -1,0 +1,31 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="neo"] .typo h1:not(:where([data-scope] *)) {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tighter);
+}
+
+[data-theme="neo"] .typo h2:not(:where([data-scope] *)) {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+[data-theme="neo"] .typo h3:not(:where([data-scope] *)) {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+}
+
+[data-theme="neo"] .typo kbd:not(:where([data-scope] *)) {
+  font-family: var(--font-mono);
+}
+
+[data-theme="neo"] .typo p.display:not(:where([data-scope] *)) {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tighter);
+}
+

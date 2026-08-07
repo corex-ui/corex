@@ -52,12 +52,7 @@ defmodule E2eWeb.TimerApiLive do
       state_js_heex: m.api_state_client_js_heex(),
       state_js: m.api_state_client_js_js(),
       state_js_ts: m.api_state_client_js_ts(),
-      countdown: m.api_template_props_countdown_heex(),
-      timing: m.api_template_props_timing_heex(),
-      direction: m.api_template_props_direction_heex(),
-      events_heex: m.events_combined_heex(),
-      events_elixir: m.events_server_elixir(),
-      events_js: m.events_combined_js()
+      countdown: m.api_template_props_countdown_heex()
     }
   end
 
@@ -209,49 +204,9 @@ defmodule E2eWeb.TimerApiLive do
           code={@codes.countdown}
         >
           <:preview>
-            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
+            <div class="flex w-full max-w-4xl flex-col items-center gap-space-lg">
               <Demo.api_template_countdown_preview />
             </div>
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
-          id="timer-api-template-timing"
-          title="Configuration: interval and auto start"
-          code={@codes.timing}
-        >
-          <:preview>
-            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
-              <Demo.api_template_timing_preview />
-            </div>
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
-          id="timer-api-template-direction"
-          title="Configuration: direction and orientation"
-          code={@codes.direction}
-        >
-          <:preview>
-            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
-              <Demo.api_template_direction_preview />
-            </div>
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
-          id="timer-api-events"
-          title="Tick and complete"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.events_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.events_elixir},
-            %{value: "js", label: "JS", language: :js, code: @codes.events_js}
-          ]}
-        >
-          <:preview>
-            <p class="typo-sm text-ink-muted max-w-2xl">
-              Interactive log live on <.link navigate={~p"/timer/events"} class="link">Timer · Events</.link>.
-            </p>
           </:preview>
         </.demo_section>
       </.demo_page>

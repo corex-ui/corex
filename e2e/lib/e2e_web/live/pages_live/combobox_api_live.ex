@@ -64,7 +64,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", ["bel"])}
                 class="button ui-size-sm"
@@ -81,7 +81,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-client"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -104,14 +106,16 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="combobox_api_set_value" class="button ui-size-sm">Belgium</.action>
               <.action phx-click="combobox_api_clear" class="button ui-size-sm">Clear</.action>
             </div>
             <.combobox
               id="combobox-api-sv-server"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -128,7 +132,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 type="button"
                 class="button ui-size-sm"
@@ -159,7 +163,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-js"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -176,7 +182,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_open("combobox-api-open-client", true)}
                 class="button ui-size-sm"
@@ -193,7 +199,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-open-client"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -216,14 +224,16 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="combobox_api_open" class="button ui-size-sm">Open</.action>
               <.action phx-click="combobox_api_close" class="button ui-size-sm">Close</.action>
             </div>
             <.combobox
               id="combobox-api-open-server"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>

@@ -13,6 +13,7 @@ defmodule CorexDesign.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       name: "Corex Design",
       description: description(),
       package: package(),
@@ -48,21 +49,39 @@ defmodule CorexDesign.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
-    ] ++ maybe_json_polyfill()
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+    ] ++ maybe_ex_slop() ++ maybe_json_polyfill()
   end
 
-  defp maybe_json_polyfill do
-    if Code.ensure_loaded?(:json) do
-      []
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
+    ]
+  end
+
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
     else
-      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+      []
+    end
+  end
+
+  # Gate on OTP release, not Code.ensure_loaded?(:json). After json_polyfill
+  # compiles it defines :json, so an ensure_loaded? check can drop the dep on
+  # Mix reload and raise "Unknown dependency json_polyfill for environment …".
+  defp maybe_json_polyfill do
+    case Integer.parse(System.otp_release()) do
+      {otp, _} when otp >= 27 -> []
+      _ -> [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
     end
   end
 
   defp aliases do
     [
-      "bundle.build": ["compile", &build_bundle/1],
       test: ["test"],
       lint: [
         "format --check-formatted",
@@ -74,19 +93,6 @@ defmodule CorexDesign.MixProject do
     ]
   end
 
-  @bundle_dir "dist"
-
-  defp build_bundle(_) do
-    priv_css = Path.join(__DIR__, "priv/css")
-    output = Path.join(__DIR__, @bundle_dir)
-
-    Mix.Task.run("app.start")
-    Corex.Design.Config.validate!()
-    Corex.Design.Tokens.Publish.write_theme_tokens!(priv_css)
-    Mix.Task.run("corex.design.build", ["--output", output])
-    :ok
-  end
-
   defp package do
     [
       maintainers: ["Karim Semmoud"],
@@ -95,7 +101,7 @@ defmodule CorexDesign.MixProject do
         "GitHub" => @scm_url,
         "Website" => "https://corex.gigalixirapp.com/en"
       },
-      files: ~w(lib priv mix.exs README.md .formatter.exs guides)
+      files: ~w(lib priv mix.exs README.md CHANGELOG.md LICENSE .formatter.exs guides)
     ]
   end
 
@@ -109,9 +115,10 @@ defmodule CorexDesign.MixProject do
       groups_for_modules: [
         Design: [
           Corex.Design,
+          Corex.Design.Accessibility,
           Corex.Design.Config,
-          Corex.Design.Config.Options,
-          Corex.Design.ThemeDefinition,
+          Corex.Design.Config.Resolved,
+          Corex.Design.Config.Schema,
           Mix.Tasks.Corex.Design.Build,
           Mix.Tasks.Corex.Design.Options,
           Mix.Tasks.Corex.Design.Validate,
@@ -125,9 +132,10 @@ defmodule CorexDesign.MixProject do
     allowed =
       MapSet.new([
         Corex.Design,
+        Corex.Design.Accessibility,
         Corex.Design.Config,
-        Corex.Design.Config.Options,
-        Corex.Design.ThemeDefinition,
+        Corex.Design.Config.Resolved,
+        Corex.Design.Config.Schema,
         Mix.Tasks.Corex.Design.Build,
         Mix.Tasks.Corex.Design.Options,
         Mix.Tasks.Corex.Design.Validate,

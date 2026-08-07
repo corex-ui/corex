@@ -1,11 +1,12 @@
 import { connect, machine, type Props, type Api } from "@zag-js/angle-slider";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
-export class AngleSlider extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class AngleSlider extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -35,6 +36,14 @@ export class AngleSlider extends Component<Props, Api> {
         (el, props) => this.spreadProps(el, props),
         this.api.getHiddenInputProps() as Record<string, unknown>
       );
+      // data-submit-name is always the form name; data-name is gated until used.
+      // Strip Zag's name until the server/hook has named the input.
+      const submitName = this.el.dataset.submitName;
+      const gatedName = this.el.dataset.name;
+      if (submitName && !gatedName) {
+        hiddenInputEl.removeAttribute("name");
+        hiddenInputEl.removeAttribute("form");
+      }
     }
 
     const controlEl = this.el.querySelector<HTMLElement>(

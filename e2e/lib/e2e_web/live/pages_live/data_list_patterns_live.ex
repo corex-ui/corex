@@ -5,9 +5,9 @@ defmodule E2eWeb.DataListPatternsLive do
 
   alias E2eWeb.Demos.DataListDemo, as: Demo
 
-  @id_stream "data-list-patterns-stream-list"
+  @id_dynamic "data-list-patterns-dynamic-list"
 
-  @initial_stream_items [
+  @initial_items [
     %{
       value: "lorem",
       label: "Lorem ipsum dolor sit amet",
@@ -29,17 +29,15 @@ defmodule E2eWeb.DataListPatternsLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:id_stream, @id_stream)
-     |> assign(:stream_heex, Demo.patterns_stream_demo_heex())
-     |> assign(:stream_elixir, Demo.patterns_stream_elixir())
-     |> stream_configure(:items, dom_id: &"data-list:stream-data-list:item:#{&1.value}")
-     |> stream(:items, @initial_stream_items)
-     |> assign(:items_list, @initial_stream_items)
+     |> assign(:id_dynamic, @id_dynamic)
+     |> assign(:dynamic_heex, Demo.patterns_dynamic_demo_heex())
+     |> assign(:dynamic_elixir, Demo.patterns_dynamic_elixir())
+     |> assign(:items, @initial_items)
      |> assign(:next_id, 4)}
   end
 
   @impl true
-  def handle_event("stream_add", _params, socket) do
+  def handle_event("add", _params, socket) do
     id = "item-#{socket.assigns.next_id}"
 
     row = %{
@@ -50,16 +48,14 @@ defmodule E2eWeb.DataListPatternsLive do
 
     {:noreply,
      socket
-     |> stream_insert(:items, row)
-     |> assign(:items_list, socket.assigns.items_list ++ [row])
+     |> assign(:items, socket.assigns.items ++ [row])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
-  def handle_event("stream_reset", _params, socket) do
+  def handle_event("reset", _params, socket) do
     {:noreply,
      socket
-     |> stream(:items, [], reset: true)
-     |> assign(:items_list, [])
+     |> assign(:items, [])
      |> assign(:next_id, 1)}
   end
 
@@ -76,26 +72,26 @@ defmodule E2eWeb.DataListPatternsLive do
         path={@path}
         id="data-list-patterns-page"
         title="Data List · Pattern"
-        subtitle="Update items from a LiveView stream while the component reads a plain list assign."
+        subtitle="Update items from a LiveView list assign."
         heading_class="layout-heading"
       >
         <.demo_section
-          id="data-list-patterns-stream"
-          title="Stream"
+          id="data-list-patterns-dynamic"
+          title="Dynamic items"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @stream_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @stream_elixir}
+            %{value: "heex", label: "Heex", language: :heex, code: @dynamic_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @dynamic_elixir}
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-4">
-              <.action phx-click="stream_add" class="button ui-accent">Add row</.action>
-              <.action phx-click="stream_reset" class="button ui-alert">Reset</.action>
+            <div class="flex flex-wrap gap-space-lg">
+              <.action phx-click="add" class="button ui-accent">Add row</.action>
+              <.action phx-click="reset" class="button ui-alert">Reset</.action>
             </div>
             <.data_list
-              id={@id_stream}
+              id={@id_dynamic}
               class="data-list"
-              items={Corex.Content.new(@items_list)}
+              items={Corex.Content.new(@items)}
             >
               <:empty>
                 <p>No items</p>

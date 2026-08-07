@@ -1,13 +1,14 @@
-<%= if layout_mode || layout_theme || layout_locale || scope do %><Layouts.app
+<%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths || scope do %><Layouts.app
   flash={@flash}<%= if layout_mode do %>
   mode={@mode}<% end %><%= if layout_theme do %>
-  theme={@theme}<% end %><%= if layout_locale do %>
+  theme={@theme}<% end %><%= if layout_locale_paths do %>
   locale={@locale}
-  current_path={@current_path}<% end %><%= if scope do %>
+<% end %><%= if layout_locale_assigns do %>
+  current_path={@conn.request_path}<% end %><%= if scope do %>
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
-  <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
+  <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg pt-space-xl text-ink rounded-md">
   <.layout_heading class="layout-heading">
     <:title>New <%= schema.human_singular %></:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
@@ -15,8 +16,8 @@
 
   <.<%= schema.singular %>_form
     form={to_form(@changeset, as: :<%= String.to_atom(schema.singular) %>, id: "<%= schema.singular %>-form")}
-    action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
-    return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+    action={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+    return_to={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
   />
   </article>
 </Layouts.app>

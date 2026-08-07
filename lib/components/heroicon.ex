@@ -40,4 +40,15 @@ defmodule Corex.Heroicon do
     <span class={[@name, @class]} {@rest} />
     """
   end
+
+  def heroicon(assigns) do
+    raise ArgumentError, """
+    Corex.Heroicon expected a Heroicon class name starting with \"hero-\", got: #{inspect(assigns.name)}
+
+    Examples:
+
+        <.heroicon name=\"hero-x-mark\" />
+        <.heroicon name=\"hero-arrow-path\" class=\"size-3\" />
+    """
+  end
 end

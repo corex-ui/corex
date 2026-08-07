@@ -30,6 +30,7 @@ defmodule Corex.TagsInput.Translation do
     ]
 
   @doc false
+  @spec format_tag(String.t(), String.t()) :: String.t()
   def format_tag(template, tag) when is_binary(template) and is_binary(tag) do
     String.replace(template, "%{tag}", tag)
   end

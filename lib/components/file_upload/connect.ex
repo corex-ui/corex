@@ -1,6 +1,7 @@
 defmodule Corex.FileUpload.Connect do
   @moduledoc false
-  import Corex.Helpers, only: [get_boolean: 1]
+  use Corex.Connect.Mounted
+  use Corex.Component, :connect
 
   alias Corex.Selectors
 
@@ -19,8 +20,6 @@ defmodule Corex.FileUpload.Connect do
 
   alias Phoenix.LiveView.JS
 
-  @visually_hidden_style "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
-
   defp zid(id), do: "file:#{id}"
 
   defp maybe_put_int(map, _key, nil), do: map
@@ -35,10 +34,10 @@ defmodule Corex.FileUpload.Connect do
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-required" => get_boolean(assigns.required),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-required" => presence_attr(assigns.required),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => Map.get(assigns, :dir),
@@ -47,7 +46,7 @@ defmodule Corex.FileUpload.Connect do
       "data-prevent-document-drop" =>
         if(assigns.prevent_document_drop, do: "true", else: "false"),
       "data-accept" => assigns.accept,
-      "data-directory" => get_boolean(assigns.directory),
+      "data-directory" => presence_attr(assigns.directory),
       "data-on-file-change" => assigns.on_file_change,
       "data-on-file-change-client" => assigns.on_file_change_client,
       "data-on-file-accept" => assigns.on_file_accept,
@@ -58,9 +57,13 @@ defmodule Corex.FileUpload.Connect do
     }
     |> maybe_put_int("data-max-file-size", assigns.max_file_size)
     |> maybe_put_int("data-min-file-size", assigns.min_file_size)
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
     |> Map.reject(fn {_k, v} -> is_nil(v) end)
     |> FormField.put_form_field_attrs(assigns)
   end
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   def ignore_root(assigns) do
     JS.ignore_attributes(Root.ignored_attrs(), to: Selectors.css_id(zid(assigns.id)))
@@ -107,7 +110,7 @@ defmodule Corex.FileUpload.Connect do
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
       "id" => zid(assigns.id),
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -140,8 +143,8 @@ defmodule Corex.FileUpload.Connect do
       "id" => "#{zid(assigns.id)}:input",
       "tabindex" => -1,
       "aria-hidden" => true,
-      "style" => @visually_hidden_style,
-      "disabled" => get_boolean(assigns.disabled),
+      "style" => visually_hidden_style(),
+      "disabled" => presence_attr(assigns.disabled),
       "name" => assigns.name,
       "form" => assigns.form
     }
@@ -153,7 +156,6 @@ defmodule Corex.FileUpload.Connect do
   def input_sentinel(assigns) do
     base = %{
       "type" => "hidden",
-      "name" => assigns.name,
       "form" => assigns.form,
       "value" => "",
       "id" => "#{zid(assigns.id)}:sentinel",
@@ -161,6 +163,12 @@ defmodule Corex.FileUpload.Connect do
       "data-part" => "hidden-input-sentinel",
       "data-corex-file-upload-sentinel" => ""
     }
+
+    base =
+      case assigns.name do
+        name when is_binary(name) and name != "" -> Map.put(base, "name", name)
+        _ -> base
+      end
 
     Map.reject(base, fn {_k, v} -> is_nil(v) end)
   end
@@ -185,7 +193,7 @@ defmodule Corex.FileUpload.Connect do
       "data-type" => assigns.type,
       "id" => "#{zid(assigns.id)}:item-group:#{assigns.type}",
       "dir" => Map.get(assigns, :dir),
-      "data-disabled" => get_boolean(Map.get(assigns, :disabled, false))
+      "data-disabled" => presence_attr(Map.get(assigns, :disabled, false))
     }
     |> Map.reject(fn {_k, v} -> is_nil(v) end)
   end

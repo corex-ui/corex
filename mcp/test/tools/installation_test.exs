@@ -54,6 +54,9 @@ defmodule Corex.MCP.Tools.InstallationTest do
     runs = Enum.map(decoded["commands"], & &1["run"])
     assert Enum.any?(runs, &(&1 =~ "tableau_new"))
     assert Enum.any?(runs, &(&1 =~ "corex.tableau.new"))
+    assert "--lang" in decoded["optional_flags"]
+    assert "--no-design" in decoded["optional_flags"]
+    assert "--a11y" in decoded["optional_flags"]
   end
 
   test "installation_guide existing_project is scoped" do
@@ -77,13 +80,18 @@ defmodule Corex.MCP.Tools.InstallationTest do
     assert Enum.any?(titles, &(&1 =~ "MCP"))
   end
 
-  test "installation_guide rejects invalid scenario" do
-    assert {:error, :invalid_arguments} =
-             Installation.installation_guide(%{"scenario" => "bogus"})
+  test "installation_guide rejects invalid scenario and lists the allowed values" do
+    assert {:error,
+            %{
+              code: -32_602,
+              data: %{tool: "installation_guide", param: "scenario", allowed: allowed}
+            }} = Installation.installation_guide(%{"scenario" => "bogus"})
+
+    assert "tableau_new" in allowed
   end
 
   test "installation_guide rejects unknown keys" do
-    assert {:error, :invalid_arguments} =
+    assert {:error, %{code: -32_602, data: %{tool: "installation_guide"}}} =
              Installation.installation_guide(%{"scenario" => "all", "extra" => "x"})
   end
 

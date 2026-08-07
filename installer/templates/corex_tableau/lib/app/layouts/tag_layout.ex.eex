@@ -1,0 +1,64 @@
+defmodule <%= @app_module %>.TagLayout do
+  @moduledoc false
+
+  use Tableau.Layout, layout: <%= @app_module %>.RootLayout
+  use Phoenix.Component
+  use Corex
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
+
+  alias <%= @app_module %>.Locale
+<% end %>  alias <%= @app_module %>.Layouts.Shell
+
+  def template(assigns) do
+    page = assigns.page
+    tag = page[:tag] || ""
+    posts = page[:posts] || []
+<%= if @lang do %>    locale = Locale.current(page)
+<% end %>
+    assigns =
+      assigns
+      |> Map.put(:tag_label, tag)
+      |> Map.put(:tag_posts, posts)
+<%= if @lang do %>      |> Map.put(:tags_path, Locale.swap_path("/tags", locale))
+<% else %>      |> Map.put(:tags_path, "/tags")
+<% end %>
+    ~H"""
+    <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
+      <nav class="blog__nav" aria-label=<%= if @lang do %>{~t"Blog"}<% else %>"Blog"<% end %>>
+        <.navigate to={@tags_path} class="link ui-nav w-fit">
+          <.heroicon name="hero-arrow-left" /><%= if @lang do %> {~t"All tags"}<% else %> All tags<% end %>
+        </.navigate>
+      </nav>
+
+      <header class="blog__hero" aria-labelledby="tag-heading">
+        <div class="blog__head">
+          <p class="blog__eyebrow"><%= if @lang do %>{~t"Tag"}<% else %>Tag<% end %></p>
+          <h1 id="tag-heading" class="blog__display">
+            <span class="blog__display__accent">{@tag_label}</span>
+          </h1>
+          <p class="blog__meta">
+            {length(@tag_posts)} {if length(@tag_posts) == 1, do: <%= if @lang do %>~t"post"<% else %>"post"<% end %>, else: <%= if @lang do %>~t"posts"<% else %>"posts"<% end %>}
+          </p>
+        </div>
+      </header>
+
+      <ul class="blog__grid m-0 list-none p-0">
+        <li :for={post <- @tag_posts}>
+          <.navigate to={post.permalink} class={"#{Shell.card()}"}>
+            <div class="blog__card__top">
+              <p :if={post_date_label(post)} class="blog__card__date">{post_date_label(post)}</p>
+              <span :if={is_nil(post_date_label(post))}></span>
+              <.heroicon name="hero-arrow-right" class="blog__card__arrow" />
+            </div>
+            <h2 class="blog__card__title">{post[:title] || <%= if @lang do %>~t"Untitled"<% else %>"Untitled"<% end %>}</h2>
+            <p :if={post[:description]} class="blog__card__excerpt">{post[:description]}</p>
+          </.navigate>
+        </li>
+      </ul>
+    </article>
+    """
+  end
+
+  defp post_date_label(%{date: %DateTime{} = date}), do: Calendar.strftime(date, "%Y-%m-%d")
+  defp post_date_label(_), do: nil
+end

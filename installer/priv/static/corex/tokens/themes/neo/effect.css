@@ -1,0 +1,41 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="neo"] {
+  --shadow-2xs: 0px 0.85px var(--color-shadow);
+  --shadow-xs: 0px 0.85px 1.7px 0px var(--color-shadow);
+  --shadow-sm: 0px 0.85px 2.55px 0px var(--color-shadow), 0px 0.85px 1.7px -0.85px var(--color-shadow);
+  --shadow-md: 0px 3.4px 5.1px -0.85px var(--color-shadow), 0px 1.7px 3.4px -1.7px var(--color-shadow);
+  --shadow-lg: 0px 8.5px 12.75px -2.55px var(--color-shadow), 0px 3.4px 5.1px -3.4px var(--color-shadow);
+  --shadow-xl: 0px 17px 21.25px -4.25px var(--color-shadow), 0px 6.8px 8.5px -5.1px var(--color-shadow);
+  --shadow-2xl: 0px 21.25px 42.5px -10.2px var(--color-shadow);
+  --shadow-ui: 0px 8.5px 12.75px -2.55px var(--color-shadow), 0px 3.4px 5.1px -3.4px var(--color-shadow);
+  --shadow-surface: 0px 0.85px 0.85px 0px var(--color-shadow), 0px 0.85px 0.85px 0px var(--color-shadow);
+  --inset-shadow-2xs: inset 0px 0.85px var(--color-shadow);
+  --inset-shadow-xs: inset 0px 0.85px 0.85px var(--color-shadow);
+  --inset-shadow-sm: inset 0px 1.7px 3.4px var(--color-shadow);
+  --drop-shadow-xs: 0px 0.85px 0.85px var(--color-shadow);
+  --drop-shadow-sm: 0px 0.85px 1.7px var(--color-shadow);
+  --drop-shadow-md: 0px 2.55px 2.55px var(--color-shadow);
+  --drop-shadow-lg: 0px 3.4px 3.4px var(--color-shadow);
+  --drop-shadow-xl: 0px 7.65px 5.95px var(--color-shadow);
+  --drop-shadow-2xl: 0px 21.25px 21.25px var(--color-shadow);
+  --text-shadow-2xs: 0px 0.85px 0px var(--color-shadow);
+  --text-shadow-xs: 0px 0.85px 0.85px var(--color-shadow);
+  --text-shadow-sm: 0px 0.85px 0px var(--color-shadow), 0px 0.85px 0.85px var(--color-shadow), 0px 1.7px 1.7px var(--color-shadow);
+  --text-shadow-md: 0px 0.85px 0.85px var(--color-shadow), 0px 0.85px 1.7px var(--color-shadow), 0px 1.7px 3.4px var(--color-shadow);
+  --text-shadow-lg: 0px 0.85px 1.7px var(--color-shadow), 0px 2.55px 1.7px var(--color-shadow), 0px 3.4px 6.8px var(--color-shadow);
+  --blur-xs: 4.4px var(--color-shadow);
+  --blur-sm: 8.8px var(--color-shadow);
+  --blur-md: 13.2px var(--color-shadow);
+  --blur-lg: 17.6px var(--color-shadow);
+  --blur-xl: 26.4px var(--color-shadow);
+  --blur-2xl: 44px var(--color-shadow);
+  --blur-3xl: 70.4px var(--color-shadow);
+  --duration-fast: 80ms;
+  --duration-normal: 120ms;
+  --duration-slow: 200ms;
+  --opacity-disabled: 0.7;
+  --opacity-backdrop: 0.4;
+}

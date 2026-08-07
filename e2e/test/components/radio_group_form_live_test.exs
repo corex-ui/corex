@@ -9,9 +9,9 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
     |> form("#radio-group-live-form-phoenix")
     |> render_submit()
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "choice=",
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -26,10 +26,10 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
       |> render_submit()
 
     assert html =~ "can&#39;t be blank"
-    refute_push_event(view, "toast-create", %{})
+    refute_push_event(view, "toast_create", %{})
   end
 
-  test "ecto save with choice pushes toast-create", %{conn: conn} do
+  test "ecto save with choice pushes toast_create", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
 
     view
@@ -40,9 +40,9 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
     |> form("#radio-group-live-form-ecto")
     |> render_submit(%{"radio_group_ecto" => %{"choice" => "duis"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: choice=duis",
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

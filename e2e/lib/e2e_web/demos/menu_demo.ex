@@ -116,6 +116,54 @@ defmodule E2eWeb.Demos.MenuDemo do
   def grouped_code, do: anatomy_grouped_code()
   def grouped_example(assigns), do: anatomy_grouped_example(assigns)
 
+  def anatomy_custom_items do
+    [
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"},
+      %Corex.Tree.Item{value: "nld", label: "Netherlands"}
+    ]
+  end
+
+  def anatomy_custom_item_code do
+    ~S"""
+    <.menu
+      class="menu"
+      items={[
+        %Corex.Tree.Item{value: "fra", label: "France"},
+        %Corex.Tree.Item{value: "bel", label: "Belgium"},
+        %Corex.Tree.Item{value: "deu", label: "Germany"}
+      ]}
+    >
+      <:item :let={item}>
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+        {item.label}
+      </:item>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
+    </.menu>
+    """
+  end
+
+  def anatomy_custom_item_example(assigns) do
+    ~H"""
+    <.menu
+      id="menu-anatomy-custom-item"
+      class="menu"
+      items={anatomy_custom_items()}
+    >
+      <:item :let={item}>
+        <Flagpack.flag name={flag_name(item.value)} />
+        {item.label}
+      </:item>
+      <:trigger>Corex</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
   def anatomy_nested_code do
     ~S"""
     <.menu
@@ -678,6 +726,28 @@ defmodule E2eWeb.Demos.MenuDemo do
     ]}|
   end
 
+  def styling_canonical_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu" value="menu" #{items}>
+      <:trigger>Subtle (default)</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <.menu id="menu-style-canonical" class="menu w-full" items={@items} value="menu">
+      <:trigger>Subtle (default)</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
   def styling_color_code do
     items = styling_items_attr()
 
@@ -713,7 +783,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-color-default" class="menu w-full" items={@items} value="menu">
         <:trigger>Default</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -759,6 +829,10 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Solid</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
+    <.menu class="menu ui-ghost" value="menu" #{items}>
+      <:trigger>Ghost</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
 
     """
   end
@@ -767,7 +841,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-variant-subtle" class="menu w-full" items={@items} value="menu">
         <:trigger>Subtle (default)</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -779,6 +853,15 @@ defmodule E2eWeb.Demos.MenuDemo do
         value="menu"
       >
         <:trigger>Solid</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-variant-ghost"
+        class="menu ui-ghost w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Ghost</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
     </div>
@@ -855,7 +938,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-size-sm" class="menu ui-size-sm w-full" items={@items}>
         <:trigger>SM</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -911,7 +994,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-rounded-none" class="menu ui-rounded-none w-full" items={@items}>
         <:trigger>None</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -936,6 +1019,89 @@ defmodule E2eWeb.Demos.MenuDemo do
         <:trigger>Full</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
+    </div>
+    """
+  end
+
+  def demo_scroll_leaf_items do
+    [
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"},
+      %Corex.Tree.Item{value: "nld", label: "Netherlands"},
+      %Corex.Tree.Item{value: "che", label: "Switzerland"},
+      %Corex.Tree.Item{value: "aut", label: "Austria"},
+      %Corex.Tree.Item{value: "ita", label: "Italy"},
+      %Corex.Tree.Item{value: "esp", label: "Spain"},
+      %Corex.Tree.Item{value: "prt", label: "Portugal"},
+      %Corex.Tree.Item{value: "pol", label: "Poland"},
+      %Corex.Tree.Item{value: "swe", label: "Sweden"},
+      %Corex.Tree.Item{value: "nor", label: "Norway"},
+      %Corex.Tree.Item{value: "dnk", label: "Denmark"},
+      %Corex.Tree.Item{value: "fin", label: "Finland"},
+      %Corex.Tree.Item{value: "irl", label: "Ireland"},
+      %Corex.Tree.Item{value: "grc", label: "Greece"}
+    ]
+  end
+
+  defp styling_max_height_items_attr do
+    ~S|items={[
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"},
+      %Corex.Tree.Item{value: "nld", label: "Netherlands"},
+      %Corex.Tree.Item{value: "che", label: "Switzerland"},
+      %Corex.Tree.Item{value: "aut", label: "Austria"},
+      %Corex.Tree.Item{value: "ita", label: "Italy"},
+      %Corex.Tree.Item{value: "esp", label: "Spain"},
+      %Corex.Tree.Item{value: "prt", label: "Portugal"},
+      %Corex.Tree.Item{value: "pol", label: "Poland"},
+      %Corex.Tree.Item{value: "swe", label: "Sweden"},
+      %Corex.Tree.Item{value: "nor", label: "Norway"},
+      %Corex.Tree.Item{value: "dnk", label: "Denmark"},
+      %Corex.Tree.Item{value: "fin", label: "Finland"},
+      %Corex.Tree.Item{value: "irl", label: "Ireland"},
+      %Corex.Tree.Item{value: "grc", label: "Greece"}
+    ]}|
+  end
+
+  def styling_max_height_code do
+    items = styling_max_height_items_attr()
+
+    DemoScales.max_height_variants("menu")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("menu", modifier)
+
+      """
+      <.menu class="#{class} w-full" value="fra" #{items}>
+        <:trigger>Menu</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, demo_scroll_leaf_items())
+      |> assign(:max_height_variants, DemoScales.max_height_variants("menu"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.menu
+          id={"menu-style-max-h-#{variant.id}"}
+          class={"#{DemoScales.join_modifiers("menu", variant.modifier)} w-full"}
+          items={@items}
+          value="fra"
+        >
+          <:trigger>{variant.label}</:trigger>
+          <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+        </.menu>
+      </div>
     </div>
     """
   end

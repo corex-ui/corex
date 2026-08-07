@@ -117,6 +117,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@form}
       action={~p"/pin-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
@@ -151,6 +152,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@form}
       action={~p"/pin-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
@@ -199,7 +201,9 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/pin-input/form"} method="post">
+    <form action={~p"/pin-input/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.pin_input name="pin_input[pin]" count={4} class="pin-input">
         <:label>Code</:label>
@@ -225,7 +229,9 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
       </.pin_input>
@@ -238,7 +244,9 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
         <:error :let={msg}>
@@ -262,6 +270,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@form}
       action={~p"/pin-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-phoenix-pin">
         <:label>Code</:label>
@@ -282,6 +291,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@form}
       action={~p"/pin-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-ecto-pin">
         <:label>Code</:label>
@@ -301,7 +311,12 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <form action={~p"/pin-input/form"} method="post" id="pin-input-form-native">
+    <form
+      action={~p"/pin-input/form"}
+      method="post"
+      id="pin-input-form-native"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.pin_input name="pin_input[pin]" count={4} class="pin-input" id="pin-input-form-native-pin">
         <:label>Code</:label>
@@ -317,7 +332,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.pin_input field={@form[:pin]} count={4} class="pin-input" id="pin-input-live-form-phoenix-pin">
         <:label>Code</:label>
       </.pin_input>
@@ -332,7 +347,12 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.pin_input field={@form[:pin]} count={4} class="pin-input" id="pin-input-live-form-ecto-pin">
         <:label>Code</:label>
         <:error :let={msg}>
@@ -525,7 +545,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:pin-input:set-value",
@@ -547,7 +567,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_pin_set_value_server" class="button ui-size-sm">
         Fill from server
       </.action>
@@ -618,7 +638,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:pin-input:value", to: "##{@id}", detail: %{}, bubbles: false)}
         class="button ui-size-sm"
@@ -664,7 +684,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={Corex.PinInput.set_value(@id, ["1", "2", "3", "4"])}
         class="button ui-size-sm"
@@ -680,7 +700,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.PinInput.value(@id)} class="button ui-size-sm">Value</.action>
       <.action phx-click={Corex.PinInput.value(@id, respond_to: :client)} class="button ui-size-sm">
         Value (client only)
@@ -694,7 +714,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_clear_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.PinInput.clear(@id)} class="button ui-size-sm">Clear</.action>
     </div>
     <.pin_input id={@id} count={4} class="pin-input" value={["9", "9", "9", "9"]}>
@@ -705,7 +725,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_pin_value_server" class="button ui-size-sm">Read from server</.action>
     </div>
     <.pin_input id={@id} count={4} class="pin-input" value={["5", "6", "7", "8"]}>
@@ -716,11 +736,34 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_clear_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_pin_clear_server" class="button ui-size-sm">Clear from server</.action>
     </div>
     <.pin_input id={@id} count={4} class="pin-input" value={["1", "1", "1", "1"]}>
       <:label>Code</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_canonical_code do
+    ~S"""
+    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
+      <:label>Subtle (default)</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.pin_input
+      id="pin-input-style-canonical"
+      count={4}
+      class="pin-input"
+      value={["1", "2", "", ""]}
+    >
+      <:label>Subtle (default)</:label>
     </.pin_input>
     """
   end
@@ -752,7 +795,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.pin_input
         id="pin-input-style-color-default"
         count={4}
@@ -821,7 +864,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.pin_input
         id="pin-input-style-variant-subtle"
         count={4}
@@ -902,7 +945,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.pin_input
         id="pin-input-style-size-sm"
         count={4}
@@ -963,7 +1006,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.pin_input
         id="pin-input-style-radius-none"
         count={4}
@@ -1051,7 +1094,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.pin_input
           id={"pin-input-style-width-#{variant.id}"}
@@ -1071,7 +1114,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.pin_input
           id={"pin-input-style-max-#{variant.id}"}
@@ -1108,7 +1151,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.pin_input id="pin-input-style-state-empty" count={4} class="pin-input" value={[]}>
         <:label>Empty</:label>
       </.pin_input>

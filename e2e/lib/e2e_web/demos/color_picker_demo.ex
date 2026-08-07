@@ -13,10 +13,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="rgb(25, 9, 192, 0.9)"
-      label="Select Color (RGBA)"
       presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
-      class="color-picker"
-    />
+      class="color-picker">
+      <:label>Select Color (RGBA)</:label>
+    </.color_picker>
     """
   end
 
@@ -24,9 +24,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.color_picker
       id="color-picker-anatomy-minimal"
-      label="Pick a color"
       class="color-picker"
-    />
+    >
+      <:label>Pick a color</:label>
+    </.color_picker>
     """
   end
 
@@ -34,9 +35,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#22c55e"
-      label="Initial value"
-      class="color-picker"
-    />
+      class="color-picker">
+      <:label>Initial value</:label>
+    </.color_picker>
     """
   end
 
@@ -45,9 +46,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <.color_picker
       id="color-picker-anatomy-with-value"
       value="#22c55e"
-      label="Initial value"
       class="color-picker"
-    />
+    >
+      <:label>Initial value</:label>
+    </.color_picker>
     """
   end
 
@@ -55,10 +57,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#3b82f6"
-      label="Placement and gutter"
       positioning={%Corex.Positioning{placement: "left-start", gutter: 12}}
-      class="color-picker"
-    />
+      class="color-picker">
+      <:label>Placement and gutter</:label>
+    </.color_picker>
     """
   end
 
@@ -69,10 +71,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <.color_picker
       id="color-picker-anatomy-positioning"
       value="#3b82f6"
-      label="Placement and gutter"
       positioning={%Corex.Positioning{placement: "left-start", gutter: 12}}
       class="color-picker"
-    />
+    >
+      <:label>Placement and gutter</:label>
+    </.color_picker>
     """
   end
 
@@ -80,10 +83,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#3b82f6"
-      label="Presets + picker"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
-    />
+      class="color-picker">
+      <:label>Presets + picker</:label>
+    </.color_picker>
     """
   end
 
@@ -92,10 +95,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <.color_picker
       id="color-picker-anatomy-with-preset"
       value="#3b82f6"
-      label="Presets + picker"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
       class="color-picker"
-    />
+    >
+      <:label>Presets + picker</:label>
+    </.color_picker>
     """
   end
 
@@ -107,10 +111,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     </div>
     <.color_picker
       value="#3b82f6"
-      label="Set the color from actions"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
-    />
+      class="color-picker">
+      <:label>Set the color from actions</:label>
+    </.color_picker>
     """
   end
 
@@ -129,10 +133,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <.color_picker
       id={@id}
       value="#3b82f6"
-      label="Set the color from actions"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
       class="color-picker"
-    />
+    >
+      <:label>Set the color from actions</:label>
+    </.color_picker>
     """
   end
 
@@ -144,10 +149,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     </div>
     <.color_picker
       value="#3b82f6"
-      label="Set the color (Server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
-    />
+      class="color-picker">
+      <:label>Set the color (Server)</:label>
+    </.color_picker>
     """
   end
 
@@ -163,11 +168,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#3b82f6"
-      label="Value (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
       class="color-picker"
-      on_value_change="cp_ev_server_value"
-    />
+      on_value_change="cp_ev_server_value">
+      <:label>Value (server)</:label>
+    </.color_picker>
     """
   end
 
@@ -182,11 +187,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#3b82f6"
-      label="Open (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
       class="color-picker"
-      on_open_change="cp_ev_server_open"
-    />
+      on_open_change="cp_ev_server_open">
+      <:label>Open (server)</:label>
+    </.color_picker>
     """
   end
 
@@ -201,11 +206,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#3b82f6"
-      label="Value (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
       class="color-picker"
-      on_value_change_client="color-picker-cv"
-    />
+      on_value_change_client="color-picker-cv">
+      <:label>Value (client only)</:label>
+    </.color_picker>
     """
   end
 
@@ -231,11 +236,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.color_picker
       value="#3b82f6"
-      label="Open (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
       class="color-picker"
-      on_open_change_client="color-picker-co"
-    />
+      on_open_change_client="color-picker-co">
+      <:label>Open (client only)</:label>
+    </.color_picker>
     """
   end
 
@@ -302,13 +307,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action="/color-picker/form"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={f[:color]}
-        label="Color"
         class="color-picker"
-        presets={["#ff0000", "#00ff00", "#0000ff"]}
-      >
+        presets={["#ff0000", "#00ff00", "#0000ff"]}>
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -348,13 +353,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}
-        label="Color"
-        class="color-picker"
-      />
+        class="color-picker">
+        <:label>Color</:label>
+      </.color_picker>
       <.action type="submit" class="button ui-accent">
         Submit
       </.action>
@@ -368,13 +375,14 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}
-        label="Color"
-        class="color-picker"
-      />
+        class="color-picker">
+        <:label>Color</:label>
+      </.color_picker>
       <.color_form_errors form={@form} />
       <.action type="submit" class="button ui-accent">
         Submit
@@ -437,13 +445,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action="/color-picker/form"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={f[:color]}
-        label="Color"
         class="color-picker"
-        presets={["#ff0000", "#00ff00", "#0000ff"]}
-      >
+        presets={["#ff0000", "#00ff00", "#0000ff"]}>
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -501,14 +509,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <form
       action="/color-picker/form"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
         name="color_picker_form[color]"
         value="#3b82f6"
-        label="Color"
-        class="color-picker"
-      />
+        class="color-picker">
+        <:label>Color</:label>
+      </.color_picker>
       <.action type="submit" class="button ui-accent">
         Submit
       </.action>
@@ -535,14 +544,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
      
       phx-change="validate_basic"
       phx-submit="save_basic"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@color}
-        label="Color"
         on_value_change="color_changed_basic"
-        class="color-picker"
-      />
+        class="color-picker">
+        <:label>Color</:label>
+      </.color_picker>
       <.color_form_errors form={@form} />
       <.action type="submit" class="button ui-accent">
         Submit
@@ -583,14 +593,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
      
       phx-change="validate_validate"
       phx-submit="save_validate"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@color}
-        label="Color"
         on_value_change="color_changed_validate"
-        class="color-picker"
-      />
+        class="color-picker">
+        <:label>Color</:label>
+      </.color_picker>
       <.color_form_errors form={@form} />
       <.action type="submit" class="button ui-accent">
         Submit
@@ -656,14 +667,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
         id="color-picker-changeset"
-        label="Color"
         class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -688,14 +700,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
         id="color-picker-validate"
-        label="Color"
         class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -720,15 +733,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id="color-picker-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
         name="color_picker_form[color]"
         id="color-picker-form-native"
         value="#3b82f6"
-        label="Color"
         class="color-picker"
-      />
+      >
+        <:label>Color</:label>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-form-submit"
@@ -749,15 +764,16 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       phx-change="validate_basic"
       phx-submit="save_basic"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
         id="color-picker-live-basic"
-        label="Color"
         on_value_change="color_changed_basic"
         class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -782,15 +798,16 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       phx-change="validate_validate"
       phx-submit="save_validate"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
         id="color-picker-live-validate"
-        label="Color"
         on_value_change="color_changed_validate"
         class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -815,13 +832,14 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
-        label="Color"
         class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -846,13 +864,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.color_picker
         field={@form[:color]}
-        label="Color"
         class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
+        <:label>Color</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -958,14 +976,49 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.color_picker class="color-picker" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Subtle (default)</:label>
+    </.color_picker>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    assigns = assign(assigns, :presets, @presets)
+
+    ~H"""
+    <.color_picker
+      id="color-picker-style-canonical"
+      class="color-picker"
+      value="#3b82f6"
+      presets={@presets}
+    >
+      <:label>Subtle (default)</:label>
+    </.color_picker>
+    """
+  end
+
   def styling_color_code do
     ~S"""
-    <.color_picker class="color-picker" value="#3b82f6" label="Default" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-accent" value="#3b82f6" label="Accent" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-brand" value="#3b82f6" label="Brand" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-alert" value="#3b82f6" label="Alert" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-info" value="#3b82f6" label="Info" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-success" value="#3b82f6" label="Success" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Default</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-accent" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Accent</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-brand" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Brand</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-alert" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Alert</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-info" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Info</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-success" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Success</:label>
+    </.color_picker>
     """
   end
 
@@ -973,57 +1026,67 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-color-default"
         class="color-picker"
         value="#3b82f6"
-        label="Default"
         presets={@presets}
-      />
+      >
+        <:label>Default</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-color-accent"
         class="color-picker ui-accent"
         value="#3b82f6"
-        label="Accent"
         presets={@presets}
-      />
+      >
+        <:label>Accent</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-color-brand"
         class="color-picker ui-brand"
         value="#3b82f6"
-        label="Brand"
         presets={@presets}
-      />
+      >
+        <:label>Brand</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-color-alert"
         class="color-picker ui-alert"
         value="#3b82f6"
-        label="Alert"
         presets={@presets}
-      />
+      >
+        <:label>Alert</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-color-info"
         class="color-picker ui-info"
         value="#3b82f6"
-        label="Info"
         presets={@presets}
-      />
+      >
+        <:label>Info</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-color-success"
         class="color-picker ui-success"
         value="#3b82f6"
-        label="Success"
         presets={@presets}
-      />
+      >
+        <:label>Success</:label>
+      </.color_picker>
     </div>
     """
   end
 
   def styling_variant_code do
     ~S"""
-    <.color_picker class="color-picker" value="#3b82f6" label="Subtle (default)" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-solid" value="#3b82f6" label="Solid" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Subtle (default)</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-solid" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Solid</:label>
+    </.color_picker>
     """
   end
 
@@ -1031,21 +1094,23 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-variant-subtle"
         class="color-picker"
         value="#3b82f6"
-        label="Subtle (default)"
         presets={@presets}
-      />
+      >
+        <:label>Subtle (default)</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-variant-solid"
         class="color-picker ui-solid"
         value="#3b82f6"
-        label="Solid"
         presets={@presets}
-      />
+      >
+        <:label>Solid</:label>
+      </.color_picker>
     </div>
     """
   end
@@ -1056,7 +1121,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       class =
         DemoScales.join_matrix_modifiers("color-picker", semantic.modifier, variant.modifier)
 
-      ~s(<.color_picker class="#{class}" value="#3b82f6" label="#{semantic.label}" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />)
+      ~s(<.color_picker class="#{class}" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}><:label>#{semantic.label}</:label></.color_picker>)
     end
     |> DemoScales.join_code()
   end
@@ -1079,9 +1144,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
               DemoScales.join_matrix_modifiers("color-picker", semantic.modifier, variant.modifier)
             }
             value="#3b82f6"
-            label={semantic.label}
             presets={@presets}
-          />
+          >
+            <:label>{semantic.label}</:label>
+          </.color_picker>
         </div>
       </div>
     </div>
@@ -1090,10 +1156,18 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def styling_size_code do
     ~S"""
-    <.color_picker class="color-picker ui-size-sm" value="#3b82f6" label="SM" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-size-md" value="#3b82f6" label="MD" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-size-lg" value="#3b82f6" label="LG" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-size-xl" value="#3b82f6" label="XL" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker ui-size-sm" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>SM</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-size-md" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>MD</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-size-lg" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>LG</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-size-xl" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>XL</:label>
+    </.color_picker>
     """
   end
 
@@ -1101,47 +1175,63 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-size-sm"
         class="color-picker ui-size-sm"
         value="#3b82f6"
-        label="SM"
         presets={@presets}
-      />
+      >
+        <:label>SM</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-size-md"
         class="color-picker ui-size-md"
         value="#3b82f6"
-        label="MD"
         presets={@presets}
-      />
+      >
+        <:label>MD</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-size-lg"
         class="color-picker ui-size-lg"
         value="#3b82f6"
-        label="LG"
         presets={@presets}
-      />
+      >
+        <:label>LG</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-size-xl"
         class="color-picker ui-size-xl"
         value="#3b82f6"
-        label="XL"
         presets={@presets}
-      />
+      >
+        <:label>XL</:label>
+      </.color_picker>
     </div>
     """
   end
 
   def styling_rounded_code do
     ~S"""
-    <.color_picker class="color-picker ui-rounded-none" value="#3b82f6" label="None" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-rounded-sm" value="#3b82f6" label="SM" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-rounded-md" value="#3b82f6" label="MD" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-rounded-lg" value="#3b82f6" label="LG" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-rounded-xl" value="#3b82f6" label="XL" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker ui-rounded-full" value="#3b82f6" label="Full" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker ui-rounded-none" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>None</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-rounded-sm" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>SM</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-rounded-md" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>MD</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-rounded-lg" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>LG</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-rounded-xl" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>XL</:label>
+    </.color_picker>
+    <.color_picker class="color-picker ui-rounded-full" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+      <:label>Full</:label>
+    </.color_picker>
     """
   end
 
@@ -1149,49 +1239,55 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-rounded-none"
         class="color-picker ui-rounded-none"
         value="#3b82f6"
-        label="None"
         presets={@presets}
-      />
+      >
+        <:label>None</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-rounded-sm"
         class="color-picker ui-rounded-sm"
         value="#3b82f6"
-        label="SM"
         presets={@presets}
-      />
+      >
+        <:label>SM</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-rounded-md"
         class="color-picker ui-rounded-md"
         value="#3b82f6"
-        label="MD"
         presets={@presets}
-      />
+      >
+        <:label>MD</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-rounded-lg"
         class="color-picker ui-rounded-lg"
         value="#3b82f6"
-        label="LG"
         presets={@presets}
-      />
+      >
+        <:label>LG</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-rounded-xl"
         class="color-picker ui-rounded-xl"
         value="#3b82f6"
-        label="XL"
         presets={@presets}
-      />
+      >
+        <:label>XL</:label>
+      </.color_picker>
       <.color_picker
         id="color-picker-style-rounded-full"
         class="color-picker ui-rounded-full"
         value="#3b82f6"
-        label="Full"
         presets={@presets}
-      />
+      >
+        <:label>Full</:label>
+      </.color_picker>
     </div>
     """
   end
@@ -1204,7 +1300,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       class = DemoScales.join_modifiers("color-picker", modifier)
 
       """
-      <.color_picker class="#{class}" value="#3b82f6" label="#{label}" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+      <.color_picker class="#{class}" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+        <:label>#{label}</:label>
+      </.color_picker>
       """
     end)
     |> DemoScales.join_code()
@@ -1218,7 +1316,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       class = DemoScales.join_block_modifiers("color-picker", modifier)
 
       """
-      <.color_picker class="#{class}" value="#3b82f6" label="#{label}" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+      <.color_picker class="#{class}" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+        <:label>#{label}</:label>
+      </.color_picker>
       """
     end)
     |> DemoScales.join_code()
@@ -1232,15 +1332,16 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.color_picker
           id={"color-picker-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("color-picker", variant.modifier)}
           value="#3b82f6"
-          label={DemoScales.block_demo_label()}
           presets={@presets}
-        />
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+        </.color_picker>
       </div>
     </div>
     """
@@ -1254,15 +1355,16 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.color_picker
           id={"color-picker-style-max-#{variant.id}"}
           class={DemoScales.join_block_modifiers("color-picker", variant.modifier)}
           value="#3b82f6"
-          label={DemoScales.block_demo_label()}
           presets={@presets}
-        />
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+        </.color_picker>
       </div>
     </div>
     """

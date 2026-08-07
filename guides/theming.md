@@ -6,6 +6,8 @@ Package: [corex_design](https://hexdocs.pm/corex_design). Full guide on **corex*
 
 Visitors pick a Corex Design theme (neo, uno, duo, leo) from a `<.select>`. The choice updates `data-theme` on `<html>` without a server round-trip, and persists across reloads.
 
+Each preset is a full personality pack: muted brand color, shared status colors (alert / info / success), plus density, radius, shadow, blur, focus ring geometry, border width, and motion durations. Switching themes should change how the UI feels, not only the brand hue.
+
 Theme is independent from light/dark mode. Corex Design combines them as `[data-theme="neo"][data-mode="dark"]`. Mode is covered in [Dark mode](dark_mode.html). Static Tableau sites use the same picker pattern without plugs; see [Tableau Theming](tableau_theming.html).
 
 ## Install first
@@ -47,10 +49,10 @@ def theme_toggle(assigns) do
     <:label class="sr-only">Theme</:label>
     <:item :let={item}>{item.label}</:item>
     <:trigger>
-      <.heroicon name="hero-swatch" class="icon" />
+      <.heroicon name="hero-swatch" />
     </:trigger>
     <:item_indicator>
-      <.heroicon name="hero-check" class="icon" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   """
@@ -85,6 +87,44 @@ With LiveViews, ensure `:theme` is on the socket (session via `Plugs.Theme`, or 
 
 `corex.css` loads utilities, configured themes, and `components.css`. Include `select` in `components:` when you use a theme picker. For layered imports, see [Design](design.html).
 
+## Bridge {: #bridge}
+
+Before-paint script in `<head>` (merge into the same IIFE as [Dark mode](dark_mode.html#bridge) when you use both):
+
+```heex
+<script>
+  (() => {
+    const validThemes = ["neo", "uno", "duo", "leo"];
+
+    const setTheme = (theme) => {
+      const resolved = validThemes.includes(theme) ? theme : "neo";
+      localStorage.setItem("phx:theme", resolved);
+      document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
+      document.documentElement.setAttribute("data-theme", resolved);
+    };
+
+    setTheme(
+      localStorage.getItem("phx:theme") ||
+        document.documentElement.getAttribute("data-theme") ||
+        "neo"
+    );
+
+    window.addEventListener(
+      "storage",
+      (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue)
+    );
+
+    window.addEventListener("phx:set-theme", (e) => {
+      const value = e.detail?.value;
+      const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
+      setTheme(theme);
+    });
+  })();
+</script>
+```
+
+Keep `validThemes` in sync with `config :my_app, :themes` and the picker `items`.
+
 ## Troubleshooting
 
 | Symptom | Check |
@@ -100,5 +140,6 @@ With LiveViews, ensure `:theme` is on the socket (session via `Plugs.Theme`, or 
 - [Configuration](configuration.html): build vs picker vs generators
 - [Design](design.html): `config :corex_design` theme CSS
 - [Dark mode](dark_mode.html): mode toggle; combine bridges in one `<script>` block
+- [Accessibility](accessibility.html): optional preference axes; same bridge pattern
 - [Tableau Theming](tableau_theming.html): static site equivalent
 - [Localize](localize.html): language switcher when using `--lang`

@@ -60,8 +60,8 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
     @tag database: :postgresql
     test "corex.new then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
       with_installer_tmp("full_stack_no_locale", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
-        router_path = Path.join(app_root_path, "lib/phx_blog_web/router.ex")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "corex_blog", [])
+        router_path = Path.join(app_root_path, "lib/corex_blog_web/router.ex")
 
         mix_run!(
           ["corex.gen.live", "Admin", "admins" | @rich_attrs],
@@ -76,13 +76,13 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
         modify_file(router_path, fn file ->
           inject_before_final_end(file, """
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               resources "/users", UserController
             end
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               live "/admins", AdminLive.Index, :index

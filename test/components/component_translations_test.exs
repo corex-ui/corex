@@ -1,9 +1,15 @@
 defmodule Corex.ComponentTranslationsTest do
   use ExUnit.Case, async: true
 
+  alias Corex.ColorPicker.Translation, as: ColorPickerTranslation
   alias Corex.Combobox.Translation, as: ComboboxTranslation
+  alias Corex.DataTable.Translation, as: DataTableTranslation
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
   alias Corex.Dialog.Translation, as: DialogTranslation
+  alias Corex.Editable.Translation, as: EditableTranslation
+  alias Corex.FileUpload.Translation, as: FileUploadTranslation
+  alias Corex.FloatingPanel.Translation, as: FloatingPanelTranslation
+  alias Corex.NumberInput.Translation, as: NumberInputTranslation
   alias Corex.Pagination.Translation, as: PaginationTranslation
   alias Corex.PasswordInput.Translation, as: PasswordInputTranslation
   alias Corex.PinInput.Translation, as: PinInputTranslation
@@ -178,6 +184,102 @@ defmodule Corex.ComponentTranslationsTest do
       map = DatePickerTranslation.to_camel_map(t)
       assert map["openCalendar"] == t.open_calendar
       assert map["rangeEnd"] == t.range_end
+    end
+  end
+
+  describe "ColorPicker.Translation" do
+    test "resolve nil returns defaults" do
+      t = ColorPickerTranslation.resolve(nil)
+      assert t.hex == "Hex color value"
+      assert t.alpha == "Alpha (opacity) value"
+    end
+
+    test "resolve partial struct merges" do
+      t = ColorPickerTranslation.resolve(%ColorPickerTranslation{hex: "Hex code"})
+      assert t.hex == "Hex code"
+      assert t.alpha == "Alpha (opacity) value"
+    end
+  end
+
+  describe "DataTable.Translation" do
+    test "resolve nil returns defaults" do
+      t = DataTableTranslation.resolve(nil)
+      assert t.actions == "Actions"
+      assert t.select_all == "Select all"
+      assert t.select_row == "Select row"
+    end
+
+    test "resolve partial struct merges" do
+      t = DataTableTranslation.resolve(%DataTableTranslation{actions: "Options"})
+      assert t.actions == "Options"
+      assert t.select_all == "Select all"
+    end
+  end
+
+  describe "Editable.Translation" do
+    test "resolve nil returns defaults" do
+      t = EditableTranslation.resolve(nil)
+      assert t.input == "editable input"
+      assert t.edit == "edit"
+      assert t.submit == "submit"
+      assert t.cancel == "cancel"
+    end
+
+    test "resolve partial struct merges" do
+      t = EditableTranslation.resolve(%EditableTranslation{edit: "Edit text", submit: "Save"})
+      assert t.edit == "Edit text"
+      assert t.submit == "Save"
+      assert t.cancel == "cancel"
+    end
+  end
+
+  describe "FileUpload.Translation" do
+    test "resolve nil returns defaults" do
+      t = FileUploadTranslation.resolve(nil)
+      assert t.dropzone == "Drag your file(s) here"
+      assert t.open == "Upload file(s)"
+    end
+
+    test "resolve partial struct merges" do
+      t = FileUploadTranslation.resolve(%FileUploadTranslation{dropzone: "Drop files here"})
+      assert t.dropzone == "Drop files here"
+      assert t.open == "Upload file(s)"
+    end
+  end
+
+  describe "FloatingPanel.Translation" do
+    test "resolve nil returns defaults" do
+      t = FloatingPanelTranslation.resolve(nil)
+      assert t.minimize == "Minimize window"
+      assert t.maximize == "Maximize window"
+      assert t.restore == "Restore window"
+      assert t.close == "Close window"
+    end
+
+    test "resolve partial struct merges" do
+      t =
+        FloatingPanelTranslation.resolve(%FloatingPanelTranslation{
+          minimize: "Minimize",
+          close: "Close panel"
+        })
+
+      assert t.minimize == "Minimize"
+      assert t.close == "Close panel"
+      assert t.maximize == "Maximize window"
+    end
+  end
+
+  describe "NumberInput.Translation" do
+    test "resolve nil returns defaults" do
+      t = NumberInputTranslation.resolve(nil)
+      assert t.decrease == "Decrease value"
+      assert t.increase == "Increase value"
+    end
+
+    test "resolve partial struct merges" do
+      t = NumberInputTranslation.resolve(%NumberInputTranslation{decrease: "Less"})
+      assert t.decrease == "Less"
+      assert t.increase == "Increase value"
     end
   end
 end

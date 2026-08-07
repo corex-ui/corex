@@ -6,22 +6,23 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_locale || scope do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths || scope do %><Layouts.app
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
-      theme={@theme}<% end %><%= if layout_locale do %>
+      theme={@theme}<% end %><%= if layout_locale_paths do %>
       locale={@locale}
+<% end %><%= if layout_locale_assigns do %>
       current_path={@current_path}<% end %><%= if scope do %>
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
     <% else %><Layouts.app flash={@flash}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
+      <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg pt-space-xl text-ink rounded-md">
         <.layout_heading class="layout-heading">
           <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
           <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
           <:actions>
             <.navigate
-              to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+              to={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
               type="navigate"
               class="button"
               aria_label="Back to list"
@@ -30,7 +31,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <.heroicon name="hero-arrow-left" />
             </.navigate>
             <.navigate
-              to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}
+              to={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}
               type="navigate"
               class="button ui-accent ui-trigger--square"
               aria_label="Edit <%= schema.human_singular %>"
@@ -111,7 +112,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     {:noreply,
      socket
      |> put_flash(:info, "<%= schema.human_singular %> deleted successfully")
-     |> push_navigate(to: ~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")}
+     |> push_navigate(to: ~p"<%= if layout_locale_paths do %>/#{socket.assigns.locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")}
   end<%= if scope do %>
 
   @impl true
@@ -129,7 +130,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     {:noreply,
      socket
      |> put_flash(:error, "The current <%= schema.singular %> was deleted.")
-     |> push_navigate(to: ~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= scope_socket_route_prefix %><%= schema.route_prefix %>")}
+     |> push_navigate(to: ~p"<%= if layout_locale_paths do %>/#{socket.assigns.locale}<% end %><%= scope_socket_route_prefix %><%= schema.route_prefix %>")}
   end
 
   def handle_info({type, %<%= inspect schema.module %>{}}, socket)

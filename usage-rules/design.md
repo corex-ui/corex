@@ -49,11 +49,15 @@ mix corex.design.build
 | Axis | Examples | Notes |
 |------|----------|-------|
 | Semantic | `ui-accent`, `ui-brand`, `ui-success` | palette roles on the host |
-| Variant | `ui-solid` | surface treatment; subtle is default (no class) |
-| Size | `ui-size-sm`, `ui-size-md`, `ui-size-lg`, `ui-size-xl` | padding, control height, and font size |
+| Variant | `ui-solid`, `ui-ghost` | surface treatment; subtle is default (no class). Not used on switch, checkbox, radio-group, input fields, or selection hosts |
+| Size | `ui-size-sm` … `ui-size-xl` | padding, control height, and font size |
 | Radius | `ui-rounded-sm`, `ui-rounded-xl` | corner radius on roundable surfaces |
+| Width | `ui-width-auto`, `ui-width-full`, `ui-width-4xs` | container ladder on hosts |
+| Max height | `ui-max-height-xs` … | scrollable panel clamp on host |
+| Shape | `ui-trigger--square`, `ui-trigger--circle` | buttons, badges, toggles (on host) |
+| Nav link | `ui-nav` | chrome-less `<.navigate class="link ui-nav">` |
 
-Size scales text; there is no separate text modifier axis. See the [modifier guide](modifiers.html). Use Tailwind `w-*` and `max-w-*` with the container ladder on layout components; each component also has an intrinsic default width in its CSS.
+Size scales text; there is no separate text modifier axis. Full vocabulary: Hexdocs [modifier guide](https://hexdocs.pm/corex_design/modifiers.html) and MCP `list_modifiers` / `get_component_style`. Use Tailwind `w-*` / `max-w-*` with the container ladder on layout components.
 
 ## Semantic ink tokens
 
@@ -85,10 +89,12 @@ No `class` on `<.heroicon>` inside Corex components or slots:
 ## Anti-patterns
 
 - Custom layout components instead of Tailwind (`<.stack>` with axis attrs)
-- Invented modifier names (`accordion--ghost`, `accordion--accent`) — use shared `ui-*` roles (`ui-accent`, `ui-solid`)
+- Invented modifier names (`accordion--ghost`, `accordion--accent`) — use shared `ui-*` roles (`ui-accent`, `ui-solid`, `ui-ghost`)
 - Overriding `--color-*` in templates — use `data-theme` / `data-mode` or rebuild tokens
 - Using `--color-ink-*` on filled semantic controls — use on-fill contrast tokens instead
-- Documenting or configuring `variants:` — removed in 0.2; only subtle + `ui-solid`
+- Documenting or configuring `variants:` — removed in 0.2; use shared `ui-solid` / `ui-ghost` on hosts that support the variant axis
+- Applying `ui-solid` / `ui-ghost` on switch, checkbox, radio-group, input fields, or selection hosts (toggle, toggle-group, etc.) — those hosts have no variant axis
+- Using `ui-outline` — removed; outline is no longer a variant
 
 ## References
 

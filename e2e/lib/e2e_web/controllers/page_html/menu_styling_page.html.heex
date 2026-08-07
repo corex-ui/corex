@@ -1,10 +1,15 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
   <.demo_page
     path={@path}
     id="menu-styling-page"
     title={~t"Menu · Style"}
     subtitle={
-      ~t"Semantic colors, density, and corner radius via modifier classes on the menu root."
+      ~t"Semantic colors, visual variants, density, and corner radius via modifier classes on the menu root."
     }
   >
     <.demo_section
@@ -65,6 +70,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.MenuDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.MenuDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.MenuDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

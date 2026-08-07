@@ -61,13 +61,13 @@ defmodule E2eWeb.ListboxApiLive do
       >
         <.demo_section
           id="listbox-api-set-value-binding"
-          title={~t"set_value (Phoenix binding)"}
+          title={~t"Set Value (Client Binding)"}
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_value_binding}
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}
                 class="button ui-size-sm"
@@ -90,7 +90,7 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-set-value-server"
-          title={~t"set_value (push_event from LiveView)"}
+          title={~t"Set Value (Server)"}
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_value_server_heex},
             %{
@@ -102,7 +102,7 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="listbox_api_set_value" class="button ui-size-sm">Belgium</.action>
             </div>
             <.listbox id="listbox-api-sv-server" class="listbox" items={Demo.items_minimal()}>
@@ -114,7 +114,7 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-set-value-js"
-          title={~t"set_value (CustomEvent from JavaScript)"}
+          title={~t"Set Value (Client JS)"}
           code_tabs={[
             %{value: "js", label: ~t"JS", language: :js, code: @codes.set_value_js}
           ]}
@@ -142,13 +142,13 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-value-binding"
-          title={~t"value (Phoenix binding)"}
+          title={~t"Value (Client Binding)"}
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.value_binding}
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.value("listbox-api-val-client")}
                 class="button ui-size-sm"
@@ -165,7 +165,7 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-value-server"
-          title={~t"value (push_event from LiveView)"}
+          title={~t"Value (Server)"}
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.value_server_heex},
             %{
@@ -177,7 +177,7 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="listbox_api_value_server" class="button ui-size-sm">
                 Read selection
               </.action>

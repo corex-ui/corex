@@ -5,21 +5,19 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def minimal_code do
     ~S"""
-    <.number_input
-      class="number-input"
-      min={0.0}
-      max={100.0}
-      step={5.0}
-      value="10"
-    >
-      <:label>Amount</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    <.number_input class="number-input" />
+    """
+  end
+
+  def with_label_code do
+    ~S"""
+    <.number_input class="number-input">
+      <:label>Quantity</:label>
     </.number_input>
     """
   end
 
-  def anatomy_minimal_quantity_code do
+  def with_triggers_code do
     ~S"""
     <.number_input class="number-input">
       <:label>Quantity</:label>
@@ -29,9 +27,25 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     """
   end
 
+  def anatomy_minimal_quantity_code, do: minimal_code()
+
   def minimal_example(assigns) do
     ~H"""
-    <.number_input id="number-input-anatomy-minimal" class="number-input">
+    <.number_input id="number-input-anatomy-minimal" class="number-input" />
+    """
+  end
+
+  def with_label_example(assigns) do
+    ~H"""
+    <.number_input id="number-input-anatomy-label" class="number-input">
+      <:label>Quantity</:label>
+    </.number_input>
+    """
+  end
+
+  def with_triggers_example(assigns) do
+    ~H"""
+    <.number_input id="number-input-anatomy-triggers" class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -71,9 +85,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     </.number_input>
     """
   end
-
-  def with_triggers_code, do: minimal_code()
-  def with_triggers_example(assigns), do: minimal_example(assigns)
 
   defp styling_triggers_code do
     """
@@ -117,7 +128,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.number_input id="number-input-style-color-default" class="number-input" value="1">
         <:label>Default</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -192,7 +203,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.number_input id="number-input-style-variant-subtle" class="number-input" value="1">
         <:label>Subtle (default)</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -286,7 +297,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.number_input id="number-input-style-sm" class="number-input ui-size-sm w-full" value="1">
         <:label>SM</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -333,7 +344,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.number_input
           id={"number-input-style-max-#{variant.id}"}
@@ -384,7 +395,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.number_input
         id="number-input-style-rounded-none"
         class="number-input ui-rounded-none w-full"
@@ -633,7 +644,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.set_value(@id, 42)} class="button ui-size-sm">
         Set 42
       </.action>
@@ -648,7 +659,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_number_set_value_server" class="button ui-size-sm">
         Set 99
       </.action>
@@ -663,7 +674,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:number-input:set-value",
@@ -721,7 +732,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_clear_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.clear_value(@id)} class="button ui-size-sm">
         Clear
       </.action>
@@ -736,7 +747,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_clear_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_number_clear_server" class="button ui-size-sm">
         Clear
       </.action>
@@ -766,7 +777,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_commands_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.increment(@id)} class="button ui-size-sm">+</.action>
       <.action phx-click={Corex.NumberInput.decrement(@id)} class="button ui-size-sm">−</.action>
       <.action phx-click={Corex.NumberInput.set_to_min(@id)} class="button ui-size-sm">Min</.action>
@@ -864,7 +875,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_state_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.state(@id)} class="button ui-size-sm">
         Read state
       </.action>
@@ -879,7 +890,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_state_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_number_state_server" class="button ui-size-sm">
         Read state
       </.action>
@@ -894,7 +905,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_state_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:number-input:state", to: "##{@id}", detail: %{}, bubbles: false)
@@ -1001,6 +1012,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input field={@form[:value]} class="number-input">
         <:label>Value</:label>
@@ -1045,7 +1057,9 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.number_input field={@form[:value]} class="number-input">
         <:label>Value</:label>
         <:decrement_trigger>
@@ -1072,6 +1086,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.number_input field={@form[:value]} class="number-input">
@@ -1174,6 +1189,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     <form
       action={~p"/number-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.number_input name="value" value="1234" class="number-input">
@@ -1211,6 +1227,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input
         field={f[:value]}
@@ -1243,6 +1260,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input
         field={f[:value]}
@@ -1276,6 +1294,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
       id="number-input-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.number_input
@@ -1301,7 +1320,9 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_doc_live_changeset_heex do
     ~S"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.number_input field={@form[:value]} class="number-input">
         <:label>Value</:label>
         <:decrement_trigger>
@@ -1363,6 +1384,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
      
       phx-change="validate_strict"
       phx-submit="save_strict"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input field={@form[:value]} class="number-input">
         <:label>Value (1–9999)</:label>
@@ -1424,6 +1446,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input
         field={@form[:value]}
@@ -1459,6 +1482,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input
         field={@form[:value]}
@@ -1493,6 +1517,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.number_input field={f[:value]} class="number-input">
         <:label>Value</:label>
@@ -1521,7 +1546,12 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-change="change_phoenix" phx-submit="save_phoenix">
+    <.form
+      for={@form}
+      phx-change="change_phoenix"
+      phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.number_input
         field={@form[:value]}
         class="number-input"

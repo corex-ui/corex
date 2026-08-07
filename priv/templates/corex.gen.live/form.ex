@@ -7,16 +7,17 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_locale || scope do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths || scope do %><Layouts.app
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
-      theme={@theme}<% end %><%= if layout_locale do %>
+      theme={@theme}<% end %><%= if layout_locale_paths do %>
       locale={@locale}
+<% end %><%= if layout_locale_assigns do %>
       current_path={@current_path}<% end %><%= if scope do %>
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
     <% else %><Layouts.app flash={@flash}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
+      <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg pt-space-xl text-ink rounded-md">
         <.layout_heading class="layout-heading">
           <:title>{@page_title}</:title>
           <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
@@ -71,7 +72,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         >
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 10) %>
           <div class="flex flex-wrap items-center justify-between gap-space">
-            <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate" class="button">
+            <.navigate to={return_path(<%= if layout_locale_paths do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate" class="button">
               Cancel
             </.navigate>
             <.action phx-disable-with="Saving..." class="button ui-accent" type="submit">
@@ -130,7 +131,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     {:noreply,
      socket
      |> put_flash(:info, "<%= schema.human_singular %> deleted successfully")
-     |> push_navigate(to: ~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")}
+     |> push_navigate(to: ~p"<%= if layout_locale_paths do %>/#{socket.assigns.locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")}
   end
 
   defp save_<%= schema.singular %>(socket, :edit, <%= schema.singular %>_params) do
@@ -140,11 +141,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
          socket
          |> put_flash(:info, "<%= schema.human_singular %> updated successfully")
          <%= if scope do %>|> push_navigate(
-           to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %><%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
-         )}<% else %>|> push_navigate(to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %>socket.assigns.return_to, <%= schema.singular %>))}<% end %>
+           to: return_path(<%= if layout_locale_paths do %>socket.assigns.locale, <% end %><%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
+         )}<% else %>|> push_navigate(to: return_path(<%= if layout_locale_paths do %>socket.assigns.locale, <% end %>socket.assigns.return_to, <%= schema.singular %>))}<% end %>
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset, id: "<%= schema.singular %>-form"))}
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate, id: "<%= schema.singular %>-form"))}
     end
   end
 
@@ -155,15 +156,15 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
          socket
          |> put_flash(:info, "<%= schema.human_singular %> created successfully")
          <%= if scope do %>|> push_navigate(
-           to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %><%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
-         )}<% else %>|> push_navigate(to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %>socket.assigns.return_to, <%= schema.singular %>))}<% end %>
+           to: return_path(<%= if layout_locale_paths do %>socket.assigns.locale, <% end %><%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
+         )}<% else %>|> push_navigate(to: return_path(<%= if layout_locale_paths do %>socket.assigns.locale, <% end %>socket.assigns.return_to, <%= schema.singular %>))}<% end %>
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate, id: "<%= schema.singular %>-form"))}
     end
   end
 
-  <%= if layout_locale do %>defp return_path(locale, <%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
+  <%= if layout_locale_paths do %>defp return_path(locale, <%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
   defp return_path(locale, <%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"
 <% else %>defp return_path(<%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
   defp return_path(<%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"

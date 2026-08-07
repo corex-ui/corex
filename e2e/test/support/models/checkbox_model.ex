@@ -64,10 +64,19 @@ defmodule E2eWeb.CheckboxModel do
       Wallaby.Browser.execute_script(
         session,
         """
-        var el = document.getElementById('checkbox:' + arguments[0] + ':control');
-        if (el) el.focus();
+        var host = document.querySelector('[id="' + arguments[0] + '"][phx-hook="Checkbox"]') ||
+          document.getElementById(arguments[0]);
+        var input = host && host.querySelector(
+          '[data-scope="checkbox"][data-part="hidden-input"], input[type="checkbox"]'
+        );
+        if (!input) return false;
+        input.style.cssText =
+          'position:fixed;left:8px;top:8px;width:16px;height:16px;opacity:0.01;clip:auto;margin:0;border:0;padding:0;overflow:visible;';
+        input.focus();
+        return document.activeElement === input;
         """,
-        [checkbox_dom_id]
+        [checkbox_dom_id],
+        fn v -> assert v == true, "expected focus on checkbox input ##{checkbox_dom_id}" end
       )
 
     session
@@ -77,6 +86,70 @@ defmodule E2eWeb.CheckboxModel do
     session
     |> focus_checkbox_control(checkbox_dom_id)
     |> press_space()
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def assert_aria_checked(session, checkbox_dom_id, expected)
+      when expected in ["true", "false", "mixed"] do
+    if not (String.match?(checkbox_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(checkbox_dom_id) > 0) do
+      raise ArgumentError, "invalid checkbox dom id"
+    end
+
+    execute_script(
+      session,
+      """
+      const host = document.querySelector(
+        '[id="#{checkbox_dom_id}"][phx-hook="Checkbox"]'
+      ) || document.getElementById('#{checkbox_dom_id}');
+      if (!host) return null;
+      const root = host.querySelector('[data-scope="checkbox"][data-part="root"]');
+      const input = host.querySelector(
+        '[data-scope="checkbox"][data-part="hidden-input"], input[type="checkbox"]'
+      );
+      const fromAria =
+        (root && root.getAttribute('aria-checked')) ||
+        (input && input.getAttribute('aria-checked'));
+      if (fromAria != null) return fromAria;
+      if (!input) return null;
+      if (input.indeterminate) return 'mixed';
+      return input.checked ? 'true' : 'false';
+      """,
+      [],
+      fn v ->
+        assert v == expected,
+               "expected aria-checked=#{inspect(expected)} on checkbox ##{checkbox_dom_id}, got #{inspect(v)}"
+      end
+    )
+
+    session
+  end
+
+  def assert_control_focused(session, checkbox_dom_id) when is_binary(checkbox_dom_id) do
+    if not (String.match?(checkbox_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(checkbox_dom_id) > 0) do
+      raise ArgumentError, "invalid checkbox dom id"
+    end
+
+    execute_script(
+      session,
+      """
+      const host = document.querySelector(
+        '[id="#{checkbox_dom_id}"][phx-hook="Checkbox"]'
+      ) || document.getElementById('#{checkbox_dom_id}');
+      const input = host && host.querySelector(
+        '[data-scope="checkbox"][data-part="hidden-input"], input[type="checkbox"]'
+      );
+      return !!(input && document.activeElement === input);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on checkbox input ##{checkbox_dom_id}" end
+    )
+
+    session
   end
 
   def click_api_dispatch_checked(session) do

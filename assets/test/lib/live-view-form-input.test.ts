@@ -88,6 +88,40 @@ describe("notifyPhoenixFormChange", () => {
       ]
     ).toBe(true);
   });
+
+  it("dispatches events with markUsed false but does not mark focused", () => {
+    const input = document.createElement("input");
+    const inputHandler = vi.fn();
+    const changeHandler = vi.fn();
+    input.addEventListener("input", inputHandler);
+    input.addEventListener("change", changeHandler);
+
+    notifyPhoenixFormChange(input, "90", { markUsed: false, force: true });
+
+    expect(input.value).toBe("90");
+    expect(inputHandler).toHaveBeenCalledTimes(1);
+    expect(changeHandler).toHaveBeenCalledTimes(1);
+    expect(
+      (input as HTMLInputElement & { phxPrivate?: Record<string, boolean> }).phxPrivate?.[
+        PHX_HAS_FOCUSED
+      ]
+    ).toBeUndefined();
+  });
+
+  it("writes value without dispatching when dispatch is false", () => {
+    const input = document.createElement("input");
+    const inputHandler = vi.fn();
+    const changeHandler = vi.fn();
+    input.addEventListener("input", inputHandler);
+    input.addEventListener("change", changeHandler);
+
+    notifyPhoenixFormChange(input, "1234", { markUsed: false, dispatch: false });
+
+    expect(input.value).toBe("1234");
+    expect(input.getAttribute("value")).toBe("1234");
+    expect(inputHandler).not.toHaveBeenCalled();
+    expect(changeHandler).not.toHaveBeenCalled();
+  });
 });
 
 describe("syncLiveViewFormInput", () => {

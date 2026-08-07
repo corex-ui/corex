@@ -12,6 +12,12 @@ defmodule Corex.UrlTest do
       assert Url.allowed_href?("http://localhost:4000")
     end
 
+    test "allows mailto and tel" do
+      assert Url.allowed_href?("mailto:hello@example.com")
+      assert Url.allowed_href?("mailto:hello@example.com?subject=Hi")
+      assert Url.allowed_href?("tel:+15551212")
+    end
+
     test "rejects empty, protocol-relative, and dangerous schemes" do
       refute Url.allowed_href?("")
       refute Url.allowed_href?("   ")
@@ -19,6 +25,20 @@ defmodule Corex.UrlTest do
       refute Url.allowed_href?("javascript:alert(1)")
       refute Url.allowed_href?("data:text/html,hi")
       refute Url.allowed_href?("vbscript:msgbox")
+    end
+
+    test "rejects dangerous schemes prefixed with C0 controls or space" do
+      refute Url.allowed_href?(<<0, "javascript:alert(1)">>)
+      refute Url.allowed_href?(<<1, "javascript:alert(1)">>)
+      refute Url.allowed_href?(<<0x1F, "javascript:alert(1)">>)
+      refute Url.allowed_href?(" javascript:alert(1)")
+      refute Url.allowed_href?(<<1, "data:text/html,hi">>)
+      refute Url.allowed_href?(<<1, "//evil.example">>)
+    end
+
+    test "allows relative paths after stripping leading C0 or space" do
+      assert Url.allowed_href?(<<1, "/items">>)
+      assert Url.allowed_href?(" /safe")
     end
 
     test "rejects non-string input" do
@@ -32,8 +52,18 @@ defmodule Corex.UrlTest do
       assert Url.put_data_to(%{"id" => "x"}, "/items") == %{"id" => "x", "data-to" => "/items"}
     end
 
+    test "puts stripped data-to when leading C0 or space is present" do
+      assert Url.put_data_to(%{"id" => "x"}, <<1, "/items">>) == %{
+               "id" => "x",
+               "data-to" => "/items"
+             }
+
+      assert Url.put_data_to(%{"id" => "x"}, " /safe") == %{"id" => "x", "data-to" => "/safe"}
+    end
+
     test "leaves map unchanged when href is disallowed" do
       assert Url.put_data_to(%{"id" => "x"}, "javascript:alert(1)") == %{"id" => "x"}
+      assert Url.put_data_to(%{"id" => "x"}, <<1, "javascript:alert(1)">>) == %{"id" => "x"}
       assert Url.put_data_to(%{"id" => "x"}, nil) == %{"id" => "x"}
     end
   end

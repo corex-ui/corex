@@ -2,6 +2,8 @@ defmodule E2eWeb.NumberInputFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  import Wallaby.Query
+
   @moduletag :wallaby
 
   alias E2eWeb.NumberInputModel, as: NumberInput
@@ -78,6 +80,26 @@ defmodule E2eWeb.NumberInputFormTest do
 
     assert NumberInput.hidden_submit_value_at_host(session, "number-input-form-ecto_value") ==
              "1235"
+  end
+
+  feature "static ecto form - clear value keeps hidden empty", %{session: session} do
+    session
+    |> NumberInput.goto_form(:static, :ecto)
+    |> NumberInput.wait_root_number_input_ready("number-input-form-ecto_value")
+    |> NumberInput.clear_number_input_at_host("number-input-form-ecto_value")
+    |> NumberInput.wait(200)
+    |> NumberInput.assert_hidden_submit_value("number-input-form-ecto_value", "")
+  end
+
+  feature "live ecto form - clear and submit shows required error", %{session: session} do
+    session
+    |> NumberInput.goto_form(:live)
+    |> NumberInput.wait_root_number_input_ready("number-input-live-form-ecto_value")
+    |> NumberInput.clear_number_input_at_host("number-input-live-form-ecto_value")
+    |> NumberInput.wait(300)
+    |> click(css("#number-input-live-form-ecto button[type='submit']"))
+    |> NumberInput.wait(500)
+    |> NumberInput.assert_number_input_field_error("number-input-live-form-ecto_value")
   end
 
   feature "live ecto validate form - initial value is valid", %{session: session} do

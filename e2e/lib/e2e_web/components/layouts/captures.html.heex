@@ -3,7 +3,7 @@
   lang={E2eWeb.Locale.current()}
   dir={E2eWeb.Locale.dir(E2eWeb.Locale.current())}
   data-theme={assigns[:theme] || "neo"}
-  data-mode={assigns[:mode]}
+  data-mode={assigns[:mode] || "light"}
 >
   <head>
     <meta charset="utf-8" />
@@ -82,7 +82,7 @@
           <a
             href="/"
             target="_blank"
-            class="link md:ui-size-md lg:ui-size-lg ui-brand gap-mini-gap text-xl flex flex-nowrap px-1 uppercase after:content-none"
+            class="link md:ui-size-md lg:ui-size-lg ui-brand gap-mini-gap text-xl flex flex-nowrap px-space-xs uppercase after:content-none"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136">
               <path
@@ -107,7 +107,7 @@
       </div>
     </main>
     <footer class={Shell.footer()}>
-      <div class={Shell.footer_content() <> " gap-2 justify-center md:justify-between"}>
+      <div class={Shell.footer_content() <> " gap-space-sm justify-center md:justify-between"}>
         <div class="flex flex-wrap items-center gap-space">
           <a class="link ui-size-sm ui-success" href="https://netoum.com" target="_blank">
             Open source by Netoum

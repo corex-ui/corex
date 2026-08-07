@@ -1,5 +1,9 @@
 defmodule Corex.DatePicker.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.DatePicker.Anatomy.{
     Content,
     Control,
@@ -15,13 +19,14 @@ defmodule Corex.DatePicker.Connect do
   }
 
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
+
   alias Corex.FormField
+
   alias Corex.Positioning
+
   alias Corex.Selectors
 
   alias Phoenix.LiveView.JS
-
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp zag_root_id(id), do: "datepicker:#{id}"
   defp zag_label_id(id, index \\ 0), do: "datepicker:#{id}:label:#{index}"
@@ -46,17 +51,17 @@ defmodule Corex.DatePicker.Connect do
       "data-locale" => assigns.locale,
       "data-time-zone" => assigns.time_zone,
       "data-name" => assigns.name,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-required" => get_boolean(assigns.required),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-outside-day-selectable" => get_boolean(assigns.outside_day_selectable),
-      "data-close-on-select" => get_boolean(assigns.close_on_select),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-required" => presence_attr(assigns.required),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-outside-day-selectable" => presence_attr(assigns.outside_day_selectable),
+      "data-close-on-select" => presence_attr(assigns.close_on_select),
       "data-min" => assigns.min,
       "data-max" => assigns.max,
       "data-focused-value" => assigns.focused_value,
       "data-start-of-week" => assigns.start_of_week,
-      "data-fixed-weeks" => get_boolean(assigns.fixed_weeks),
+      "data-fixed-weeks" => presence_attr(assigns.fixed_weeks),
       "data-selection-mode" => assigns.selection_mode,
       "data-placeholder" => assigns.placeholder,
       "data-default-view" => assigns.view,
@@ -160,7 +165,7 @@ defmodule Corex.DatePicker.Connect do
       "dir" => assigns.dir,
       "id" => zag_root_id(assigns.id),
       "data-state" => "closed",
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 

@@ -1,16 +1,11 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Marquee } from "../components/marquee";
 import type { Props } from "@zag-js/marquee";
 import { getBoolean, getDir, getNumber, getString } from "../lib/util";
 import { idMatches, readPayloadId } from "../lib/respond-to";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type MarqueeHookState = {
   marquee?: Marquee;
-  handlers?: Array<CallbackRef>;
-  onPause?: (event: Event) => void;
-  onResume?: (event: Event) => void;
-  onTogglePause?: (event: Event) => void;
 };
 
 export function readMarqueeProps(el: HTMLElement) {
@@ -31,16 +26,17 @@ export function readMarqueeProps(el: HTMLElement) {
   };
 }
 
-const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & MarqueeHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
+const MarqueeHook = createZagLiveHook<MarqueeHookState, Marquee>({
+  key: "marquee",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
 
     const zag = new Marquee(el, {
       ...readMarqueeProps(el),
       onPauseChange: (details) => {
         const eventName = getString(el, "onPauseChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && hook.liveSocket.main.isConnected()) {
           pushEvent(eventName, { id: el.id, paused: details.paused });
         }
         const clientEventName = getString(el, "onPauseChangeClient");
@@ -55,7 +51,7 @@ const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
       },
       onLoopComplete: () => {
         const eventName = getString(el, "onLoopComplete");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && hook.liveSocket.main.isConnected()) {
           pushEvent(eventName, { id: el.id });
         }
         const clientEventName = getString(el, "onLoopCompleteClient");
@@ -67,7 +63,7 @@ const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
       },
       onComplete: () => {
         const eventName = getString(el, "onComplete");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && hook.liveSocket.main.isConnected()) {
           pushEvent(eventName, { id: el.id });
         }
         const clientEventName = getString(el, "onCompleteClient");
@@ -80,55 +76,32 @@ const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
     } as Props);
 
     zag.buildDom();
-    zag.init();
 
-    this.marquee = zag;
+    dom.add("corex:marquee:pause", () => zag.api.pause());
+    dom.add("corex:marquee:resume", () => zag.api.resume());
+    dom.add("corex:marquee:toggle-pause", () => zag.api.togglePause());
 
-    this.onPause = () => zag.api.pause();
-    this.onResume = () => zag.api.resume();
-    this.onTogglePause = () => zag.api.togglePause();
+    server.add("marquee_pause", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.pause();
+    });
 
-    el.addEventListener("corex:marquee:pause", this.onPause);
-    el.addEventListener("corex:marquee:resume", this.onResume);
-    el.addEventListener("corex:marquee:toggle-pause", this.onTogglePause);
+    server.add("marquee_resume", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.resume();
+    });
 
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("marquee_pause", (payload: unknown) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        zag.api.pause();
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("marquee_resume", (payload: unknown) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        zag.api.resume();
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("marquee_toggle_pause", (payload: unknown) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        zag.api.togglePause();
-      })
-    );
+    server.add("marquee_toggle_pause", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.togglePause();
+    });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & MarqueeHookState) {
-    const zag = this.marquee;
-    if (!zag) return;
-    zag.updateProps(readMarqueeProps(this.el) as Partial<Props>);
+  update(hook, zag) {
+    zag.updateProps(readMarqueeProps(hook.el) as Partial<Props>);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & MarqueeHookState) {
-    if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);
-    if (this.onResume) this.el.removeEventListener("corex:marquee:resume", this.onResume);
-    if (this.onTogglePause)
-      this.el.removeEventListener("corex:marquee:toggle-pause", this.onTogglePause);
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
-    this.marquee?.destroy();
-  },
-};
+});
 
 export { MarqueeHook as Marquee };

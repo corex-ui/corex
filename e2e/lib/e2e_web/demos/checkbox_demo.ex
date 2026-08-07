@@ -152,7 +152,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.checkbox id="checkbox-style-color-default" class="checkbox" checked>
         <:label>Default</:label>
         <:indicator>
@@ -237,7 +237,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.checkbox id="checkbox-style-variant-subtle" class="checkbox" checked>
         <:label>Subtle (default)</:label>
         <:indicator>
@@ -339,7 +339,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-end">
+    <div class="flex flex-wrap gap-space-xl items-end">
       <.checkbox id="checkbox-style-sm" class="checkbox ui-size-sm">
         <:label>Small</:label>
         <:indicator>
@@ -399,7 +399,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.checkbox id="checkbox-style-rounded-none" class="checkbox ui-rounded-none" checked>
         <:label>None</:label>
         <:indicator><.heroicon name="hero-check" /></:indicator>
@@ -448,7 +448,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.checkbox
           id={"checkbox-style-max-#{variant.id}"}
@@ -490,7 +490,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def api_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Checkbox.set_checked(@id, true)} class="button ui-size-sm">
         Set checked
       </.action>
@@ -682,7 +682,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def api_js_dispatch_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <button
         type="button"
         class="button ui-size-sm"
@@ -753,7 +753,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <button
         type="button"
         class="button ui-size-sm"
@@ -852,6 +852,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action="/account/terms"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={f[:terms]} class="checkbox">
         <:label>Accept terms</:label>
@@ -915,6 +916,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action="/account/terms"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={f[:terms]} class="checkbox">
         <:label>Accept terms (strict messages)</:label>
@@ -977,6 +979,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     <form
       action="/register"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.checkbox
@@ -1007,7 +1010,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.checkbox field={@phoenix_form[:terms]} class="checkbox" id="checkbox-live-form-phoenix-terms">
         <:label>Accept terms</:label>
         <:indicator>
@@ -1023,7 +1028,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.checkbox field={@ecto_form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
         <:indicator>
@@ -1043,7 +1050,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_doc_live_ecto_controlled_heex do
     ~S"""
-    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.checkbox
         field={@ecto_controlled_form[:terms]}
         class="checkbox"
@@ -1068,7 +1077,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.checkbox
         field={@ecto_invalid_form[:terms]}
         class="checkbox"
@@ -1098,6 +1109,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     <.form
       for={@form}
       phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox
         field={@form[:terms]}
@@ -1124,6 +1136,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
@@ -1150,6 +1163,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       phx-change="validate_controlled"
       phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox
         field={@form[:terms]}
@@ -1185,6 +1199,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       phx-change="validate_invalid"
       phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox
         field={@form[:terms]}
@@ -1216,6 +1231,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
         <:label>Accept terms</:label>
@@ -1238,6 +1254,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
         <:label>Accept terms</:label>
@@ -1260,7 +1277,12 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     _ = assigns
 
     ~H"""
-    <form action={~p"/checkbox/form"} method="post" id="checkbox-form-native">
+    <form
+      action={~p"/checkbox/form"}
+      method="post"
+      id="checkbox-form-native"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.checkbox name="user[accept_terms]" id="checkbox-form-native-terms" class="checkbox">
         <:label>Accept terms</:label>

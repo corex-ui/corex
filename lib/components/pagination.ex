@@ -11,8 +11,8 @@ defmodule Corex.Pagination do
 
   ```heex
   <.pagination class="pagination" count={95} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -28,8 +28,8 @@ defmodule Corex.Pagination do
     controlled
     on_page_change="pagination_controlled_changed"
   >
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -73,8 +73,8 @@ defmodule Corex.Pagination do
         )
     }}
   >
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -107,8 +107,8 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button ui-size-sm">5</.action>
   <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -138,8 +138,8 @@ defmodule Corex.Pagination do
 
   ```heex
   <.pagination class="pagination" count={95} page_size={10} on_page_change="pagination_page_changed">
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -171,8 +171,8 @@ defmodule Corex.Pagination do
     page_size={10}
     on_page_change_client="pagination-page-changed"
   >
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -202,8 +202,8 @@ defmodule Corex.Pagination do
     controlled
     on_page_change="pagination_controlled_changed"
   >
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -230,8 +230,8 @@ defmodule Corex.Pagination do
     to="/posts"
     redirect={:patch}
   >
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -254,17 +254,17 @@ defmodule Corex.Pagination do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info ui-solid`.
+  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: unselected items use a neutral surface, the active page uses selected with semantic ink text. Add `pagination ui-solid` for filled active and nav triggers.
+  Semantic modifiers set palette variables on item triggers. Unselected items stay neutral; the active page always fills (`--ctl-fill`, or ink when no semantic role is set).
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for pagination ink and fill. Does not change surface treatment by itself.
+  Palette variables for pagination ink and the filled active page.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -275,14 +275,6 @@ defmodule Corex.Pagination do
   | Success | `pagination ui-success` |
   | Info | `pagination ui-info` |
 
-  ### Variant
-
-  Visual treatment of prev, next, and page item triggers. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `pagination` or `pagination ui-accent` |
-  | Solid | `pagination ui-accent ui-solid` |
 
   ### Size
 
@@ -328,6 +320,7 @@ defmodule Corex.Pagination do
   alias Corex.Pagination.Connect
   alias Corex.Pagination.Translation
   alias Corex.Pagination.Utils
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -381,11 +374,11 @@ defmodule Corex.Pagination do
   attr(:translation, Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
-  slot :prev, required: true do
+  slot :prev_trigger, required: true do
     attr(:class, :string)
   end
 
-  slot :next, required: true do
+  slot :next_trigger, required: true do
     attr(:class, :string)
   end
 
@@ -402,8 +395,7 @@ defmodule Corex.Pagination do
       :if={@total_pages > 1}
       id={@id}
       phx-hook="Pagination"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -428,8 +420,7 @@ defmodule Corex.Pagination do
       })}
     >
       <nav
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, aria_label: @translation.root_label})}
-        {Connect.root(%Root{id: @id, dir: @dir, aria_label: @translation.root_label})}
+        {Connect.mounted_root(%Root{id: @id, dir: @dir, aria_label: @translation.root_label})}
       >
         <ul>
           <li>
@@ -453,7 +444,7 @@ defmodule Corex.Pagination do
                 tag: "button"
               })}
             >
-              {render_slot(@prev)}
+              {render_slot(@prev_trigger)}
             </button>
             <a
               :if={@link?}
@@ -478,7 +469,7 @@ defmodule Corex.Pagination do
                 tag: "link"
               })}
             >
-              {render_slot(@prev)}
+              {render_slot(@prev_trigger)}
             </a>
           </li>
           <li
@@ -488,22 +479,19 @@ defmodule Corex.Pagination do
             <button
               :if={entry.type == :page and !@link?}
               type="button"
-              phx-mounted={Connect.ignore_ssr_page_item(ssr_page_item_for(@ssr, entry.value, index))}
-              {Connect.ssr_page_item(ssr_page_item_for(@ssr, entry.value, index))}
+              {Connect.mounted_ssr_page_item(ssr_page_item_for(@ssr, entry.value, index))}
             >
               {entry.value}
             </button>
             <a
               :if={entry.type == :page and @link?}
-              phx-mounted={Connect.ignore_ssr_page_item(ssr_page_item_for(@ssr, entry.value, index))}
-              {Connect.ssr_page_item(ssr_page_item_for(@ssr, entry.value, index))}
+              {Connect.mounted_ssr_page_item(ssr_page_item_for(@ssr, entry.value, index))}
             >
               {entry.value}
             </a>
             <span
               :if={entry.type == :ellipsis}
-              phx-mounted={Connect.ignore_ssr_ellipsis(%SsrEllipsis{id: @id, dir: @dir, index: index})}
-              {Connect.ssr_ellipsis(%SsrEllipsis{id: @id, dir: @dir, index: index})}
+              {Connect.mounted_ssr_ellipsis(%SsrEllipsis{id: @id, dir: @dir, index: index})}
             >
               {render_slot(@ellipsis)}
             </span>
@@ -529,7 +517,7 @@ defmodule Corex.Pagination do
                 tag: "button"
               })}
             >
-              {render_slot(@next)}
+              {render_slot(@next_trigger)}
             </button>
             <a
               :if={@link?}
@@ -554,7 +542,7 @@ defmodule Corex.Pagination do
                 tag: "link"
               })}
             >
-              {render_slot(@next)}
+              {render_slot(@next_trigger)}
             </a>
           </li>
         </ul>
@@ -689,9 +677,9 @@ defmodule Corex.Pagination do
   end
 
   defp validate_slots!(assigns) do
-    if assigns.prev == [] or assigns.next == [] or assigns.ellipsis == [] do
+    if assigns.prev_trigger == [] or assigns.next_trigger == [] or assigns.ellipsis == [] do
       raise ArgumentError,
-            "Corex.Pagination requires non-empty :prev, :next, and :ellipsis slots"
+            "Corex.Pagination requires non-empty :prev_trigger, :next_trigger, and :ellipsis slots"
     end
   end
 
@@ -701,8 +689,8 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.set_page("my-pagination", 2)}>Page 2</.action>
   <.pagination id="my-pagination" class="pagination" count={95} page={1} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
@@ -717,9 +705,12 @@ defmodule Corex.Pagination do
   ```
   """)
 
+  @spec set_page(String.t(), integer()) :: Phoenix.LiveView.JS.t()
+  @spec set_page(Phoenix.LiveView.Socket.t(), String.t(), integer()) ::
+          Phoenix.LiveView.Socket.t()
   def set_page(pagination_id, page) when is_binary(pagination_id) and is_integer(page) do
     JS.dispatch("corex:pagination:set-page",
-      to: "##{pagination_id}",
+      to: Selectors.css_id(pagination_id),
       detail: %{page: page}
     )
   end
@@ -746,17 +737,20 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.set_page_size("my-pagination", 20)}>20 per page</.action>
   <.pagination id="my-pagination" class="pagination" count={95} page={1} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
   """)
 
+  @spec set_page_size(String.t(), integer()) :: Phoenix.LiveView.JS.t()
+  @spec set_page_size(Phoenix.LiveView.Socket.t(), String.t(), integer()) ::
+          Phoenix.LiveView.Socket.t()
   def set_page_size(pagination_id, page_size)
       when is_binary(pagination_id) and is_integer(page_size) do
     JS.dispatch("corex:pagination:set-page-size",
-      to: "##{pagination_id}",
+      to: Selectors.css_id(pagination_id),
       detail: %{page_size: page_size}
     )
   end
@@ -786,15 +780,20 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.go_to_next_page("my-pagination")}>Next</.action>
   <.pagination id="my-pagination" class="pagination" count={95} page={1} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
   """)
 
+  @spec go_to_next_page(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec go_to_next_page(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def go_to_next_page(pagination_id) when is_binary(pagination_id) do
-    JS.dispatch("corex:pagination:go-to-next-page", to: "##{pagination_id}", detail: %{})
+    JS.dispatch("corex:pagination:go-to-next-page",
+      to: Selectors.css_id(pagination_id),
+      detail: %{}
+    )
   end
 
   api_doc(~S"""
@@ -818,15 +817,20 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.go_to_prev_page("my-pagination")}>Previous</.action>
   <.pagination id="my-pagination" class="pagination" count={95} page={1} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
   """)
 
+  @spec go_to_prev_page(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec go_to_prev_page(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def go_to_prev_page(pagination_id) when is_binary(pagination_id) do
-    JS.dispatch("corex:pagination:go-to-prev-page", to: "##{pagination_id}", detail: %{})
+    JS.dispatch("corex:pagination:go-to-prev-page",
+      to: Selectors.css_id(pagination_id),
+      detail: %{}
+    )
   end
 
   api_doc(~S"""
@@ -850,15 +854,20 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.go_to_first_page("my-pagination")}>First</.action>
   <.pagination id="my-pagination" class="pagination" count={95} page={1} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
   """)
 
+  @spec go_to_first_page(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec go_to_first_page(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def go_to_first_page(pagination_id) when is_binary(pagination_id) do
-    JS.dispatch("corex:pagination:go-to-first-page", to: "##{pagination_id}", detail: %{})
+    JS.dispatch("corex:pagination:go-to-first-page",
+      to: Selectors.css_id(pagination_id),
+      detail: %{}
+    )
   end
 
   api_doc(~S"""
@@ -882,15 +891,20 @@ defmodule Corex.Pagination do
   ```heex
   <.action phx-click={Corex.Pagination.go_to_last_page("my-pagination")}>Last</.action>
   <.pagination id="my-pagination" class="pagination" count={95} page={1} page_size={10}>
-    <:prev><.heroicon name="hero-chevron-left" /></:prev>
-    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
   """)
 
+  @spec go_to_last_page(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec go_to_last_page(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def go_to_last_page(pagination_id) when is_binary(pagination_id) do
-    JS.dispatch("corex:pagination:go-to-last-page", to: "##{pagination_id}", detail: %{})
+    JS.dispatch("corex:pagination:go-to-last-page",
+      to: Selectors.css_id(pagination_id),
+      detail: %{}
+    )
   end
 
   api_doc(~S"""

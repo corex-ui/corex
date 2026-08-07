@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/tags-input";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { getString, templatesContentRoot } from "../lib/util";
 type ZagTagsInputTranslations = NonNullable<Props["translations"]>;
 
@@ -77,9 +77,10 @@ export function normalizeDeleteTriggerContent(delEl: HTMLElement): void {
   }
 }
 
-export class TagsInput extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class TagsInput extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

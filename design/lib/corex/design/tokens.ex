@@ -93,6 +93,8 @@ defmodule Corex.Design.Tokens.Scales do
     black: 900
   ]
 
+  @font_steps ~W(sans serif mono code display)a
+
   @font [
     sans: [
       "ui-sans-serif",
@@ -168,7 +170,7 @@ defmodule Corex.Design.Tokens.Scales do
     xl: "0 20px 25px -5px var(--color-shadow), 0 8px 10px -6px var(--color-shadow)",
     "2xl": "0 25px 50px -12px var(--color-shadow)",
     ui: "0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow)",
-    layer: "0 1px 1px 0 var(--color-shadow), 0 1px 1px 0 var(--color-shadow)"
+    surface: "0 1px 1px 0 var(--color-shadow), 0 1px 1px 0 var(--color-shadow)"
   ]
 
   @inset_shadow [
@@ -207,76 +209,19 @@ defmodule Corex.Design.Tokens.Scales do
     "3xl": "64px"
   ]
 
-  @perspective [
-    dramatic: "100px",
-    near: "300px",
-    normal: "500px",
-    midrange: "800px",
-    distant: "1200px"
-  ]
-
-  @aspect [video: "16 / 9"]
-
-  @ease [
-    {:in, "cubic-bezier(0.4, 0, 1, 1)"},
-    {:out, "cubic-bezier(0, 0, 0.2, 1)"},
-    {:"in-out", "cubic-bezier(0.4, 0, 0.2, 1)"}
-  ]
-
-  @animate [
-    spin: "spin 1s linear infinite",
-    ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
-    pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-    bounce: "bounce 1s infinite"
-  ]
-
-  @breakpoint [
-    sm: "40rem",
-    md: "48rem",
-    lg: "64rem",
-    xl: "80rem",
-    "2xl": "96rem"
-  ]
-
-  @keyframes """
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes ping {
-    75%,
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
-  }
-
-  @keyframes pulse {
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  @keyframes bounce {
-    0%,
-    100% {
-      transform: translateY(-25%);
-      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-    }
-
-    50% {
-      transform: none;
-      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    }
-  }
-  """
-
   def builtin_density_mult, do: @density_mult
   def builtin_size_mult, do: @size_mult
   def builtin_text, do: @text
   def builtin_radius, do: @radius
+
+  @doc """
+  The built-in radius step names, without consulting the configured scale.
+
+  Theme normalization needs the allowlist before the configured scales are
+  resolved: reading `radius_steps/0` there would re-enter the scale resolution
+  that theme specs are an input to.
+  """
+  def builtin_radius_steps, do: Keyword.keys(@radius)
   def builtin_weight, do: @weight
 
   def density_mult, do: configured_or_default(:density, @density_mult)
@@ -292,32 +237,46 @@ defmodule Corex.Design.Tokens.Scales do
   def container, do: @container
 
   def font, do: @font
+
+  @doc """
+  Every font step a theme may define a stack for.
+
+  Wider than `font/0`, which carries only the steps that have a built-in stack:
+  `:display` has no default and exists only when a theme names it.
+  """
+  def font_steps, do: @font_steps
   def shadow, do: @shadow
   def inset_shadow, do: @inset_shadow
   def drop_shadow, do: @drop_shadow
   def text_shadow, do: @text_shadow
   def blur, do: @blur
-  def perspective, do: @perspective
-  def aspect, do: @aspect
-  def ease, do: @ease
-  def animate, do: @animate
-  def breakpoint, do: @breakpoint
-  def keyframes, do: @keyframes
-
-  def density_steps, do: ConfiguredScales.dimension_steps(:density)
-  def size_steps, do: ConfiguredScales.dimension_steps(:size)
-  def text_steps, do: ConfiguredScales.dimension_steps(:text)
-  def radius_steps, do: ConfiguredScales.dimension_steps(:radius)
-  def weight_steps, do: ConfiguredScales.dimension_steps(:weight)
 
   defp configured_or_default(axis, default) do
     values = ConfiguredScales.dimension_values(axis)
 
     if map_size(values) > 0 do
-      Map.to_list(values)
+      in_ladder_order(values, Keyword.keys(default))
     else
       default
     end
+  end
+
+  @doc """
+  Orders a step map by `ladder`, with steps outside it sorted by name after.
+
+  Configured scales arrive as maps, and iterating one follows the atom table
+  rather than the ladder, so emitted token files would reorder whenever an
+  unrelated module interned a new atom.
+  """
+  def in_ladder_order(values, ladder) when is_map(values) and is_list(ladder) do
+    ordered = for step <- ladder, Map.has_key?(values, step), do: {step, Map.fetch!(values, step)}
+
+    extra =
+      values
+      |> Map.drop(ladder)
+      |> Enum.sort_by(fn {step, _value} -> to_string(step) end)
+
+    ordered ++ extra
   end
 
   @doc "Formats a number as a `rem` length with trailing zeros trimmed."
@@ -334,19 +293,55 @@ defmodule Corex.Design.Tokens.Scales do
     end)
   end
 
-  @doc "Scales px offsets in a shadow template; leaves color references unchanged."
+  @doc """
+  Scales shadow templates by parsing each layer into lengths + color, then
+  multiplying lengths. Accepts the authored string form or a list of layer maps.
+  """
   def scale_shadow_template(template, scale) when is_binary(template) and scale == 1.0,
     do: template
 
   def scale_shadow_template(template, scale) when is_binary(template) and is_number(scale) do
-    Regex.replace(~r/(-?\d+(?:\.\d+)?)px/, template, fn _, num ->
-      num
-      |> parse_shadow_num()
-      |> Kernel.*(scale)
-      |> trim()
-      |> Kernel.<>("px")
-    end)
+    template
+    |> shadow_layers()
+    |> Enum.map_join(", ", &format_shadow_layer(&1, scale))
   end
+
+  def scale_shadow_template(layers, scale) when is_list(layers) and is_number(scale) do
+    Enum.map_join(layers, ", ", &format_shadow_layer(&1, scale))
+  end
+
+  defp shadow_layers(template) when is_binary(template) do
+    template
+    |> String.split(",")
+    |> Enum.map(&parse_shadow_layer/1)
+  end
+
+  defp parse_shadow_layer(layer) do
+    trimmed = String.trim(layer)
+    inset? = String.starts_with?(trimmed, "inset ")
+    body = if inset?, do: String.trim_leading(trimmed, "inset "), else: trimmed
+
+    {lengths, color} =
+      case Regex.run(~r/^(.*?)\s+(var\(--[\w-]+\)|#[0-9A-Fa-f]{3,8}|[a-zA-Z]+)$/, body) do
+        [_, nums, color] -> {nums, color}
+        _ -> {body, "var(--color-shadow)"}
+      end
+
+    numbers =
+      Regex.scan(~r/-?\d+(?:\.\d+)?/, lengths)
+      |> Enum.map(fn [n] -> parse_shadow_num(n) end)
+
+    %{inset: inset?, lengths: numbers, color: color}
+  end
+
+  defp format_shadow_layer(%{inset: inset?, lengths: lengths, color: color}, scale) do
+    scaled = Enum.map_join(lengths, " ", fn n -> format_px(n * scale) end)
+    prefix = if inset?, do: "inset ", else: ""
+    "#{prefix}#{scaled} #{color}"
+  end
+
+  defp format_px(n) when n == 0, do: "0px"
+  defp format_px(n) when is_number(n), do: "#{num(n)}px"
 
   defp parse_shadow_num(num) when is_binary(num) do
     case Float.parse(num) do

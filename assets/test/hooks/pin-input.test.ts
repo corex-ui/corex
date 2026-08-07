@@ -3,6 +3,7 @@ import { el } from "../helpers/dom";
 import {
   padToCount,
   parseValueWithEmpties,
+  pinValueCommitKind,
   readDefaultValueList,
   readPinValueList,
 } from "../../hooks/pin-input";
@@ -16,6 +17,22 @@ describe("parseValueWithEmpties", () => {
 describe("padToCount", () => {
   it("pads with empty strings", () => {
     expect(padToCount(["a"], 3)).toEqual(["a", "", ""]);
+  });
+});
+
+describe("pinValueCommitKind", () => {
+  it("treats all-empty as empty", () => {
+    expect(pinValueCommitKind(["", "", "", ""])).toBe("empty");
+    expect(pinValueCommitKind([])).toBe("empty");
+  });
+
+  it("treats fully filled as complete", () => {
+    expect(pinValueCommitKind(["1", "2", "3", "4"])).toBe("complete");
+  });
+
+  it("treats mid-entry as partial", () => {
+    expect(pinValueCommitKind(["1", "", "", ""])).toBe("partial");
+    expect(pinValueCommitKind(["1", "2", "3", ""])).toBe("partial");
   });
 });
 

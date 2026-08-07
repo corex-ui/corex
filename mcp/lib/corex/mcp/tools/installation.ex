@@ -2,6 +2,7 @@ defmodule Corex.MCP.Tools.Installation do
   @moduledoc false
 
   alias Corex.MCP.Json
+  alias Corex.MCP.ToolError
 
   @valid_scenarios ~W(new_project existing_project tableau_new all)
 
@@ -46,7 +47,17 @@ defmodule Corex.MCP.Tools.Installation do
     encode_guide(payload)
   end
 
-  def installation_guide(_), do: {:error, :invalid_arguments}
+  def installation_guide(%{"scenario" => scenario} = args)
+      when is_binary(scenario) and map_size(args) == 1 do
+    ToolError.unknown_value("installation_guide", "scenario", @valid_scenarios)
+  end
+
+  def installation_guide(_) do
+    ToolError.invalid_arguments(
+      "installation_guide",
+      "optional scenario: one of #{Enum.join(@valid_scenarios, ", ")}"
+    )
+  end
 
   defp encode_guide(payload) do
     {:ok, Json.encode!(payload)}
@@ -79,6 +90,16 @@ defmodule Corex.MCP.Tools.Installation do
         %{step: 2, run: "mix archive.install hex corex_new"},
         %{step: 3, run: "mix corex.new my_app"}
       ],
+      optional_flags: [
+        "--mode",
+        "--theme",
+        "--a11y",
+        "--lang",
+        "--mcp",
+        "--no-mcp",
+        "--no-design",
+        "--dev ../corex"
+      ],
       update_generator: %{
         command: "mix local.corex",
         note: "Updates the corex.new archive before generating a project."
@@ -105,7 +126,11 @@ defmodule Corex.MCP.Tools.Installation do
       optional_flags: [
         "--mode",
         "--theme",
+        "--a11y",
+        "--lang",
         "--mcp",
+        "--no-mcp",
+        "--no-design",
         "--dev ../corex"
       ],
       update_generator: %{
@@ -137,7 +162,7 @@ defmodule Corex.MCP.Tools.Installation do
           "Run mix corex.design.build"
         ],
         note:
-          "Generated apps from mix corex.new include these steps by default when --design is on."
+          "Drop only: :dev when enabling accessibility (config accessibility: true / --a11y) so Corex.Design.Accessibility is available at runtime. Generated apps from mix corex.new include these steps by default when --design is on."
       }
     }
   end
@@ -145,7 +170,7 @@ defmodule Corex.MCP.Tools.Installation do
   defp corex_hex_version do
     case Application.spec(:corex, :vsn) do
       nil ->
-        Mix.raise("corex application version is not available")
+        "0.2"
 
       v when is_list(v) ->
         List.to_string(v)
@@ -185,7 +210,7 @@ defmodule Corex.MCP.Tools.Installation do
         #     env: %{\"NODE_PATH\" => [Path.expand(\"../deps\", __DIR__), Mix.Project.build_path()]}
 
         config :esbuild,
-          version: \"0.25.4\",
+          version: \"0.25.12\",
           my_app: [
             args:
               ~W(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),

@@ -1,10 +1,9 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Checkbox } from "../components/checkbox";
 import type { CheckedChangeDetails } from "@zag-js/checkbox";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { mountCheckedBinding, readUpdatedServerChecked } from "../lib/read-props";
+import { syncCheckedHiddenInput } from "../lib/phoenix-form-bridge";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
   checkedChangePayload,
   emitResponse,
@@ -14,23 +13,20 @@ import {
   readPayloadId,
   readPayloadChecked,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 
 type CheckboxHookState = {
   checkbox?: Checkbox;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
 };
 
 export { checkedChangePayload };
 
-const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const CheckboxHook = createZagLiveHook<CheckboxHookState, Checkbox>({
+  key: "checkbox",
+  controlledKeys: ["checked"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const zagCheckbox = new Checkbox(el, {
       id: el.id,
@@ -57,39 +53,28 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
         const input = el.querySelector<HTMLInputElement>(
           '[data-scope="checkbox"][data-part="hidden-input"]'
         );
-
         if (input) {
-          input.checked = details.checked === true;
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-          input.dispatchEvent(new Event("change", { bubbles: true }));
+          syncCheckedHiddenInput(input, details.checked === true, { markUsed: false });
         }
       },
     });
 
-    zagCheckbox.init();
-    this.checkbox = zagCheckbox;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ checked: boolean }>>("corex:checkbox:set-checked", (event) => {
+    dom.add<CustomEvent<{ checked: boolean }>>("corex:checkbox:set-checked", (event) => {
       const { checked } = event.detail;
       zagCheckbox.api.setChecked(checked);
     });
 
-    domRegistry.add("corex:checkbox:toggle-checked", () => {
+    dom.add("corex:checkbox:toggle-checked", () => {
       zagCheckbox.api.toggleChecked();
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("checkbox_set_checked", (payload: unknown) => {
+    server.add("checkbox_set_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const checked = readPayloadChecked(payload);
       if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
     });
 
-    registry.add("checkbox_set_checked_many", (payload: unknown) => {
+    server.add("checkbox_set_checked_many", (payload: unknown) => {
       if (!payload || typeof payload !== "object") return;
       const ids = (payload as { ids?: unknown }).ids;
       if (!Array.isArray(ids) || !ids.includes(el.id)) return;
@@ -97,7 +82,7 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
       if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
     });
 
-    registry.add("checkbox_toggle_checked", (payload: unknown) => {
+    server.add("checkbox_toggle_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zagCheckbox.api.toggleChecked();
     });
@@ -121,7 +106,7 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
       });
     };
 
-    registry.add("checkbox_checked", (payload: unknown) => {
+    server.add("checkbox_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitCheckedState(
         parseRespondTo(payload),
@@ -131,7 +116,7 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
       );
     });
 
-    registry.add("checkbox_focused", (payload: unknown) => {
+    server.add("checkbox_focused", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitCheckedState(
         parseRespondTo(payload),
@@ -141,7 +126,7 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
       );
     });
 
-    registry.add("checkbox_disabled", (payload: unknown) => {
+    server.add("checkbox_disabled", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitCheckedState(
         parseRespondTo(payload),
@@ -150,41 +135,26 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
         zagCheckbox.api.disabled
       );
     });
+
+    return zagCheckbox;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
+  update(hook, zagCheckbox) {
+    const checkedPatch = readUpdatedServerChecked(hook.el, hook.beforeAttrs);
+
+    zagCheckbox.updateProps({
+      id: hook.el.id,
+      ...("checked" in checkedPatch ? { checked: checkedPatch.checked } : {}),
+      disabled: getBoolean(hook.el, "disabled"),
+      name: getString(hook.el, "name"),
+      form: getString(hook.el, "form"),
+      value: getString(hook.el, "value"),
+      dir: getDir(hook.el),
+      invalid: getBoolean(hook.el, "invalid"),
+      required: getBoolean(hook.el, "required"),
+      readOnly: getBoolean(hook.el, "readonly"),
+    });
   },
-
-  updated(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
-    const zagCheckbox = this.checkbox;
-    if (!zagCheckbox) return;
-
-    try {
-      const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
-
-      zagCheckbox.updateProps({
-        id: this.el.id,
-        ...("checked" in checkedPatch ? { checked: checkedPatch.checked } : {}),
-        disabled: getBoolean(this.el, "disabled"),
-        name: getString(this.el, "name"),
-        form: getString(this.el, "form"),
-        value: getString(this.el, "value"),
-        dir: getDir(this.el),
-        invalid: getBoolean(this.el, "invalid"),
-        required: getBoolean(this.el, "required"),
-        readOnly: getBoolean(this.el, "readonly"),
-      });
-    } finally {
-      this.beforeAttrs = undefined;
-    }
-  },
-
-  destroyed(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.checkbox?.destroy();
-  },
-};
+});
 
 export { CheckboxHook as Checkbox };

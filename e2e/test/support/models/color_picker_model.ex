@@ -1,4 +1,12 @@
 defmodule E2eWeb.ColorPickerModel do
+  @moduledoc """
+  Behavior map:
+    anatomy  - each section mounts, trigger opens content
+    api      - set value (binding/server), assert value changed
+    events   - server log growth after preset click
+    form     - submit, validation
+  """
+
   use E2eWeb.Model, component: "color-picker"
 
   @anatomy_sections ~W(
@@ -108,5 +116,71 @@ defmodule E2eWeb.ColorPickerModel do
         else: "color-picker-form-phoenix"
 
     click(session, css("##{form_id} button[type='submit']"))
+  end
+
+  def hidden_input_value(session, host_dom_id) when is_binary(host_dom_id) do
+    key = {:e2e_cp_value, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        const input = host && host.querySelector('[data-scope="color-picker"][data-part="hidden-input"]');
+        return input ? input.value : "";
+        """,
+        [host_dom_id],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
+  def wait_value(session, host_dom_id, expected, opts \\ []) when is_binary(expected) do
+    timeout = Keyword.get(opts, :timeout, 8_000)
+    deadline = System.monotonic_time(:millisecond) + timeout
+    busy_wait_value(session, host_dom_id, expected, deadline)
+    session
+  end
+
+  defp busy_wait_value(session, host_dom_id, expected, deadline) do
+    actual = hidden_input_value(session, host_dom_id)
+
+    if color_values_match?(actual, expected) do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected color picker #{host_dom_id} value #{inspect(expected)}, got #{inspect(actual)}"
+      else
+        Process.sleep(50)
+        busy_wait_value(session, host_dom_id, expected, deadline)
+      end
+    end
+  end
+
+  defp color_values_match?(actual, expected) when is_binary(actual) and is_binary(expected) do
+    a = String.downcase(String.trim(actual))
+    e = String.downcase(String.trim(expected))
+
+    a == e or
+      (e == "#ff0000" and (String.contains?(a, "255, 0, 0") or String.contains?(a, "255,0,0"))) or
+      (e == "#3b82f6" and String.contains?(a, "59, 130, 246"))
+  end
+
+  def assert_content_open(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
+    timeout = Keyword.get(opts, :timeout, 8_000)
+
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="color-picker"][data-part="content"][data-state="open"]|,
+        visible: :any
+      ),
+      timeout: timeout
+    )
+
+    session
   end
 end

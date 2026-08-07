@@ -1,0 +1,60 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme {
+  --text-xs: var(--text-xs);
+  --text-xs--line-height: var(--text-xs--line-height);
+  --text-sm: var(--text-sm);
+  --text-sm--line-height: var(--text-sm--line-height);
+  --text-base: var(--text-base);
+  --text-base--line-height: var(--text-base--line-height);
+  --text-lg: var(--text-lg);
+  --text-lg--line-height: var(--text-lg--line-height);
+  --text-xl: var(--text-xl);
+  --text-xl--line-height: var(--text-xl--line-height);
+  --text-2xl: var(--text-2xl);
+  --text-2xl--line-height: var(--text-2xl--line-height);
+  --text-3xl: var(--text-3xl);
+  --text-3xl--line-height: var(--text-3xl--line-height);
+  --text-4xl: var(--text-4xl);
+  --text-4xl--line-height: var(--text-4xl--line-height);
+  --text-5xl: var(--text-5xl);
+  --text-5xl--line-height: var(--text-5xl--line-height);
+  --text-6xl: var(--text-6xl);
+  --text-6xl--line-height: var(--text-6xl--line-height);
+  --text-7xl: var(--text-7xl);
+  --text-7xl--line-height: var(--text-7xl--line-height);
+  --text-8xl: var(--text-8xl);
+  --text-8xl--line-height: var(--text-8xl--line-height);
+  --text-9xl: var(--text-9xl);
+  --text-9xl--line-height: var(--text-9xl--line-height);
+  --text-display-sm: var(--text-4xl);
+  --text-display-sm--line-height: var(--text-4xl--line-height);
+}
+@theme inline {
+  --leading-xs: var(--leading-xs);
+  --leading-sm: var(--leading-sm);
+  --leading-md: var(--leading-md);
+  --leading-lg: var(--leading-lg);
+  --leading-xl: var(--leading-xl);
+  --leading-2xl: var(--leading-2xl);
+  --leading-3xl: var(--leading-3xl);
+  --leading-4xl: var(--leading-4xl);
+  --leading-5xl: var(--leading-5xl);
+  --leading-6xl: var(--leading-6xl);
+  --leading-7xl: var(--leading-7xl);
+  --leading-8xl: var(--leading-8xl);
+  --leading-9xl: var(--leading-9xl);
+  --leading-tight: var(--leading-tight);
+  --leading-snug: var(--leading-snug);
+  --leading-normal: var(--leading-normal);
+  --leading-relaxed: var(--leading-relaxed);
+  --leading-loose: var(--leading-loose);
+  --tracking-tighter: var(--tracking-tighter);
+  --tracking-tight: var(--tracking-tight);
+  --tracking-normal: var(--tracking-normal);
+  --tracking-wide: var(--tracking-wide);
+  --tracking-wider: var(--tracking-wider);
+  --tracking-widest: var(--tracking-widest);
+}

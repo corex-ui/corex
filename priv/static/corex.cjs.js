@@ -218,6 +218,10 @@ function createLazyHook(importFn, exportName) {
             real.destroyed?.call(this);
             return;
           }
+          if (state._pendingBeforeUpdate) {
+            state._pendingBeforeUpdate = false;
+            real.beforeUpdate?.call(this);
+          }
           if (state._pendingUpdated) {
             state._pendingUpdated = false;
             real.updated?.call(this);
@@ -255,7 +259,12 @@ function createLazyHook(importFn, exportName) {
       this._realHook?.reconnected?.call(this);
     },
     beforeUpdate() {
-      this._realHook?.beforeUpdate?.call(this);
+      const state = this;
+      if (state._realHook?.beforeUpdate) {
+        state._realHook.beforeUpdate.call(this);
+      } else if (state._mountPromise) {
+        state._pendingBeforeUpdate = true;
+      }
     }
   };
 }

@@ -1,19 +1,24 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { collection } from "@zag-js/select";
 import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
-import { getString, getBoolean, canPushEvent, getDir, safeParseJson } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
+import { getString, getBoolean, canPushEvent, getDir } from "../lib/util";
 import { readStringListControlledZagProps, readUpdatedServerStringList } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
-import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
-import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
-import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collection";
+import { notifyPhoenixFormChange } from "../lib/phoenix-form-bridge";
+import {
+  type ValueLabelItem,
+  applyItems,
+  firstSelectedValue,
+  initCollectionItems,
+  itemValue,
+  redirectCollectionItem,
+  refreshItemsIfChanged,
+  zagListCollectionConfig,
+} from "../lib/collection-hook";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type SelectItem = ValueLabelItem;
 
@@ -139,13 +144,8 @@ function createSelectOnValueChange(
       return;
     }
 
-    const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-
-    if (getBoolean(el, "redirect") && firstValue) {
-      const itemEl = el.querySelector<HTMLElement>(
-        `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-      );
-      performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+    if (getBoolean(el, "redirect")) {
+      redirectCollectionItem(el, "select", firstSelectedValue(details.value), liveSocket);
     }
 
     syncSelectHiddenInputForPhoenix(el, details.value);
@@ -189,115 +189,91 @@ export function reapplySelectInteractiveState(el: HTMLElement): void {
 
 type SelectHookState = {
   select?: Select;
-  handlers?: Array<CallbackRef>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
   lastItemsJson?: string;
   onValueChange?: (details: ValueChangeDetails) => void;
 };
 
-const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & SelectHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const SelectHook = createZagLiveHook<SelectHookState, Select>({
+  key: "select",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
-    const allItems = safeParseJson<SelectItem[]>(el.dataset.items || "[]", []);
-    const hasGroups = allItems.some((item: SelectItem) => Boolean(item.group));
     const onValueChange = createSelectOnValueChange(
-      () => this.el,
-      this.liveSocket,
+      () => hook.el,
+      hook.liveSocket,
       pushEvent,
       canPush
     );
-    this.onValueChange = onValueChange;
+    hook.onValueChange = onValueChange;
 
+    const { items: allItems, hasGroups } = initCollectionItems<SelectItem>(el, hook);
     const selectComponent = new Select(el, {
       ...selectZagPropsBase(el, onValueChange),
       collection: buildCollection(allItems, hasGroups),
       ...readStringListControlledZagProps(el, "value", "defaultValue"),
     } as Props);
 
-    selectComponent.hasGroups = hasGroups;
-    selectComponent.setOptions(allItems);
-    selectComponent.init();
+    applyItems(selectComponent, allItems, hasGroups);
 
-    this.select = selectComponent;
-    this.lastItemsJson = el.dataset.items || "[]";
-    this.handlers = [];
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: string[] }>>("corex:select:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string[] }>>("corex:select:set-value", (event) => {
       selectComponent.api.setValue(event.detail.value);
     });
 
-    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:select:set-open", (event) => {
+    dom.add<CustomEvent<{ open: boolean }>>("corex:select:set-open", (event) => {
       selectComponent.api.setOpen(event.detail.open);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("select_set_value", (payload: { id?: string; value: string[] }) => {
+    server.add("select_set_value", (payload: { id?: string; value: string[] }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       selectComponent.api.setValue(payload.value);
     });
 
-    registry.add("select_set_open", (payload: { id?: string; open?: boolean }) => {
+    server.add("select_set_open", (payload: { id?: string; open?: boolean }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.open !== "boolean") return;
       selectComponent.api.setOpen(payload.open);
     });
+
+    return selectComponent;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & SelectHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-  },
+  update(hook, select) {
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, select);
 
-  updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
-    if (!this.select) return;
+    const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
 
-    try {
-      const newItemsJson = this.el.dataset.items || "[]";
-      if (newItemsJson !== this.lastItemsJson) {
-        this.lastItemsJson = newItemsJson;
-        const newItems = safeParseJson<SelectItem[]>(newItemsJson, []);
-        const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
-        this.select.hasGroups = hasGroups;
-        this.select.setOptions(newItems);
+    if (valuePatch.value !== undefined) {
+      syncControlledValueInputFromServer(hook.el, valuePatch.value);
+    }
+
+    // Drop selections whose items were removed from the collection (e.g. reset).
+    if (itemsChanged && valuePatch.value === undefined) {
+      const available = new Set(select.options.map((i) => String(itemValue(i))));
+      const current = (select.api.value ?? []).map(String);
+      const next = current.filter((v) => available.has(v));
+      if (next.length !== current.length) {
+        select.api.setValue(next);
       }
+    }
 
-      const valuePatch = readUpdatedServerStringList(this.el, this.beforeAttrs);
-
-      if (valuePatch.value !== undefined) {
-        syncControlledValueInputFromServer(this.el, valuePatch.value);
-      }
-
-      this.select.updateProps({
-        ...selectLayoutProps(this.el),
-        collection: this.select.getCollection(),
+    const propsApplied = select.updateProps(
+      {
+        ...selectLayoutProps(hook.el),
+        collection: select.getCollection(),
         ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
-      } as Props);
+      } as Props,
+      { force: itemsChanged }
+    );
 
-      reapplySelectInteractiveState(this.el);
-    } finally {
-      this.beforeAttrs = undefined;
-    }
-  },
-
-  destroyed(this: object & HookInterface<HTMLElement> & SelectHookState) {
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
+    if (!propsApplied || itemsChanged) {
+      select.render();
     }
 
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.select?.destroy();
+    reapplySelectInteractiveState(hook.el);
   },
-};
+});
 
 export { SelectHook as Select };

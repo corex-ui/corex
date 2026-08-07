@@ -6,17 +6,19 @@ defmodule Corex.NumberInput.Translation do
 
   | Field | Default | Used for |
   | ----- | ------- | -------- |
+  | `input` | Number | Input `aria-label` when no `:label` slot |
   | `decrease` | Decrease value | Decrement trigger `aria-label` |
   | `increase` | Increase value | Increment trigger `aria-label` |
 
   Partial override example:
 
       translation={%Corex.NumberInput.Translation{
+        input: Corex.Gettext.gettext("Quantity"),
         decrease: Corex.Gettext.gettext("Decrease"),
         increase: Corex.Gettext.gettext("Increase")
       }}
   """
 
   use Corex.Translation,
-    fields: [decrease: "Decrease value", increase: "Increase value"]
+    fields: [input: "Number", decrease: "Decrease value", increase: "Increase value"]
 end

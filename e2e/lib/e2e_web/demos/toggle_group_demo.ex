@@ -57,7 +57,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def anatomy_indicator_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-center justify-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-center justify-center w-full max-w-4xl">
       <.toggle_group id="toggle-group-anatomy-indicator-label" class="toggle-group">
         <:item value="bold">
           <.heroicon name="hero-bold" /> Bold
@@ -93,7 +93,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])}
@@ -202,7 +202,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           class="button ui-size-sm"
@@ -290,7 +290,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="tg_api_lorem" class="button ui-size-sm">Lorem</.action>
         <.action phx-click="tg_api_duis" class="button ui-size-sm">Duis</.action>
@@ -401,7 +401,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-6 w-full max-w-4xl">
+    <div class="flex flex-col gap-space-xl w-full max-w-4xl">
       <.toggle_group id="tg-style-c-default" class="toggle-group" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
@@ -462,7 +462,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-6 w-full max-w-4xl">
+    <div class="flex flex-col gap-space-xl w-full max-w-4xl">
       <.toggle_group id="tg-style-variant-subtle" class="toggle-group" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
@@ -548,7 +548,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-6 w-full max-w-4xl">
+    <div class="flex flex-col gap-space-xl w-full max-w-4xl">
       <.toggle_group id="tg-style-sm" class="toggle-group ui-size-sm" value={["lorem"]}>
         <:item value="lorem">SM</:item>
         <:item value="duis">SM</:item>
@@ -618,7 +618,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-6 w-full max-w-4xl">
+    <div class="flex flex-col gap-space-xl w-full max-w-4xl">
       <.toggle_group
         id="tg-style-radius-none"
         class="toggle-group ui-rounded-none"
@@ -722,7 +722,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.toggle_group
           id={"toggle-group-style-width-#{variant.id}"}
@@ -743,7 +743,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.toggle_group
           id={"toggle-group-style-max-#{variant.id}"}
@@ -782,7 +782,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-6 w-full max-w-4xl">
+    <div class="flex flex-col gap-space-xl w-full max-w-4xl">
       <.toggle_group id="tg-style-disabled" class="toggle-group" disabled value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>

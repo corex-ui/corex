@@ -64,10 +64,10 @@ def language_switch(assigns) do
     <:label class="sr-only">Language</:label>
     <:item :let={item}>{item.label}</:item>
     <:trigger>
-      <.heroicon name="hero-language" class="icon" />
+      <.heroicon name="hero-language" />
     </:trigger>
     <:item_indicator>
-      <.heroicon name="hero-check" class="icon" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   """

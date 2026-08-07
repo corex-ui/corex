@@ -1,20 +1,13 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Toggle } from "../components/toggle";
 import type { Props } from "@zag-js/toggle";
 
 import { getString, getBoolean, getBooleanValue, getDir, canPushEvent } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readPressedControlledZagUpdate } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId, readPayloadPressed } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type ToggleHookState = {
-  zagToggle?: Toggle;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
+  toggle?: Toggle;
 };
 
 export function pressedChangePayload(el: HTMLElement, pressed: boolean): Record<string, unknown> {
@@ -24,15 +17,17 @@ export function pressedChangePayload(el: HTMLElement, pressed: boolean): Record<
   };
 }
 
-const ToggleHook: Hook<object & ToggleHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & ToggleHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const ToggleHook = createZagLiveHook<ToggleHookState, Toggle>({
+  key: "toggle",
+  controlledKeys: ["pressed"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const controlled = getBoolean(el, "controlled");
     const pressedFromDataset = getBooleanValue(el, "pressed");
     const defaultPressedFromDataset = getBooleanValue(el, "defaultPressed");
-    const zagToggle = new Toggle(el, {
+    const toggle = new Toggle(el, {
       id: el.id,
       ...(controlled
         ? { pressed: pressedFromDataset === true }
@@ -51,69 +46,48 @@ const ToggleHook: Hook<object & ToggleHookState, HTMLElement> = {
       },
     } as unknown as Props);
 
-    zagToggle.init();
-    this.zagToggle = zagToggle;
-
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ pressed: boolean }>>("corex:toggle:set-pressed", (event) => {
+    dom.add<CustomEvent<{ pressed: boolean }>>("corex:toggle:set-pressed", (event) => {
       const p = event.detail?.pressed;
-      if (typeof p === "boolean") zagToggle.api.setPressed(p);
+      if (typeof p === "boolean") toggle.api.setPressed(p);
     });
 
-    domRegistry.add("corex:toggle:toggle-pressed", () => {
-      zagToggle.api.setPressed(!zagToggle.api.pressed);
+    dom.add("corex:toggle:toggle-pressed", () => {
+      toggle.api.setPressed(!toggle.api.pressed);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("toggle_set_pressed", (payload: unknown) => {
+    server.add("toggle_set_pressed", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const pressed = readPayloadPressed(payload);
-      if (typeof pressed === "boolean") zagToggle.api.setPressed(pressed);
+      if (typeof pressed === "boolean") toggle.api.setPressed(pressed);
     });
 
-    registry.add("toggle_toggle_pressed", (payload: unknown) => {
+    server.add("toggle_toggle_pressed", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      zagToggle.api.setPressed(!zagToggle.api.pressed);
+      toggle.api.setPressed(!toggle.api.pressed);
     });
 
-    registry.add("toggle_pressed", (payload: unknown) => {
+    server.add("toggle_pressed", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("toggle_pressed_response", {
+      hook.pushEvent("toggle_pressed_response", {
         id: el.id,
-        value: zagToggle.api.pressed,
+        value: toggle.api.pressed,
       });
     });
+
+    return toggle;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & ToggleHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["pressed"]);
-  },
+  update(hook, toggle) {
+    const pressedPatch = readPressedControlledZagUpdate(hook.el, hook.beforeAttrs);
 
-  updated(this: object & HookInterface<HTMLElement> & ToggleHookState) {
-    try {
-      const pressedPatch = readPressedControlledZagUpdate(this.el, this.beforeAttrs);
-
-      this.zagToggle?.updateProps({
-        id: this.el.id,
-        ...pressedPatch,
-        disabled: getBoolean(this.el, "disabled"),
-        dir: getDir(this.el),
-      } as unknown as Partial<Props>);
-    } finally {
-      this.beforeAttrs = undefined;
-    }
+    toggle.updateProps({
+      id: hook.el.id,
+      ...pressedPatch,
+      disabled: getBoolean(hook.el, "disabled"),
+      dir: getDir(hook.el),
+    } as unknown as Partial<Props>);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & ToggleHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.zagToggle?.destroy();
-  },
-};
+});
 
 export { ToggleHook as Toggle };

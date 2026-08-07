@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api, type ItemType } from "@zag-js/file-upload";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
 const ACCEPTED: ItemType = "accepted";
 
@@ -37,6 +37,40 @@ export function labelFieldNameFor(fieldName: string): string {
   return `${fieldName}_label`;
 }
 
+/** Empty field: only the sentinel may own `name`. Files present: file input owns it. */
+export function syncFileFieldNames(opts: {
+  fileInput: HTMLInputElement | null;
+  sentinel: HTMLInputElement | null;
+  name: string | undefined;
+  filesLength: number;
+  nameEmptySentinel: boolean;
+}): void {
+  const { fileInput, sentinel, name, filesLength, nameEmptySentinel } = opts;
+
+  if (fileInput) {
+    if (filesLength > 0 && name) {
+      fileInput.setAttribute("name", name);
+    } else {
+      fileInput.removeAttribute("name");
+    }
+  }
+
+  if (!sentinel) return;
+
+  if (filesLength > 0) {
+    sentinel.disabled = true;
+    sentinel.removeAttribute("name");
+    return;
+  }
+
+  sentinel.disabled = false;
+  if (name && nameEmptySentinel) {
+    sentinel.setAttribute("name", name);
+  } else {
+    sentinel.removeAttribute("name");
+  }
+}
+
 function setInputFiles(inputEl: HTMLInputElement, files: File[]): void {
   try {
     if (typeof window.DataTransfer !== "undefined") {
@@ -51,12 +85,13 @@ function setInputFiles(inputEl: HTMLInputElement, files: File[]): void {
   }
 }
 
-export class FileUpload extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class FileUpload extends Component<Props, Api, Schema> {
   private previewCleanup = new Map<HTMLElement, VoidFunction>();
   private sentinelSnapshot = "";
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -185,13 +220,15 @@ export class FileUpload extends Component<Props, Api> {
     this.touchSentinel();
   }
 
-  syncFormSubmitInputs(): void {
+  syncFormSubmitInputs(opts: { forSubmit?: boolean } = {}): void {
     const fileInput = this.el.querySelector<HTMLInputElement>(
       '[data-scope="file-upload"][data-part="hidden-input"]'
     );
     const sentinel = this.el.querySelector<HTMLInputElement>('[data-part="hidden-input-sentinel"]');
     const files = this.api.acceptedFiles;
-    const name = this.el.dataset.name;
+    const name = this.el.dataset.submitName ?? this.el.dataset.name;
+    const fieldUsed = this.el.dataset.fieldUsed === "true";
+    const forSubmit = opts.forSubmit === true;
 
     if (fileInput) {
       setInputFiles(fileInput, files);
@@ -199,18 +236,13 @@ export class FileUpload extends Component<Props, Api> {
 
     this.syncAcceptedNamesHidden(name, files);
 
-    if (!sentinel) return;
-
-    if (files.length > 0) {
-      sentinel.disabled = true;
-      sentinel.removeAttribute("name");
-      return;
-    }
-
-    sentinel.disabled = false;
-    if (name) {
-      sentinel.setAttribute("name", name);
-    }
+    syncFileFieldNames({
+      fileInput,
+      sentinel,
+      name,
+      filesLength: files.length,
+      nameEmptySentinel: forSubmit || fieldUsed || Boolean(this.el.dataset.name),
+    });
   }
 
   private syncAcceptedNamesHidden(fieldName: string | undefined, files: File[]): void {

@@ -1,6 +1,4 @@
 defmodule Corex.DataTable.Sort do
-  import Phoenix.Component, only: [assign: 3]
-
   @moduledoc """
   Helpers for sortable [`data_table/1`](Corex.DataTable.html#data_table/1) usage in LiveViews.
 
@@ -92,6 +90,10 @@ defmodule Corex.DataTable.Sort do
       end
   """
 
+  import Phoenix.Component, only: [assign: 3]
+
+  @type sort_state :: %{sort_by: atom() | nil, sort_order: :asc | :desc}
+
   @doc """
   Assigns sort state and sorts the rows for a [`data_table/1`](Corex.DataTable.html#data_table/1) instance.
 
@@ -107,6 +109,8 @@ defmodule Corex.DataTable.Sort do
   passed as `rows` to [`data_table/1`](Corex.DataTable.html#data_table/1). Adds `:sort_by`,
   `:sort_order`, `:sort_columns`, and replaces the rows assign with the sorted list.
   """
+  @spec assign_for_sort(Phoenix.LiveView.Socket.t(), atom(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def assign_for_sort(socket, rows_assign, opts \\ []) do
     sort_by = Keyword.get(opts, :default_sort_by)
     sort_order = Keyword.get(opts, :default_sort_order, :asc)
@@ -137,6 +141,7 @@ defmodule Corex.DataTable.Sort do
 
   `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
+  @spec handle_sort(Phoenix.LiveView.Socket.t(), map(), atom()) :: Phoenix.LiveView.Socket.t()
   def handle_sort(socket, %{"sort_by" => sort_by_param}, rows_assign) do
     case parse_sort_by(sort_by_param, socket.assigns[:sort_columns]) do
       {:ok, sort_by} -> apply_sort(socket, sort_by, rows_assign)
@@ -151,6 +156,8 @@ defmodule Corex.DataTable.Sort do
   Stores `%{sort_by, sort_order}` under `:data_table_sort` keyed by table id. Does not mutate rows;
   use [`sorted_rows/3`](#sorted_rows/3) when rendering each table.
   """
+  @spec handle_sort_for(Phoenix.LiveView.Socket.t(), map(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def handle_sort_for(socket, params, opts \\ [])
 
   def handle_sort_for(socket, %{"sort_by" => sort_by_param, "table_id" => table_id}, opts)
@@ -185,6 +192,7 @@ defmodule Corex.DataTable.Sort do
   @doc """
   Returns `%{sort_by: atom | nil, sort_order: :asc | :desc}` for a table id from `:data_table_sort`.
   """
+  @spec sort_state(Phoenix.LiveView.Socket.t() | map(), String.t(), sort_state()) :: sort_state()
   def sort_state(assigns_or_socket, table_id, default \\ %{sort_by: nil, sort_order: :asc})
 
   def sort_state(%Phoenix.LiveView.Socket{} = socket, table_id, default) do
@@ -198,8 +206,10 @@ defmodule Corex.DataTable.Sort do
   @doc """
   Sorts `rows` by `sort_by` / `sort_order` without touching the socket.
   """
+  @spec sorted_rows([map()], atom() | nil, :asc | :desc) :: [map()]
   def sorted_rows(rows, sort_by, sort_order), do: sort_rows(rows, sort_by, sort_order)
 
+  @spec sorted_rows([map()], sort_state()) :: [map()]
   def sorted_rows(rows, %{sort_by: sort_by, sort_order: sort_order}),
     do: sort_rows(rows, sort_by, sort_order)
 
@@ -210,6 +220,7 @@ defmodule Corex.DataTable.Sort do
   When `sort_columns` is `nil`, always returns `:error`. Use in database-backed handlers before
   calling your context with `order_by`.
   """
+  @spec parse_sort_by(term(), term()) :: {:ok, atom()} | :error
   def parse_sort_by(param, columns) when is_binary(param) and is_list(columns) do
     with {:ok, sort_by} <- safe_existing_atom(param), true <- sort_by in columns do
       {:ok, sort_by}

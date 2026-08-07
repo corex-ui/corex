@@ -1,10 +1,21 @@
 defmodule E2eWeb.TabsTest do
+  @moduledoc """
+  Tabs Wallaby behavior regression.
+
+  ## Behavior map
+
+  | Page | Features |
+  | --- | --- |
+  | anatomy | Click trigger, assert data-selected |
+  | api | set_value x3 (binding, JS, server), assert trigger selected |
+  | events | server log + client log grow, mention value |
+  | patterns | controlled tab switch |
+  """
+
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
   @moduletag :wallaby
-
-  import Wallaby.Query
 
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.TabsModel, as: Tabs
@@ -47,7 +58,7 @@ defmodule E2eWeb.TabsTest do
   end
 
   describe "api" do
-    feature "client binding  -  Duis selects tab", %{session: session} do
+    feature "set value (binding)  -  Duis selects tab", %{session: session} do
       host = "tabs-api-cb"
 
       session =
@@ -62,7 +73,20 @@ defmodule E2eWeb.TabsTest do
       |> Tabs.wait_trigger_selected_by_label_in_host(host, "Duis", timeout: 8_000)
     end
 
-    feature "server  -  Duis selects tab", %{session: session} do
+    feature "set value (js)  -  Lorem via CustomEvent selects tab", %{session: session} do
+      host = "tabs-api-cjs"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Tabs, :tabs, :api)
+        |> Tabs.wait_host_tabs_ready(host)
+
+      session
+      |> Tabs.click_in_section("tabs-api-set-value-client-js", "Lorem")
+      |> Tabs.wait_trigger_selected_by_label_in_host(host, "Lorem", timeout: 8_000)
+    end
+
+    feature "set value (server)  -  Duis selects tab", %{session: session} do
       host = "tabs-api-srv"
 
       session =
@@ -78,7 +102,7 @@ defmodule E2eWeb.TabsTest do
   end
 
   describe "events" do
-    feature "server  -  tab change appends log row", %{session: session} do
+    feature "server  -  tab change appends log row mentioning value", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Tabs, :tabs, :events)
@@ -87,11 +111,33 @@ defmodule E2eWeb.TabsTest do
 
       refute Tabs.tabs_events_server_log_has_row?(session)
 
-      session
-      |> Tabs.click_trigger_by_label_in_host("tabs-events-server", "Duis")
-      |> Tabs.wait_for_has(css("#tabs-events-log-server tr[data-part='row']"), timeout: 10_000)
+      before = Tabs.log_row_count(session, "tabs-events-log-server")
 
-      assert Tabs.tabs_events_server_log_has_row?(session)
+      session =
+        session
+        |> Tabs.click_trigger_by_label_in_host("tabs-events-server", "Duis")
+        |> Tabs.wait_log_rows_grew("tabs-events-log-server", before, timeout: 10_000)
+
+      Tabs.assert_events_log_mentions(session, "tabs-events-log-server", "duis")
+    end
+
+    feature "client  -  tab change appends client log row mentioning value", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Tabs, :tabs, :events)
+        |> Tabs.prepare_live_form()
+        |> Tabs.wait_host_tabs_ready("tabs-events-client")
+
+      refute Tabs.tabs_events_client_log_has_row?(session)
+
+      before = Tabs.log_row_count(session, "tabs-events-log-client")
+
+      session =
+        session
+        |> Tabs.click_trigger_by_label_in_host("tabs-events-client", "Duis")
+        |> Tabs.wait_log_rows_grew("tabs-events-log-client", before, timeout: 20_000)
+
+      Tabs.assert_events_log_mentions(session, "tabs-events-log-client", "duis")
     end
   end
 
@@ -110,6 +156,34 @@ defmodule E2eWeb.TabsTest do
       session
       |> Tabs.click_trigger_by_label_in_host(host, "Duis")
       |> Tabs.wait_trigger_selected_by_label_in_host(host, "Duis", timeout: 8_000)
+    end
+  end
+
+  describe "keyboard focus and aria" do
+    feature "arrows move selected tab on anatomy basic", %{session: session} do
+      host = "tabs-basic"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Tabs, :tabs, :anatomy)
+        |> Tabs.wait_host_tabs_ready(host)
+        |> Tabs.focus_trigger_by_value(host, "lorem")
+
+      assert Tabs.trigger_selected_by_label_in_host?(session, host, "Lorem")
+
+      session =
+        session
+        |> Tabs.press_key_on_active(:right_arrow)
+
+      Tabs.wait_trigger_selected_by_label_in_host(session, host, "Duis", timeout: 5_000)
+      assert Tabs.trigger_selected_by_label_in_host?(session, host, "Duis")
+
+      session =
+        session
+        |> Tabs.press_key_on_active(:left_arrow)
+
+      Tabs.wait_trigger_selected_by_label_in_host(session, host, "Lorem", timeout: 5_000)
+      assert Tabs.trigger_selected_by_label_in_host?(session, host, "Lorem")
     end
   end
 end

@@ -294,6 +294,21 @@ defmodule E2eWeb.SelectModel do
     has?(session, css("#select-events-log-client tr[data-part='row']"))
   end
 
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
   def goto_form(session, mode) do
     {path, page_id} =
       case mode do
@@ -319,5 +334,155 @@ defmodule E2eWeb.SelectModel do
   def set_select_value(session, id, value) do
     hidden_id = if String.ends_with?(id, "-value"), do: id, else: "#{id}-value"
     E2eWeb.FormInputHelpers.set_input_value(session, hidden_id, value)
+  end
+
+  defp safe_dom_token?(token), do: String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+
+  def trigger_id(host_dom_id), do: "select:#{host_dom_id}:trigger"
+  def content_id(host_dom_id), do: "select:#{host_dom_id}:content"
+
+  def focus_trigger(session, host_dom_id) when is_binary(host_dom_id) do
+    tid = trigger_id(host_dom_id)
+
+    execute_script(
+      session,
+      """
+      const el = document.getElementById('#{tid}');
+      if (el) el.focus();
+      return !!(el && document.activeElement === el);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on ##{tid}" end
+    )
+
+    session
+  end
+
+  def focus_trigger_in_section(session, section_dom_id) when is_binary(section_dom_id) do
+    if not safe_dom_token?(section_dom_id),
+      do: raise(ArgumentError, "invalid section id")
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      const trigger = section && section.querySelector(
+        '[data-scope="select"][data-part="trigger"]'
+      );
+      if (trigger) trigger.focus();
+      return !!(trigger && document.activeElement === trigger);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on select trigger in ##{section_dom_id}" end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def assert_content_open(session, host_dom_id) when is_binary(host_dom_id) do
+    assert_has(
+      session,
+      css(~s|[id="#{content_id(host_dom_id)}"][data-state="open"]|, visible: :any)
+    )
+
+    session
+  end
+
+  def assert_content_closed(session, host_dom_id) when is_binary(host_dom_id) do
+    assert_has(
+      session,
+      css(~s|[id="#{content_id(host_dom_id)}"][data-state="closed"]|, visible: :any)
+    )
+
+    session
+  end
+
+  def content_open_in_section?(session, section_dom_id) do
+    has?(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="select"][data-part="content"][data-state="open"]|,
+        visible: :any
+      )
+    )
+  end
+
+  def assert_highlighted_item(session, host_dom_id, value)
+      when is_binary(host_dom_id) and is_binary(value) do
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{host_dom_id}');
+      if (!root) return false;
+      const item = root.querySelector(
+        '[data-scope="select"][data-part="item"][data-value="#{value}"][data-highlighted]'
+      );
+      return !!item;
+      """,
+      [],
+      fn v -> assert v == true, "expected highlighted item #{value} in ##{host_dom_id}" end
+    )
+
+    session
+  end
+
+  def assert_highlighted_item_in_section(session, section_dom_id, value) do
+    if not safe_dom_token?(section_dom_id), do: raise(ArgumentError, "invalid section id")
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      if (!section) return false;
+      const item = section.querySelector(
+        '[data-scope="select"][data-part="item"][data-value="#{value}"][data-highlighted]'
+      );
+      return !!item;
+      """,
+      [],
+      fn v ->
+        assert v == true, "expected highlighted item #{value} in section ##{section_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def assert_trigger_aria_expanded(session, host_dom_id, expected)
+      when expected in ["true", "false"] do
+    tid = trigger_id(host_dom_id)
+    trigger = find(session, css(~s|[id="#{tid}"]|, visible: :any))
+    actual = Wallaby.Element.attr(trigger, "aria-expanded")
+    assert actual == expected
+    session
+  end
+
+  def assert_trigger_has_aria_controls(session, host_dom_id) do
+    tid = trigger_id(host_dom_id)
+    cid = content_id(host_dom_id)
+    trigger = find(session, css(~s|[id="#{tid}"]|, visible: :any))
+    controls = Wallaby.Element.attr(trigger, "aria-controls")
+    assert controls == cid
+    session
+  end
+
+  def assert_trigger_role_combobox(session, host_dom_id) do
+    tid = trigger_id(host_dom_id)
+    trigger = find(session, css(~s|[id="#{tid}"]|, visible: :any))
+    role = Wallaby.Element.attr(trigger, "role")
+    assert role == "combobox"
+    session
+  end
+
+  def assert_content_role_listbox(session, host_dom_id) do
+    cid = content_id(host_dom_id)
+    content = find(session, css(~s|[id="#{cid}"]|, visible: :any))
+    role = Wallaby.Element.attr(content, "role")
+    assert role == "listbox"
+    session
   end
 end

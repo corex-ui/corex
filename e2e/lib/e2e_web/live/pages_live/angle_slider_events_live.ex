@@ -74,15 +74,15 @@ defmodule E2eWeb.AngleSliderEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-6 justify-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-xl justify-center w-full">
                 <.angle_slider
                   id={@id_server_change}
                   class="angle-slider"
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change="angle_slider_changed"
                 >
-                  <:label>on change</:label>
+                  <:label>On Change</:label>
                 </.angle_slider>
 
                 <.angle_slider
@@ -92,7 +92,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                   value={90.0}
                   on_value_change_end="angle_slider_change_ended"
                 >
-                  <:label>on end</:label>
+                  <:label>On End</:label>
                 </.angle_slider>
               </div>
 
@@ -122,15 +122,15 @@ defmodule E2eWeb.AngleSliderEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-6 justify-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-xl justify-center w-full">
                 <.angle_slider
                   id={@id_client_change}
                   class="angle-slider"
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change_client={@client_event_change}
                 >
-                  <:label>on_value_change_client</:label>
+                  <:label>On Change</:label>
                 </.angle_slider>
 
                 <.angle_slider
@@ -140,7 +140,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                   value={90.0}
                   on_value_change_end_client={@client_event_end}
                 >
-                  <:label>on_value_change_end_client</:label>
+                  <:label>On End</:label>
                 </.angle_slider>
               </div>
 

@@ -78,7 +78,7 @@ defmodule E2eWeb.ToggleEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.toggle
                 id={@id_server}
                 class="toggle"
@@ -115,7 +115,7 @@ defmodule E2eWeb.ToggleEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <div
                 id="toggle-events-client-wrap"
                 phx-hook=".ToggleEventsClient"

@@ -590,7 +590,7 @@ defmodule Mix.Corex do
     vsn = Application.spec(:corex_live_view)[:vsn]
 
     # if lv is not installed, such as in corex's own test env, do not raise
-    if vsn && Version.compare("#{vsn}", "1.0.0-rc.7") != :gt do
+    if vsn && Version.compare("#{vsn}", "1.0.0") == :lt do
       raise "#{inspect(generator_mod)} requires :corex_live_view >= 1.0.0, got: #{vsn}"
     end
   end
@@ -724,6 +724,11 @@ defmodule Mix.Corex do
   def layout_locale_paths?(web_module, layout_opts)
       when is_atom(web_module) and is_list(layout_opts) do
     Keyword.has_key?(layout_opts, :locale) and not verified_routes_path_prefixes?(web_module)
+  end
+
+  @doc "Returns whether generated layouts should receive locale assigns such as current_path."
+  def layout_locale_assigns?(layout_opts) when is_list(layout_opts) do
+    Keyword.has_key?(layout_opts, :locale)
   end
 
   def format_generated_files(files) when is_list(files) do

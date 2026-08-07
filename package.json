@@ -7,57 +7,160 @@
   "main": "./priv/static/corex.cjs.js",
   "unpkg": "./priv/static/corex.min.js",
   "jsdelivr": "./priv/static/corex.min.js",
+  "types": "./priv/static/types/hooks/corex.d.ts",
   "exports": {
     ".": {
+      "types": "./priv/static/types/hooks/corex.d.ts",
       "import": "./priv/static/corex.mjs",
       "require": "./priv/static/corex.cjs.js"
     },
-    "./hooks": "./priv/static/hooks.mjs",
-    "./accordion": "./priv/static/accordion.mjs",
-    "./angle-slider": "./priv/static/angle-slider.mjs",
-    "./avatar": "./priv/static/avatar.mjs",
-    "./carousel": "./priv/static/carousel.mjs",
-    "./checkbox": "./priv/static/checkbox.mjs",
-    "./clipboard": "./priv/static/clipboard.mjs",
-    "./color-picker": "./priv/static/color-picker.mjs",
-    "./collapsible": "./priv/static/collapsible.mjs",
-    "./combobox": "./priv/static/combobox.mjs",
-    "./date-picker": "./priv/static/date-picker.mjs",
-    "./dialog": "./priv/static/dialog.mjs",
-    "./editable": "./priv/static/editable.mjs",
-    "./file-upload": "./priv/static/file-upload.mjs",
-    "./floating-panel": "./priv/static/floating-panel.mjs",
-    "./listbox": "./priv/static/listbox.mjs",
-    "./marquee": "./priv/static/marquee.mjs",
-    "./menu": "./priv/static/menu.mjs",
-    "./number-input": "./priv/static/number-input.mjs",
-    "./pagination": "./priv/static/pagination.mjs",
-    "./password-input": "./priv/static/password-input.mjs",
-    "./pin-input": "./priv/static/pin-input.mjs",
-    "./radio-group": "./priv/static/radio-group.mjs",
-    "./select": "./priv/static/select.mjs",
-    "./signature-pad": "./priv/static/signature-pad.mjs",
-    "./switch": "./priv/static/switch.mjs",
-    "./tags-input": "./priv/static/tags-input.mjs",
-    "./tabs": "./priv/static/tabs.mjs",
-    "./timer": "./priv/static/timer.mjs",
-    "./toast": "./priv/static/toast.mjs",
-    "./tooltip": "./priv/static/tooltip.mjs",
-    "./toggle": "./priv/static/toggle.mjs",
-    "./toggle-group": "./priv/static/toggle-group.mjs",
-    "./tree-view": "./priv/static/tree-view.mjs"
+    "./hooks": {
+      "types": "./priv/static/types/hooks/hooks.d.ts",
+      "import": "./priv/static/hooks.mjs"
+    },
+    "./accordion": {
+      "types": "./priv/static/types/hooks/accordion.d.ts",
+      "import": "./priv/static/accordion.mjs"
+    },
+    "./angle-slider": {
+      "types": "./priv/static/types/hooks/angle-slider.d.ts",
+      "import": "./priv/static/angle-slider.mjs"
+    },
+    "./avatar": {
+      "types": "./priv/static/types/hooks/avatar.d.ts",
+      "import": "./priv/static/avatar.mjs"
+    },
+    "./carousel": {
+      "types": "./priv/static/types/hooks/carousel.d.ts",
+      "import": "./priv/static/carousel.mjs"
+    },
+    "./checkbox": {
+      "types": "./priv/static/types/hooks/checkbox.d.ts",
+      "import": "./priv/static/checkbox.mjs"
+    },
+    "./clipboard": {
+      "types": "./priv/static/types/hooks/clipboard.d.ts",
+      "import": "./priv/static/clipboard.mjs"
+    },
+    "./color-picker": {
+      "types": "./priv/static/types/hooks/color-picker.d.ts",
+      "import": "./priv/static/color-picker.mjs"
+    },
+    "./collapsible": {
+      "types": "./priv/static/types/hooks/collapsible.d.ts",
+      "import": "./priv/static/collapsible.mjs"
+    },
+    "./combobox": {
+      "types": "./priv/static/types/hooks/combobox.d.ts",
+      "import": "./priv/static/combobox.mjs"
+    },
+    "./date-picker": {
+      "types": "./priv/static/types/hooks/date-picker.d.ts",
+      "import": "./priv/static/date-picker.mjs"
+    },
+    "./dialog": {
+      "types": "./priv/static/types/hooks/dialog.d.ts",
+      "import": "./priv/static/dialog.mjs"
+    },
+    "./editable": {
+      "types": "./priv/static/types/hooks/editable.d.ts",
+      "import": "./priv/static/editable.mjs"
+    },
+    "./file-upload": {
+      "types": "./priv/static/types/hooks/file-upload.d.ts",
+      "import": "./priv/static/file-upload.mjs"
+    },
+    "./floating-panel": {
+      "types": "./priv/static/types/hooks/floating-panel.d.ts",
+      "import": "./priv/static/floating-panel.mjs"
+    },
+    "./listbox": {
+      "types": "./priv/static/types/hooks/listbox.d.ts",
+      "import": "./priv/static/listbox.mjs"
+    },
+    "./marquee": {
+      "types": "./priv/static/types/hooks/marquee.d.ts",
+      "import": "./priv/static/marquee.mjs"
+    },
+    "./menu": {
+      "types": "./priv/static/types/hooks/menu.d.ts",
+      "import": "./priv/static/menu.mjs"
+    },
+    "./number-input": {
+      "types": "./priv/static/types/hooks/number-input.d.ts",
+      "import": "./priv/static/number-input.mjs"
+    },
+    "./pagination": {
+      "types": "./priv/static/types/hooks/pagination.d.ts",
+      "import": "./priv/static/pagination.mjs"
+    },
+    "./password-input": {
+      "types": "./priv/static/types/hooks/password-input.d.ts",
+      "import": "./priv/static/password-input.mjs"
+    },
+    "./pin-input": {
+      "types": "./priv/static/types/hooks/pin-input.d.ts",
+      "import": "./priv/static/pin-input.mjs"
+    },
+    "./radio-group": {
+      "types": "./priv/static/types/hooks/radio-group.d.ts",
+      "import": "./priv/static/radio-group.mjs"
+    },
+    "./select": {
+      "types": "./priv/static/types/hooks/select.d.ts",
+      "import": "./priv/static/select.mjs"
+    },
+    "./signature-pad": {
+      "types": "./priv/static/types/hooks/signature-pad.d.ts",
+      "import": "./priv/static/signature-pad.mjs"
+    },
+    "./switch": {
+      "types": "./priv/static/types/hooks/switch.d.ts",
+      "import": "./priv/static/switch.mjs"
+    },
+    "./tags-input": {
+      "types": "./priv/static/types/hooks/tags-input.d.ts",
+      "import": "./priv/static/tags-input.mjs"
+    },
+    "./tabs": {
+      "types": "./priv/static/types/hooks/tabs.d.ts",
+      "import": "./priv/static/tabs.mjs"
+    },
+    "./timer": {
+      "types": "./priv/static/types/hooks/timer.d.ts",
+      "import": "./priv/static/timer.mjs"
+    },
+    "./toast": {
+      "types": "./priv/static/types/hooks/toast.d.ts",
+      "import": "./priv/static/toast.mjs"
+    },
+    "./tooltip": {
+      "types": "./priv/static/types/hooks/tooltip.d.ts",
+      "import": "./priv/static/tooltip.mjs"
+    },
+    "./toggle": {
+      "types": "./priv/static/types/hooks/toggle.d.ts",
+      "import": "./priv/static/toggle.mjs"
+    },
+    "./toggle-group": {
+      "types": "./priv/static/types/hooks/toggle-group.d.ts",
+      "import": "./priv/static/toggle-group.mjs"
+    },
+    "./tree-view": {
+      "types": "./priv/static/types/hooks/tree-view.d.ts",
+      "import": "./priv/static/tree-view.mjs"
+    }
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/corex-ui/corex.git"
   },
-  "files": [
+    "files": [
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "package.json",
-    "priv/static/**",
-    "assets/**"
+    "priv/static/**"
   ],
   "scripts": {
     "lint": "eslint assets",
@@ -65,61 +168,65 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"assets/**/*.{ts,js,json,css}\"",
     "format:check": "prettier --check \"assets/**/*.{ts,js,json,css}\"",
+    "build:types": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build:types",
     "gen:components-dts": "node assets/scripts/gen-components-dts.mjs",
     "gen:components-dts:check": "node assets/scripts/gen-components-dts.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:js": "npm run typecheck && npm run format:check && npm run lint && npm run gen:components-dts:check",
-    "check": "npm run test && npm run lint:js"
+    "check": "npm run test && npm run lint:js && npm run build:types"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",
-    "@zag-js/accordion": "^1.40.0",
-    "@zag-js/angle-slider": "^1.40.0",
-    "@zag-js/avatar": "^1.40.0",
-    "@zag-js/carousel": "^1.40.0",
-    "@zag-js/checkbox": "^1.40.0",
-    "@zag-js/clipboard": "^1.40.0",
-    "@zag-js/collapsible": "^1.40.0",
-    "@zag-js/collection": "^1.40.0",
-    "@zag-js/color-picker": "^1.40.0",
-    "@zag-js/combobox": "^1.40.0",
-    "@zag-js/date-picker": "^1.40.0",
-    "@zag-js/dialog": "^1.40.0",
-    "@zag-js/editable": "^1.40.0",
-    "@zag-js/file-upload": "^1.40.0",
-    "@zag-js/floating-panel": "^1.40.0",
-    "@zag-js/listbox": "^1.40.0",
-    "@zag-js/marquee": "^1.40.0",
-    "@zag-js/menu": "^1.40.0",
-    "@zag-js/number-input": "^1.40.0",
-    "@zag-js/pagination": "^1.40.0",
-    "@zag-js/password-input": "^1.40.0",
-    "@zag-js/pin-input": "^1.40.0",
-    "@zag-js/popper": "^1.40.0",
-    "@zag-js/radio-group": "^1.40.0",
-    "@zag-js/select": "^1.40.0",
-    "@zag-js/signature-pad": "^1.40.0",
-    "@zag-js/switch": "^1.40.0",
-    "@zag-js/tabs": "^1.40.0",
-    "@zag-js/tags-input": "^1.40.0",
-    "@zag-js/timer": "^1.40.0",
-    "@zag-js/toast": "^1.40.0",
-    "@zag-js/toggle": "^1.40.0",
-    "@zag-js/toggle-group": "^1.40.0",
-    "@zag-js/tooltip": "^1.40.0",
-    "@zag-js/tree-view": "^1.40.0",
-    "@zag-js/types": "^1.40.0",
-    "@zag-js/vanilla": "^1.40.0",
+    "@zag-js/accordion": "^1.42.0",
+    "@zag-js/angle-slider": "^1.42.0",
+    "@zag-js/avatar": "^1.42.0",
+    "@zag-js/carousel": "^1.42.0",
+    "@zag-js/checkbox": "^1.42.0",
+    "@zag-js/clipboard": "^1.42.0",
+    "@zag-js/collapsible": "^1.42.0",
+    "@zag-js/collection": "^1.42.0",
+    "@zag-js/color-picker": "^1.42.0",
+    "@zag-js/combobox": "^1.42.0",
+    "@zag-js/core": "^1.42.0",
+    "@zag-js/date-picker": "^1.42.0",
+    "@zag-js/dialog": "^1.42.0",
+    "@zag-js/editable": "^1.42.0",
+    "@zag-js/file-upload": "^1.42.0",
+    "@zag-js/floating-panel": "^1.42.0",
+    "@zag-js/listbox": "^1.42.0",
+    "@zag-js/marquee": "^1.42.0",
+    "@zag-js/menu": "^1.42.0",
+    "@zag-js/number-input": "^1.42.0",
+    "@zag-js/pagination": "^1.42.0",
+    "@zag-js/password-input": "^1.42.0",
+    "@zag-js/pin-input": "^1.42.0",
+    "@zag-js/popper": "^1.42.0",
+    "@zag-js/radio-group": "^1.42.0",
+    "@zag-js/select": "^1.42.0",
+    "@zag-js/signature-pad": "^1.42.0",
+    "@zag-js/switch": "^1.42.0",
+    "@zag-js/tabs": "^1.42.0",
+    "@zag-js/tags-input": "^1.42.0",
+    "@zag-js/timer": "^1.42.0",
+    "@zag-js/toast": "^1.42.0",
+    "@zag-js/toggle": "^1.42.0",
+    "@zag-js/toggle-group": "^1.42.0",
+    "@zag-js/tooltip": "^1.42.0",
+    "@zag-js/tree-view": "^1.42.0",
+    "@zag-js/types": "^1.42.0",
+    "@zag-js/vanilla": "^1.42.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.7.0",
+    "happy-dom": "^20.0.10",
     "match-sorter": "^8.3.0",
     "phoenix_live_view": "^1.1.30",
     "prettier": "^3.8.3",
-    "happy-dom": "^20.0.10",
     "vitest": "^3.2.4"
   }
 }

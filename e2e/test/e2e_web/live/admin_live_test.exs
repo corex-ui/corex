@@ -20,7 +20,8 @@ defmodule E2eWeb.AdminLiveTest do
     pin: "1234",
     accent_color: "#3b82f6",
     heading_angle: 90.0,
-    title: "some title"
+    title: "some title",
+    avatar: "avatar.png"
   }
   @update_attrs %{
     name: "some updated name",
@@ -36,7 +37,8 @@ defmodule E2eWeb.AdminLiveTest do
     pin: "5678",
     accent_color: "#00ff00",
     heading_angle: 180.0,
-    title: "updated title"
+    title: "updated title",
+    avatar: "updated.png"
   }
   @invalid_attrs %{
     name: "",
@@ -49,7 +51,12 @@ defmodule E2eWeb.AdminLiveTest do
     tags: [""],
     password: "",
     notifications: false,
-    role: ""
+    role: "",
+    pin: "",
+    accent_color: "",
+    heading_angle: nil,
+    title: "",
+    avatar: ""
   }
   @invalid_attrs_edit %{
     name: "",
@@ -61,7 +68,12 @@ defmodule E2eWeb.AdminLiveTest do
     tags: ["alpha", "beta"],
     password: "password1",
     notifications: false,
-    role: "admin"
+    role: "admin",
+    pin: "1234",
+    accent_color: "#3b82f6",
+    heading_angle: 90.0,
+    title: "some title",
+    avatar: "avatar.png"
   }
 
   defp create_admin(_) do
@@ -337,6 +349,104 @@ defmodule E2eWeb.AdminLiveTest do
       refute html =~ "can&#39;t be blank"
     end
 
+    test "validate on name only does not show avatar file-upload errors", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "h",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => ""
+          }
+        })
+
+      file_upload_open =
+        case Regex.run(~r/<div[^>]*data-scope="file-upload"[^>]*>/, html) do
+          [tag] -> tag
+          _ -> flunk("expected file-upload root in html")
+        end
+
+      refute file_upload_open =~ ~r/\bdata-invalid(?:="[^"]*")?(?=[\s>])/
+      refute file_upload_open =~ ~S|data-field-used="true"|
+      refute html =~ ~r/data-scope="file-upload"[^>]*data-part="error"/
+      refute html =~ ~r/id="file:admin_avatar"[\s\S]{0,4000}?can&#39;t be blank/
+    end
+
+    test "stale avatar_label does not clear used empty avatar error", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "Ada",
+            "avatar" => "",
+            "avatar_label" => "stale.png"
+          }
+        })
+
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~r/data-scope="file-upload"/
+      assert html =~ ~r/data-part="error"/
+    end
+
+    test "used empty avatar error survives sibling name validation after submit", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      render_submit(form_live, "save", %{
+        "admin" => %{
+          "name" => "Ada",
+          "avatar" => ""
+        }
+      })
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "Ada Lovelace",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => ""
+          }
+        })
+
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~r/data-scope="file-upload"|data-part="error"/
+    end
+
     test "select and combobox values survive sibling field validation", %{conn: conn} do
       {form_live, _} = live_ok!(conn, ~p"/admins/new")
 
@@ -397,6 +507,57 @@ defmodule E2eWeb.AdminLiveTest do
 
       refute html =~
                ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[level\]")/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[title\]")[^>]*\bdata-part="form-value"/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[title\]")/
+
+      assert html =~ ~S|data-submit-name="admin[pin][]"|
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\bdata-part="array-input")(?=[^>]*\bname="admin\[pin\]\[\]")/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\bdata-part="hidden-input")(?=[^>]*\bname="admin\[heading_angle\]")/
+    end
+
+    test "validate on name only does not show errors on untouched pin or editable", %{
+      conn: conn
+    } do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "h",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => "",
+            "_unused_pin" => "",
+            "_unused_title" => ""
+          }
+        })
+
+      refute html =~ "can&#39;t be blank"
+      refute html =~ ~S|data-part="error"|
     end
 
     test "radio level stays unused when only name is validated", %{conn: conn} do
@@ -458,6 +619,49 @@ defmodule E2eWeb.AdminLiveTest do
       assert html =~ "data-field-used"
     end
 
+    test "validate shows pin error after pin was used then cleared", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "Ada",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "pin" => [""],
+            "title" => "",
+            "accent_color" => "",
+            "heading_angle" => "",
+            "avatar" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => "",
+            "_unused_title" => "",
+            "_unused_accent_color" => "",
+            "_unused_heading_angle" => "",
+            "_unused_avatar" => ""
+          }
+        })
+
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~r/<div[^>]*data-scope="pin-input"[^>]*data-part="error"/
+      assert html =~ ~S|data-submit-name="admin[pin][]"|
+    end
+
     test "invalid save re-renders with validate action and errors for used fields", %{conn: conn} do
       {form_live, _html} = live_ok!(conn, ~p"/admins/new")
 
@@ -491,6 +695,37 @@ defmodule E2eWeb.AdminLiveTest do
       assert html =~ "Save Admin"
     end
 
+    test "save with empty used avatar shows file-upload error", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_submit(form_live, "save", %{
+          "admin" => %{
+            "name" => "Ada",
+            "country" => "fra",
+            "birth_date" => "1990-01-15",
+            "signature" => [@valid_signature_path],
+            "terms" => "true",
+            "level" => "3",
+            "currency" => "eur",
+            "tags" => ["alpha"],
+            "password" => "password1",
+            "notifications" => "true",
+            "role" => "admin",
+            "pin" => "1234",
+            "accent_color" => "#3b82f6",
+            "heading_angle" => "90.0",
+            "title" => "some title",
+            "avatar" => ""
+          }
+        })
+
+      refute html =~ "Admin created successfully"
+      assert html =~ ~r/data-scope="file-upload"[^>]*data-part="error"|data-part="error"/
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~S|data-field-used="true"|
+    end
+
     test "save accepts list signature params from HTTP shape", %{conn: conn} do
       {form_live, _} = live_ok!(conn, ~p"/admins/new")
 
@@ -505,7 +740,12 @@ defmodule E2eWeb.AdminLiveTest do
         "tags" => ["alpha"],
         "password" => "password1",
         "notifications" => "true",
-        "role" => "admin"
+        "role" => "admin",
+        "pin" => "1234",
+        "accent_color" => "#3b82f6",
+        "heading_angle" => "90.0",
+        "title" => "some title",
+        "avatar" => "avatar.png"
       }
 
       form_live

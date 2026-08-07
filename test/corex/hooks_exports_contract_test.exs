@@ -8,7 +8,7 @@ defmodule Corex.HooksExportsContractTest do
               row =
                 path
                 |> File.read!()
-                |> Jason.decode!()
+                |> Corex.Json.decode!()
                 |> Enum.find(&(&1["id"] == Atom.to_string(id)))
 
               row && row["phx_hook"]
@@ -25,7 +25,7 @@ defmodule Corex.HooksExportsContractTest do
 
   test "component_wire.json ids match registry" do
     path = Application.app_dir(:corex, "priv/doc/component_wire.json")
-    wire_ids = path |> File.read!() |> Jason.decode!() |> Enum.map(& &1["id"]) |> Enum.sort()
+    wire_ids = path |> File.read!() |> Corex.Json.decode!() |> Enum.map(& &1["id"]) |> Enum.sort()
     registry_ids = Corex.component_ids() |> Enum.map(&Atom.to_string/1) |> Enum.sort()
     assert wire_ids == registry_ids
   end
@@ -44,7 +44,7 @@ defmodule Corex.HooksExportsContractTest do
 
   test "hook PascalCase names match component_wire phx_hook" do
     path = Application.app_dir(:corex, "priv/doc/component_wire.json")
-    by_id = path |> File.read!() |> Jason.decode!() |> Map.new(&{&1["id"], &1})
+    by_id = path |> File.read!() |> Corex.Json.decode!() |> Map.new(&{&1["id"], &1})
 
     for id <- @hook_ids do
       row = Map.fetch!(by_id, Atom.to_string(id))
@@ -55,6 +55,6 @@ defmodule Corex.HooksExportsContractTest do
   defp package_json_exports do
     root = Path.expand("../..", __DIR__)
     path = Path.join(root, "package.json")
-    path |> File.read!() |> Jason.decode!() |> Map.get("exports", %{})
+    path |> File.read!() |> Corex.Json.decode!() |> Map.get("exports", %{})
   end
 end

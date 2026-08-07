@@ -95,7 +95,7 @@ defmodule E2eWeb.PaginationPlayLive do
     <ul class="flex flex-col gap-space w-full max-w-md">
       <li
         :for={_ <- 1..@count}
-        class="h-16 rounded-md border border-dashed border-border bg-layer"
+        class="h-16 rounded-md border border-dashed border-border bg-surface"
       />
     </ul>
     """
@@ -194,7 +194,7 @@ defmodule E2eWeb.PaginationPlayLive do
               <ul class="flex flex-col gap-space w-full">
                 <li
                   :for={post <- blog.posts}
-                  class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
+                  class="flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border"
                 >
                   <h3>{post.title}</h3>
                   <p class="text-ink-muted text-sm">{post.excerpt}</p>
@@ -216,8 +216,8 @@ defmodule E2eWeb.PaginationPlayLive do
               to={~p"/pagination/playground"}
               redirect={:patch}
             >
-              <:prev><.heroicon name="hero-chevron-left" /></:prev>
-              <:next><.heroicon name="hero-chevron-right" /></:next>
+              <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+              <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
             </.pagination>
           </div>

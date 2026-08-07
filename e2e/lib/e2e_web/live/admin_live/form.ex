@@ -47,7 +47,7 @@ defmodule E2eWeb.AdminLive.Form do
             <:title>Delete admin?</:title>
             <:description>This action cannot be undone.</:description>
             <:content>
-              <div class="flex flex-wrap justify-end gap-2 mt-4">
+              <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
@@ -76,6 +76,7 @@ defmodule E2eWeb.AdminLive.Form do
         id={@form.id}
         phx-change="validate"
         phx-submit="save"
+        multipart
       >
         <.native_input field={@form[:name]} type="text" class="native-input">
           <:label>Name</:label>
@@ -111,7 +112,9 @@ defmodule E2eWeb.AdminLive.Form do
         <.combobox
           field={@form[:currency]}
           class="combobox max-w-none"
-          placeholder="Search currency"
+          translation={
+            %Corex.Combobox.Translation{placeholder: "Search currency", empty: "No results"}
+          }
           items={currency_items()}
         >
           <:label>Preferred currency</:label>
@@ -156,7 +159,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad">
+        <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />
@@ -212,7 +215,7 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.password_input>
 
-        <.switch field={@form[:notifications]} class="switch max-w-none">
+        <.switch field={@form[:notifications]} class="switch">
           <:label>Email notifications</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -249,10 +252,10 @@ defmodule E2eWeb.AdminLive.Form do
 
         <.color_picker
           field={@form[:accent_color]}
-          label="Accent color"
           class="color-picker max-w-none"
           presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
         >
+          <:label>Accent color</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
@@ -294,19 +297,18 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.editable>
 
-        <.file_upload_live
-          id={@form[:avatar].id}
-          upload={@uploads.avatar}
-          field={:avatar}
-          class="file-upload max-w-none"
-        >
+        <.file_upload field={@form[:avatar]} class="file-upload max-w-none">
           <:label>Avatar</:label>
           <:close>
             <.heroicon name="hero-x-mark" />
           </:close>
-        </.file_upload_live>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.file_upload>
 
-        <footer class="flex w-full justify-between gap-2">
+        <footer class="flex w-full justify-between gap-space-sm">
           <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
             Cancel
           </.navigate>
@@ -324,11 +326,6 @@ defmodule E2eWeb.AdminLive.Form do
     {:ok,
      socket
      |> assign(:return_to, return_to(params["return_to"]))
-     |> allow_upload(:avatar,
-       accept: ~W(.jpg .jpeg .png .gif .webp .pdf .txt),
-       max_entries: 1,
-       max_file_size: 8_000_000
-     )
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -341,6 +338,7 @@ defmodule E2eWeb.AdminLive.Form do
     socket
     |> assign(:page_title, "Edit Admin")
     |> assign(:admin, admin)
+    |> assign(:form_submitted, false)
     |> assign(:form, to_form(Accounts.change_admin(admin)))
   end
 
@@ -350,6 +348,7 @@ defmodule E2eWeb.AdminLive.Form do
     socket
     |> assign(:page_title, "New Admin")
     |> assign(:admin, admin)
+    |> assign(:form_submitted, false)
     |> assign(:form, to_form(Accounts.change_admin(admin)))
   end
 
@@ -357,26 +356,23 @@ defmodule E2eWeb.AdminLive.Form do
   def handle_event("validate", %{"admin" => admin_params}, socket) do
     changeset =
       socket.assigns.admin
-      |> Accounts.change_admin(admin_params)
-      |> Map.put(:action, :validate)
+      |> Accounts.change_admin(normalize_avatar_params(admin_params))
+      |> Map.put(:action, form_error_action(socket))
 
-    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    {:noreply, assign(socket, form: to_form(changeset, action: form_error_action(socket)))}
   end
 
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
   def handle_event("save", %{"admin" => admin_params}, socket) do
-    save_admin(socket, socket.assigns.live_action, admin_params)
+    socket = assign(socket, :form_submitted, true)
+    save_admin(socket, socket.assigns.live_action, normalize_avatar_params(admin_params))
   end
 
   def handle_event("save", params, socket) do
+    socket = assign(socket, :form_submitted, true)
     admin_params = Map.get(params, "admin", %{})
-    save_admin(socket, socket.assigns.live_action, admin_params)
-  end
-
-  def handle_event("file_upload_live_cancel", params, socket) do
-    %{"ref" => ref, "upload_field" => field} = params
-    {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+    save_admin(socket, socket.assigns.live_action, normalize_avatar_params(admin_params))
   end
 
   def handle_event("delete", %{"id" => id}, socket) do
@@ -395,8 +391,6 @@ defmodule E2eWeb.AdminLive.Form do
   end
 
   defp save_admin(socket, :edit, admin_params) do
-    admin_params = put_avatar_filename(socket, admin_params)
-
     case Accounts.update_admin(socket.assigns.admin, admin_params) do
       {:ok, admin} ->
         {:noreply,
@@ -405,13 +399,11 @@ defmodule E2eWeb.AdminLive.Form do
          |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+        {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 
   defp save_admin(socket, :new, admin_params) do
-    admin_params = put_avatar_filename(socket, admin_params)
-
     case Accounts.create_admin(admin_params) do
       {:ok, admin} ->
         {:noreply,
@@ -420,36 +412,17 @@ defmodule E2eWeb.AdminLive.Form do
          |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
-    end
-  end
-
-  defp put_avatar_filename(socket, admin_params) do
-    names =
-      consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
-        _ = File.rm(tmp_upload_path!(path))
-        {:ok, entry.client_name}
-      end)
-
-    case names do
-      [name | _] when is_binary(name) and name != "" -> Map.put(admin_params, "avatar", name)
-      _ -> admin_params
-    end
-  end
-
-  defp tmp_upload_path!(path) when is_binary(path) do
-    tmp = Path.expand(System.tmp_dir!())
-    expanded = Path.expand(path)
-
-    if expanded == tmp or String.starts_with?(expanded, tmp <> "/") do
-      expanded
-    else
-      raise ArgumentError, "upload path outside system tmp"
+        {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 
   defp return_path("index", _admin), do: ~p"/admins"
   defp return_path("show", admin), do: ~p"/admins/#{admin}"
+
+  defp form_error_action(%{assigns: %{form_submitted: true}}), do: :insert
+  defp form_error_action(_socket), do: :validate
+
+  defp normalize_avatar_params(params), do: E2e.Form.AvatarParams.normalize(params)
 
   defp currency_items do
     [

@@ -47,10 +47,38 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --mode" do
-    test "compiles, format check passes, and tests pass" do
-      with_installer_tmp("corex_mode", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
+  describe "app with --a11y" do
+    test "compiles, format check passes, and scaffolds accessibility wiring" do
+      with_installer_tmp("corex_a11y", fn tmp_dir ->
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--a11y"])
+
+        assert File.exists?(Path.join(app_root_path, "lib/my_app_web/plugs/accessibility.ex"))
+        assert File.exists?(Path.join(app_root_path, "lib/my_app_web/hooks/accessibility.ex"))
+
+        config = File.read!(Path.join(app_root_path, "config/config.exs"))
+
+        assert config =~
+                 "accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]"
+
+        assert config =~ "toggle-group"
+
+        layouts = File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts.ex"))
+        assert layouts =~ "def accessibility_panel(assigns)"
+        assert layouts =~ "def accessibility_open_button(assigns)"
+        assert layouts =~ "hidden sm:inline-flex"
+        assert layouts =~ ~s(viewBox="0 0 512 512")
+        refute layouts =~ "fixed bottom-space end-space"
+        refute layouts =~ "hero-adjustments-horizontal"
+        refute layouts =~ ~r/<\/footer>\s*<\.accessibility_panel/
+        assert layouts =~ "<.accessibility_panel"
+
+        root =
+          File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"))
+
+        refute root =~ "<.accessibility_panel"
+
+        assert File.read!(Path.join(app_root_path, "lib/my_app_web/router.ex")) =~
+                 "Plugs.Accessibility"
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -125,7 +153,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     test "compiles, format check passes, and test suite passes (sqlite3)" do
       with_installer_tmp("corex_mode_theme_lang_sqlite3", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "phx_blog", [
+          generate_corex_app(tmp_dir, "corex_blog", [
             "--database",
             "sqlite3",
             "--mode",
@@ -141,8 +169,31 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
+  describe "app with --mode, --theme, --lang, and --a11y (combined)" do
+    test "compiles and format check passes" do
+      with_installer_tmp("corex_mode_theme_lang_a11y", fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", [
+            "--mode",
+            "--theme",
+            "--lang",
+            "--a11y"
+          ])
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+
+        root =
+          File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"))
+
+        assert root =~ "a11y_data_attrs"
+        assert root =~ ~r/\{a11y_data_attrs\(assigns\[:a11y\]\)\}\n>/
+      end)
+    end
+  end
+
   describe "app with --no-design" do
-    test "patches JS and home but does not run design (no assets/corex, no design imports in app.css)" do
+    test "ships static corex export without corex_design dep" do
       with_installer_tmp("corex_no_design_flag", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-design"])
 

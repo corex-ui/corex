@@ -13,6 +13,16 @@
     }
   >
     <.demo_section
+      id="accordion-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.AccordionDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
       id="accordion-styling-color"
       title={~t"Semantic"}
       code={E2eWeb.Demos.AccordionDemo.styling_color_code()}
@@ -26,29 +36,25 @@
     </.demo_section>
 
     <.demo_section
-      id="accordion-styling-variant"
+      id="accordion-style-variant"
       title={~t"Variant"}
       code={E2eWeb.Demos.AccordionDemo.styling_variant_code()}
     >
       <:description>
         <.demo_modifier_axis name="accordion" axis={:variant} />
       </:description>
-      <:preview>
-        <E2eWeb.Demos.AccordionDemo.styling_variant_example />
-      </:preview>
+      <:preview><E2eWeb.Demos.AccordionDemo.styling_variant_example /></:preview>
     </.demo_section>
 
     <.demo_section
-      id="accordion-styling-variant-matrix"
+      id="accordion-style-variant-matrix"
       title={~t"Semantic × variant"}
       code={E2eWeb.Demos.AccordionDemo.styling_variant_matrix_code()}
     >
       <:description>
         <.variant_matrix_description host="accordion" />
       </:description>
-      <:preview>
-        <E2eWeb.Demos.AccordionDemo.styling_variant_matrix_example />
-      </:preview>
+      <:preview><E2eWeb.Demos.AccordionDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -87,6 +93,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.AccordionDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="accordion-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.AccordionDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="accordion" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

@@ -36,13 +36,9 @@ defmodule E2eWeb.ListboxPlayLive do
     for {id, label} <- rows_for_controls(), do: %{label: label, value: id}
   end
 
-  defp playground_listbox_reset_value(controls) do
+  defp normalize_play_value(controls, play_value) do
     disabled = Map.get(controls, :disabled_items, [])
-
-    case Enum.find(rows_for_controls(), fn {id, _} -> id not in disabled end) do
-      nil -> []
-      {id, _} -> [id]
-    end
+    Enum.filter(List.wrap(play_value), &(&1 not in disabled))
   end
 
   @impl true
@@ -59,6 +55,7 @@ defmodule E2eWeb.ListboxPlayLive do
       |> assign(:controls, controls)
       |> assign(:disabled_select_items, disabled_select_items())
       |> assign(:items, listbox_items(controls))
+      |> assign(:play_value, [])
       |> assign(:playground_listbox_id, @listbox_id)
 
     {:ok, socket}
@@ -69,20 +66,27 @@ defmodule E2eWeb.ListboxPlayLive do
     {:noreply, update_control(socket, control_id(id), value)}
   end
 
+  def handle_event("listbox_play_value_changed", %{"value" => value}, socket)
+      when is_list(value) do
+    {:noreply, assign(socket, :play_value, value)}
+  end
+
+  def handle_event("listbox_play_value_changed", _params, socket) do
+    {:noreply, socket}
+  end
+
   def handle_event("disabled_items_changed", %{"value" => value}, socket) when is_list(value) do
     {:noreply,
      socket
      |> update(:controls, &%{&1 | disabled_items: value})
-     |> sync_items()
-     |> push_playground_listbox_value()}
+     |> sync_items()}
   end
 
   def handle_event("disabled_items_changed", _params, socket) do
     {:noreply,
      socket
      |> update(:controls, &%{&1 | disabled_items: []})
-     |> sync_items()
-     |> push_playground_listbox_value()}
+     |> sync_items()}
   end
 
   defp update_control(socket, "orientation", value) do
@@ -111,19 +115,21 @@ defmodule E2eWeb.ListboxPlayLive do
     available_ids = rows_for_controls() |> Enum.map(&elem(&1, 0))
     filtered_disabled = Enum.filter(controls.disabled_items, &(&1 in available_ids))
     controls = %{controls | disabled_items: filtered_disabled}
+    old_play = socket.assigns.play_value
+    play_value = normalize_play_value(controls, old_play)
 
-    socket
-    |> assign(:controls, controls)
-    |> assign(:items, listbox_items(controls))
-    |> assign(:disabled_select_items, disabled_select_items())
-  end
+    socket =
+      socket
+      |> assign(:controls, controls)
+      |> assign(:items, listbox_items(controls))
+      |> assign(:disabled_select_items, disabled_select_items())
+      |> assign(:play_value, play_value)
 
-  defp push_playground_listbox_value(socket) do
-    Listbox.set_value(
-      socket,
-      @listbox_id,
-      playground_listbox_reset_value(socket.assigns.controls)
-    )
+    if play_value != old_play do
+      Listbox.set_value(socket, @listbox_id, play_value)
+    else
+      socket
+    end
   end
 
   @impl true
@@ -197,11 +203,17 @@ defmodule E2eWeb.ListboxPlayLive do
             id={@playground_listbox_id}
             class="listbox"
             items={@items}
+            value={@play_value}
+            on_value_change="listbox_play_value_changed"
             selection_mode={@controls.selection_mode}
             orientation={@controls.orientation}
             dir={@controls.dir}
           >
             <:label>Choose a country</:label>
+            <:item :let={%{item: entry}}>
+              <Flagpack.flag name={flag_name(entry.value)} />
+              {entry.label}
+            </:item>
             <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
           </.listbox>
         </:canvas>

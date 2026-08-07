@@ -1,16 +1,17 @@
 import { connect, machine, type Props, type Api } from "@zag-js/signature-pad";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { stripZagSubmitNames } from "../lib/form-field-array-submit";
 import { getDir, getString } from "../lib/util";
 
-export class SignaturePad extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class SignaturePad extends Component<Props, Api, Schema> {
   imageURL: string = "";
   paths: string[] = [];
   name?: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     this.name = (props as Props & { name?: string }).name;
     return new VanillaMachine(machine, props);
   }

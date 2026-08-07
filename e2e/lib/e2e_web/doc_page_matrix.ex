@@ -2,7 +2,7 @@ defmodule E2eWeb.DocPageMatrix do
   @moduledoc false
 
   @wallaby_pages %{
-    accordion: [:anatomy, :api, :events, :patterns],
+    accordion: [:playground, :anatomy, :api, :events, :patterns, :animation, :style],
     action: [:anatomy, :style],
     angle_slider: [:anatomy, :api, :events, :patterns],
     avatar: [:anatomy, :api, :events],
@@ -18,7 +18,7 @@ defmodule E2eWeb.DocPageMatrix do
     date_picker: [:anatomy, :api, :events],
     dialog: [:anatomy, :api, :events, :patterns],
     editable: [:anatomy, :api, :events],
-    file_upload: [:anatomy, :api, :events, :style],
+    file_upload: [:anatomy, :api, :events, :style, :playground],
     file_upload_live: [:anatomy, :form, :playground, :style],
     floating_panel: [:anatomy, :api, :events, :style],
     layout_heading: [:anatomy, :style],
@@ -36,7 +36,7 @@ defmodule E2eWeb.DocPageMatrix do
     signature_pad: [:anatomy, :api, :events, :style],
     switch: [:anatomy, :api, :events, :patterns],
     tabs: [:anatomy, :api, :events, :patterns],
-    tags_input: [:anatomy, :api, :events, :patterns],
+    tags_input: [:anatomy, :api, :events, :patterns, :form, :live_form],
     timer: [:anatomy, :api, :events],
     toast: [:playground, :api, :anatomy],
     toggle: [:anatomy, :api, :events, :patterns],
@@ -73,6 +73,7 @@ defmodule E2eWeb.DocPageMatrix do
             :tabs,
             :tags_input,
             :timer,
+            :toast,
             :toggle,
             :toggle_group,
             :tooltip,

@@ -7,12 +7,20 @@ defmodule E2eWeb.DialogPlayLive do
   def mount(_params, _session, socket) do
     socket =
       socket
+      |> assign(:modal, true)
       |> assign(:close_on_escape, true)
+      |> assign(:close_on_interact_outside, true)
       |> assign(:prevent_scroll, false)
+      |> assign(:restore_focus, true)
       |> assign(:dir, "ltr")
       |> assign(:dir_select, ["ltr"])
 
     {:ok, socket}
+  end
+
+  @impl true
+  def handle_event("modal_changed", %{"checked" => checked, "id" => _}, socket) do
+    {:noreply, assign(socket, :modal, checked == true or checked == "true")}
   end
 
   @impl true
@@ -21,8 +29,22 @@ defmodule E2eWeb.DialogPlayLive do
   end
 
   @impl true
+  def handle_event(
+        "close_on_interact_outside_changed",
+        %{"checked" => checked, "id" => _},
+        socket
+      ) do
+    {:noreply, assign(socket, :close_on_interact_outside, checked == true or checked == "true")}
+  end
+
+  @impl true
   def handle_event("prevent_scroll_changed", %{"checked" => checked, "id" => _}, socket) do
     {:noreply, assign(socket, :prevent_scroll, checked == true or checked == "true")}
+  end
+
+  @impl true
+  def handle_event("restore_focus_changed", %{"checked" => checked, "id" => _}, socket) do
+    {:noreply, assign(socket, :restore_focus, checked == true or checked == "true")}
   end
 
   @impl true
@@ -54,11 +76,27 @@ defmodule E2eWeb.DialogPlayLive do
           />
           <.switch
             class="switch ui-size-sm"
+            id="modal"
+            checked={@modal}
+            on_checked_change="modal_changed"
+          >
+            <:label>Modal</:label>
+          </.switch>
+          <.switch
+            class="switch ui-size-sm"
             id="close_on_escape"
             checked={@close_on_escape}
             on_checked_change="close_on_escape_changed"
           >
             <:label>Close on escape</:label>
+          </.switch>
+          <.switch
+            class="switch ui-size-sm"
+            id="close_on_interact_outside"
+            checked={@close_on_interact_outside}
+            on_checked_change="close_on_interact_outside_changed"
+          >
+            <:label>Close on interact outside</:label>
           </.switch>
           <.switch
             class="switch ui-size-sm"
@@ -68,14 +106,25 @@ defmodule E2eWeb.DialogPlayLive do
           >
             <:label>Prevent scroll</:label>
           </.switch>
+          <.switch
+            class="switch ui-size-sm"
+            id="restore_focus"
+            checked={@restore_focus}
+            on_checked_change="restore_focus_changed"
+          >
+            <:label>Restore focus</:label>
+          </.switch>
         </:controls>
         <:canvas>
           <.dialog
             id="dialog-playground"
             class="dialog"
             dir={@dir}
+            modal={@modal}
             close_on_escape={@close_on_escape}
+            close_on_interact_outside={@close_on_interact_outside}
             prevent_scroll={@prevent_scroll}
+            restore_focus={@restore_focus}
           >
             <:trigger>Open Dialog</:trigger>
             <:title>Dialog Title</:title>

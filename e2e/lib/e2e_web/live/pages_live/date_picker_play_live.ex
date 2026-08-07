@@ -5,7 +5,7 @@ defmodule E2eWeb.DatePickerPlayLive do
 
   @locales [
     %{value: "en-US", label: "English (US)"},
-    %{value: "ar", label: "Arabic"},
+    %{value: "ar-EG", label: "Arabic (Egypt)"},
     %{value: "ja-JP", label: "Japanese"}
   ]
 
@@ -15,6 +15,7 @@ defmodule E2eWeb.DatePickerPlayLive do
       disabled: false,
       invalid: false,
       read_only: false,
+      close_on_select: true,
       dir: "ltr",
       locale: "en-US",
       selection_mode: "single",
@@ -30,7 +31,7 @@ defmodule E2eWeb.DatePickerPlayLive do
 
   @impl true
   def handle_event("control_changed", %{"checked" => checked, "id" => id}, socket) do
-    {:noreply, update_control(socket, id, checked)}
+    {:noreply, update_control(socket, id, control_bool(checked))}
   end
 
   def handle_event("control_changed", %{"value" => [value], "id" => id}, socket) do
@@ -41,17 +42,17 @@ defmodule E2eWeb.DatePickerPlayLive do
     {:noreply, assign(socket, :value, value)}
   end
 
-  defp update_control(socket, "disabled", true),
-    do: update(socket, :controls, &%{&1 | disabled: true})
-
-  defp update_control(socket, "disabled", false),
-    do: update(socket, :controls, &Map.put(&1, :disabled, false))
+  defp update_control(socket, "disabled", v),
+    do: update(socket, :controls, &Map.put(&1, :disabled, v))
 
   defp update_control(socket, "invalid", v),
     do: update(socket, :controls, &Map.put(&1, :invalid, v))
 
   defp update_control(socket, "read_only", v),
     do: update(socket, :controls, &Map.put(&1, :read_only, v))
+
+  defp update_control(socket, "close_on_select", v),
+    do: update(socket, :controls, &Map.put(&1, :close_on_select, v))
 
   defp update_control(socket, "dir", value),
     do: update(socket, :controls, &%{&1 | dir: value})
@@ -73,6 +74,10 @@ defmodule E2eWeb.DatePickerPlayLive do
   end
 
   defp update_control(socket, _, _), do: socket
+
+  defp control_bool(v) when v in [true, "true"], do: true
+  defp control_bool(v) when v in [false, "false"], do: false
+  defp control_bool(v), do: !!v
 
   @impl true
   def render(assigns) do
@@ -114,6 +119,14 @@ defmodule E2eWeb.DatePickerPlayLive do
             on_checked_change="control_changed"
           >
             <:label>Invalid</:label>
+          </.switch>
+          <.switch
+            class="switch ui-size-sm"
+            id="close_on_select"
+            checked={@controls.close_on_select}
+            on_checked_change="control_changed"
+          >
+            <:label>Close on select</:label>
           </.switch>
 
           <.select
@@ -187,6 +200,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             locale={@controls.locale}
             selection_mode={@controls.selection_mode}
             max_selected_dates={@controls.max_selected_dates}
+            close_on_select={@controls.close_on_select}
             value={@value && [@value]}
             disabled={@controls.disabled}
             read_only={@controls.read_only}

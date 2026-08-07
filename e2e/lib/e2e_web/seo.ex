@@ -39,7 +39,7 @@ defmodule E2eWeb.SEO do
     new(
       title: "Corex",
       description:
-        "Unstyled, accessible Phoenix components with a full server-and-client API, powered by Zag.js state machines.",
+        "The Phoenix UI with a real API. Accessible, unstyled HEEx components you command from the server or the client, powered by Zag.js.",
       canonical_path: "/",
       hreflang_paths: %{en: "/", ar: "/ar"}
     )

@@ -179,7 +179,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def api_controls_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           Phoenix.LiveView.JS.dispatch("corex:carousel:play",
@@ -321,7 +321,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def api_controls_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_carousel_server_play" class="button ui-size-sm">Play</.action>
       <.action phx-click="api_carousel_server_pause" class="button ui-size-sm">Pause</.action>
       <.action phx-click="api_carousel_server_scroll_next" class="button ui-size-sm">Next</.action>
@@ -373,7 +373,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
+    <div class="flex flex-wrap gap-space-lg items-end justify-center">
       <.carousel id="carousel-style-default" items={gallery_images()} class="carousel w-full max-w-xs">
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -437,7 +437,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
+    <div class="flex flex-wrap gap-space-lg items-end justify-center">
       <.carousel
         id="carousel-style-variant-subtle"
         items={gallery_images()}
@@ -517,7 +517,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-end justify-center">
+    <div class="flex flex-wrap gap-space-xl items-end justify-center">
       <.carousel
         id="carousel-style-sm"
         items={gallery_images()}
@@ -584,7 +584,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-end justify-center">
+    <div class="flex flex-wrap gap-space-xl items-end justify-center">
       <.carousel
         id="carousel-style-rounded-default"
         items={gallery_images()}
@@ -665,7 +665,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.carousel
           id={"carousel-style-max-#{variant.id}"}
@@ -917,7 +917,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     ~H"""
     <.carousel id="carousel-blog" items={@posts} class="carousel">
       <:item :let={post}>
-        <article class="flex flex-col gap-2 p-4">
+        <article class="flex flex-col gap-space-sm p-space-lg">
           <h3>{post.title}</h3>
           <p>{post.description}</p>
           <.navigate to="#" class="link">Read more</.navigate>
@@ -967,7 +967,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
         <.carousel_item_group ctx={ctx}>
           <%= for {post, index} <- Enum.with_index(@posts) do %>
             <.carousel_item ctx={ctx} index={index}>
-              <article class="flex flex-col gap-2 p-4">
+              <article class="flex flex-col gap-space-sm p-space-lg">
                 <h3>{post.title}</h3>
                 <p>{post.description}</p>
                 <.navigate to="#" class="link">Read more</.navigate>

@@ -439,7 +439,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_controls_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:timer:start", to: "##{@id}", bubbles: false)}
         class="button ui-size-sm"
@@ -482,7 +482,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_controls_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Timer.start(@id)} class="button ui-size-sm">Start</.action>
       <.action phx-click={Corex.Timer.pause(@id)} class="button ui-size-sm">Pause</.action>
       <.action phx-click={Corex.Timer.resume(@id)} class="button ui-size-sm">Resume</.action>
@@ -500,7 +500,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_controls_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_timer_start_server" class="button ui-size-sm">Start</.action>
       <.action phx-click="api_timer_pause_server" class="button ui-size-sm">Pause</.action>
       <.action phx-click="api_timer_resume_server" class="button ui-size-sm">Resume</.action>
@@ -518,7 +518,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_state_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Timer.state(@id)} class="button ui-size-sm">
         Read state
       </.action>
@@ -534,7 +534,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_state_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_timer_state_server" class="button ui-size-sm">
         Read state
       </.action>
@@ -550,7 +550,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_state_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:timer:state", to: "##{@id}", detail: %{}, bubbles: false)}
         class="button ui-size-sm"
@@ -622,7 +622,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.timer
         id="timer-style-sm"
         class="timer ui-size-sm w-full"
@@ -689,7 +689,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.timer
         id="timer-style-rounded-none"
         class="timer ui-rounded-none w-full"
@@ -754,6 +754,35 @@ defmodule E2eWeb.Demos.TimerDemo do
     """
   end
 
+  def styling_canonical_code do
+    triggers = styling_triggers_code()
+
+    """
+    <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    #{triggers}
+    </.timer>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-style-canonical"
+      class="timer w-full max-w-xs"
+      start_ms={60_000}
+      target_ms={0}
+      countdown
+    >
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+    </.timer>
+    """
+  end
+
   def styling_color_code do
     ~S"""
     <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
@@ -769,7 +798,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.timer
         id="timer-c-def"
         class="timer w-full max-w-xs"
@@ -864,7 +893,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.timer
         id="timer-style-variant-subtle"
         class="timer w-full max-w-xs"
@@ -983,7 +1012,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.timer
           id={"timer-style-width-#{variant.id}"}
@@ -1007,7 +1036,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.timer
           id={"timer-style-max-#{variant.id}"}

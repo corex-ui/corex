@@ -9,8 +9,15 @@ defmodule Corex.Design.Emit.Tokens do
 
     case Theme.font_stacks(theme) do
       nil -> base
-      %{} = overrides -> Keyword.merge(base, Map.to_list(overrides))
-      overrides when is_list(overrides) -> Keyword.merge(base, overrides)
+      overrides when is_map(overrides) -> merge_stacks(base, overrides)
+      overrides when is_list(overrides) -> merge_stacks(base, Map.new(overrides))
     end
+  end
+
+  defp merge_stacks(base, overrides) do
+    base
+    |> Map.new()
+    |> Map.merge(overrides)
+    |> Scales.in_ladder_order(Keyword.keys(base))
   end
 end

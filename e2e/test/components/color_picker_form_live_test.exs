@@ -13,33 +13,33 @@ defmodule E2eWeb.ColorPickerFormLiveTest do
     assert html =~ "maximum alpha allowed is 50%"
   end
 
-  test "save_phoenix submits hex color and pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits hex color and pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/color-picker/live-form")
 
     view
     |> form("#color-picker-live-form-phoenix")
     |> render_submit(%{"color_picker_phoenix" => %{"color" => "#ef4444"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: color=#ef4444",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
   end
 
-  test "save_validate submits rgba within alpha cap and pushes toast-create", %{conn: conn} do
+  test "save_validate submits rgba within alpha cap and pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/color-picker/live-form")
 
     view
     |> form("#color-picker-validate-form-live")
     |> render_submit(%{"color_picker_validate" => %{"color" => "rgba(10,20,30,0.2)"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: color=rgba(10,20,30,0.2)",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

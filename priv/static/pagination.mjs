@@ -1,18 +1,14 @@
 import {
   memo
-} from "./chunks/chunk-NB7M3GJN.mjs";
+} from "./chunks/chunk-Z3EQ3GCO.mjs";
 import {
   isAllowedRedirectDestination
-} from "./chunks/chunk-HZLPIQBD.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-4JICR5HJ.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -20,15 +16,16 @@ import {
   cloneTemplateChildren,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getDir,
   getNumber,
   getString,
   isNumber
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.anatomy.mjs
 var anatomy = createAnatomy("pagination").parts(
   "root",
   "item",
@@ -40,7 +37,7 @@ var anatomy = createAnatomy("pagination").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.dom.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `pagination:${ctx.id}`;
 var getFirstTriggerId = (ctx) => ctx.ids?.firstTrigger ?? `pagination:${ctx.id}:first`;
 var getPrevTriggerId = (ctx) => ctx.ids?.prevTrigger ?? `pagination:${ctx.id}:prev`;
@@ -49,7 +46,7 @@ var getLastTriggerId = (ctx) => ctx.ids?.lastTrigger ?? `pagination:${ctx.id}:la
 var getEllipsisId = (ctx, index) => ctx.ids?.ellipsis?.(index) ?? `pagination:${ctx.id}:ellipsis:${index}`;
 var getItemId = (ctx, page) => ctx.ids?.item?.(page) ?? `pagination:${ctx.id}:item:${page}`;
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.utils.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.utils.mjs
 var range = (start, end) => {
   let length = end - start + 1;
   return Array.from({ length }, (_, idx) => idx + start);
@@ -109,7 +106,7 @@ var getRange = (ctx) => {
 };
 var getTransformedRange = (ctx) => transform(getRange(ctx));
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.connect.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.connect.mjs
 function connect(service, normalize) {
   const { send, scope, prop, computed, context } = service;
   const totalPages = computed("totalPages");
@@ -262,7 +259,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.machine.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -413,7 +410,6 @@ function corexPaginationConnect(service, normalize) {
 
 // components/pagination.ts
 var Pagination = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -635,79 +631,67 @@ function buildPaginationPropsForUpdate(el, pushEvent, canPush) {
     ...controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {}
   };
 }
-var PaginationHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var PaginationHook = createZagLiveHook({
+  key: "pagination",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const pagination = new Pagination(el, buildPaginationProps(el, pushEvent, canPush));
-    pagination.init();
-    this.pagination = pagination;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:pagination:set-page", (event) => {
+    dom.add("corex:pagination:set-page", (event) => {
       const page = event.detail?.page;
       if (typeof page === "number") pagination.api.setPage(page);
     });
-    domRegistry.add(
-      "corex:pagination:set-page-size",
-      (event) => {
-        const pageSize = event.detail?.page_size;
-        if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
-      }
-    );
-    domRegistry.add("corex:pagination:go-to-next-page", () => {
+    dom.add("corex:pagination:set-page-size", (event) => {
+      const pageSize = event.detail?.page_size;
+      if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
+    });
+    dom.add("corex:pagination:go-to-next-page", () => {
       pagination.api.goToNextPage();
     });
-    domRegistry.add("corex:pagination:go-to-prev-page", () => {
+    dom.add("corex:pagination:go-to-prev-page", () => {
       pagination.api.goToPrevPage();
     });
-    domRegistry.add("corex:pagination:go-to-first-page", () => {
+    dom.add("corex:pagination:go-to-first-page", () => {
       pagination.api.goToFirstPage();
     });
-    domRegistry.add("corex:pagination:go-to-last-page", () => {
+    dom.add("corex:pagination:go-to-last-page", () => {
       pagination.api.goToLastPage();
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("pagination_set_page", (payload) => {
+    server.add("pagination_set_page", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const page = readPayloadPage(payload);
       if (page != null) pagination.api.setPage(page);
     });
-    registry.add("pagination_set_page_size", (payload) => {
+    server.add("pagination_set_page_size", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const pageSize = readPayloadPageSize(payload);
       if (pageSize != null) pagination.api.setPageSize(pageSize);
     });
-    registry.add("pagination_go_to_next_page", (payload) => {
+    server.add("pagination_go_to_next_page", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToNextPage();
     });
-    registry.add("pagination_go_to_prev_page", (payload) => {
+    server.add("pagination_go_to_prev_page", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToPrevPage();
     });
-    registry.add("pagination_go_to_first_page", (payload) => {
+    server.add("pagination_go_to_first_page", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToFirstPage();
     });
-    registry.add("pagination_go_to_last_page", (payload) => {
+    server.add("pagination_go_to_last_page", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToLastPage();
     });
+    return pagination;
   },
-  updated() {
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    this.pagination?.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.pagination?.destroy();
+  update(hook, pagination) {
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    pagination.updateProps(buildPaginationPropsForUpdate(hook.el, pushEvent, canPush));
   }
-};
+});
 export {
   PaginationHook as Pagination,
   readPayloadPage,

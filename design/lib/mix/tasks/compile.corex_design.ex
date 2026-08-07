@@ -16,11 +16,12 @@ defmodule Mix.Tasks.Compile.CorexDesign do
         ]
       end
 
-  On every `mix compile` the compiler hashes the resolved `config :corex_design`
-  and the installed `corex_design` version. When that signature changes (or the
-  output directory is missing) it re-runs the same pipeline as
-  `mix corex.design.build`: config validation, the WCAG contrast gate, and bundle
-  generation into the configured `output` directory. Otherwise it is a no-op.
+  On every `mix compile` the compiler hashes the resolved `config :corex_design`,
+  the installed `corex_design` version, and the package `lib` + `priv/css` source
+  trees. When that signature changes (or the output directory is missing) it
+  re-runs the same pipeline as `mix corex.design.build`: config validation, the
+  WCAG contrast gate, and bundle generation into the configured `output`
+  directory. Otherwise it is a no-op.
   """
 
   @manifest "compile.corex_design"
@@ -47,7 +48,7 @@ defmodule Mix.Tasks.Compile.CorexDesign do
 
   @impl true
   def clean do
-    File.rm(manifest_path())
+    _ = File.rm(manifest_path())
     :ok
   end
 
@@ -76,7 +77,27 @@ defmodule Mix.Tasks.Compile.CorexDesign do
   defp current_signature do
     config = Corex.Design.design_config()
     version = Application.spec(:corex_design, :vsn)
-    :erlang.phash2({config, version})
+    sources = source_tree_hash()
+    :erlang.phash2({config, version, sources})
+  end
+
+  defp source_tree_hash do
+    root = Application.app_dir(:corex_design)
+
+    ["lib", "priv/css"]
+    |> Enum.flat_map(fn rel ->
+      root
+      |> Path.join(rel)
+      |> Path.join("**/*")
+      |> Path.wildcard(match_dot: false)
+      |> Enum.filter(&File.regular?/1)
+    end)
+    |> Enum.sort()
+    |> Enum.reduce(:crypto.hash_init(:sha256), fn path, acc ->
+      relative = Path.relative_to(path, root)
+      :crypto.hash_update(acc, [relative, 0, File.read!(path)])
+    end)
+    |> :crypto.hash_final()
   end
 
   defp previous_signature(manifest) do

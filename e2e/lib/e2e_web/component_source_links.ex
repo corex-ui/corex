@@ -11,38 +11,12 @@ defmodule E2eWeb.ComponentSourceLinks do
 
   @skip_segments ~W(showcases blog admins)
 
-  @slug_to_registry %{
-    "layout-heading" => "layout_heading",
-    "file-upload-live" => "file_upload_live",
-    "data-list" => "data_list",
-    "data-table" => "data_table",
-    "angle-slider" => "angle_slider",
-    "color-picker" => "color_picker",
-    "date-picker" => "date_picker",
-    "file-upload" => "file_upload",
-    "floating-panel" => "floating_panel",
-    "native-input" => "native_input",
-    "number-input" => "number_input",
-    "password-input" => "password_input",
-    "pin-input" => "pin_input",
-    "radio-group" => "radio_group",
-    "signature-pad" => "signature_pad",
-    "tags-input" => "tags_input",
-    "toggle-group" => "toggle_group",
-    "tree-view" => "tree_view"
-  }
-
   @registry_to_hex_module %{
     "layout_heading" => "Corex.Layout.Heading"
   }
 
   @registry_to_phoenix_path %{
     "layout_heading" => "lib/components/layout/heading.ex"
-  }
-
-  @registry_to_design_slug %{
-    "action" => "button",
-    "navigate" => "link"
   }
 
   def links_for_path(path) when is_binary(path) do
@@ -74,9 +48,7 @@ defmodule E2eWeb.ComponentSourceLinks do
     end
   end
 
-  defp registry_id(slug) do
-    Map.get(@slug_to_registry, slug, String.replace(slug, "-", "_"))
-  end
+  defp registry_id(slug), do: String.replace(slug, "-", "_")
 
   defp registered?(registry_id) do
     registry_id in Enum.map(Corex.component_ids(), &Atom.to_string/1)
@@ -96,7 +68,7 @@ defmodule E2eWeb.ComponentSourceLinks do
     links = links ++ [%{label: "Phoenix", to: phoenix_url(registry_id), icon: @icon_phoenix}]
 
     links =
-      case design_url_for(registry_id, slug) do
+      case design_url_for(registry_id) do
         nil -> links
         url -> links ++ [%{label: "Design", to: url, icon: @icon_tailwind}]
       end
@@ -125,13 +97,15 @@ defmodule E2eWeb.ComponentSourceLinks do
     "#{@github_base}/#{rel}"
   end
 
-  defp design_url_for(registry_id, slug) do
-    design_slug = Map.get(@registry_to_design_slug, registry_id, slug)
-    design_url(design_slug)
+  defp design_url_for(registry_id) do
+    case Corex.Design.Components.fetch_css_id(registry_id) do
+      {:ok, css_id} -> design_url(css_id)
+      :error -> nil
+    end
   end
 
-  defp design_url(slug) do
-    rel = "design/priv/css/components/#{slug}.css"
+  defp design_url(css_id) do
+    rel = "design/priv/css/components/#{css_id}.css"
 
     if corex_file_exists?(rel), do: "#{@github_base}/#{rel}"
   end

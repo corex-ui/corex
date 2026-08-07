@@ -3,8 +3,6 @@ defmodule E2eWeb.App.MainNav do
 
   use E2eWeb, :html
 
-  import E2eWeb.Helpers, only: [hexdocs_url: 0]
-
   attr(:path, :string, required: true)
   attr(:orientation, :atom, default: :horizontal, values: [:horizontal, :vertical])
 
@@ -18,10 +16,10 @@ defmodule E2eWeb.App.MainNav do
     nav_class =
       case assigns.orientation do
         :vertical -> "flex flex-col gap-space-sm w-full"
-        :horizontal -> "hidden md:flex items-center gap-4 lg:gap-6 min-w-0"
+        :horizontal -> "hidden md:flex items-center gap-space-lg lg:gap-space-xl min-w-0"
       end
 
-    link_class = "link ui-size-md font-medium text-ink hover:text-link no-underline"
+    link_class = "link ui-nav ui-size-md"
     aria_label = nav_aria_label(assigns.placement)
 
     assigns =
@@ -53,15 +51,6 @@ defmodule E2eWeb.App.MainNav do
       >
         {~t"Blog"}
       </.navigate>
-      <.navigate
-        :if={@placement == :header}
-        to={hexdocs_url()}
-        class={[@link_class, "inline-flex items-center gap-1"]}
-        external
-      >
-        {~t"Hex Doc"}
-        <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-      </.navigate>
     </nav>
     """
   end
@@ -70,17 +59,18 @@ defmodule E2eWeb.App.MainNav do
   defp nav_aria_label(:sidebar), do: ~t"Sidebar navigation"
   defp nav_aria_label(:drawer), do: ~t"Menu navigation"
 
-  defp nav_showcases_aria_current(path) when is_binary(path) do
-    if normalize_path(path) == "/showcases", do: "page", else: nil
+  defp nav_showcases_aria_current(path), do: section_aria_current(path, "/showcases")
+
+  defp nav_blog_aria_current(path), do: section_aria_current(path, "/blog")
+
+  defp section_aria_current(path, root) when is_binary(path) do
+    case normalize_path(path) do
+      ^root -> "page"
+      normalized -> if String.starts_with?(normalized, root <> "/"), do: "location"
+    end
   end
 
-  defp nav_showcases_aria_current(_), do: nil
-
-  defp nav_blog_aria_current(path) when is_binary(path) do
-    if String.starts_with?(path, "/blog"), do: "page", else: nil
-  end
-
-  defp nav_blog_aria_current(_), do: nil
+  defp section_aria_current(_path, _root), do: nil
 
   defp nav_components_aria_current(raw_path) do
     path = normalize_path(raw_path)

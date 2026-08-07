@@ -1,19 +1,15 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { RadioGroup } from "../components/radio-group";
 import type { Props, ValueChangeDetails } from "@zag-js/radio-group";
 import { getString, getBoolean, getDir, canPushEvent, syncInputFormAssociation } from "../lib/util";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readStringControlledZagProps, readUpdatedServerString } from "../lib/read-props";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
-  emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId,
+  createValueEmitter,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 import {
   clearCorexFormFieldFeedback,
   hasCorexFormFieldValue,
@@ -22,7 +18,8 @@ import {
 import {
   notifyPhoenixFormChange,
   reapplyLiveViewValueInputUsage,
-} from "../lib/live-view-form-input";
+  dispatchFormInputEvents,
+} from "../lib/phoenix-form-bridge";
 
 function syncRadioGroupValueInputForPhoenix(
   el: HTMLElement,
@@ -38,9 +35,6 @@ function syncRadioGroupValueInputForPhoenix(
 
 type RadioGroupHookState = {
   radioGroup?: RadioGroup;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  beforeAttrs?: DatasetSnapshot;
 };
 
 export function valueChangePayload(
@@ -53,11 +47,13 @@ export function valueChangePayload(
   };
 }
 
-const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const RadioGroupHook = createZagLiveHook<RadioGroupHookState, RadioGroup>({
+  key: "radioGroup",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const zag = new RadioGroup(el, {
       id: el.id,
       ...readStringControlledZagProps(el, "value", "defaultValue"),
@@ -94,8 +90,7 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
           );
           if (checked) {
             reapplyLiveViewValueInputUsage(checked);
-            checked.dispatchEvent(new Event("input", { bubbles: true }));
-            checked.dispatchEvent(new Event("change", { bubbles: true }));
+            dispatchFormInputEvents(checked);
           }
         }
         notifyChange({
@@ -108,8 +103,6 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
         });
       },
     } as Props);
-    zag.init();
-    this.radioGroup = zag;
 
     queueMicrotask(() => {
       if (!isCorexFormField(el)) return;
@@ -121,98 +114,77 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
     );
     if (valueInput) syncInputFormAssociation(valueInput, el);
 
-    const emitValue = (respondTo: ReturnType<typeof parseRespondTo>) => {
-      const value = zag.api.value;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
+    const emitValue = createValueEmitter(
+      { el, pushEvent, canPushServer: canPush },
+      {
+        getValue: () => zag.api.value,
         serverEventName: "radio_group_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
         domEventName: "radio-group-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+      }
+    );
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: string }>>("corex:radio-group:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string }>>("corex:radio-group:set-value", (event) => {
       zag.api.setValue(event.detail.value);
     });
 
-    domRegistry.add("corex:radio-group:clear-value", () => {
+    dom.add("corex:radio-group:clear-value", () => {
       zag.api.clearValue();
     });
 
-    domRegistry.add("corex:radio-group:focus", () => {
+    dom.add("corex:radio-group:focus", () => {
       zag.api.focus();
     });
 
-    domRegistry.add<CustomEvent>("corex:radio-group:value", (event) => {
+    dom.add<CustomEvent>("corex:radio-group:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("radio_group_set_value", (payload: { id?: string; value: string }) => {
+    server.add("radio_group_set_value", (payload: { id?: string; value: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(payload.value);
     });
 
-    registry.add("radio_group_clear_value", (payload: { id?: string }) => {
+    server.add("radio_group_clear_value", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
     });
 
-    registry.add("radio_group_focus", (payload: { id?: string }) => {
+    server.add("radio_group_focus", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.focus();
     });
 
-    registry.add("radio_group_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("radio_group_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
+
+    return zag;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-  },
+  update(hook, zag) {
+    const el = hook.el;
+    const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
 
-  updated(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    const el = this.el;
-    const zag = this.radioGroup;
-    try {
-      const valuePatch = readUpdatedServerString(el, this.beforeAttrs);
+    zag.updateProps({
+      id: el.id,
+      ...valuePatch,
+      name: getString(el, "name"),
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readonly"),
+      orientation: getString<"horizontal" | "vertical">(el, "orientation"),
+      dir: getDir(el),
+    } as Partial<Props>);
 
-      zag?.updateProps({
-        id: el.id,
-        ...valuePatch,
-        name: getString(el, "name"),
-        disabled: getBoolean(el, "disabled"),
-        invalid: getBoolean(el, "invalid"),
-        required: getBoolean(el, "required"),
-        readOnly: getBoolean(el, "readonly"),
-        orientation: getString<"horizontal" | "vertical">(el, "orientation"),
-        dir: getDir(el),
-      } as Partial<Props>);
+    // Always re-render so newly morphed items get Zag props (radio has no collection).
+    zag.render();
 
-      if ("value" in valuePatch) {
-        syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
-      }
-    } finally {
-      this.beforeAttrs = undefined;
+    if ("value" in valuePatch) {
+      syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
     }
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.radioGroup?.destroy();
-  },
-};
+});
 
 export { RadioGroupHook as RadioGroup };

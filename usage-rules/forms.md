@@ -4,6 +4,8 @@ Corex has **no** `<.form>` component. Forms use standard Phoenix [`to_form/1`](h
 
 Discover field-capable attrs via MCP `get_component` for each input id.
 
+Selection hosts default to `value` / `on_value_change`. Boolean Zag widgets (checkbox, switch, toggle) use `checked` / `pressed` instead. Data table selection uses `selected`.
+
 ## LiveView form pattern
 
 ```elixir
@@ -41,7 +43,7 @@ end
   <.native_input field={@form[:email]} type="email" class="native-input">
     <:label>Email</:label>
   </.native_input>
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button ui-accent">Save</.action>
 </.form>
 ```
 
@@ -84,6 +86,25 @@ Both Corex `select` (with `multiple`) and `tags_input` submit `name[]` automatic
 - Submit with `<.action type="submit" class="button …">` — not raw `<button>` unless styled
 - Import matching CSS: `native-input.css`, `checkbox.css`, etc.
 - Register hooks for interactive inputs in `app.js`
+
+## Error messages and `invalid` styling
+
+Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
+
+- **Messages** render through the `:error` slot when the field has errors and was used.
+- **Alert borders** (`data-invalid`) stay off by default. Pass `auto_invalid` to derive them from visible errors, `invalid={true}` to force, or `invalid={false}` to suppress when `auto_invalid` is also set.
+
+```heex
+<.checkbox field={@form[:terms]} auto_invalid class="checkbox">
+  <:label>Accept terms</:label>
+</.checkbox>
+
+<.select field={@form[:country]} auto_invalid controlled class="select" items={Corex.List.new([…])}>
+  <:label>Country</:label>
+</.select>
+```
+
+Form-bound `select` / `combobox` / `listbox` need `controlled` when using `field={…}` with LiveView.
 
 ## References
 

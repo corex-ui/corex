@@ -1,9 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-NB7M3GJN.mjs";
-import {
-  syncHiddenInputValue
-} from "./chunks/chunk-DH47S3VU.mjs";
+} from "./chunks/chunk-Z3EQ3GCO.mjs";
 import {
   clampValue,
   decrementValue,
@@ -13,34 +10,27 @@ import {
   isValueWithinRange,
   roundToDpr,
   wrap
-} from "./chunks/chunk-PE34YET2.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
+  dispatchFormInputEvents,
   markUsed,
-  syncFormInput
-} from "./chunks/chunk-2H6YHTHG.mjs";
-import "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
+  syncFormInput,
+  syncHiddenInputValue
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   formatDisplayValue,
-  formatSubmitValue,
   mergeFormatOptions,
   mountNumberBinding,
-  readUpdatedServerNumber
-} from "./chunks/chunk-BGER3KYP.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+  readUpdatedServerNumber,
+  resolveNumberInputSubmitValue
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   MAX_Z_INDEX,
@@ -50,11 +40,12 @@ import {
   callAll,
   canPushEvent,
   createAnatomy,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getDir,
   getEventPoint,
-  getEventStep,
+  getEventStepValue,
   getNumber,
   getString,
   getWindow,
@@ -70,9 +61,9 @@ import {
   setup,
   syncInputFormAssociation,
   trackFormControl
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(
   "root",
   "label",
@@ -85,7 +76,7 @@ var anatomy = createAnatomy("numberInput").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/cursor.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/cursor.mjs
 function recordCursor(inputEl, scope) {
   if (!inputEl || !scope.isActiveElement(inputEl)) return;
   try {
@@ -165,7 +156,7 @@ function getNextCursorPosition(oldValue, newValue, oldPosition) {
   return newValue.length;
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `number-input:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `number-input:${ctx.id}:input`;
 var getIncrementTriggerId = (ctx) => ctx.ids?.incrementTrigger ?? `number-input:${ctx.id}:inc`;
@@ -253,7 +244,7 @@ var createVirtualCursor = (ctx, point) => {
   doc.body.appendChild(el);
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope, computed } = service;
   const focused = state.hasTag("focus");
@@ -397,7 +388,11 @@ function connect(service, normalize) {
           if (event.defaultPrevented) return;
           if (readOnly) return;
           if (isComposingEvent(event)) return;
-          const step = getEventStep(event) * prop("step");
+          const step = getEventStepValue(event, {
+            step: prop("step"),
+            largeStep: prop("largeStep"),
+            smallStep: prop("smallStep")
+          });
           const keyMap = {
             ArrowUp() {
               send({ type: "INPUT.ARROW_UP", step });
@@ -519,24 +514,24 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@internationalized+number@3.6.5/node_modules/@internationalized/number/dist/NumberFormatter.mjs
-var $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
-var $488c6ddbf4ef74c2$var$supportsSignDisplay = false;
+// ../node_modules/.pnpm/@internationalized+number@3.6.7/node_modules/@internationalized/number/dist/private/NumberFormatter.mjs
+var $1dfb119a85e764e5$var$formatterCache = /* @__PURE__ */ new Map();
+var $1dfb119a85e764e5$var$supportsSignDisplay = false;
 try {
-  $488c6ddbf4ef74c2$var$supportsSignDisplay = new Intl.NumberFormat("de-DE", {
+  $1dfb119a85e764e5$var$supportsSignDisplay = new Intl.NumberFormat("de-DE", {
     signDisplay: "exceptZero"
   }).resolvedOptions().signDisplay === "exceptZero";
 } catch {
 }
-var $488c6ddbf4ef74c2$var$supportsUnit = false;
+var $1dfb119a85e764e5$var$supportsUnit = false;
 try {
-  $488c6ddbf4ef74c2$var$supportsUnit = new Intl.NumberFormat("de-DE", {
+  $1dfb119a85e764e5$var$supportsUnit = new Intl.NumberFormat("de-DE", {
     style: "unit",
     unit: "degree"
   }).resolvedOptions().style === "unit";
 } catch {
 }
-var $488c6ddbf4ef74c2$var$UNITS = {
+var $1dfb119a85e764e5$var$UNITS = {
   degree: {
     narrow: {
       default: "\xB0",
@@ -546,17 +541,23 @@ var $488c6ddbf4ef74c2$var$UNITS = {
     }
   }
 };
-var $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5 = class {
-  /** Formats a number value as a string, according to the locale and options provided to the constructor. */
+var $1dfb119a85e764e5$export$cc77c4ff7e8673c5 = class {
+  constructor(locale, options = {}) {
+    this.numberFormatter = $1dfb119a85e764e5$var$getCachedNumberFormatter(locale, options);
+    this.options = options;
+  }
+  /**
+  * Formats a number value as a string, according to the locale and options provided to the
+  * constructor.
+  */
   format(value) {
     let res = "";
-    if (!$488c6ddbf4ef74c2$var$supportsSignDisplay && this.options.signDisplay != null) res = $488c6ddbf4ef74c2$export$711b50b3c525e0f2(this.numberFormatter, this.options.signDisplay, value);
+    if (!$1dfb119a85e764e5$var$supportsSignDisplay && this.options.signDisplay != null) res = $1dfb119a85e764e5$export$711b50b3c525e0f2(this.numberFormatter, this.options.signDisplay, value);
     else res = this.numberFormatter.format(value);
-    if (this.options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
-      var _UNITS_unit;
+    if (this.options.style === "unit" && !$1dfb119a85e764e5$var$supportsUnit) {
       let { unit, unitDisplay = "short", locale } = this.resolvedOptions();
       if (!unit) return res;
-      let values = (_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay];
+      let values = $1dfb119a85e764e5$var$UNITS[unit]?.[unitDisplay];
       res += values[locale] || values.default;
     }
     return res;
@@ -596,11 +597,11 @@ var $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5 = class {
   /** Returns the resolved formatting options based on the values passed to the constructor. */
   resolvedOptions() {
     let options = this.numberFormatter.resolvedOptions();
-    if (!$488c6ddbf4ef74c2$var$supportsSignDisplay && this.options.signDisplay != null) options = {
+    if (!$1dfb119a85e764e5$var$supportsSignDisplay && this.options.signDisplay != null) options = {
       ...options,
       signDisplay: this.options.signDisplay
     };
-    if (!$488c6ddbf4ef74c2$var$supportsUnit && this.options.style === "unit") options = {
+    if (!$1dfb119a85e764e5$var$supportsUnit && this.options.style === "unit") options = {
       ...options,
       style: "unit",
       unit: this.options.unit,
@@ -608,34 +609,29 @@ var $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5 = class {
     };
     return options;
   }
-  constructor(locale, options = {}) {
-    this.numberFormatter = $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options);
-    this.options = options;
-  }
 };
-function $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options = {}) {
+function $1dfb119a85e764e5$var$getCachedNumberFormatter(locale, options = {}) {
   let { numberingSystem } = options;
   if (numberingSystem && locale.includes("-nu-")) {
     if (!locale.includes("-u-")) locale += "-u-";
     locale += `-nu-${numberingSystem}`;
   }
-  if (options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
-    var _UNITS_unit;
+  if (options.style === "unit" && !$1dfb119a85e764e5$var$supportsUnit) {
     let { unit, unitDisplay = "short" } = options;
     if (!unit) throw new Error('unit option must be provided with style: "unit"');
-    if (!((_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay])) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
+    if (!$1dfb119a85e764e5$var$UNITS[unit]?.[unitDisplay]) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
     options = {
       ...options,
       style: "decimal"
     };
   }
   let cacheKey = locale + (options ? Object.entries(options).sort((a, b) => a[0] < b[0] ? -1 : 1).join() : "");
-  if ($488c6ddbf4ef74c2$var$formatterCache.has(cacheKey)) return $488c6ddbf4ef74c2$var$formatterCache.get(cacheKey);
+  if ($1dfb119a85e764e5$var$formatterCache.has(cacheKey)) return $1dfb119a85e764e5$var$formatterCache.get(cacheKey);
   let numberFormatter = new Intl.NumberFormat(locale, options);
-  $488c6ddbf4ef74c2$var$formatterCache.set(cacheKey, numberFormatter);
+  $1dfb119a85e764e5$var$formatterCache.set(cacheKey, numberFormatter);
   return numberFormatter;
 }
-function $488c6ddbf4ef74c2$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
+function $1dfb119a85e764e5$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
   if (signDisplay === "auto") return numberFormat.format(num);
   else if (signDisplay === "never") return numberFormat.format(Math.abs(num));
   else {
@@ -658,9 +654,9 @@ function $488c6ddbf4ef74c2$export$711b50b3c525e0f2(numberFormat, signDisplay, nu
   }
 }
 
-// ../node_modules/.pnpm/@internationalized+number@3.6.5/node_modules/@internationalized/number/dist/NumberParser.mjs
-var $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX = new RegExp("^.*\\(.*\\).*$");
-var $6c7bd7858deea686$var$NUMBERING_SYSTEMS = [
+// ../node_modules/.pnpm/@internationalized+number@3.6.7/node_modules/@internationalized/number/dist/private/NumberParser.mjs
+var $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX = new RegExp("^.*\\(.*\\).*$");
+var $eb76cf4feb040f77$var$NUMBERING_SYSTEMS = [
   "latn",
   "arab",
   "hanidec",
@@ -668,12 +664,16 @@ var $6c7bd7858deea686$var$NUMBERING_SYSTEMS = [
   "beng",
   "fullwide"
 ];
-var $6c7bd7858deea686$export$cd11ab140839f11d = class {
+var $eb76cf4feb040f77$export$cd11ab140839f11d = class {
+  constructor(locale, options = {}) {
+    this.locale = locale;
+    this.options = options;
+  }
   /**
   * Parses the given string to a number. Returns NaN if a valid number could not be parsed.
   */
   parse(value) {
-    return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).parse(value);
+    return $eb76cf4feb040f77$var$getNumberParserImpl(this.locale, this.options, value).parse(value);
   }
   /**
   * Returns whether the given string could potentially be a valid number. This should be used to
@@ -681,7 +681,7 @@ var $6c7bd7858deea686$export$cd11ab140839f11d = class {
   * of the minus/plus sign characters can be checked.
   */
   isValidPartialNumber(value, minValue, maxValue) {
-    return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).isValidPartialNumber(value, minValue, maxValue);
+    return $eb76cf4feb040f77$var$getNumberParserImpl(this.locale, this.options, value).isValidPartialNumber(value, minValue, maxValue);
   }
   /**
   * Returns a numbering system for which the given string is valid in the current locale.
@@ -689,38 +689,49 @@ var $6c7bd7858deea686$export$cd11ab140839f11d = class {
   * locale is returned.
   */
   getNumberingSystem(value) {
-    return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).options.numberingSystem;
-  }
-  constructor(locale, options = {}) {
-    this.locale = locale;
-    this.options = options;
+    return $eb76cf4feb040f77$var$getNumberParserImpl(this.locale, this.options, value).options.numberingSystem;
   }
 };
-var $6c7bd7858deea686$var$numberParserCache = /* @__PURE__ */ new Map();
-function $6c7bd7858deea686$var$getNumberParserImpl(locale, options, value) {
-  let defaultParser = $6c7bd7858deea686$var$getCachedNumberParser(locale, options);
+var $eb76cf4feb040f77$var$numberParserCache = /* @__PURE__ */ new Map();
+function $eb76cf4feb040f77$var$getNumberParserImpl(locale, options, value) {
+  let defaultParser = $eb76cf4feb040f77$var$getCachedNumberParser(locale, options);
   if (!locale.includes("-nu-") && !defaultParser.isValidPartialNumber(value)) {
-    for (let numberingSystem of $6c7bd7858deea686$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
-      let parser = $6c7bd7858deea686$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
+    for (let numberingSystem of $eb76cf4feb040f77$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
+      let parser = $eb76cf4feb040f77$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
       if (parser.isValidPartialNumber(value)) return parser;
     }
   }
   return defaultParser;
 }
-function $6c7bd7858deea686$var$getCachedNumberParser(locale, options) {
+function $eb76cf4feb040f77$var$getCachedNumberParser(locale, options) {
   let cacheKey = locale + (options ? Object.entries(options).sort((a, b) => a[0] < b[0] ? -1 : 1).join() : "");
-  let parser = $6c7bd7858deea686$var$numberParserCache.get(cacheKey);
+  let parser = $eb76cf4feb040f77$var$numberParserCache.get(cacheKey);
   if (!parser) {
-    parser = new $6c7bd7858deea686$var$NumberParserImpl(locale, options);
-    $6c7bd7858deea686$var$numberParserCache.set(cacheKey, parser);
+    parser = new $eb76cf4feb040f77$var$NumberParserImpl(locale, options);
+    $eb76cf4feb040f77$var$numberParserCache.set(cacheKey, parser);
   }
   return parser;
 }
-var $6c7bd7858deea686$var$NumberParserImpl = class {
+var $eb76cf4feb040f77$var$NumberParserImpl = class {
+  constructor(locale, options = {}) {
+    this.locale = locale;
+    if (options.roundingIncrement !== 1 && options.roundingIncrement != null) {
+      if (options.maximumFractionDigits == null && options.minimumFractionDigits == null) {
+        options.maximumFractionDigits = 0;
+        options.minimumFractionDigits = 0;
+      } else if (options.maximumFractionDigits == null) options.maximumFractionDigits = options.minimumFractionDigits;
+      else if (options.minimumFractionDigits == null) options.minimumFractionDigits = options.maximumFractionDigits;
+    }
+    this.formatter = new Intl.NumberFormat(locale, options);
+    this.options = this.formatter.resolvedOptions();
+    this.symbols = $eb76cf4feb040f77$var$getSymbols(locale, this.formatter, this.options, options);
+    if (this.options.style === "percent" && ((this.options.minimumFractionDigits ?? 0) > 18 || (this.options.maximumFractionDigits ?? 0) > 18)) console.warn("NumberParser cannot handle percentages with greater than 18 decimal places, please reduce the number in your options.");
+  }
   parse(value) {
+    let isGroupSymbolAllowed = this.formatter.resolvedOptions().useGrouping;
     let fullySanitizedValue = this.sanitize(value);
-    if (this.symbols.group)
-      fullySanitizedValue = $6c7bd7858deea686$var$replaceAll(fullySanitizedValue, this.symbols.group, "");
+    if (!isGroupSymbolAllowed && this.symbols.group && fullySanitizedValue.includes(this.symbols.group)) return NaN;
+    else if (this.symbols.group) fullySanitizedValue = fullySanitizedValue.replaceAll(this.symbols.group, "");
     if (this.symbols.decimal) fullySanitizedValue = fullySanitizedValue.replace(this.symbols.decimal, ".");
     if (this.symbols.minusSign) fullySanitizedValue = fullySanitizedValue.replace(this.symbols.minusSign, "-");
     fullySanitizedValue = fullySanitizedValue.replace(this.symbols.numeral, this.symbols.index);
@@ -740,63 +751,50 @@ var $6c7bd7858deea686$var$NumberParserImpl = class {
     let newValue = fullySanitizedValue ? +fullySanitizedValue : NaN;
     if (isNaN(newValue)) return NaN;
     if (this.options.style === "percent") {
-      var _this_options_minimumFractionDigits, _this_options_maximumFractionDigits;
       let options = {
         ...this.options,
         style: "decimal",
-        minimumFractionDigits: Math.min(((_this_options_minimumFractionDigits = this.options.minimumFractionDigits) !== null && _this_options_minimumFractionDigits !== void 0 ? _this_options_minimumFractionDigits : 0) + 2, 20),
-        maximumFractionDigits: Math.min(((_this_options_maximumFractionDigits = this.options.maximumFractionDigits) !== null && _this_options_maximumFractionDigits !== void 0 ? _this_options_maximumFractionDigits : 0) + 2, 20)
+        minimumFractionDigits: Math.min((this.options.minimumFractionDigits ?? 0) + 2, 20),
+        maximumFractionDigits: Math.min((this.options.maximumFractionDigits ?? 0) + 2, 20)
       };
-      return new $6c7bd7858deea686$export$cd11ab140839f11d(this.locale, options).parse(new (0, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5)(this.locale, options).format(newValue));
+      return new $eb76cf4feb040f77$export$cd11ab140839f11d(this.locale, options).parse(new (0, $1dfb119a85e764e5$export$cc77c4ff7e8673c5)(this.locale, options).format(newValue));
     }
-    if (this.options.currencySign === "accounting" && $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX.test(value)) newValue = -1 * newValue;
+    if (this.options.currencySign === "accounting" && $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX.test(value)) newValue = -1 * newValue;
     return newValue;
   }
   sanitize(value) {
+    let isGroupSymbolAllowed = this.formatter.resolvedOptions().useGrouping;
+    if (this.symbols.noNumeralUnits.length > 0 && this.symbols.noNumeralUnits.find((obj) => obj.unit === value)) return this.symbols.noNumeralUnits.find((obj) => obj.unit === value).value.toString();
     value = value.replace(this.symbols.literals, "");
     if (this.symbols.minusSign) value = value.replace("-", this.symbols.minusSign);
     if (this.options.numberingSystem === "arab") {
       if (this.symbols.decimal) {
-        value = value.replace(",", this.symbols.decimal);
-        value = value.replace(String.fromCharCode(1548), this.symbols.decimal);
+        value = $eb76cf4feb040f77$var$replaceAll(value, ",", this.symbols.decimal);
+        value = $eb76cf4feb040f77$var$replaceAll(value, String.fromCharCode(1548), this.symbols.decimal);
       }
-      if (this.symbols.group) value = $6c7bd7858deea686$var$replaceAll(value, ".", this.symbols.group);
+      if (this.symbols.group && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, ".", this.symbols.group);
     }
-    if (this.symbols.group === "\u2019" && value.includes("'")) value = $6c7bd7858deea686$var$replaceAll(value, "'", this.symbols.group);
-    if (this.options.locale === "fr-FR" && this.symbols.group) {
-      value = $6c7bd7858deea686$var$replaceAll(value, " ", this.symbols.group);
-      value = $6c7bd7858deea686$var$replaceAll(value, /\u00A0/g, this.symbols.group);
+    if (this.symbols.group === "\u2019" && value.includes("'") && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, "'", this.symbols.group);
+    if (this.symbols.group === "'" && value.includes("\u2019") && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, "\u2019", this.symbols.group);
+    if (this.options.locale === "fr-FR" && this.symbols.group && isGroupSymbolAllowed) {
+      value = $eb76cf4feb040f77$var$replaceAll(value, " ", this.symbols.group);
+      value = $eb76cf4feb040f77$var$replaceAll(value, /\u00A0/g, this.symbols.group);
     }
     return value;
   }
   isValidPartialNumber(value, minValue = -Infinity, maxValue = Infinity) {
+    let isGroupSymbolAllowed = this.formatter.resolvedOptions().useGrouping;
     value = this.sanitize(value);
     if (this.symbols.minusSign && value.startsWith(this.symbols.minusSign) && minValue < 0) value = value.slice(this.symbols.minusSign.length);
     else if (this.symbols.plusSign && value.startsWith(this.symbols.plusSign) && maxValue > 0) value = value.slice(this.symbols.plusSign.length);
-    if (this.symbols.group && value.startsWith(this.symbols.group)) return false;
     if (this.symbols.decimal && value.indexOf(this.symbols.decimal) > -1 && this.options.maximumFractionDigits === 0) return false;
-    if (this.symbols.group) value = $6c7bd7858deea686$var$replaceAll(value, this.symbols.group, "");
+    if (this.symbols.group && isGroupSymbolAllowed) value = $eb76cf4feb040f77$var$replaceAll(value, this.symbols.group, "");
     value = value.replace(this.symbols.numeral, "");
     if (this.symbols.decimal) value = value.replace(this.symbols.decimal, "");
     return value.length === 0;
   }
-  constructor(locale, options = {}) {
-    this.locale = locale;
-    if (options.roundingIncrement !== 1 && options.roundingIncrement != null) {
-      if (options.maximumFractionDigits == null && options.minimumFractionDigits == null) {
-        options.maximumFractionDigits = 0;
-        options.minimumFractionDigits = 0;
-      } else if (options.maximumFractionDigits == null) options.maximumFractionDigits = options.minimumFractionDigits;
-      else if (options.minimumFractionDigits == null) options.minimumFractionDigits = options.maximumFractionDigits;
-    }
-    this.formatter = new Intl.NumberFormat(locale, options);
-    this.options = this.formatter.resolvedOptions();
-    this.symbols = $6c7bd7858deea686$var$getSymbols(locale, this.formatter, this.options, options);
-    var _this_options_minimumFractionDigits, _this_options_maximumFractionDigits;
-    if (this.options.style === "percent" && (((_this_options_minimumFractionDigits = this.options.minimumFractionDigits) !== null && _this_options_minimumFractionDigits !== void 0 ? _this_options_minimumFractionDigits : 0) > 18 || ((_this_options_maximumFractionDigits = this.options.maximumFractionDigits) !== null && _this_options_maximumFractionDigits !== void 0 ? _this_options_maximumFractionDigits : 0) > 18)) console.warn("NumberParser cannot handle percentages with greater than 18 decimal places, please reduce the number in your options.");
-  }
 };
-var $6c7bd7858deea686$var$nonLiteralParts = /* @__PURE__ */ new Set([
+var $eb76cf4feb040f77$var$nonLiteralParts = /* @__PURE__ */ new Set([
   "decimal",
   "fraction",
   "integer",
@@ -804,7 +802,7 @@ var $6c7bd7858deea686$var$nonLiteralParts = /* @__PURE__ */ new Set([
   "plusSign",
   "group"
 ]);
-var $6c7bd7858deea686$var$pluralNumbers = [
+var $eb76cf4feb040f77$var$pluralNumbers = [
   0,
   4,
   2,
@@ -818,8 +816,7 @@ var $6c7bd7858deea686$var$pluralNumbers = [
   0.1,
   1.1
 ];
-function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
-  var _allParts_find, _posAllParts_find, _decimalParts_find, _allParts_find1;
+function $eb76cf4feb040f77$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
   let symbolFormatter = new Intl.NumberFormat(locale, {
     ...intlOptions,
     // Resets so we get the full range of symbols
@@ -827,31 +824,39 @@ function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, origin
     maximumSignificantDigits: 21,
     roundingIncrement: 1,
     roundingPriority: "auto",
-    roundingMode: "halfExpand"
+    roundingMode: "halfExpand",
+    useGrouping: true
   });
   let allParts = symbolFormatter.formatToParts(-10000.111);
   let posAllParts = symbolFormatter.formatToParts(10000.111);
-  let pluralParts = $6c7bd7858deea686$var$pluralNumbers.map((n) => symbolFormatter.formatToParts(n));
-  var _allParts_find_value;
-  let minusSign = (_allParts_find_value = (_allParts_find = allParts.find((p) => p.type === "minusSign")) === null || _allParts_find === void 0 ? void 0 : _allParts_find.value) !== null && _allParts_find_value !== void 0 ? _allParts_find_value : "-";
-  let plusSign = (_posAllParts_find = posAllParts.find((p) => p.type === "plusSign")) === null || _posAllParts_find === void 0 ? void 0 : _posAllParts_find.value;
-  if (!plusSign && ((originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "exceptZero" || (originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "always")) plusSign = "+";
+  let pluralParts = $eb76cf4feb040f77$var$pluralNumbers.map((n) => symbolFormatter.formatToParts(n));
+  let noNumeralUnits = pluralParts.map((p, i) => {
+    let unit = p.find((p2) => p2.type === "unit");
+    if (unit && !p.some((p2) => p2.type === "integer" || p2.type === "fraction")) return {
+      unit: unit.value,
+      value: $eb76cf4feb040f77$var$pluralNumbers[i]
+    };
+    return null;
+  }).filter((p) => !!p);
+  let minusSign = allParts.find((p) => p.type === "minusSign")?.value ?? "-";
+  let plusSign = posAllParts.find((p) => p.type === "plusSign")?.value;
+  if (!plusSign && (originalOptions?.signDisplay === "exceptZero" || originalOptions?.signDisplay === "always")) plusSign = "+";
   let decimalParts = new Intl.NumberFormat(locale, {
     ...intlOptions,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).formatToParts(1e-3);
-  let decimal = (_decimalParts_find = decimalParts.find((p) => p.type === "decimal")) === null || _decimalParts_find === void 0 ? void 0 : _decimalParts_find.value;
-  let group = (_allParts_find1 = allParts.find((p) => p.type === "group")) === null || _allParts_find1 === void 0 ? void 0 : _allParts_find1.value;
-  let allPartsLiterals = allParts.filter((p) => !$6c7bd7858deea686$var$nonLiteralParts.has(p.type)).map((p) => $6c7bd7858deea686$var$escapeRegex(p.value));
-  let pluralPartsLiterals = pluralParts.flatMap((p) => p.filter((p2) => !$6c7bd7858deea686$var$nonLiteralParts.has(p2.type)).map((p2) => $6c7bd7858deea686$var$escapeRegex(p2.value)));
+  let decimal = decimalParts.find((p) => p.type === "decimal")?.value;
+  let group = allParts.find((p) => p.type === "group")?.value;
+  let allPartsLiterals = allParts.filter((p) => !$eb76cf4feb040f77$var$nonLiteralParts.has(p.type)).map((p) => $eb76cf4feb040f77$var$escapeRegex(p.value));
+  let pluralPartsLiterals = pluralParts.flatMap((p) => p.filter((p2) => !$eb76cf4feb040f77$var$nonLiteralParts.has(p2.type)).map((p2) => $eb76cf4feb040f77$var$escapeRegex(p2.value)));
   let sortedLiterals = [
     .../* @__PURE__ */ new Set([
       ...allPartsLiterals,
       ...pluralPartsLiterals
     ])
   ].sort((a, b) => b.length - a.length);
-  let literals = sortedLiterals.length === 0 ? new RegExp("[\\p{White_Space}]", "gu") : new RegExp(`${sortedLiterals.join("|")}|[\\p{White_Space}]`, "gu");
+  let literals = sortedLiterals.length === 0 ? new RegExp("\\p{White_Space}|\\p{Cf}", "gu") : new RegExp(`${sortedLiterals.join("|")}|\\p{White_Space}|\\p{Cf}`, "gu");
   let numerals = [
     ...new Intl.NumberFormat(intlOptions.locale, {
       useGrouping: false
@@ -870,23 +875,25 @@ function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, origin
     group,
     literals,
     numeral,
-    index
+    numerals,
+    index,
+    noNumeralUnits
   };
 }
-function $6c7bd7858deea686$var$replaceAll(str, find, replace) {
+function $eb76cf4feb040f77$var$replaceAll(str, find, replace) {
   if (str.replaceAll) return str.replaceAll(find, replace);
   return str.split(find).join(replace);
 }
-function $6c7bd7858deea686$var$escapeRegex(string) {
+function $eb76cf4feb040f77$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
 var createFormatter = (locale, options = {}) => {
   return new Intl.NumberFormat(locale, options);
 };
 var createParser = (locale, options = {}) => {
-  return new $6c7bd7858deea686$export$cd11ab140839f11d(locale, options);
+  return new $eb76cf4feb040f77$export$cd11ab140839f11d(locale, options);
 };
 var parseValue = (value, params) => {
   const { prop, computed } = params;
@@ -908,7 +915,7 @@ var getDefaultStep = (step, formatOptions) => {
   return defaultStep;
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
 var { choose, guards, createMachine } = setup();
 var { not, and } = guards;
 var machine = createMachine({
@@ -928,6 +935,8 @@ var machine = createMachine({
       max: Number.MAX_SAFE_INTEGER,
       spinOnPress: true,
       ...props,
+      largeStep: props.largeStep ?? 10 * step,
+      smallStep: props.smallStep ?? step / 10,
       translations: {
         incrementLabel: "increment value",
         decrementLabel: "decrease value",
@@ -1055,7 +1064,7 @@ var machine = createMachine({
         },
         "INPUT.BLUR": [
           {
-            guard: and("clampValueOnBlur", not("isInRange")),
+            guard: and("clampValueOnBlur", not("isValueEmpty"), not("isInRange")),
             target: "idle",
             actions: ["setClampedValue", "clearHint", "invokeOnBlur", "invokeOnValueCommit"]
           },
@@ -1138,6 +1147,7 @@ var machine = createMachine({
       clampValueOnBlur: ({ prop }) => prop("clampValueOnBlur"),
       spinOnPress: ({ prop }) => !!prop("spinOnPress"),
       isInRange: ({ computed }) => !computed("isOutOfRange"),
+      isValueEmpty: ({ computed }) => computed("isValueEmpty"),
       isDecrementHint: ({ context, event }) => (event.hint ?? context.get("hint")) === "decrement",
       isIncrementHint: ({ context, event }) => (event.hint ?? context.get("hint")) === "increment",
       isTouchPointer: ({ event }) => event.pointerType === "touch"
@@ -1242,7 +1252,7 @@ var machine = createMachine({
         context.set("value", formatValue(nextValue, { computed, prop }));
       },
       setRawValue({ context, event, prop, computed }) {
-        let nextValue = parseValue(event.value, { computed, prop });
+        let nextValue = typeof event.value === "number" ? event.value : parseValue(event.value, { computed, prop });
         if (!prop("allowOverflow")) nextValue = clampValue(nextValue, prop("min"), prop("max"));
         context.set("value", formatValue(nextValue, { computed, prop }));
       },
@@ -1327,7 +1337,6 @@ var machine = createMachine({
 
 // components/number-input.ts
 var NumberInput = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1356,7 +1365,11 @@ var NumberInput = class extends Component {
       const visibleProps = { ...this.api.getInputProps() };
       delete visibleProps.name;
       delete visibleProps.form;
+      const ssrAriaLabel = inputEl.getAttribute("aria-label");
       this.spreadProps(inputEl, visibleProps);
+      if (ssrAriaLabel && !inputEl.getAttribute("aria-label")) {
+        inputEl.setAttribute("aria-label", ssrAriaLabel);
+      }
       const formatted = this.api.value ?? "";
       if (inputEl.value !== formatted) {
         inputEl.value = formatted;
@@ -1375,9 +1388,11 @@ var NumberInput = class extends Component {
     );
     if (valueInputEl instanceof HTMLInputElement) {
       const step = getNumber(this.el, "step") ?? 1;
-      const n = this.api.valueAsNumber;
-      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
-      const submit = Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
+      const submit = resolveNumberInputSubmitValue(
+        this.api.valueAsNumber,
+        this.api.value ?? "",
+        step
+      );
       syncHiddenInputValue(
         valueInputEl,
         this.el,
@@ -1399,46 +1414,32 @@ function machineState(api) {
     valueAsNumber: api.valueAsNumber
   };
 }
-function submitValueForHost(el, valueAsNumber) {
+function submitValueForHost(el, valueAsNumber, displayValue = "") {
   const step = getNumber(el, "step") ?? 1;
-  if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
-  return formatSubmitValue(valueAsNumber, step);
-}
-function canonicalDatasetValue(el) {
-  return getString(el, "value") ?? getString(el, "defaultValue") ?? "";
-}
-function hiddenSubmitValue(el, displayValue, valueAsNumber) {
-  const step = getNumber(el, "step") ?? 1;
-  if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
-    return submitValueForHost(el, valueAsNumber);
-  }
-  const canonical = canonicalDatasetValue(el);
-  if (canonical !== "") {
-    return formatSubmitValue(canonical, step);
-  }
-  const stripped = (displayValue ?? "").replace(/,/g, "");
-  if (stripped === "") return "";
-  return formatSubmitValue(stripped, step);
+  return resolveNumberInputSubmitValue(valueAsNumber, displayValue, step);
 }
 function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
   const valueInput = el.querySelector(
     '[data-scope="number-input"][data-part="value-input"]'
   );
   if (!valueInput) return;
-  const v = hiddenSubmitValue(el, value, valueAsNumber);
+  const step = getNumber(el, "step") ?? 1;
+  const v = resolveNumberInputSubmitValue(valueAsNumber, value, step);
   const changed = valueInput.value !== v;
   if (changed) valueInput.value = v;
   syncInputFormAssociation(valueInput, el);
   if (notifyForm && (changed || v !== "")) {
     markUsed(valueInput);
-    valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-    valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+    dispatchFormInputEvents(valueInput);
   }
 }
 function setZagValue(zag, value) {
   const step = getNumber(zag.el, "step") ?? 1;
   if (typeof value === "number") {
-    if (Number.isNaN(value)) return;
+    if (Number.isNaN(value)) {
+      zag.api.clearValue();
+      return;
+    }
     zag.machine.service.send({
       type: "VALUE.SET",
       value: formatDisplayValue(value, step)
@@ -1446,10 +1447,28 @@ function setZagValue(zag, value) {
     return;
   }
   const trimmed = value.trim();
-  if (trimmed === "") return;
+  if (trimmed === "") {
+    zag.api.clearValue();
+    return;
+  }
   zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
 }
-function buildMachineProps(el, pushEvent, canPush) {
+function initialDisplayValue(el) {
+  const binding = mountNumberBinding(el);
+  if ("value" in binding) return binding.value ?? "";
+  return binding.defaultValue ?? "";
+}
+function bindFormSubmitFlush(el, zag) {
+  const form = el.closest("form");
+  if (!form) return () => {
+  };
+  const onSubmit = () => {
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
+  };
+  form.addEventListener("submit", onSubmit, true);
+  return () => form.removeEventListener("submit", onSubmit, true);
+}
+function buildMachineProps(el, pushEvent, canPush, hook) {
   const step = getNumber(el, "step") ?? 1;
   return {
     id: el.id,
@@ -1465,8 +1484,13 @@ function buildMachineProps(el, pushEvent, canPush) {
     allowMouseWheel: getBoolean(el, "allowMouseWheel"),
     dir: getDir(el),
     onValueChange: (details) => {
+      const next = details.value ?? "";
+      const isMountEcho = hook.fieldTouched !== true && next === (hook.initialValue ?? "");
+      if (!isMountEcho) {
+        hook.fieldTouched = true;
+      }
       if (details.value !== void 0) {
-        syncNumberInputValueInput(el, details.value ?? "", true, details.valueAsNumber);
+        syncNumberInputValueInput(el, next, !isMountEcho, details.valueAsNumber);
       }
       notifyChange({
         el,
@@ -1499,22 +1523,17 @@ function numberInputPropsForUpdate(el) {
     dir: getDir(el)
   };
 }
-var NumberInputHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
-    zag.init();
-    this.numberInput = zag;
-    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
-    const valueInput = el.querySelector(
-      '[data-scope="number-input"][data-part="value-input"]'
-    );
-    if (valueInput) {
-      syncFormInput(valueInput, () => initialSubmit);
-    }
+var NumberInputHook = createZagLiveHook({
+  key: "numberInput",
+  controlledKeys: ["value", "defaultValue"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
+    hook.initialValue = initialDisplayValue(el);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
+    hook.unbindFormSubmit = bindFormSubmitFlush(el, zag);
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
       emitResponse({
@@ -1528,104 +1547,105 @@ var NumberInputHook = {
         domDetail: { id: el.id, ...snapshot }
       });
     };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add(
-      "corex:number-input:set-value",
-      (event) => {
-        const v = event.detail?.value;
-        if (typeof v === "number" && !Number.isNaN(v)) setZagValue(zag, v);
-        else if (typeof v === "string") setZagValue(zag, v);
-      }
-    );
-    domRegistry.add("corex:number-input:clear-value", () => {
+    dom.add("corex:number-input:set-value", (event) => {
+      const v = event.detail?.value;
+      if (typeof v === "number" && !Number.isNaN(v)) setZagValue(zag, v);
+      else if (typeof v === "string") setZagValue(zag, v);
+    });
+    dom.add("corex:number-input:clear-value", () => {
       zag.api.clearValue();
     });
-    domRegistry.add("corex:number-input:increment", () => {
+    dom.add("corex:number-input:increment", () => {
       zag.api.increment();
     });
-    domRegistry.add("corex:number-input:decrement", () => {
+    dom.add("corex:number-input:decrement", () => {
       zag.api.decrement();
     });
-    domRegistry.add("corex:number-input:set-to-min", () => {
+    dom.add("corex:number-input:set-to-min", () => {
       zag.api.setToMin();
     });
-    domRegistry.add("corex:number-input:set-to-max", () => {
+    dom.add("corex:number-input:set-to-max", () => {
       zag.api.setToMax();
     });
-    domRegistry.add("corex:number-input:focus", () => {
+    dom.add("corex:number-input:focus", () => {
       zag.api.focus();
     });
-    domRegistry.add("corex:number-input:state", (event) => {
+    dom.add("corex:number-input:state", (event) => {
       emitState(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("number_input_set_value", (payload) => {
+    server.add("number_input_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
         setZagValue(zag, payload.value);
       }
     });
-    registry.add("number_input_clear_value", (payload) => {
+    server.add("number_input_clear_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
     });
-    registry.add("number_input_increment", (payload) => {
+    server.add("number_input_increment", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.increment();
     });
-    registry.add("number_input_decrement", (payload) => {
+    server.add("number_input_decrement", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.decrement();
     });
-    registry.add("number_input_set_to_min", (payload) => {
+    server.add("number_input_set_to_min", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setToMin();
     });
-    registry.add("number_input_set_to_max", (payload) => {
+    server.add("number_input_set_to_max", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setToMax();
     });
-    registry.add("number_input_focus", (payload) => {
+    server.add("number_input_focus", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.focus();
     });
-    registry.add("number_input_state", (payload) => {
+    server.add("number_input_state", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitState(parseRespondTo(payload));
     });
+    return zag;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["value", "defaultValue"]);
+  afterInit(hook, zag) {
+    const el = hook.el;
+    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber, zag.api.value ?? "");
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
+    const valueInput = el.querySelector(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInput) {
+      syncFormInput(valueInput, () => initialSubmit);
+    }
   },
-  updated() {
-    const el = this.el;
-    const zag = this.numberInput;
-    if (!zag) return;
-    try {
-      const valuePatch = readUpdatedServerNumber(el, this.beforeAttrs);
+  update(hook, zag) {
+    const el = hook.el;
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+    }
+    const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+    if (valuePatch.value === "") {
+      zag.api.clearValue();
+      zag.updateProps({
+        ...numberInputPropsForUpdate(el),
+        ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
+      });
+    } else {
       zag.updateProps({
         ...numberInputPropsForUpdate(el),
         ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {},
         ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
       });
-      syncNumberInputValueInput(
-        el,
-        zag.api.value ?? getString(el, "defaultValue") ?? "",
-        false,
-        zag.api.valueAsNumber
-      );
-    } finally {
-      this.beforeAttrs = void 0;
     }
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
+    zag.render();
   },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.numberInput?.destroy();
+  destroy(hook) {
+    hook.unbindFormSubmit?.();
   }
-};
+});
 export {
   NumberInputHook as NumberInput,
   buildMachineProps,

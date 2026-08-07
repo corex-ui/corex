@@ -19,12 +19,14 @@ defmodule Mix.Tasks.Corex.New do
 
   ## Corex-only options
 
-  * **`--no-design`**  -  skip the `corex_design` dependency, token config, and Corex design `@import` blocks in `app.css`. Default is **`--design`** (design on).
+  * **`--no-design`**  -  skip the `corex_design` dependency and live design build. Ships a static neo/light `assets/corex/` export (all components) you can edit or delete. Cannot combine with `--mode`, `--theme`, or `--a11y`. Default is **`--design`** (design on).
   * **`--tailwind`** / **`--no-tailwind`**  -  Tailwind in the generated Phoenix app defaults **on**. **`--no-tailwind`** is forwarded to **`phx.new`** only together with **`--no-design`**. If **`--design`** is on, **`--no-tailwind` is ignored** (Corex design CSS expects Tailwind).
   * **`--mode`**  -  plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
   * **`--theme`**  -  themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
+  * **`--a11y`**  -  preference axes (text, contrast, motion, cursor, focus, links), plug, LiveView hook, root-layout bridge, panel UI. Default **off**. Implies **`--design`**.
   * **`--lang`**  -  Localize + Gettext, path plug, locale scope helpers, `language_switch`.
-  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`.
+  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: [:dev, :test]}`, `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`, and writes `.cursor/mcp.json` pointing at `http://localhost:4000/corex/mcp`. Use **`--no-mcp`** for locked-down scaffolds. Never enable MCP in `:prod` or set `allow_remote_access: true` casually.
+  * **`--usage-rules`** / **`--no-usage-rules`**  -  when **`--usage-rules`** (default), adds `{:usage_rules, "~> 1.1", only: :dev}` and `usage_rules: usage_rules()` (skills under `.cursor/skills`, `package_skills: [:corex]`).
   * **`--dev PATH`**  -  `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
   * **`--install`** / **`--no-install`**  -  whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
 
@@ -54,6 +56,7 @@ defmodule Mix.Tasks.Corex.New do
 
       mix corex.new hello_world
       mix corex.new my_app --mode --theme --lang
+      mix corex.new my_app --mode --theme --a11y
       mix corex.new my_app --no-design --no-tailwind
       mix corex.new my_app --dev ../corex
 
@@ -76,6 +79,7 @@ defmodule Mix.Tasks.Corex.New do
     design: :boolean,
     mode: :boolean,
     theme: :boolean,
+    a11y: :boolean,
     lang: :boolean,
     ecto: :boolean,
     app: :string,
@@ -94,7 +98,8 @@ defmodule Mix.Tasks.Corex.New do
     no_version_check: :boolean,
     tailwind: :boolean,
     gettext: :boolean,
-    mcp: :boolean
+    mcp: :boolean,
+    usage_rules: :boolean
   ]
 
   @reserved_app_names ~W(server table)
@@ -113,10 +118,13 @@ defmodule Mix.Tasks.Corex.New do
       opts
       |> Keyword.put_new(:lang, false)
       |> Keyword.put_new(:mcp, true)
+      |> Keyword.put_new(:usage_rules, true)
       |> Keyword.put_new(:theme, false)
-      |> Keyword.put_new(:design, true)
+      |> Keyword.put_new(:a11y, false)
+      |> Keyword.put_new(:mode, false)
       |> Keyword.put_new(:tailwind, true)
       |> Cli.maybe_auto_enable_design()
+      |> Keyword.put_new(:design, true)
 
     Cli.validate_corex_flags!(opts)
     Cli.validate_phx_new_flags!(opts)

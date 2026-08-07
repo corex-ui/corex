@@ -1,38 +1,35 @@
 import {
   memo
-} from "./chunks/chunk-NB7M3GJN.mjs";
+} from "./chunks/chunk-Z3EQ3GCO.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunks/chunk-6MIECCPA.mjs";
+} from "./chunks/chunk-V2LDXRRO.mjs";
 import {
   clampValue
-} from "./chunks/chunk-PE34YET2.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
   emitResponse,
   idMatches,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   getBoolean,
   getDir,
   getNumber,
   getString,
   getStringList,
   match
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+timer@1.40.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
   "root",
   "area",
@@ -45,11 +42,11 @@ var anatomy = createAnatomy("timer").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+timer@1.40.0/node_modules/@zag-js/timer/dist/timer.dom.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `timer:${ctx.id}:root`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `timer:${ctx.id}:area`;
 
-// ../node_modules/.pnpm/@zag-js+timer@1.40.0/node_modules/@zag-js/timer/dist/timer.connect.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.connect.mjs
 var validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
 function connect(service, normalize) {
   const { state, send, computed, scope, prop } = service;
@@ -153,7 +150,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+timer@1.40.0/node_modules/@zag-js/timer/dist/timer.machine.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.machine.mjs
 var machine = createMachine({
   props({ props }) {
     validateProps(props);
@@ -444,7 +441,6 @@ function applyTimerItemVisibility(root, api) {
   }
 }
 var Timer = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -467,6 +463,14 @@ var Timer = class extends Component {
       );
       if (itemEl) {
         this.spreadProps(itemEl, this.api.getItemProps({ type }));
+        if (type === "days") {
+          const days = Number(this.api.time.days);
+          if (days > 99) {
+            itemEl.setAttribute("data-plain", String(days));
+          } else {
+            itemEl.removeAttribute("data-plain");
+          }
+        }
       }
       const labelEl = this.el.querySelector(
         `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
@@ -569,6 +573,20 @@ function buildTimerCallbacks(el, pushEvent, canPush) {
     }
   };
 }
+function syncTimerDir(el) {
+  const dir = getDir(el);
+  if (dir) {
+    el.setAttribute("dir", dir);
+    el.querySelectorAll("[data-scope='timer']").forEach((node) => {
+      node.setAttribute("dir", dir);
+    });
+  } else {
+    el.removeAttribute("dir");
+    el.querySelectorAll("[data-scope='timer'][dir]").forEach((node) => {
+      node.removeAttribute("dir");
+    });
+  }
+}
 function buildTimerProps(el, pushEvent, canPush) {
   return {
     id: el.id,
@@ -577,25 +595,23 @@ function buildTimerProps(el, pushEvent, canPush) {
     targetMs: getNumber(el, "targetMs"),
     autoStart: getBoolean(el, "autoStart"),
     interval: getNumber(el, "interval"),
-    dir: getDir(el),
-    orientation: getString(el, "orientation"),
     translations: parseTimerTranslations(el),
     ...buildTimerCallbacks(el, pushEvent, canPush)
   };
 }
-var TimerHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var TimerHook = createZagLiveHook({
+  key: "timer",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const identity = readIdentityRaw(el);
-    this.lastStartMsRaw = identity.startMs;
-    this.lastTargetMsRaw = identity.targetMs;
-    this.lastCountdownRaw = identity.countdown;
-    this.lastIntervalRaw = identity.interval;
+    hook.lastStartMsRaw = identity.startMs;
+    hook.lastTargetMsRaw = identity.targetMs;
+    hook.lastCountdownRaw = identity.countdown;
+    hook.lastIntervalRaw = identity.interval;
     const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
-    zag.init();
-    this.timer = zag;
+    syncTimerDir(el);
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
       emitResponse({
@@ -609,90 +625,83 @@ var TimerHook = {
         domDetail: { id: el.id, ...snapshot }
       });
     };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:timer:start", () => {
+    dom.add("corex:timer:start", () => {
       zag.api.start();
     });
-    domRegistry.add("corex:timer:pause", () => {
+    dom.add("corex:timer:pause", () => {
       zag.api.pause();
     });
-    domRegistry.add("corex:timer:resume", () => {
+    dom.add("corex:timer:resume", () => {
       zag.api.resume();
     });
-    domRegistry.add("corex:timer:reset", () => {
+    dom.add("corex:timer:reset", () => {
       zag.api.reset();
     });
-    domRegistry.add("corex:timer:restart", () => {
+    dom.add("corex:timer:restart", () => {
       zag.api.restart();
     });
-    domRegistry.add("corex:timer:state", (event) => {
+    dom.add("corex:timer:state", (event) => {
       emitState(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("timer_start", (payload) => {
+    server.add("timer_start", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.start();
     });
-    registry.add("timer_pause", (payload) => {
+    server.add("timer_pause", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.pause();
     });
-    registry.add("timer_resume", (payload) => {
+    server.add("timer_resume", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.resume();
     });
-    registry.add("timer_reset", (payload) => {
+    server.add("timer_reset", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.reset();
     });
-    registry.add("timer_restart", (payload) => {
+    server.add("timer_restart", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.restart();
     });
-    registry.add("timer_state", (payload) => {
+    server.add("timer_state", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitState(parseRespondTo(payload));
     });
+    return zag;
   },
-  updated() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+  update(hook, zag) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const patch = {
       id: el.id,
       translations: parseTimerTranslations(el),
       ...buildTimerCallbacks(el, pushEvent, canPush)
     };
     const startMsRaw = el.dataset.startMs;
-    if (startMsRaw !== this.lastStartMsRaw) {
+    if (startMsRaw !== hook.lastStartMsRaw) {
       patch.startMs = getNumber(el, "startMs");
-      this.lastStartMsRaw = startMsRaw;
+      hook.lastStartMsRaw = startMsRaw;
     }
     const targetMsRaw = el.dataset.targetMs;
-    if (targetMsRaw !== this.lastTargetMsRaw) {
+    if (targetMsRaw !== hook.lastTargetMsRaw) {
       patch.targetMs = getNumber(el, "targetMs");
-      this.lastTargetMsRaw = targetMsRaw;
+      hook.lastTargetMsRaw = targetMsRaw;
     }
     const countdownRaw = el.dataset.countdown;
-    if (countdownRaw !== this.lastCountdownRaw) {
+    if (countdownRaw !== hook.lastCountdownRaw) {
       patch.countdown = getBoolean(el, "countdown");
-      this.lastCountdownRaw = countdownRaw;
+      hook.lastCountdownRaw = countdownRaw;
     }
     const intervalRaw = el.dataset.interval;
-    if (intervalRaw !== this.lastIntervalRaw) {
+    if (intervalRaw !== hook.lastIntervalRaw) {
       patch.interval = getNumber(el, "interval");
-      this.lastIntervalRaw = intervalRaw;
+      hook.lastIntervalRaw = intervalRaw;
     }
-    this.timer?.updateProps(patch);
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.timer?.destroy();
+    syncTimerDir(el);
+    zag.updateProps(patch);
   }
-};
+});
 export {
   TimerHook as Timer,
   parseTimerTranslations

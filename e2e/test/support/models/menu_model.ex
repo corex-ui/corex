@@ -150,6 +150,21 @@ defmodule E2eWeb.MenuModel do
     has?(session, css("#menu-events-log-client tr[data-part='row']", visible: :any))
   end
 
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
   def click_item_by_host_id(session, host_dom_id, value, opts \\ []) when is_binary(value) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid menu host dom id"
@@ -241,6 +256,58 @@ defmodule E2eWeb.MenuModel do
     click(
       session,
       css("#menu-playground-disabled [data-scope='switch'][data-part='control']", visible: :any)
+    )
+
+    session
+  end
+
+  defp safe_dom_token?(token), do: String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+
+  def focus_trigger(session, host_dom_id) when is_binary(host_dom_id) do
+    if not safe_dom_token?(host_dom_id), do: raise(ArgumentError, "invalid menu host dom id")
+
+    tid = "menu:#{host_dom_id}:trigger"
+
+    execute_script(
+      session,
+      """
+      const el = document.getElementById('#{tid}');
+      if (el) el.focus();
+      return !!(el && document.activeElement === el);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on ##{tid}" end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def content_open?(session, host_dom_id) when is_binary(host_dom_id) do
+    has?(
+      session,
+      css(~s|[id="menu:#{host_dom_id}:content"][data-state="open"]|, visible: :any)
+    )
+  end
+
+  def assert_highlighted_item(session, host_dom_id, value)
+      when is_binary(host_dom_id) and is_binary(value) do
+    if not safe_dom_token?(host_dom_id), do: raise(ArgumentError, "invalid menu host dom id")
+
+    execute_script(
+      session,
+      """
+      const item = document.querySelector(
+        '[id="menu:#{host_dom_id}"] [data-scope="menu"][data-part="item"][data-value="#{value}"][data-highlighted], ' +
+        '[id="menu:#{host_dom_id}:content"] [data-scope="menu"][data-part="item"][data-value="#{value}"][data-highlighted]'
+      );
+      return !!item;
+      """,
+      [],
+      fn v -> assert v == true, "expected highlighted item #{value} in menu ##{host_dom_id}" end
     )
 
     session

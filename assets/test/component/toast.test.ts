@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from "vitest";
+import { describe, expect, it, afterEach, vi } from "vitest";
 import type { ActionOptions } from "@zag-js/toast";
 import {
   actionClassTokens,
@@ -42,7 +42,7 @@ describe("toast group API", () => {
     const container = document.createElement("div");
     container.id = groupId;
     createToastGroup(container, { id: groupId });
-    createToast({ id: "t1", title: "Hi", groupId });
+    createToast({ id: "t1", title: "Hi", group_id: groupId });
     const store = getToastStore(groupId);
     expect(store?.getCount()).toBe(1);
     updateToast("t1", { title: "Updated" }, groupId);
@@ -51,8 +51,22 @@ describe("toast group API", () => {
     expect(store?.getCount()).toBe(0);
   });
 
-  it("createToast throws without a store", () => {
-    expect(() => createToast({ id: "orphan", title: "X" })).toThrow(/No toast store/);
+  it("createToast warns and drops the toast without a store", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    expect(() => createToast({ id: "orphan", title: "X" })).not.toThrow();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("no toast group"));
+
+    warn.mockRestore();
+  });
+
+  it("createToast names the missing group in the warning", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    createToast({ id: "orphan", title: "X", group_id: "not-mounted" });
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"not-mounted"'));
+
+    warn.mockRestore();
   });
 
   it("disposeToastGroup clears dataset markers", () => {
@@ -158,6 +172,40 @@ describe("toast group API", () => {
     expect(close?.querySelector("svg[data-testid='close-icon']")).toBeTruthy();
     expect(loading?.querySelector("svg[data-testid='loading-icon']")).toBeTruthy();
     expect(closeTemplate.querySelector("svg")).toBeTruthy();
+
+    document.body.removeChild(container);
+  });
+
+  it("re-spreads remaining toast styles when updateProps is a no-op", () => {
+    const container = document.createElement("div");
+    container.id = groupId;
+    container.setAttribute("phx-hook", "Toast");
+    document.body.appendChild(container);
+
+    const { group, store } = createToastGroup(container, {
+      id: groupId,
+      overlap: true,
+      removeDelay: 0,
+    });
+
+    store.create({ id: "t-a", title: "A", type: "info", duration: Infinity });
+    store.create({ id: "t-b", title: "B", type: "info", duration: Infinity });
+    group.render();
+
+    const items = (
+      group as unknown as {
+        toastComponents: Map<string, { updateProps: () => boolean; render: () => void }>;
+      }
+    ).toastComponents;
+    const remaining = items.get("t-b");
+    expect(remaining).toBeTruthy();
+
+    vi.spyOn(remaining!, "updateProps").mockReturnValue(false);
+    const renderSpy = vi.spyOn(remaining!, "render");
+
+    group.render();
+
+    expect(renderSpy).toHaveBeenCalled();
 
     document.body.removeChild(container);
   });

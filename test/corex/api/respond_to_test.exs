@@ -5,9 +5,19 @@ defmodule Corex.Api.RespondToTest do
   alias Phoenix.LiveView.JS
 
   describe "respond_to_fields/1" do
-    test "delegates to Helpers" do
-      assert RespondTo.respond_to_fields(respond_to: :both) == %{respond_to: "both"}
+    test "defaults to the server target" do
       assert RespondTo.respond_to_fields([]) == %{respond_to: "server"}
+    end
+
+    test "stringifies a known target" do
+      assert RespondTo.respond_to_fields(respond_to: :both) == %{respond_to: "both"}
+      assert RespondTo.respond_to_fields(respond_to: :client) == %{respond_to: "client"}
+    end
+
+    test "raises on an unknown target" do
+      assert_raise ArgumentError, ~r/expected :both, :server, or :client/, fn ->
+        RespondTo.respond_to_fields(respond_to: :invalid)
+      end
     end
   end
 

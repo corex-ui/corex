@@ -55,6 +55,62 @@ defmodule E2eWeb.TimerTest do
       assert has?(session, Timer.action_trigger_query(host, "pause"))
     end
 
+    feature "controls js starts timer", %{session: session} do
+      section = "timer-api-controls-js-section"
+      host = "timer-api-controls-js"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready(host)
+        |> Timer.click_button_in_section(section, "Start")
+
+      assert Timer.timer_area_visible_in_host?(session, host)
+      assert has?(session, Timer.action_trigger_query(host, "pause"))
+    end
+
+    feature "controls server starts timer", %{session: session} do
+      section = "timer-api-controls-server-section"
+      host = "timer-api-controls-server"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready(host)
+        |> Timer.click_button_in_section(section, "Start")
+
+      assert Timer.timer_area_visible_in_host?(session, host)
+      assert has?(session, Timer.action_trigger_query(host, "pause"))
+    end
+
+    feature "state binding shows toast", %{session: session} do
+      section = "timer-api-state-binding"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready("timer-api-state-client")
+        |> Timer.click_button_in_section(section, "Read state")
+
+      Timer.assert_toast(session, "timer-api-state-client")
+    end
+
+    feature "state js shows toast", %{session: session} do
+      section = "timer-api-state-js-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready("timer-api-state-js")
+        |> Timer.click_button_in_section(section, "Read state")
+
+      Timer.assert_toast(session, "timer-api-state-js")
+    end
+
     feature "state server shows toast", %{session: session} do
       section = "timer-api-state-server-section"
 
@@ -82,6 +138,20 @@ defmodule E2eWeb.TimerTest do
       session
       |> Timer.click_start_trigger_in_host("timer-events-server")
       |> Timer.wait_log_rows_grew("timer-events-log-server", before, timeout: 12_000)
+    end
+
+    feature "client  -  tick appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :events)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready("timer-events-client")
+
+      before = Timer.log_row_count(session, "timer-events-log-client")
+
+      session
+      |> Timer.click_start_trigger_in_host("timer-events-client")
+      |> Timer.wait_log_rows_grew("timer-events-log-client", before, timeout: 12_000)
     end
   end
 end

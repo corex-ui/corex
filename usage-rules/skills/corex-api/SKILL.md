@@ -1,7 +1,7 @@
 ---
 name: corex-api
 description: >-
-  Load when using Corex.Accordion.set_value, Corex.Dialog.open, phx-click with
+  Load when using Corex.Accordion.set_value, Corex.Dialog.set_open, phx-click with
   Corex.* JS commands, socket helpers Corex.*(socket, id, …), controlled mode
   with value assign, assign_async with accordion_skeleton, toast_group flash,
   or mix usage_rules.search_docs set_value -p corex. For on_*_change subscriptions
@@ -38,6 +38,6 @@ Pair `controlled`, `value`, and `on_value_change`:
 
 ## Discovery
 
-MCP `get_component { id: "<name>" }` → API section, or `mix usage_rules.search_docs "set_value" -p corex`.
+MCP `get_component { id: "<name>" }` → structured `api`, or `search_docs` / `mix usage_rules.search_docs "set_value" -p corex`.
 
 Full checklist: sub-rule `corex:api`.

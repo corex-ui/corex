@@ -58,7 +58,7 @@ defmodule Corex.MCP.ServerTest do
     assert map_size(dispatch) == length(tools)
   end
 
-  test "handle_http_message initialize returns protocol and tools" do
+  test "handle_http_message initialize returns protocol without tools list" do
     body = %{
       "jsonrpc" => "2.0",
       "id" => 1,
@@ -75,10 +75,30 @@ defmodule Corex.MCP.ServerTest do
     decoded = Corex.MCP.Json.decode!(conn.resp_body)
     assert decoded["result"]["protocolVersion"] == "2025-03-26"
     assert decoded["result"]["serverInfo"]["name"] == "Corex MCP"
-    assert is_list(decoded["result"]["tools"])
+    refute Map.has_key?(decoded["result"], "tools")
+    assert decoded["result"]["capabilities"]["prompts"]
+    assert is_binary(decoded["result"]["instructions"])
   end
 
-  test "handle_http_message rejects stale protocol version" do
+  test "handle_http_message initialize echoes 2025-11-25" do
+    body = %{
+      "jsonrpc" => "2.0",
+      "id" => 1,
+      "method" => "initialize",
+      "params" => %{"protocolVersion" => "2025-11-25"}
+    }
+
+    conn =
+      body
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.MCP.Json.decode!(conn.resp_body)
+    assert decoded["result"]["protocolVersion"] == "2025-11-25"
+  end
+
+  test "handle_http_message initialize negotiates unknown version to latest" do
     body = %{
       "jsonrpc" => "2.0",
       "id" => 1,
@@ -91,8 +111,9 @@ defmodule Corex.MCP.ServerTest do
       |> post_conn()
       |> Server.handle_http_message()
 
-    assert conn.status == 400
-    assert conn.resp_body =~ "Unsupported protocol version"
+    assert conn.status == 200
+    decoded = Corex.MCP.Json.decode!(conn.resp_body)
+    assert decoded["result"]["protocolVersion"] == "2025-11-25"
   end
 
   test "handle_http_message ping" do
@@ -134,18 +155,30 @@ defmodule Corex.MCP.ServerTest do
   end
 
   test "handle_http_message lists prompts and resources" do
-    for {method, key} <- [{"prompts/list", "prompts"}, {"resources/list", "resources"}] do
-      body = %{"jsonrpc" => "2.0", "id" => 3, "method" => method, "params" => %{}}
+    body = %{"jsonrpc" => "2.0", "id" => 3, "method" => "prompts/list", "params" => %{}}
 
-      conn =
-        body
-        |> post_conn()
-        |> Server.handle_http_message()
+    conn =
+      body
+      |> post_conn()
+      |> Server.handle_http_message()
 
-      assert conn.status == 200
-      decoded = Corex.MCP.Json.decode!(conn.resp_body)
-      assert decoded["result"][key] == []
-    end
+    assert conn.status == 200
+    decoded = Corex.MCP.Json.decode!(conn.resp_body)
+    names = Enum.map(decoded["result"]["prompts"], & &1["name"])
+    assert "corex_form" in names
+    assert "corex_controlled" in names
+    assert "corex_style" in names
+
+    body = %{"jsonrpc" => "2.0", "id" => 4, "method" => "resources/list", "params" => %{}}
+
+    conn =
+      body
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.MCP.Json.decode!(conn.resp_body)
+    assert decoded["result"]["resources"] == []
   end
 
   test "handle_http_message unknown method returns JSON-RPC error" do

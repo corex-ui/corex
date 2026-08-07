@@ -80,7 +80,7 @@ defmodule E2eWeb.CheckboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-space-sm mb-space-lg">
               <.action phx-click="api_check" phx-value-id={@id_server} class="button ui-size-sm">
                 Set checked
               </.action>

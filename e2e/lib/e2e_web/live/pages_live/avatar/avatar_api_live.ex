@@ -71,7 +71,7 @@ defmodule E2eWeb.AvatarApiLive do
           code={@codes.set_src_binding}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-space-sm mb-space-lg">
               <.action
                 phx-click={Corex.Avatar.set_src(@id_sv_client, @primary_src)}
                 class="button ui-size-sm"
@@ -149,7 +149,7 @@ defmodule E2eWeb.AvatarApiLive do
         <div
           id="avatar-api-loaded-wrap"
           phx-hook=".AvatarApiLoadedDomToast"
-          class="flex flex-col gap-4 w-full"
+          class="flex flex-col gap-space-lg w-full"
         >
           <.demo_section
             id="avatar-api-loaded-binding"

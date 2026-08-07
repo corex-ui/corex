@@ -2,17 +2,17 @@ defmodule E2eWeb.FileUploadFormLiveTest do
   use E2eWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
 
-  test "phoenix save with no uploads pushes toast-create", %{conn: conn} do
+  test "phoenix save with no uploads pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/file-upload-live/form")
 
     view
     |> form("#file-upload-live-form-phoenix")
     |> render_submit(%{})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "attachment=(none)",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -30,10 +30,10 @@ defmodule E2eWeb.FileUploadFormLiveTest do
     |> form("#file-upload-live-form-ecto")
     |> render_submit(%{"file_upload_ecto" => %{}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "attachment=report.pdf",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -50,7 +50,7 @@ defmodule E2eWeb.FileUploadFormLiveTest do
     assert html =~ "file-upload-live-form-ecto_attachment"
     assert html =~ ~S|data-part="error"|
     assert html =~ "can&#39;t be blank"
-    refute_push_event(view, "toast-create", %{})
+    refute_push_event(view, "toast_create", %{})
   end
 
   test "ecto save ignores stale attachment_label when no files are selected", %{conn: conn} do
@@ -65,7 +65,7 @@ defmodule E2eWeb.FileUploadFormLiveTest do
 
     assert html =~ ~S|data-part="error"|
     assert html =~ "can&#39;t be blank"
-    refute_push_event(view, "toast-create", %{})
+    refute_push_event(view, "toast_create", %{})
   end
 
   test "ecto shows error after clearing selected files", %{conn: conn} do
@@ -88,6 +88,6 @@ defmodule E2eWeb.FileUploadFormLiveTest do
 
     assert html =~ ~S|data-part="error"|
     assert html =~ "can&#39;t be blank"
-    refute_push_event(view, "toast-create", %{})
+    refute_push_event(view, "toast_create", %{})
   end
 end

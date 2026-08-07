@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { ColorPicker, parse } from "../components/color-picker";
 import type {
   Props,
@@ -8,25 +6,38 @@ import type {
   FormatChangeDetails,
 } from "@zag-js/color-picker";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { mountStringBinding } from "../lib/read-props";
+import { mountStringBinding, readUpdatedServerString } from "../lib/read-props";
+import { readPositioningOptions } from "../lib/positioning";
+import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
+import { createZagLiveHook } from "../lib/zag-live-hook";
+import { notifyPhoenixFormChange } from "../lib/phoenix-form-bridge";
+
+type ParsedColor = ReturnType<typeof parse>;
+
+function tryParseColor(raw: string, label = "color"): ParsedColor | undefined {
+  try {
+    return parse(raw);
+  } catch (error) {
+    console.warn(`[corex] color-picker: failed to parse ${label}`, raw, error);
+    return undefined;
+  }
+}
 
 function readColorValueBinding(el: HTMLElement): Pick<Props, "value" | "defaultValue"> {
   const binding = mountStringBinding(el, "value", "defaultValue");
   if ("value" in binding && binding.value) {
-    return { value: parse(binding.value) };
+    const parsed = tryParseColor(binding.value, "value");
+    if (parsed) return { value: parsed };
   }
   if ("defaultValue" in binding && binding.defaultValue) {
-    return { defaultValue: parse(binding.defaultValue) };
+    const parsed = tryParseColor(binding.defaultValue, "defaultValue");
+    if (parsed) return { defaultValue: parsed };
   }
-  return {};
+  return { defaultValue: tryParseColor("#000000", "fallback") };
 }
-import { readPositioningOptions } from "../lib/positioning";
-import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 
 type ColorPickerHookState = {
   colorPicker?: ColorPicker;
-  handlers?: Array<CallbackRef>;
-  onSetValue?: (event: Event) => void;
 };
 
 function syncColorHiddenAndNotify(el: HTMLElement, valueAsString: string | undefined) {
@@ -37,22 +48,22 @@ function syncColorHiddenAndNotify(el: HTMLElement, valueAsString: string | undef
     '[data-scope="color-picker"][data-part="hidden-input"]'
   );
   if (hidden) {
-    hidden.value = valueAsString;
-    hidden.dispatchEvent(new Event("input", { bubbles: true }));
-    hidden.dispatchEvent(new Event("change", { bubbles: true }));
+    notifyPhoenixFormChange(hidden, valueAsString, { force: true });
   }
 }
 
 export function readValueProps(el: HTMLElement): Pick<Props, "defaultValue"> {
   const defaultVal = getString(el, "defaultValue");
-  return { defaultValue: defaultVal ? parse(defaultVal) : undefined };
+  return { defaultValue: defaultVal ? tryParseColor(defaultVal, "defaultValue") : undefined };
 }
 
-const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const ColorPickerHook = createZagLiveHook<ColorPickerHookState, ColorPicker>({
+  key: "colorPicker",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const valueProps = readColorValueBinding(el);
 
     const zag = new ColorPicker(el, {
@@ -148,29 +159,34 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
         });
       },
     } as unknown as Props);
-    zag.init();
-    this.colorPicker = zag;
-    this.handlers = [];
 
-    this.onSetValue = (event: Event) => {
-      const { value } = (event as CustomEvent<{ value: string }>).detail;
+    dom.add<CustomEvent<{ value: string }>>("corex:color-picker:set-value", (event) => {
+      const { value } = event.detail;
+      if (typeof value !== "string") return;
+      if (!tryParseColor(value, "set-value")) return;
       zag.api.setValue(value);
-    };
-    el.addEventListener("corex:color-picker:set-value", this.onSetValue);
+    });
 
-    this.handlers.push(
-      this.handleEvent("color_picker_set_value", (payload: { value: string }) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        zag.api.setValue(payload.value);
-      })
-    );
+    server.add("color_picker_set_value", (payload: { value: string }) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof payload.value !== "string") return;
+      if (!tryParseColor(payload.value, "set_value")) return;
+      zag.api.setValue(payload.value);
+    });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
-    const el = this.el;
-    const zag = this.colorPicker;
+  update(hook, zag) {
+    const el = hook.el;
 
-    zag?.updateProps({
+    const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
+    const parsedValue =
+      valuePatch.value !== undefined && valuePatch.value
+        ? tryParseColor(valuePatch.value, "value")
+        : undefined;
+
+    zag.updateProps({
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -180,20 +196,13 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
       required: getBoolean(el, "required"),
       dir: getDir(el),
       positioning: readPositioningOptions(el),
+      ...(parsedValue !== undefined ? { value: parsedValue } : {}),
     } as Partial<Props>);
-  },
 
-  destroyed(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
-    if (this.onSetValue) {
-      this.el.removeEventListener("corex:color-picker:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const h of this.handlers) {
-        this.removeHandleEvent(h);
-      }
-    }
-    this.colorPicker?.destroy();
+    // Morphdom can clear Zag-owned styles (area-background gradients, thumbs)
+    // when the server re-renders after on_value_change; re-spread props.
+    zag.render();
   },
-};
+});
 
 export { ColorPickerHook as ColorPicker };

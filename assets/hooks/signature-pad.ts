@@ -1,11 +1,10 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { SignaturePad } from "../components/signature-pad";
 import type { Props } from "@zag-js/signature-pad";
 
 import { getBoolean, getDir, getNumber, getString } from "../lib/util";
 import { getJsonStringList, readFormFieldServerPaths } from "../lib/read-props";
 import { idMatches, readPayloadId } from "../lib/respond-to";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
@@ -78,17 +77,15 @@ function syncSignatureFormForPhoenix(
 
 type SignaturePadHookState = {
   signaturePad?: SignaturePad;
-  handlers?: Array<CallbackRef>;
-  onClear?: (event: Event) => void;
   padTouched: boolean;
   unbindSubmitIntent?: () => void;
 };
 
-const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
-    const el = this.el;
-    const hook = this as object & HookInterface<HTMLElement> & SignaturePadHookState;
-    const pushEvent = this.pushEvent.bind(this);
+const SignaturePadHook = createZagLiveHook<SignaturePadHookState, SignaturePad>({
+  key: "signaturePad",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
     hook.padTouched = false;
     const markTouched = () => {
       hook.padTouched = true;
@@ -115,7 +112,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
           signaturePad.imageURL = url;
 
           const eventName = getString(el, "onDrawEnd");
-          if (eventName && this.liveSocket.main.isConnected()) {
+          if (eventName && hook.liveSocket.main.isConnected()) {
             pushEvent(eventName, {
               id: el.id,
               paths: details.paths,
@@ -139,8 +136,6 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         });
       },
     } as Props);
-    signaturePad.init();
-    this.signaturePad = signaturePad;
 
     const syncForm = (
       paths: ReadonlyArray<string>,
@@ -163,9 +158,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       syncForm(paths.length > 0 ? paths : [], { notifyLiveView: false, fieldTouched: true });
     });
 
-    this.onClear = (event: Event) => {
-      const { id: targetId } = (event as CustomEvent<{ id: string }>).detail;
-      if (targetId && targetId !== el.id) return;
+    const clearPad = () => {
       signaturePad.api.clear();
       syncSignatureFormForPhoenix(el, [], {
         onPadTouched: markTouched,
@@ -173,27 +166,25 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         fieldTouched: true,
       });
     };
-    el.addEventListener("corex:signature-pad:clear", this.onClear);
 
-    this.handlers = [];
+    dom.add<CustomEvent<{ id: string }>>("corex:signature-pad:clear", (event) => {
+      const { id: targetId } = event.detail;
+      if (targetId && targetId !== el.id) return;
+      clearPad();
+    });
 
-    this.handlers.push(
-      this.handleEvent("signature_pad_clear", (payload: unknown) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        signaturePad.api.clear();
-        syncSignatureFormForPhoenix(el, [], {
-          onPadTouched: markTouched,
-          notifyLiveView: true,
-          fieldTouched: true,
-        });
-      })
-    );
+    server.add("signature_pad_clear", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      clearPad();
+    });
+
+    return signaturePad;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
-    const el = this.el;
+  update(hook, signaturePad) {
+    const el = hook.el;
 
-    this.signaturePad?.updateProps({
+    signaturePad.updateProps({
       id: el.id,
       name: zagNameForForm(el),
       dir: getDir(el),
@@ -201,30 +192,19 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     } as Partial<Props>);
 
     const serverPaths = readFormFieldServerPaths(el);
-    if (serverPaths !== undefined && !this.padTouched) {
-      this.signaturePad?.setPaths(serverPaths);
+    if (serverPaths !== undefined && !hook.padTouched) {
+      signaturePad.setPaths(serverPaths);
       syncSignatureFormForPhoenix(el, serverPaths, {
         onPadTouched: () => {},
         notifyLiveView: false,
-        fieldTouched: isFormFieldUsed(el, this.padTouched),
+        fieldTouched: isFormFieldUsed(el, hook.padTouched),
       });
     }
   },
 
-  destroyed(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
-    this.unbindSubmitIntent?.();
-    if (this.onClear) {
-      this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
-    }
-
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
-    this.signaturePad?.destroy();
+  destroy(hook) {
+    hook.unbindSubmitIntent?.();
   },
-};
+});
 
 export { SignaturePadHook as SignaturePad };

@@ -35,22 +35,36 @@ defmodule E2eWeb.CheckboxTest do
         sess
       end)
     end
+  end
 
-    feature "minimal  -  Space toggles checked state", %{session: session} do
+  describe "keyboard focus and aria" do
+    feature "space toggles checked state with aria-checked on anatomy minimal", %{
+      session: session
+    } do
       section = "checkbox-anatomy-minimal"
 
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Checkbox, :checkbox, :anatomy)
-        |> Checkbox.click_control_in_section(section)
+        |> Checkbox.focus_checkbox_control(section)
+        |> Checkbox.assert_control_focused(section)
 
-      assert Checkbox.control_data_state(session, section) == "checked"
+      Checkbox.assert_aria_checked(session, section, "false")
+      assert Checkbox.control_data_state(session, section) == "unchecked"
 
       session =
         session
-        |> Checkbox.press_space_on_checkbox_control(section)
+        |> Checkbox.press_key_on_active(:space)
+
+      assert Checkbox.control_data_state(session, section) == "checked"
+      Checkbox.assert_aria_checked(session, section, "true")
+
+      session =
+        session
+        |> Checkbox.press_key_on_active(:space)
 
       assert Checkbox.control_data_state(session, section) == "unchecked"
+      Checkbox.assert_aria_checked(session, section, "false")
     end
   end
 

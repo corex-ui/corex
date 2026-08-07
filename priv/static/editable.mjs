@@ -1,25 +1,19 @@
 import {
-  setScalarValue
-} from "./chunks/chunk-2H6YHTHG.mjs";
-import {
   trackInteractOutside
-} from "./chunks/chunk-ZSA4KI2Y.mjs";
-import "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
+} from "./chunks/chunk-F544AH56.mjs";
 import {
-  mountStringBinding
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
+  setScalarValue
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+  mountStringBinding,
+  readUpdatedServerString
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId,
   readPayloadValue
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -28,6 +22,7 @@ import {
   contains,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getDir,
@@ -37,9 +32,9 @@ import {
   raf,
   setElementValue,
   syncInputFormAssociation
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
   "root",
   "area",
@@ -53,7 +48,7 @@ var anatomy = createAnatomy("editable").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.dom.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `editable:${ctx.id}`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `editable:${ctx.id}:area`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `editable:${ctx.id}:label`;
@@ -69,7 +64,7 @@ var getSubmitTriggerEl = (ctx) => ctx.getById(getSubmitTriggerId(ctx));
 var getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
 var getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.connect.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.connect.mjs
 function connect(service, normalize) {
   const { state, context, send, prop, scope, computed } = service;
   const disabled = !!prop("disabled");
@@ -305,7 +300,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.machine.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -527,7 +522,6 @@ var machine = createMachine({
 
 // components/editable.ts
 var Editable = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -540,7 +534,14 @@ var Editable = class extends Component {
     const controlEl = this.el.querySelector(
       '[data-scope="editable"][data-part="control"]'
     );
-    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+      if (this.el.hasAttribute("data-readonly")) {
+        controlEl.setAttribute("data-readonly", "");
+      } else {
+        controlEl.removeAttribute("data-readonly");
+      }
+    }
     const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
     if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
     const labelEl = this.el.querySelector(
@@ -631,15 +632,17 @@ function zagName(el) {
   if (formValueInput(el)) return void 0;
   return getString(el, "name");
 }
-var EditableHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var EditableHook = createZagLiveHook({
+  key: "editable",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const placeholder = getString(el, "placeholder");
     const activationMode = getString(el, "activationMode");
     const selectOnFocus = getBoolean(el, "selectOnFocus");
-    this.fieldTouched = false;
+    hook.fieldTouched = false;
     const valueBinding = mountStringBinding(el, "value", "defaultValue");
     const initialValue = "value" in valueBinding ? valueBinding.value ?? "" : valueBinding.defaultValue ?? "";
     const zag = new Editable(el, {
@@ -657,32 +660,30 @@ var EditableHook = {
       ...selectOnFocus !== void 0 ? { selectOnFocus } : {},
       defaultEdit: getBoolean(el, "defaultEdit"),
       onValueChange: (details) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, hook, initialValue);
       },
       onValueCommit: (details) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, hook, initialValue);
       }
     });
-    zag.init();
-    this.editable = zag;
-    syncEditableFormValue(el, zag.api.value, { markUsed: false });
-    this.unbindFormSubmit = bindFormSubmitSync(el, zag);
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:editable:set-value", (event) => {
+    hook.unbindFormSubmit = bindFormSubmitSync(el, zag);
+    dom.add("corex:editable:set-value", (event) => {
       const raw = event.detail?.value;
       zag.api.setValue(raw === void 0 || raw === null ? "" : String(raw));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("editable_set_value", (payload) => {
+    server.add("editable_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(readPayloadValue(payload));
     });
+    return zag;
   },
-  updated() {
-    const el = this.el;
-    this.editable?.updateProps({
+  afterInit(hook, zag) {
+    syncEditableFormValue(hook.el, zag.api.value, { markUsed: false });
+  },
+  update(hook, zag) {
+    const el = hook.el;
+    const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
@@ -690,16 +691,14 @@ var EditableHook = {
       invalid: getBoolean(el, "invalid"),
       name: zagName(el),
       form: formValueInput(el) ? void 0 : getString(el, "form"),
-      dir: getDir(el)
+      dir: getDir(el),
+      ...valuePatch.value !== void 0 ? { value: valuePatch.value ?? "" } : {}
     });
   },
-  destroyed() {
-    this.unbindFormSubmit?.();
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.editable?.destroy();
+  destroy(hook) {
+    hook.unbindFormSubmit?.();
   }
-};
+});
 export {
   EditableHook as Editable,
   dataDefaultValue

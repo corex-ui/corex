@@ -1,14 +1,16 @@
 defmodule Corex.Marquee.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Marquee.Anatomy.{Content, Edge, Item, Props, Root, Viewport}
+
   alias Corex.Selectors
+
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_dir: 2, maybe_put_data_dir: 2]
 
   defp orientation(side), do: if(side in ["top", "bottom"], do: "vertical", else: "horizontal")
-
-  defp maybe_put(acc, _key, nil), do: acc
-  defp maybe_put(acc, key, value), do: [{key, value} | acc]
 
   @spec ignore_hook(String.t()) :: JS.t()
   def ignore_hook(id) when is_binary(id) do
@@ -20,14 +22,13 @@ defmodule Corex.Marquee.Connect do
     orient = orientation(assigns.side)
 
     event_attrs =
-      []
+      %{}
       |> maybe_put("data-on-pause-change", Map.get(assigns, :on_pause_change))
       |> maybe_put("data-on-pause-change-client", Map.get(assigns, :on_pause_change_client))
       |> maybe_put("data-on-loop-complete", Map.get(assigns, :on_loop_complete))
       |> maybe_put("data-on-loop-complete-client", Map.get(assigns, :on_loop_complete_client))
       |> maybe_put("data-on-complete", Map.get(assigns, :on_complete))
       |> maybe_put("data-on-complete-client", Map.get(assigns, :on_complete_client))
-      |> Map.new()
 
     base = %{
       "id" => assigns.id,
@@ -36,18 +37,18 @@ defmodule Corex.Marquee.Connect do
       "data-side" => assigns.side,
       "data-speed" => to_string(assigns.speed),
       "data-spacing" => assigns.spacing,
-      "data-auto-fill" => get_boolean(assigns.auto_fill),
-      "data-pause-on-interaction" => get_boolean(assigns.pause_on_interaction),
-      "data-default-paused" => get_boolean(assigns.paused),
+      "data-auto-fill" => presence_attr(assigns.auto_fill),
+      "data-pause-on-interaction" => presence_attr(assigns.pause_on_interaction),
+      "data-default-paused" => presence_attr(assigns.paused),
       "data-delay" => to_string(assigns.delay),
       "data-loop-count" => to_string(assigns.loop_count),
-      "data-reverse" => get_boolean(assigns.reverse),
+      "data-reverse" => presence_attr(assigns.reverse),
       "data-respect-reduced-motion" => if(assigns.respect_reduced_motion, do: nil, else: "false"),
       "data-orientation" => orient
     }
 
     Map.merge(base, event_attrs)
-    |> maybe_put_data_dir(Map.get(assigns, :dir))
+    |> put_data_dir_attr(Map.get(assigns, :dir))
   end
 
   @spec root(Root.t()) :: map()
@@ -56,38 +57,30 @@ defmodule Corex.Marquee.Connect do
     loop_val = if assigns.loop_count == 0, do: "infinite", else: to_string(assigns.loop_count)
 
     style =
-      "display:flex;flex-direction:#{if(orient == "vertical", do: "column", else: "row")};position:relative;overflow:hidden;width:100%;contain:layout style paint;--marquee-duration:#{assigns.duration}s;--marquee-spacing:#{assigns.spacing};--marquee-delay:#{assigns.delay}s;--marquee-loop-count:#{loop_val};--marquee-translate:#{assigns.translate}"
+      "display:flex;flex-direction:#{if(orient == "vertical", do: "column", else: "row")};position:relative;overflow:hidden;contain:layout style paint;--marquee-duration:#{assigns.duration}s;--marquee-spacing:#{assigns.spacing};--marquee-delay:#{assigns.delay}s;--marquee-loop-count:#{loop_val};--marquee-translate:#{assigns.translate}"
 
     aria_label = Map.get(assigns, :aria_label) || "Marquee: #{assigns.id}"
     paused? = Map.get(assigns, :paused, false)
 
-    base =
-      %{
-        "data-scope" => "marquee",
-        "data-part" => "root",
-        "role" => "region",
-        "aria-roledescription" => "marquee",
-        "aria-live" => "off",
-        "aria-label" => aria_label,
-        "id" => "marquee:#{assigns.id}",
-        "data-orientation" => orient,
-        "data-state" => if(paused?, do: "paused", else: "idle"),
-        "style" => style
-      }
-      |> maybe_put_dir(Map.get(assigns, :dir))
-
-    base =
-      case get_boolean(paused?) do
-        nil -> base
-        v -> Map.put(base, "data-paused", v)
-      end
-
-    if Map.get(assigns, :respect_reduced_motion, true) == false do
-      Map.put(base, "data-respect-reduced-motion", "false")
-    else
-      base
-    end
+    %{
+      "data-scope" => "marquee",
+      "data-part" => "root",
+      "role" => "region",
+      "aria-roledescription" => "marquee",
+      "aria-live" => "off",
+      "aria-label" => aria_label,
+      "id" => "marquee:#{assigns.id}",
+      "data-orientation" => orient,
+      "data-state" => data_state(paused?, "paused", "idle"),
+      "style" => style
+    }
+    |> put_dir_attr(Map.get(assigns, :dir))
+    |> maybe_put("data-paused", presence_attr(paused?))
+    |> maybe_put("data-respect-reduced-motion", reduced_motion_attr(assigns))
   end
+
+  defp reduced_motion_attr(%{respect_reduced_motion: false}), do: "false"
+  defp reduced_motion_attr(_assigns), do: nil
 
   @spec edge(Edge.t()) :: map()
   def edge(assigns) do
@@ -137,40 +130,27 @@ defmodule Corex.Marquee.Connect do
     flex_dir = if(orient == "vertical", do: "column", else: "row")
     min_dim = if(orient == "vertical", do: "min-width", else: "min-height")
     index = Map.get(assigns, :index, 0)
-    clone? = index > 0
 
-    attrs =
-      %{
-        "data-scope" => "marquee",
-        "data-part" => "content",
-        "data-index" => to_string(index),
-        "data-orientation" => orient,
-        "data-side" => assigns.side,
-        "id" => "marquee:#{assigns.root_id}:content:#{index}",
-        "style" =>
-          "display:flex;flex-direction:#{flex_dir};flex-shrink:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);#{min_dim}:auto;contain:paint"
-      }
-      |> maybe_put_dir(Map.get(assigns, :dir))
-
-    attrs =
-      if clone? do
-        attrs
-        |> Map.put("data-clone", "")
-        |> Map.put("role", "presentation")
-        |> Map.put("aria-hidden", "true")
-      else
-        attrs
-      end
-
-    attrs =
-      if Map.get(assigns, :reverse, false) do
-        Map.put(attrs, "data-reverse", "")
-      else
-        attrs
-      end
-
-    attrs
+    %{
+      "data-scope" => "marquee",
+      "data-part" => "content",
+      "data-index" => to_string(index),
+      "data-orientation" => orient,
+      "data-side" => assigns.side,
+      "id" => "marquee:#{assigns.root_id}:content:#{index}",
+      "style" =>
+        "display:flex;flex-direction:#{flex_dir};flex-shrink:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0);#{min_dim}:auto;contain:paint"
+    }
+    |> put_dir_attr(Map.get(assigns, :dir))
+    |> Map.merge(clone_attrs(index))
+    |> maybe_put("data-reverse", presence_attr(Map.get(assigns, :reverse, false)))
   end
+
+  defp clone_attrs(index) when index > 0 do
+    %{"data-clone" => "", "role" => "presentation", "aria-hidden" => "true"}
+  end
+
+  defp clone_attrs(_index), do: %{}
 
   @spec item(Item.t() | map()) :: map()
   def item(assigns) do
@@ -187,6 +167,6 @@ defmodule Corex.Marquee.Connect do
       "data-part" => "item",
       "style" => style
     }
-    |> maybe_put_dir(Map.get(assigns, :dir))
+    |> put_dir_attr(Map.get(assigns, :dir))
   end
 end

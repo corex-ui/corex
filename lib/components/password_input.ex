@@ -194,17 +194,17 @@ defmodule Corex.PasswordInput do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input ui-accent ui-size-lg` or `password-input ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and visibility trigger. Variant modifiers control field surface treatment. Default is subtle; add `password-input ui-solid` for a filled control.
+  Semantic modifiers set palette variables for focus and accent ink on the field and visibility trigger. The input surface stays the shared `ui-input` treatment. Password input has no variant axis.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for password input ink and fill. Does not change surface treatment by itself.
+  Palette for focus and accent ink on the field and visibility trigger.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -214,15 +214,6 @@ defmodule Corex.PasswordInput do
   | Alert | `password-input ui-alert` |
   | Info | `password-input ui-info` |
   | Success | `password-input ui-success` |
-
-  ### Variant
-
-  Visual treatment of the input and visibility trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `password-input` or `password-input ui-accent` |
-  | Solid | `password-input ui-accent ui-solid` |
 
   ### Size
 
@@ -239,6 +230,7 @@ defmodule Corex.PasswordInput do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
 
@@ -254,26 +246,22 @@ defmodule Corex.PasswordInput do
 
   alias Corex.PasswordInput.Connect
   alias Corex.PasswordInput.Translation
+  alias Corex.Selectors
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string, required: false)
-  attr(:value, :string, default: nil)
-  attr(:visible, :boolean, default: false)
-  attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: nil)
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
+  form_control_attrs(
+    except: [:controlled],
+    docs: [
+      field:
+        "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, and errors from the form field. Pass `invalid` explicitly for alert styling."
+    ]
   )
 
-  attr(:read_only, :boolean, default: false)
-  attr(:required, :boolean, default: false)
+  attr(:value, :string, default: nil)
+  attr(:visible, :boolean, default: false)
   attr(:ignore_password_managers, :boolean, default: true)
-  attr(:name, :string)
-  attr(:form, :string)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
@@ -290,11 +278,6 @@ defmodule Corex.PasswordInput do
   attr(:translation, Corex.PasswordInput.Translation,
     default: nil,
     doc: "Override translatable strings"
-  )
-
-  attr(:field, Phoenix.HTML.FormField,
-    doc:
-      "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, and errors from the form field. Pass `invalid` explicitly for alert styling."
   )
 
   attr(:rest, :global)
@@ -328,19 +311,15 @@ defmodule Corex.PasswordInput do
     assigns =
       assigns
       |> Corex.FormField.require_id!("Corex component (password-input)")
-      |> assign_new(:name, fn -> nil end)
-      |> assign_new(:form, fn -> nil end)
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
 
     ~H"""
     <div
       id={@id}
       phx-hook="PasswordInput"
-      data-loading 
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       data-no-icon={if @visible_indicator == [] or @hidden_indicator == [], do: "", else: nil}
       {@rest}
       {Connect.props(%Props{
@@ -362,11 +341,11 @@ defmodule Corex.PasswordInput do
         on_visibility_change_client: @on_visibility_change_client
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
-        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, orientation: @orientation})} {Connect.label(%Label{id: @id, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
+        <label :if={@label != []} {Connect.mounted_label(%Label{id: @id, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, orientation: @orientation})} {Connect.control(%Control{id: @id, orientation: @orientation})}>
+        <div {Connect.mounted_control(%Control{id: @id, orientation: @orientation})}>
           <input
             type="password"
             phx-mounted={Connect.ignore_input(%Input{
@@ -391,10 +370,9 @@ defmodule Corex.PasswordInput do
           <button
             :if={@visible_indicator != [] and @hidden_indicator != []}
             type="button"
-            phx-mounted={Connect.ignore_visibility_trigger(%VisibilityTrigger{id: @id, aria_label: @translation.toggle_visibility, orientation: @orientation})}
-            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, aria_label: @translation.toggle_visibility, orientation: @orientation})}
+            {Connect.mounted_visibility_trigger(%VisibilityTrigger{id: @id, aria_label: @translation.toggle_visibility, orientation: @orientation})}
           >
-            <span phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, visible: @visible, orientation: @orientation})} {Connect.indicator(%Indicator{id: @id, visible: @visible, orientation: @orientation})}>
+            <span {Connect.mounted_indicator(%Indicator{id: @id, visible: @visible, orientation: @orientation})}>
               <span data-visible="" aria-hidden="true">{render_slot(@visible_indicator)}</span>
               <span data-hidden="" aria-hidden="true">{render_slot(@hidden_indicator)}</span>
             </span>
@@ -430,10 +408,13 @@ defmodule Corex.PasswordInput do
   ```
   """)
 
+  @spec set_visible(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_visible(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def set_visible(password_input_id, visible)
       when is_binary(password_input_id) and is_boolean(visible) do
     JS.dispatch("corex:password-input:set-visible",
-      to: "##{password_input_id}",
+      to: Selectors.css_id(password_input_id),
       detail: %{visible: visible},
       bubbles: false
     )
@@ -486,9 +467,11 @@ defmodule Corex.PasswordInput do
   ```
   """)
 
+  @spec toggle_visible(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec toggle_visible(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def toggle_visible(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:toggle-visible",
-      to: "##{password_input_id}",
+      to: Selectors.css_id(password_input_id),
       bubbles: false
     )
   end
@@ -536,8 +519,13 @@ defmodule Corex.PasswordInput do
   ```
   """)
 
+  @spec focus(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec focus(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def focus(password_input_id) when is_binary(password_input_id) do
-    JS.dispatch("corex:password-input:focus", to: "##{password_input_id}", bubbles: false)
+    JS.dispatch("corex:password-input:focus",
+      to: Selectors.css_id(password_input_id),
+      bubbles: false
+    )
   end
 
   api_doc(~S"""

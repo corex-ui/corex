@@ -14,7 +14,7 @@ defmodule E2eWeb.EditableFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Editable · Form")
+     |> assign(:page_title, "Editable · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -142,7 +142,7 @@ defmodule E2eWeb.EditableFormLive do
       <.demo_page
         path={@path}
         id="editable-form-live-page"
-        title={~t"Editable · Form"}
+        title={~t"Editable · Live Form"}
       >
         <.demo_section
           id="editable-live-form-phoenix-section"

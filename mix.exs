@@ -20,6 +20,7 @@ defmodule Corex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       name: "Corex",
       description:
         "Accessible Phoenix UI components with Zag.js hooks, plus an optional Corex Design Hex package for token-driven CSS and shared ui-* modifiers.",
@@ -42,7 +43,13 @@ defmodule Corex.MixProject do
 
   def cli do
     [
-      preferred_envs: [docs: :docs]
+      preferred_envs: [
+        docs: :docs,
+        lint: :test,
+        ci: :test,
+        "release.check": :test,
+        "pre.publish": :test
+      ]
     ]
   end
 
@@ -53,9 +60,8 @@ defmodule Corex.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
-      {:phoenix_live_view, "~> 1.1"},
+      {:phoenix_live_view, "~> 1.1 or ~> 1.2"},
       {:gettext, "~> 1.0"},
       {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
@@ -66,21 +72,42 @@ defmodule Corex.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
-      {:corex_design, path: "design", runtime: false, only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
-      {:tidewave, "~> 0.5.5", only: :dev}
-    ] ++ maybe_json_polyfill()
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:tidewave, "~> 0.5.5", only: :dev},
+      {:corex_design, path: "design", runtime: false, only: :test}
+    ] ++ maybe_ex_slop() ++ maybe_json_polyfill()
   end
 
-  defp maybe_json_polyfill do
-    if Code.ensure_loaded?(:json) do
-      []
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit, :phoenix, :phoenix_live_view],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns],
+      ignore_warnings: ".dialyzer_ignore.exs"
+    ]
+  end
+
+  # `ex_slop` requires Elixir ~> 1.18; lint/primary legs still get it.
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
     else
-      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+      []
+    end
+  end
+
+  # Gate on OTP release, not Code.ensure_loaded?(:json). After json_polyfill
+  # compiles it defines :json, so an ensure_loaded? check can drop the dep on
+  # Mix reload and raise "Unknown dependency json_polyfill for environment …".
+  defp maybe_json_polyfill do
+    case Integer.parse(System.otp_release()) do
+      {otp, _} when otp >= 27 -> []
+      _ -> [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
     end
   end
 
@@ -94,19 +121,48 @@ defmodule Corex.MixProject do
         "esbuild hooks",
         "esbuild cdn",
         "esbuild cdn_min",
-        "esbuild main"
+        "esbuild main",
+        &sync_no_design_corex_export/1
       ],
       "assets.watch": "esbuild module --watch",
       "archive.build": &raise_on_archive_build/1,
+      "format.all": [
+        "format",
+        "cmd --cd design mix format",
+        "cmd --cd mcp mix format",
+        "cmd --cd installer mix format"
+      ],
+      "format.all.check": [
+        "format --check-formatted",
+        "cmd --cd design mix format --check-formatted",
+        "cmd --cd mcp mix format --check-formatted",
+        "cmd --cd installer mix format --check-formatted"
+      ],
       lint: [
         "format --check-formatted",
         "compile --force --warnings-as-errors",
         "compile --force --warnings-as-errors --env test",
-        "corex.doc_parity --sections anatomy --components checkbox,switch,select,combobox,accordion,tabs,dialog,action,navigate",
+        "corex.doc_parity --sections anatomy,form",
         "credo --strict",
         "sobelow --exit"
       ],
+      ci: [
+        "format.all.check",
+        "lint",
+        "test",
+        "cmd --cd design mix lint",
+        "cmd --cd design mix dialyzer",
+        "cmd --cd design mix test",
+        "cmd --cd mcp mix lint",
+        "cmd --cd mcp mix dialyzer",
+        "cmd --cd mcp mix test",
+        "cmd --cd installer mix lint",
+        "cmd --cd installer mix dialyzer",
+        "cmd --cd installer mix test",
+        "cmd npm run check"
+      ],
       "release.check": ["hex.audit", "lint", "test", "assets.build"],
+      # CVE/outdated Hex+npm PRs: .github/dependabot.yml (weekly)
       "pre.publish": ["release.check"],
       "hex.build": ["hex.build"],
       tidewave:
@@ -121,6 +177,37 @@ defmodule Corex.MixProject do
       File.rm_rf!(chunks)
     end
 
+    :ok
+  end
+
+  # Neo/light full Design tree for `mix corex.new --no-design` (installer archive only).
+  defp sync_no_design_corex_export(_) do
+    design_root = Path.join(__DIR__, "design")
+    config = Path.join(__DIR__, "installer/priv/static/corex_no_design.config.exs")
+    installer_out = Path.join(__DIR__, "installer/priv/static/corex")
+
+    unless File.exists?(config) do
+      Mix.raise("Missing no-design snapshot config at #{config}")
+    end
+
+    Mix.shell().info("Building --no-design Corex CSS snapshot (neo/light)…")
+
+    {_, 0} =
+      System.cmd(
+        "mix",
+        [
+          "corex.design.build",
+          "--config",
+          config,
+          "--output",
+          installer_out
+        ],
+        cd: design_root,
+        into: IO.stream(:stdio, :line),
+        stderr_to_stdout: true
+      )
+
+    Mix.shell().info("Synced no-design export → installer/priv/static/corex")
     :ok
   end
 
@@ -152,6 +239,7 @@ defmodule Corex.MixProject do
   defp docs do
     [
       main: "installation",
+      source_ref: "v#{@version}",
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
@@ -164,12 +252,13 @@ defmodule Corex.MixProject do
         "guides/tableau_localize.md",
         "guides/dark_mode.md",
         "guides/theming.md",
+        "guides/accessibility.md",
         "guides/localize.md",
         "guides/MCP.md",
-        "guides/usage_rules.md",
         "guides/production.md",
         "guides/configuration.md",
-        "guides/update.md"
+        "guides/update.md",
+        "guides/usage_rules.md"
       ],
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -191,13 +280,14 @@ defmodule Corex.MixProject do
          [
            "guides/forms.md",
            "guides/MCP.md",
-           "guides/usage_rules.md",
            "guides/dark_mode.md",
            "guides/theming.md",
+           "guides/accessibility.md",
            "guides/localize.md",
            "guides/production.md",
            "guides/configuration.md",
-           "guides/update.md"
+           "guides/update.md",
+           "guides/usage_rules.md"
          ]},
         {"Tableau Guides",
          [
@@ -258,7 +348,8 @@ defmodule Corex.MixProject do
         Corex.TreeView
       ],
       Form: [
-        Corex.FormField
+        Corex.FormField,
+        Corex.Dataset
       ],
       Content: [
         Corex.Content,
@@ -266,7 +357,7 @@ defmodule Corex.MixProject do
         Corex.Image
       ],
       DataList: [
-        Corex.Content.Item
+        Corex.DataList
       ],
       List: [
         Corex.List,

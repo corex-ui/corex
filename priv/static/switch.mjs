@@ -1,28 +1,22 @@
 import {
-  syncCheckableHiddenInput
-} from "./chunks/chunk-MM3X6GKK.mjs";
-import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-YUSIPE4B.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
+import {
+  syncCheckableHiddenInput,
+  syncCheckedHiddenInput
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-BGER3KYP.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   checkedChangePayload,
   idMatches,
   notifyChange,
   readPayloadChecked,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -30,6 +24,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
@@ -41,13 +36,13 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.42.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.dom.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.42.0/node_modules/@zag-js/switch/dist/switch.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
@@ -56,7 +51,7 @@ var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.connect.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.42.0/node_modules/@zag-js/switch/dist/switch.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const disabled = !!prop("disabled");
@@ -173,7 +168,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.machine.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.42.0/node_modules/@zag-js/switch/dist/switch.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -317,7 +312,6 @@ var machine = createMachine({
 
 // components/switch.ts
 var Switch = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -359,12 +353,14 @@ var Switch = class extends Component {
 };
 
 // hooks/switch.ts
-var SwitchHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    const zagSwitch = new Switch(el, {
+var SwitchHook = createZagLiveHook({
+  key: "switchComponent",
+  controlledKeys: ["checked"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    const switchComponent = new Switch(el, {
       id: el.id,
       ...(() => {
         const binding = mountCheckedBinding(el);
@@ -394,89 +390,68 @@ var SwitchHook = {
           '[data-scope="switch"][data-part="hidden-input"]'
         );
         if (input) {
-          input.checked = details.checked === true;
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-          input.dispatchEvent(new Event("change", { bubbles: true }));
+          syncCheckedHiddenInput(input, details.checked === true, { markUsed: false });
         }
       }
     });
-    zagSwitch.init();
-    this.zagSwitch = zagSwitch;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:switch:set-checked", (event) => {
+    dom.add("corex:switch:set-checked", (event) => {
       const { checked } = event.detail;
-      zagSwitch.api.setChecked(checked);
+      switchComponent.api.setChecked(checked);
     });
-    domRegistry.add("corex:switch:toggle-checked", () => {
-      zagSwitch.api.toggleChecked();
+    dom.add("corex:switch:toggle-checked", () => {
+      switchComponent.api.toggleChecked();
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("switch_set_checked", (payload) => {
+    server.add("switch_set_checked", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const checked = readPayloadChecked(payload);
-      if (typeof checked === "boolean") zagSwitch.api.setChecked(checked);
+      if (typeof checked === "boolean") switchComponent.api.setChecked(checked);
     });
-    registry.add("switch_toggle_checked", (payload) => {
+    server.add("switch_toggle_checked", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      zagSwitch.api.toggleChecked();
+      switchComponent.api.toggleChecked();
     });
-    registry.add("switch_checked", (payload) => {
-      if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("switch_checked_response", {
-        id: el.id,
-        value: zagSwitch.api.checked
-      });
-    });
-    registry.add("switch_focused", (payload) => {
+    server.add("switch_checked", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("switch_focused_response", {
+      hook.pushEvent("switch_checked_response", {
         id: el.id,
-        value: zagSwitch.api.focused
+        value: switchComponent.api.checked
       });
     });
-    registry.add("switch_disabled", (payload) => {
+    server.add("switch_focused", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("switch_disabled_response", {
+      hook.pushEvent("switch_focused_response", {
         id: el.id,
-        value: zagSwitch.api.disabled
+        value: switchComponent.api.focused
       });
     });
-  },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
-  },
-  updated() {
-    const zagSwitch = this.zagSwitch;
-    if (!zagSwitch) return;
-    try {
-      const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
-      zagSwitch.updateProps({
-        id: this.el.id,
-        ..."checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {},
-        disabled: getBoolean(this.el, "disabled"),
-        name: getString(this.el, "name"),
-        form: getString(this.el, "form"),
-        value: getString(this.el, "value"),
-        dir: getDir(this.el),
-        invalid: getBoolean(this.el, "invalid"),
-        required: getBoolean(this.el, "required"),
-        readOnly: getBoolean(this.el, "readonly")
+    server.add("switch_disabled", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      hook.pushEvent("switch_disabled_response", {
+        id: el.id,
+        value: switchComponent.api.disabled
       });
-    } finally {
-      this.beforeAttrs = void 0;
-    }
+    });
+    return switchComponent;
   },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.zagSwitch?.destroy();
+  update(hook, switchComponent) {
+    const checkedPatch = readUpdatedServerChecked(hook.el, hook.beforeAttrs);
+    switchComponent.updateProps({
+      id: hook.el.id,
+      ..."checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {},
+      disabled: getBoolean(hook.el, "disabled"),
+      name: getString(hook.el, "name"),
+      form: getString(hook.el, "form"),
+      value: getString(hook.el, "value"),
+      dir: getDir(hook.el),
+      invalid: getBoolean(hook.el, "invalid"),
+      required: getBoolean(hook.el, "required"),
+      readOnly: getBoolean(hook.el, "readonly")
+    });
   }
-};
+});
 export {
   SwitchHook as Switch,
   checkedChangePayload

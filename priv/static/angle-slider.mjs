@@ -1,33 +1,31 @@
 import {
-  syncHiddenInputValue
-} from "./chunks/chunk-DH47S3VU.mjs";
-import {
   createRect
-} from "./chunks/chunk-QB2YSZP6.mjs";
+} from "./chunks/chunk-SBGJ6WBJ.mjs";
 import {
   snapValueToStep
-} from "./chunks/chunk-PE34YET2.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
-  mountNumberBinding
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
+  notifyPhoenixFormChange,
+  syncHiddenInputValue
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+  mountNumberBinding,
+  readUpdatedServerNumber
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getDir,
@@ -40,9 +38,9 @@ import {
   raf,
   setElementValue,
   trackPointerMove
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.42.0/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
 var anatomy = createAnatomy("angle-slider").parts(
   "root",
   "label",
@@ -55,7 +53,7 @@ var anatomy = createAnatomy("angle-slider").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.dom.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.42.0/node_modules/@zag-js/angle-slider/dist/angle-slider.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `angle-slider:${ctx.id}`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `angle-slider:${ctx.id}:thumb`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `angle-slider:${ctx.id}:input`;
@@ -66,7 +64,7 @@ var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 var getThumbEl = (ctx) => ctx.getById(getThumbId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/angle.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/angle.mjs
 function getPointAngle(rect, point, reference = rect.center) {
   const x = point.x - reference.x;
   const y = point.y - reference.y;
@@ -74,7 +72,7 @@ function getPointAngle(rect, point, reference = rect.center) {
   return 360 - deg;
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.utils.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.42.0/node_modules/@zag-js/angle-slider/dist/angle-slider.utils.mjs
 var MIN_VALUE = 0;
 var MAX_VALUE = 359;
 function mirrorAngle(angle) {
@@ -115,7 +113,7 @@ function snapAngleToStep(value, step) {
   return snapValueToStep(value, MIN_VALUE, MAX_VALUE, step);
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.connect.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.42.0/node_modules/@zag-js/angle-slider/dist/angle-slider.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, computed, scope } = service;
   const dragging = state.matches("dragging");
@@ -305,7 +303,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.machine.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.42.0/node_modules/@zag-js/angle-slider/dist/angle-slider.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -462,7 +460,6 @@ var machine = createMachine({
 
 // components/angle-slider.ts
 var AngleSlider = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -487,6 +484,12 @@ var AngleSlider = class extends Component {
         (el, props) => this.spreadProps(el, props),
         this.api.getHiddenInputProps()
       );
+      const submitName = this.el.dataset.submitName;
+      const gatedName = this.el.dataset.name;
+      if (submitName && !gatedName) {
+        hiddenInputEl.removeAttribute("name");
+        hiddenInputEl.removeAttribute("form");
+      }
     }
     const controlEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="control"]'
@@ -530,37 +533,66 @@ function valueChangePayload(el, details) {
     valueAsDegree: details.valueAsDegree
   };
 }
-function queueFormBubblingInputForPhoenix(el, getZag) {
+function formSubmitName(el) {
+  return getString(el, "submitName") ?? getString(el, "name");
+}
+function hiddenInput(el) {
+  return el.querySelector(
+    '[data-scope="angle-slider"][data-part="hidden-input"]'
+  );
+}
+function ensureHiddenInputName(el) {
+  const input = hiddenInput(el);
+  if (!input) return null;
+  const name = formSubmitName(el);
+  if (name && !input.getAttribute("name")) {
+    input.setAttribute("name", name);
+  }
+  return input;
+}
+function stripHiddenInputName(el) {
+  const input = hiddenInput(el);
+  if (!input) return;
+  input.removeAttribute("name");
+  input.removeAttribute("form");
+}
+function zagNameForForm(el) {
+  return hiddenInput(el)?.getAttribute("name") ?? void 0;
+}
+function queueFormBubblingInputForPhoenix(el, getZag, opts = {}) {
   queueMicrotask(() => {
     const zag = getZag();
-    const input = el.querySelector(
-      '[data-scope="angle-slider"][data-part="hidden-input"]'
-    );
+    const input = ensureHiddenInputName(el);
     if (!input) return;
-    const v = zag.api.value;
-    if (String(input.value) !== String(v)) {
-      input.value = String(v);
-    }
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
+    notifyPhoenixFormChange(input, String(zag.api.value), {
+      force: true,
+      markUsed: opts.markUsed
+    });
   });
 }
-var AngleSliderHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+function shouldGateHiddenName(el) {
+  return Boolean(formSubmitName(el)) && getString(el, "name") === void 0;
+}
+var AngleSliderHook = createZagLiveHook({
+  key: "angleSlider",
+  controlledKeys: ["value", "defaultValue"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
     const zag = new AngleSlider(el, {
       id: el.id,
       ...mountNumberBinding(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
+      name: zagNameForForm(el),
       dir: getDir(el),
       "aria-label": getString(el, "aria-label"),
       "aria-labelledby": getString(el, "aria-labelledby"),
       onValueChange: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -571,6 +603,7 @@ var AngleSliderHook = {
         });
       },
       onValueChangeEnd: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -582,8 +615,6 @@ var AngleSliderHook = {
         queueFormBubblingInputForPhoenix(el, () => zag);
       }
     });
-    zag.init();
-    this.angleSlider = zag;
     const emitValue = (respondTo) => {
       emitResponse({
         respondTo,
@@ -606,45 +637,55 @@ var AngleSliderHook = {
         }
       });
     };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:angle-slider:set-value", (event) => {
+    dom.add("corex:angle-slider:set-value", (event) => {
+      hook.fieldTouched = true;
       zag.api.setValue(event.detail.value);
       queueFormBubblingInputForPhoenix(el, () => zag);
     });
-    domRegistry.add("corex:angle-slider:value", (event) => {
+    dom.add("corex:angle-slider:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("angle_slider_set_value", (payload) => {
+    server.add("angle_slider_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(payload.value);
-      queueFormBubblingInputForPhoenix(el, () => zag);
+      queueFormBubblingInputForPhoenix(el, () => zag, { markUsed: false });
     });
-    registry.add("angle_slider_value", (payload) => {
+    server.add("angle_slider_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
+    return zag;
   },
-  updated() {
-    const el = this.el;
-    const zag = this.angleSlider;
-    zag?.updateProps({
+  afterInit(hook, zag) {
+    if (!hook.fieldTouched && shouldGateHiddenName(hook.el)) {
+      stripHiddenInputName(hook.el);
+      zag.updateProps({ name: void 0 });
+      zag.render();
+    }
+  },
+  update(hook, zag) {
+    const el = hook.el;
+    const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+    }
+    const name = hook.fieldTouched ? formSubmitName(el) : shouldGateHiddenName(el) ? void 0 : getString(el, "name") ?? formSubmitName(el);
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
-      dir: getDir(el)
+      name,
+      dir: getDir(el),
+      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {},
+      ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
     });
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.angleSlider?.destroy();
+    zag.render();
+    if (!hook.fieldTouched && shouldGateHiddenName(el)) {
+      stripHiddenInputName(el);
+    }
   }
-};
+});
 export {
   AngleSliderHook as AngleSlider,
   valueChangePayload

@@ -1,11 +1,12 @@
 import { connect, machine, type Props, type Api } from "@zag-js/carousel";
 import type { ItemProps, IndicatorProps } from "@zag-js/carousel";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
-export class Carousel extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Carousel extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -13,9 +14,10 @@ export class Carousel extends Component<Props, Api> {
     return this.zagConnect(connect);
   }
 
-  updateProps(props: Partial<Props>) {
-    super.updateProps(props);
+  updateProps(props: Partial<Props>): boolean {
+    const applied = super.updateProps(props);
     this.machine.service.send({ type: "SNAP.REFRESH" });
+    return applied;
   }
 
   render(): void {

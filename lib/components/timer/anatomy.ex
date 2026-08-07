@@ -46,7 +46,13 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal"]
 
-    @ignored_attrs ["data-orientation", "dir", "id", "data-scope", "data-part"]
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t() | nil,
+            orientation: String.t()
+          }
+
+    @ignored_attrs ["data-orientation", "id", "data-scope", "data-part"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -54,9 +60,14 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t() | nil,
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "data-orientation",
-      "dir",
       "id",
       "role",
       "aria-label",
@@ -72,7 +83,13 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal"]
 
-    @ignored_attrs ["data-orientation", "dir", "id", "data-scope", "data-part"]
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t() | nil,
+            orientation: String.t()
+          }
+
+    @ignored_attrs ["data-orientation", "id", "data-scope", "data-part"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -80,15 +97,24 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, :type, :value, dir: nil, orientation: "horizontal", hidden: false]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            type: String.t() | nil,
+            value: non_neg_integer() | nil,
+            dir: String.t() | nil,
+            orientation: String.t(),
+            hidden: boolean()
+          }
+
     @ignored_attrs [
       "id",
       "data-type",
       "style",
       "data-orientation",
-      "dir",
       "data-scope",
       "data-part",
       "data-value",
+      "data-plain",
       "data-state",
       "hidden",
       "aria-hidden"
@@ -101,11 +127,17 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, :type, dir: nil, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            type: String.t() | nil,
+            dir: String.t() | nil,
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "id",
       "data-type",
       "data-orientation",
-      "dir",
       "data-part",
       "data-scope",
       "aria-labelledby",
@@ -119,6 +151,12 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, :type, hidden: false]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            type: String.t() | nil,
+            hidden: boolean()
+          }
+
     @ignored_attrs ["hidden", "id", "data-type"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -127,11 +165,17 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal", hidden: false]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t() | nil,
+            orientation: String.t(),
+            hidden: boolean()
+          }
+
     @ignored_attrs [
       "id",
       "aria-hidden",
       "data-orientation",
-      "dir",
       "hidden",
       "data-scope",
       "data-part"
@@ -144,13 +188,20 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:action, :id, hidden: false, dir: nil, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            action: String.t() | nil,
+            id: String.t(),
+            hidden: boolean(),
+            dir: String.t() | nil,
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "hidden",
       "type",
       "aria-label",
       "data-action",
       "data-orientation",
-      "dir",
       "id",
       "disabled",
       "data-disabled",

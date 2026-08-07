@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { TagsInput, resolveZagTagsInputTranslations } from "../components/tags-input";
 import type {
   Props,
@@ -15,6 +13,7 @@ import {
   getDir,
   getNumber,
   canPushEvent,
+  parseJsonStringList,
 } from "../lib/util";
 import {
   idMatches,
@@ -23,33 +22,39 @@ import {
   readPayloadStringArray,
   readPayloadValue,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 import { bindArrayFieldSubmitIntent, isFormFieldUsed } from "../lib/phoenix-form-bridge";
 import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
-import { mountTagsBinding } from "../lib/read-props";
+import { datasetKeyChanged, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
+import { isZagValueControlled, mountTagsBinding } from "../lib/read-props";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type TagsInputHookState = {
   tagsInput?: TagsInput;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   fieldTouched?: boolean;
   unbindSubmitIntent?: () => void;
 };
+
+function readUpdatedServerTags(
+  el: HTMLElement,
+  before?: DatasetSnapshot
+): { value: string[] } | Record<string, never> {
+  if (!isZagValueControlled(el)) {
+    return {};
+  }
+
+  if (!datasetKeyChanged(before, el, "tags")) {
+    return {};
+  }
+
+  return { value: parseJsonTags(el, "tags") };
+}
 
 function sameStringList(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
 export function parseJsonTags(el: HTMLElement, key: "tags" | "defaultTags"): string[] {
-  const raw = el.dataset[key];
-  if (!raw || raw.trim() === "") return [];
-  try {
-    const v = JSON.parse(raw) as unknown;
-    return Array.isArray(v) && v.every((x) => typeof x === "string") ? (v as string[]) : [];
-  } catch {
-    return [];
-  }
+  return parseJsonStringList(el.dataset[key]);
 }
 
 export function blurBehavior(el: HTMLElement): "add" | "clear" | undefined {
@@ -76,13 +81,14 @@ function zagNameForForm(el: HTMLElement): string | undefined {
   return getString(el, "name");
 }
 
-const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
-    const el = this.el;
-    const hook = this as object & HookInterface<HTMLElement> & TagsInputHookState;
+const TagsInputHook = createZagLiveHook<TagsInputHookState, TagsInput>({
+  key: "tagsInput",
+  controlledKeys: ["tags"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     hook.fieldTouched = false;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -168,9 +174,6 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       },
     } as Props);
 
-    zag.init();
-    this.tagsInput = zag;
-
     const syncForm = (values: string[], opts: { notifyLiveView?: boolean } = {}) => {
       syncTagsInputFormForPhoenix(el, values, undefined, {
         notifyLiveView: opts.notifyLiveView,
@@ -187,66 +190,64 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       syncForm(zag.api.value, { notifyLiveView: false });
     });
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value?: string[] }>>("corex:tags-input:set-value", (event) => {
+    dom.add<CustomEvent<{ value?: string[] }>>("corex:tags-input:set-value", (event) => {
       const v = event.detail?.value;
       if (Array.isArray(v) && v.every((x) => typeof x === "string"))
         zag.api.setValue(v as string[]);
     });
 
-    domRegistry.add("corex:tags-input:clear-value", () => {
+    dom.add("corex:tags-input:clear-value", () => {
       zag.api.clearValue();
     });
 
-    domRegistry.add<CustomEvent<{ value?: string }>>("corex:tags-input:add-value", (event) => {
+    dom.add<CustomEvent<{ value?: string }>>("corex:tags-input:add-value", (event) => {
       const tag = event.detail?.value;
       if (typeof tag === "string" && tag !== "") zag.api.addValue(tag);
     });
 
-    domRegistry.add<CustomEvent<{ value?: string }>>("corex:tags-input:remove-value", (event) => {
+    dom.add<CustomEvent<{ value?: string }>>("corex:tags-input:remove-value", (event) => {
       const tag = event.detail?.value;
       if (typeof tag !== "string" || tag === "") return;
       zag.api.setValue(zag.api.value.filter((t) => t !== tag));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("tags_input_set_value", (payload: unknown) => {
+    server.add("tags_input_set_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const v = readPayloadStringArray(payload);
       if (v) zag.api.setValue(v);
     });
 
-    registry.add("tags_input_clear_value", (payload: unknown) => {
+    server.add("tags_input_clear_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
     });
 
-    registry.add("tags_input_add_value", (payload: unknown) => {
+    server.add("tags_input_add_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const tag = readPayloadValue(payload);
       if (tag !== "") zag.api.addValue(tag);
     });
 
-    registry.add("tags_input_remove_value", (payload: unknown) => {
+    server.add("tags_input_remove_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const tag = readPayloadValue(payload);
       if (tag === "") return;
       zag.api.setValue(zag.api.value.filter((t) => t !== tag));
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
-    const el = this.el;
+  update(hook, zag) {
+    const el = hook.el;
+
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
     const placeholder = readPlaceholderFromMainInput(el);
+    const valuePatch = readUpdatedServerTags(el, hook.beforeAttrs);
 
-    this.tagsInput?.updateProps({
+    zag.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
       disabled: getBoolean(el, "disabled"),
@@ -267,16 +268,13 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(max !== undefined ? { max } : {}),
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
+      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
     } as Partial<Props>);
-    this.tagsInput?.render();
   },
 
-  destroyed(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
-    this.unbindSubmitIntent?.();
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.tagsInput?.destroy();
+  destroy(hook) {
+    hook.unbindSubmitIntent?.();
   },
-};
+});
 
 export { TagsInputHook as TagsInput };

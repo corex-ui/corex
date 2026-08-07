@@ -60,6 +60,19 @@ defmodule E2eWeb.ToggleGroupTest do
       |> ToggleGroup.wait_item_on_in_host(host, "duis", timeout: 8_000)
     end
 
+    feature "client js  -  Duis selects item", %{session: session} do
+      host = "toggle-group-api-cjs"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(ToggleGroup, :toggle_group, :api)
+        |> ToggleGroup.wait_host_toggle_group_ready(host)
+
+      session
+      |> ToggleGroup.click_in_section("toggle-group-api-set-value-client-js", "Duis")
+      |> ToggleGroup.wait_item_on_in_host(host, "duis", timeout: 8_000)
+    end
+
     feature "server  -  Donec selects item", %{session: session} do
       host = "toggle-group-api-srv"
 
@@ -94,6 +107,25 @@ defmodule E2eWeb.ToggleGroupTest do
 
       assert ToggleGroup.toggle_group_events_server_log_has_row?(session)
     end
+
+    feature "client  -  item click appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(ToggleGroup, :toggle_group, :events)
+        |> ToggleGroup.prepare_live_form()
+        |> ToggleGroup.wait_host_toggle_group_ready("toggle-group-events-client")
+
+      refute ToggleGroup.toggle_group_events_client_log_has_row?(session)
+
+      session
+      |> ToggleGroup.click_item_by_value_in_host("toggle-group-events-client", "duis")
+      |> ToggleGroup.wait_for_has(
+        css("#toggle-group-events-log-client tr[data-part='row']"),
+        timeout: 10_000
+      )
+
+      assert ToggleGroup.toggle_group_events_client_log_has_row?(session)
+    end
   end
 
   describe "patterns" do
@@ -109,6 +141,23 @@ defmodule E2eWeb.ToggleGroupTest do
       session
       |> ToggleGroup.click_item_by_value_in_host(host, "duis")
       |> ToggleGroup.wait_item_on_in_host(host, "duis", timeout: 8_000)
+    end
+  end
+
+  describe "a11y (post-interaction)" do
+    @describetag :e2e
+
+    feature "anatomy minimal passes axe after toggle", %{session: session} do
+      host = "toggle-group-anatomy-minimal"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(ToggleGroup, :toggle_group, :anatomy)
+      |> ToggleGroup.wait_section_toggle_group_ready("toggle-group-anatomy-minimal")
+      |> ToggleGroup.click_item_by_value_in_host(host, "duis")
+      |> ToggleGroup.wait_item_on_in_host(host, "duis", timeout: 8_000)
+      |> ToggleGroup.check_accessibility(css("#toggle-group-anatomy-minimal"),
+        filter: E2eWeb.A11yDocPageFilter
+      )
     end
   end
 end

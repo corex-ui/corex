@@ -93,7 +93,7 @@ defmodule E2eWeb.EditablePlayLive do
         <:canvas>
           <.editable
             id="editable-playground"
-            class="editable"
+            class="editable max-w-xl"
             value={@play_value}
             on_value_change="editable_play_value_changed"
             disabled={@controls.disabled}

@@ -121,11 +121,19 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled, required: false, dir: "ltr", orientation: "horizontal"]
+    defstruct [
+      :id,
+      :disabled,
+      :aria_label,
+      required: false,
+      dir: "ltr",
+      orientation: "horizontal"
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             disabled: boolean(),
+            aria_label: String.t() | nil,
             required: boolean(),
             dir: String.t(),
             orientation: String.t()
@@ -145,6 +153,7 @@ defmodule Corex.NumberInput.Anatomy do
       "readonly",
       "readOnly",
       "required",
+      "aria-label",
       "inputmode",
       "inputMode",
       "pattern",
@@ -174,9 +183,9 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule TriggerGroup do
     @moduledoc false
-    defstruct dir: "ltr", orientation: "horizontal"
+    defstruct [:id, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{id: String.t() | nil, dir: String.t(), orientation: String.t()}
   end
 
   defmodule DecrementTrigger do

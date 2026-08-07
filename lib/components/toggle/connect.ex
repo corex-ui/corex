@@ -1,23 +1,27 @@
 defmodule Corex.Toggle.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
+
   alias Corex.Toggle.Anatomy.{Indicator, Props, Root}
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir_from: 2, maybe_put_dir_from: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-controlled" => presence_attr(assigns.controlled),
       "data-pressed" => pressed_controlled_attr(assigns.controlled, assigns.pressed),
       "data-default-pressed" => pressed_default_attr(assigns.controlled, assigns.pressed),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "data-on-pressed-change" => assigns.on_pressed_change,
       "data-on-pressed-change-client" => assigns.on_pressed_change_client
     }
-    |> maybe_put_data_dir_from(assigns)
+    |> put_data_dir_attr_from_assigns(assigns)
   end
 
   defp pressed_controlled_attr(true, pressed), do: if(pressed, do: "true", else: "false")
@@ -41,7 +45,7 @@ defmodule Corex.Toggle.Connect do
       "data-state" => state,
       "data-disabled" => assigns.disabled
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_root(assigns) do
@@ -61,7 +65,7 @@ defmodule Corex.Toggle.Connect do
       "data-state" => state,
       "data-disabled" => assigns.disabled
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_indicator(assigns) do

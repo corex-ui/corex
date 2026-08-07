@@ -1,7 +1,7 @@
 defmodule Corex.Toast.Payload do
   @moduledoc false
 
-  import Corex.Helpers, only: [maybe_put: 3]
+  use Corex.Component, :connect
 
   alias Corex.Toast.Action, as: ToastAction
   alias Phoenix.HTML.Safe
@@ -17,12 +17,13 @@ defmodule Corex.Toast.Payload do
     "loading" => :loading,
     "action" => :action,
     "id" => :id,
-    "groupId" => :groupId,
+    "group_id" => :group_id,
     "priority" => :priority
   }
 
   @action_string_keys MapSet.new(~W(label js class))
 
+  @spec type_string(term()) :: String.t()
   def type_string(type) when is_atom(type) do
     Map.get(@toast_type_strings, type, "info")
   end
@@ -33,9 +34,11 @@ defmodule Corex.Toast.Payload do
 
   def type_string(_), do: "info"
 
+  @spec duration_value(term()) :: term()
   def duration_value(:infinity), do: "Infinity"
   def duration_value(v), do: v
 
+  @spec normalize_action(term()) :: map() | nil
   def normalize_action(nil), do: nil
 
   def normalize_action(%ToastAction{} = a) do
@@ -127,7 +130,7 @@ defmodule Corex.Toast.Payload do
     |> IO.iodata_to_binary()
   end
 
-  defp encode_js_ops(%JS{} = js), do: Phoenix.json_library().encode!(js.ops)
+  defp encode_js_ops(%JS{} = js), do: Corex.Json.encode!(js.ops)
 
   defp legal_priority(nil), do: nil
   defp legal_priority(n) when is_integer(n) and n in 1..8, do: n
@@ -144,6 +147,7 @@ defmodule Corex.Toast.Payload do
   defp priority_from_parse({p, _}) when p in 1..8, do: p
   defp priority_from_parse(_), do: nil
 
+  @spec create_detail(term(), term(), term(), keyword()) :: map()
   def create_detail(title, description, type, opts) when is_list(opts) do
     opts
     |> Keyword.get(:duration, 5000)
@@ -151,11 +155,12 @@ defmodule Corex.Toast.Payload do
     |> apply_create_opts(opts)
   end
 
+  @spec create_server_data(term(), term(), term(), term(), keyword()) :: map()
   def create_server_data(group_id, title, description, type, opts) when is_list(opts) do
     opts
     |> Keyword.get(:duration, 5000)
     |> base_create_map(title, description, type)
-    |> Map.put(:groupId, group_id)
+    |> Map.put(:group_id, group_id)
     |> apply_create_opts(opts)
   end
 
@@ -179,6 +184,7 @@ defmodule Corex.Toast.Payload do
   defp put_optional_true(map, :loading, true), do: Map.put(map, :loading, true)
   defp put_optional_true(map, :loading, _), do: map
 
+  @spec update_detail(term(), keyword() | map()) :: map()
   def update_detail(toast_id, attrs) when is_list(attrs) do
     update_detail(toast_id, Map.new(attrs))
   end
@@ -192,7 +198,7 @@ defmodule Corex.Toast.Payload do
       nil ->
         acc
 
-      nk when nk in [:id, :groupId] ->
+      nk when nk in [:id, :group_id] ->
         acc
 
       _nk when is_nil(v) ->
@@ -210,7 +216,7 @@ defmodule Corex.Toast.Payload do
     end
   end
 
-  defp update_attr_key(k) when is_atom(k) and k not in [:id, :groupId], do: k
+  defp update_attr_key(k) when is_atom(k) and k not in [:id, :group_id], do: k
 
   defp update_attr_key(k) when is_binary(k) do
     Map.get(@update_attr_strings, k)
@@ -231,6 +237,7 @@ defmodule Corex.Toast.Payload do
 
   defp update_attr_value(_, v), do: v
 
+  @spec update_server_data(term(), term(), keyword() | map()) :: map()
   def update_server_data(group_id, toast_id, attrs) when is_list(attrs) do
     update_server_data(group_id, toast_id, Map.new(attrs))
   end
@@ -238,6 +245,6 @@ defmodule Corex.Toast.Payload do
   def update_server_data(group_id, toast_id, attrs) when is_map(attrs) do
     toast_id
     |> update_detail(attrs)
-    |> Map.put(:groupId, group_id)
+    |> Map.put(:group_id, group_id)
   end
 end

@@ -2,7 +2,7 @@ defmodule Corex.FileUploadLive do
   @moduledoc ~S'''
   LiveView uploads wrapper that shares [`Corex.FileUpload`](Corex.FileUpload.html) layout tokens (`data-scope` / `data-part`) and styling.
 
-  Use after [`allow_upload/3`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#allow_upload/3). Pass `upload={@uploads.name}` and `field` matching the atom given to `allow_upload`. Renders [`live_file_input`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#live_file_input/1) and `phx-drop-target`; **no** Zag `FileUpload` hook. Do not combine this component with `<.file_upload>` on the same file control.
+  Use after [`allow_upload/3`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#allow_upload/3). Pass `upload={@uploads.name}` and `upload_name` matching the atom given to `allow_upload`. Renders [`live_file_input`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#live_file_input/1) and `phx-drop-target`; **no** Zag `FileUpload` hook. Do not combine this component with `<.file_upload>` on the same file control.
 
   Forms must bind [`phx-change`](https://hexdocs.pm/phoenix_live_view/uploads.html) (and typically `phx-submit`) as in the [uploads guide](https://hexdocs.pm/phoenix_live_view/uploads.html). For shared form patterns, see the [Forms](forms.html) guide.
 
@@ -14,7 +14,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+    <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -26,7 +26,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+    <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -39,7 +39,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+    <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -56,8 +56,10 @@ defmodule Corex.FileUploadLive do
   ### Form with submit
 
   ```heex
-  <form phx-change="validate" phx-submit="save">
-    <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
+  <form phx-change="validate" phx-submit="save"
+    class="flex flex-col gap-space-lg w-full max-w-xl"
+  >
+    <.file_upload_live upload={@uploads.attachment} upload_name={:attachment} class="file-upload">
       <:label>Attachment</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -113,7 +115,7 @@ defmodule Corex.FileUploadLive do
   end
   ```
 
-  The `field` atom must match the name passed to `allow_upload/3`. Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
+  The `upload_name` atom must match the name passed to `allow_upload/3`. Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
   '''
 
   @doc type: :component
@@ -128,7 +130,7 @@ defmodule Corex.FileUploadLive do
     doc: "Upload config from `allow_upload/3` on the LiveView socket"
   )
 
-  attr(:field, :atom,
+  attr(:upload_name, :atom,
     required: true,
     doc: "Upload name passed to `allow_upload` (for cancel events)"
   )
@@ -148,7 +150,7 @@ defmodule Corex.FileUploadLive do
 
   attr(:auto_invalid, :boolean,
     default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
+    doc: "When true, set invalid from visible upload errors"
   )
 
   attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
@@ -195,7 +197,7 @@ defmodule Corex.FileUploadLive do
       |> assign(:translation, translation)
 
     ~H"""
-    <div id={@id} class="file-upload" {@rest}>
+    <div id={@id} {@rest}>
       <div
         data-scope="file-upload"
         data-part="root"
@@ -277,7 +279,7 @@ defmodule Corex.FileUploadLive do
               type="button"
               phx-click={@cancel_event}
               phx-value-ref={entry.ref}
-              phx-value-upload_field={Atom.to_string(@field)}
+              phx-value-upload_field={Atom.to_string(@upload_name)}
               data-scope="file-upload"
               data-part="item-delete-trigger"
             >
@@ -302,14 +304,17 @@ defmodule Corex.FileUploadLive do
   @doc """
   Cancels an upload entry from a LiveView `handle_event/3` callback.
 
-  Pass the same `field` atom given to `allow_upload/3`. Forged or unknown
+  Pass the same upload name atom given to `allow_upload/3`. Forged or unknown
   `upload_field` values are ignored without raising.
   """
   @spec cancel_upload_from_params(Phoenix.LiveView.Socket.t(), atom(), map()) ::
           Phoenix.LiveView.Socket.t()
-  def cancel_upload_from_params(socket, expected_field, %{"ref" => ref, "upload_field" => field})
-      when is_atom(expected_field) and is_binary(ref) and is_binary(field) do
-    if field == Atom.to_string(expected_field) do
+  def cancel_upload_from_params(socket, expected_upload_name, %{
+        "ref" => ref,
+        "upload_field" => field
+      })
+      when is_atom(expected_upload_name) and is_binary(ref) and is_binary(field) do
+    if field == Atom.to_string(expected_upload_name) do
       case safe_existing_atom(field) do
         {:ok, atom} -> Phoenix.LiveView.cancel_upload(socket, atom, ref)
         :error -> socket
@@ -319,7 +324,7 @@ defmodule Corex.FileUploadLive do
     end
   end
 
-  def cancel_upload_from_params(socket, _expected_field, _params), do: socket
+  def cancel_upload_from_params(socket, _expected_upload_name, _params), do: socket
 
   defp safe_existing_atom(param) when is_binary(param) do
     {:ok, String.to_existing_atom(param)}

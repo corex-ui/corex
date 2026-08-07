@@ -24,34 +24,51 @@ defmodule E2eWeb.ColorPickerTest do
         ColorPicker.wait_section_color_picker_ready(session, section_id)
       end)
     end
+
+    feature "positioning  -  trigger click opens content", %{session: session} do
+      section = "color-picker-anatomy-positioning"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(ColorPicker, :color_picker, :anatomy)
+      |> ColorPicker.wait_section_color_picker_ready(section)
+      |> ColorPicker.open_color_picker_in_section(section)
+
+      host_id =
+        session
+        |> find(
+          css(
+            ~s|section##{section} [phx-hook="ColorPicker"]|,
+            visible: :any
+          )
+        )
+        |> Wallaby.Element.attr("id")
+
+      ColorPicker.assert_content_open(session, host_id, timeout: 8_000)
+    end
   end
 
   describe "api" do
     feature "set value (binding)  -  Set red updates swatch", %{session: session} do
       section = "color-picker-api-set-value-c"
+      host_id = "color-picker-api-value-c"
 
       session
       |> ComponentBehaviorSpec.visit_ready(ColorPicker, :color_picker, :api)
       |> ColorPicker.wait_section_color_picker_ready(section)
       |> ColorPicker.click_button_in_section(section, "Set red")
-      |> ColorPicker.wait_for_has(
-        css("#color-picker-api-value-c [data-part='trigger']", visible: :any),
-        timeout: 8_000
-      )
+      |> ColorPicker.wait_value(host_id, "#ff0000", timeout: 8_000)
     end
 
     feature "set value (server)  -  Set red via LiveView", %{session: session} do
       section = "color-picker-api-set-value-s"
+      host_id = "color-picker-api-value-s"
 
       session
       |> ComponentBehaviorSpec.visit_ready(ColorPicker, :color_picker, :api)
       |> ColorPicker.prepare_live_form()
       |> ColorPicker.wait_section_color_picker_ready(section)
       |> ColorPicker.click_button_in_section(section, "Set red")
-      |> ColorPicker.wait_for_has(
-        css("#color-picker-api-value-s [data-part='trigger']", visible: :any),
-        timeout: 8_000
-      )
+      |> ColorPicker.wait_value(host_id, "#ff0000", timeout: 8_000)
     end
   end
 

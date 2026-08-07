@@ -8,13 +8,14 @@ CI (`.github/workflows/elixir.yml`) installs **`phx_new`** and locally built **`
 in order:
 
 The matrix runs **latest** `phx_new` on each OTP / Elixir row, then repeats all three rows with **pinned
-`phx_new 1.8.4`** (aligned with `installer/mix.exs` `@phoenix_version`) so `corex.new` stays compatible
+`phx_new 1.8.7`** (aligned with `installer/mix.exs` `@phoenix_version`) so `corex.new` stays compatible
 with older Phoenix installers as well as current Hex releases.
 
-1. **`mix test`**  -  matches local default; `test_helper.exs` sets `exclude: [:database]`, so untagged work runs here.
-2. **`mix test --include database:postgresql`**  -  uses the job’s **Postgres 15** service on **localhost:5432**
-   (`PGHOST`, `PGUSER`, `PGPASSWORD`, `PGPORT`, `DATABASE_URL` set in the workflow).
-3. **`mix test --include database:sqlite3`**  -  no extra service (file-based SQLite).
+1. **`mix test --exclude extended --exclude database`**  -  fast, untagged work (no DB).
+2. **`mix test --only database`**  -  uses the job’s **Postgres 15** service on **localhost:5432**
+   (`PGHOST`, `PGUSER`, `PGPASSWORD`, `PGPORT`, `DATABASE_URL` set in the workflow). Includes both
+   `database: :postgresql` and `database: :sqlite3` tags.
+3. **`mix test --only extended`**  -  longer scenarios.
 
 The **`dev_corex_new_test.exs`** module focuses on **`mix corex.new ... --dev <repo>`** (esbuild ESM,
 hooks, `config :corex`, `use Corex`, `corex.mjs`). The filename keeps `dev_corex` for history; the
@@ -26,6 +27,10 @@ From the **repository root**, install **`phx_new`** and local **`corex_new`**, t
     $ mix deps.get
     $ mix test
 
+**Postgres required:** default `mix test` includes `:database`-tagged tests. PostgreSQL scenarios
+expect Postgres on **`localhost:5432`**. SQLite3-tagged tests do not need a service. Database-tagged
+tests call `mix ecto.create` / `ecto.migrate` via `code_generator_case.ex` before starting the app.
+
 To run only the dev checkout test:
 
     $ mix test test/code_generation/dev_corex_new_test.exs
@@ -36,22 +41,26 @@ To install dependencies, run:
 
     $ mix deps.get
 
-Then run the default suite (same slice as CI step 1; excludes `:database`):
+Then run the suite (includes `:database` tags; needs Postgres for postgresql-tagged cases):
 
     $ mix test
+
+Skip database tests locally without Postgres:
+
+    $ mix test --exclude database
 
 Or run only the dev checkout test:
 
     $ mix test test/code_generation/dev_corex_new_test.exs
 
-To run the full suite with tests that target a specific database:
+To run only tests that target a specific database:
 
-    $ mix test --include database:postgresql
-    $ mix test --include database:sqlite3
+    $ mix test --only database:postgresql
+    $ mix test --only database:sqlite3
 
 To run every test tagged with `:database` (PostgreSQL and SQLite3):
 
-    $ mix test --include database
+    $ mix test --only database
 
 For local runs that need Postgres on **`localhost:5432`**, use **`docker-compose.yml`**:
 

@@ -1,5 +1,9 @@
 defmodule Corex.TagsInput.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, [:connect, :api]
+
   alias Corex.Selectors
 
   alias Corex.TagsInput.Translation, as: TagsInputTranslation
@@ -20,15 +24,6 @@ defmodule Corex.TagsInput.Connect do
     SsrItemText,
     ValueInput
   }
-
-  import Corex.Helpers,
-    only: [
-      get_boolean: 1,
-      validate_value!: 1,
-      maybe_put: 3,
-      maybe_put_data_dir_from: 2,
-      maybe_put_dir_from: 2
-    ]
 
   alias Phoenix.LiveView.JS
 
@@ -58,7 +53,7 @@ defmodule Corex.TagsInput.Connect do
       "data-value" => a.value,
       "id" => ssr_item_row_id(a.root_id, a.index)
     }
-    |> maybe_put_dir_from(a)
+    |> put_dir_attr_from_assigns(a)
     |> put_item_data_disabled(a.disabled)
   end
 
@@ -76,7 +71,7 @@ defmodule Corex.TagsInput.Connect do
       "id" => tag_item_dom_id(a.root_id, a.value, a.index),
       "data-value" => a.value
     }
-    |> maybe_put_dir_from(a)
+    |> put_dir_attr_from_assigns(a)
     |> put_item_data_disabled(a.disabled)
   end
 
@@ -113,7 +108,7 @@ defmodule Corex.TagsInput.Connect do
         "aria-disabled" => if(a.disabled, do: "true", else: "false"),
         "aria-label" => a.aria_label
       }
-      |> maybe_put_dir_from(a)
+      |> put_dir_attr_from_assigns(a)
       |> put_item_data_disabled(a.disabled)
 
     if a.disabled, do: Map.put(base, "disabled", true), else: base
@@ -136,7 +131,7 @@ defmodule Corex.TagsInput.Connect do
         "tabindex" => "-1",
         "hidden" => true
       }
-      |> maybe_put_dir_from(a)
+      |> put_dir_attr_from_assigns(a)
       |> maybe_put_aria_label(a.aria_label)
 
     if a.disabled, do: Map.put(base, "disabled", true), else: base
@@ -153,11 +148,11 @@ defmodule Corex.TagsInput.Connect do
     )
   end
 
-  defp tags_json(tags) when is_list(tags), do: Corex.Dataset.encode_json(validate_value!(tags))
+  defp tags_json(tags) when is_list(tags), do: Corex.Dataset.encode_json(coerce_string_list(tags))
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    value = validate_value!(assigns.value)
+    value = coerce_string_list(assigns.value)
 
     assigns
     |> base_hook_props(value)
@@ -166,7 +161,7 @@ defmodule Corex.TagsInput.Connect do
     |> put_data_delimiter(assigns.delimiter)
     |> put_data_blur_behavior(assigns.blur_behavior)
     |> put_data_editable(assigns.editable)
-    |> maybe_put_data_dir_from(assigns)
+    |> put_data_dir_attr_from_assigns(assigns)
     |> Map.put("data-translation", translation_json(assigns))
     |> FormField.put_form_field_attrs(assigns)
   end
@@ -177,16 +172,16 @@ defmodule Corex.TagsInput.Connect do
     %{
       "data-tags" => nil,
       "data-default-tags" => encoded,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-required" => get_boolean(assigns.required),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-required" => presence_attr(assigns.required),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-add-on-paste" => get_boolean(assigns.add_on_paste),
-      "data-allow-duplicates" => get_boolean(assigns.allow_duplicates),
-      "data-allow-overflow" => get_boolean(assigns.allow_overflow),
-      "data-auto-focus" => get_boolean(assigns.auto_focus),
+      "data-add-on-paste" => presence_attr(assigns.add_on_paste),
+      "data-allow-duplicates" => presence_attr(assigns.allow_duplicates),
+      "data-allow-overflow" => presence_attr(assigns.allow_overflow),
+      "data-auto-focus" => presence_attr(assigns.auto_focus),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-on-input-value-change" => assigns.on_input_value_change,
@@ -240,9 +235,9 @@ defmodule Corex.TagsInput.Connect do
       "data-scope" => "tags-input",
       "data-part" => "root",
       "id" => "tags-input:#{assigns.id}",
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_root(assigns) do
@@ -258,7 +253,7 @@ defmodule Corex.TagsInput.Connect do
       "data-part" => "label",
       "id" => "tags-input:#{assigns.id}:label"
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_label(assigns) do
@@ -274,7 +269,7 @@ defmodule Corex.TagsInput.Connect do
       "data-part" => "control",
       "id" => "tags-input:#{assigns.id}:control"
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_control(assigns) do
@@ -291,7 +286,7 @@ defmodule Corex.TagsInput.Connect do
         "data-part" => "input",
         "id" => "tags-input:#{assigns.id}:input"
       }
-      |> maybe_put_dir_from(assigns)
+      |> put_dir_attr_from_assigns(assigns)
 
     case Map.get(assigns, :placeholder) do
       nil -> base
@@ -336,7 +331,7 @@ defmodule Corex.TagsInput.Connect do
       "tabindex" => "-1",
       "id" => "tags-input:#{assigns.id}:value-input"
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   def ignore_value_input(assigns) do

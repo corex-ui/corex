@@ -91,7 +91,7 @@ defmodule E2eWeb.CarouselEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <div class="w-full flex justify-center">
                 <.carousel
                   id={@id_server}
@@ -132,7 +132,7 @@ defmodule E2eWeb.CarouselEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <div class="w-full flex justify-center">
                 <.carousel
                   id={@id_client}

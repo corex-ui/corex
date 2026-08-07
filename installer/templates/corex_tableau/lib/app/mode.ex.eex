@@ -1,7 +1,8 @@
 defmodule <%= @app_module %>.Mode do
   use Phoenix.Component
   use Corex
-
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
+<% end %>
   def head_script do
     Phoenix.HTML.raw("""
     <script>
@@ -22,24 +23,26 @@ defmodule <%= @app_module %>.Mode do
     end
   end
 
-  attr :mode, :string, required: true
+  attr(:id, :string, default: "mode-switcher")
+  attr(:mode, :string, required: true)
+  attr(:class, :string, default: nil)
 
   def mode_toggle(assigns) do
     ~H"""
     <.toggle
-      id="mode-switcher"
-      class="toggle ui-size-sm shrink-0"
+      id={@id}
+      class={["toggle ui-ghost ui-size-sm ui-trigger--circle", @class]}
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"
     >
       <span>
         <.heroicon name="hero-moon" />
-        <span class="sr-only">Dark mode</span>
+        <span class="sr-only"><%= if @lang do %>{~t"Dark mode"}<% else %>Dark mode<% end %></span>
       </span>
       <span data-pressed>
         <.heroicon name="hero-sun" />
-        <span class="sr-only">Light mode</span>
+        <span class="sr-only"><%= if @lang do %>{~t"Light mode"}<% else %>Light mode<% end %></span>
       </span>
     </.toggle>
     """

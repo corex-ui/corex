@@ -1,4 +1,3 @@
-import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Dialog, dialogInitialAriaLabel } from "../components/dialog";
 import type { OpenChangeDetails } from "@zag-js/dialog";
@@ -6,8 +5,6 @@ import type { OpenChangeDetails } from "@zag-js/dialog";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { readBooleanControlledZagProps, readControlledOrDefaultBoolean } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 import {
   isJsAnimation,
   prepareJsScaleInitialState,
@@ -16,11 +13,10 @@ import {
 } from "../lib/animation";
 import { resolveFocusElement } from "../lib/focus";
 import { type DialogOpenChangedDetail } from "../lib/event-details";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type DialogHookState = {
   dialog?: Dialog;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastOpen?: boolean;
   previousOpen?: boolean;
 };
@@ -61,12 +57,13 @@ function runDialogScaleIfJs(el: HTMLElement, isOpen: boolean): void {
   runDialogScaleTransitions(el, isOpen);
 }
 
-const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    const el = this.el;
-    const self = this as object & HookInterface<HTMLElement> & DialogHookState;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const DialogHook = createZagLiveHook<DialogHookState, Dialog>({
+  key: "dialog",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const self = hook as object & HookInterface<HTMLElement> & DialogHookState;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
 
@@ -106,74 +103,61 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
       },
     });
 
-    dialog.init();
-    this.dialog = dialog;
-
     prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
       if (sub.dataset.part === "backdrop") return { scale: false };
     });
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:dialog:set-open", (event) => {
+    dom.add<CustomEvent<{ open: boolean }>>("corex:dialog:set-open", (event) => {
       const { open } = event.detail;
       dialog.api.setOpen(open);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("dialog_set_open", (payload: unknown) => {
+    server.add("dialog_set_open", (payload: unknown) => {
       if (!payload || typeof payload !== "object") return;
       const o = payload as { open?: boolean };
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof o.open === "boolean") dialog.api.setOpen(o.open);
     });
 
-    registry.add("dialog_open", (payload: unknown) => {
+    server.add("dialog_open", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("dialog_open_response", {
+      hook.pushEvent("dialog_open_response", {
         id: el.id,
         value: dialog.api.open,
       });
     });
+
+    return dialog;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    const { el } = this;
+  beforeUpdate(hook) {
+    const { el } = hook;
     if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-      this.previousOpen = getBoolean(el, "open");
+      hook.previousOpen = getBoolean(el, "open");
     }
   },
 
-  updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    const { el } = this;
+  update(hook, dialog) {
+    const { el } = hook;
     const layout = readDialogLayoutProps(el);
 
     if (!getBoolean(el, "controlled")) {
-      this.dialog?.updateProps(layout);
+      dialog.updateProps(layout);
       return;
     }
 
     const nextOpen = getBoolean(el, "open") ?? false;
-    const prevOpen = this.previousOpen ?? this.lastOpen ?? false;
-    this.previousOpen = undefined;
-    this.lastOpen = nextOpen;
+    const prevOpen = hook.previousOpen ?? hook.lastOpen ?? false;
+    hook.previousOpen = undefined;
+    hook.lastOpen = nextOpen;
 
-    this.dialog?.updateProps({ ...layout, open: nextOpen });
+    dialog.updateProps({ ...layout, open: nextOpen });
 
     if (nextOpen !== prevOpen) {
       runDialogScaleIfJs(el, nextOpen);
     }
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.dialog?.destroy();
-  },
-};
+});
 
 export { DialogHook as Dialog };

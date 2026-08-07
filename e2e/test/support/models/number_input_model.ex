@@ -107,6 +107,51 @@ defmodule E2eWeb.NumberInputModel do
     session
   end
 
+  def assert_number_input_field_error(session, host_dom_id, text \\ nil)
+      when is_binary(host_dom_id) do
+    q =
+      if is_binary(text) and text != "" do
+        css(
+          "##{host_dom_id} [data-scope='number-input'][data-part='error']",
+          text: text,
+          visible: :any
+        )
+      else
+        css(
+          "##{host_dom_id} [data-scope='number-input'][data-part='error']",
+          visible: :any
+        )
+      end
+
+    assert_has(session, q)
+  end
+
+  def clear_number_input_at_host(session, host_dom_id) when is_binary(host_dom_id) do
+    enc_id = Jason.encode!(host_dom_id)
+
+    execute_script(
+      session,
+      """
+      return (function () {
+        var hook = document.getElementById(#{enc_id});
+        if (!hook) return;
+        hook.dispatchEvent(
+          new CustomEvent("corex:number-input:clear-value", { bubbles: true })
+        );
+        var hidden = hook.querySelector('[data-scope="number-input"][data-part="value-input"]');
+        if (hidden) {
+          if (!hidden.phxPrivate) hidden.phxPrivate = {};
+          hidden.phxPrivate["phx-has-focused"] = true;
+          hidden.dispatchEvent(new Event("input", { bubbles: true }));
+          hidden.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      })();
+      """
+    )
+
+    session
+  end
+
   def hidden_value_at_host(session, host_dom_id) when is_binary(host_dom_id) do
     key = {:e2e_number_input_value, self(), make_ref()}
 
@@ -147,6 +192,10 @@ defmodule E2eWeb.NumberInputModel do
 
   def number_input_events_server_log_has_row?(session) do
     has?(session, css("#number-input-events-log-server tr[data-part='row']"))
+  end
+
+  def number_input_events_client_log_has_row?(session) do
+    has?(session, css("#number-input-events-log-client tr[data-part='row']"))
   end
 
   def goto_form(session, mode, form \\ :phoenix) do

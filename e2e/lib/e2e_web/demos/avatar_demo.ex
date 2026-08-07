@@ -102,7 +102,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-4">
+    <div class="flex flex-wrap items-center gap-space gap-space-lg">
       <.avatar id="avatar-anatomy-value-empty" src="" class="avatar">
         <:value :let={src}>
           {if src, do: "IMG", else: " - "}
@@ -124,16 +124,16 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def anatomy_custom_slots_code do
     ~S"""
-    <div class="flex flex-col gap-8 items-center w-full">
-      <div class="flex flex-col gap-2 items-center w-full">
+    <div class="flex flex-col gap-size-sm items-center w-full">
+      <div class="flex flex-col gap-space-sm items-center w-full">
         <.avatar src="" class="avatar">
           <:fallback>
             <span class="font-semibold">AB</span>
           </:fallback>
         </.avatar>
       </div>
-      <div class="flex flex-col gap-2 items-center w-full">
-        <div class="flex flex-wrap items-center gap-space gap-4">
+      <div class="flex flex-col gap-space-sm items-center w-full">
+        <div class="flex flex-wrap items-center gap-space gap-space-lg">
           <.avatar src="" class="avatar">
             <:value :let={src}>
               {if src, do: "IMG", else: " - "}
@@ -154,11 +154,11 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-8 items-center w-full">
-      <div class="flex flex-col gap-2 items-center w-full">
+    <div class="flex flex-col gap-size-sm items-center w-full">
+      <div class="flex flex-col gap-space-sm items-center w-full">
         {anatomy_fallback_example(assigns)}
       </div>
-      <div class="flex flex-col gap-2 items-center w-full">
+      <div class="flex flex-col gap-space-sm items-center w-full">
         {anatomy_value_example(assigns)}
       </div>
     </div>
@@ -478,7 +478,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
       |> Phoenix.Component.assign(:src_alt, "https://corex-ui.com/pwa-192x192.png")
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:avatar:set-src",
@@ -512,7 +512,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def api_set_src_server_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/images/avatar.png" class="button ui-size-sm">
         Set primary
       </.action>
@@ -544,7 +544,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
       )
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event} phx-value-url={@src_primary} class="button ui-size-sm">
         Set primary
       </.action>

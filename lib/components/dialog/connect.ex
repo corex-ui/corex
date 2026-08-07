@@ -1,7 +1,11 @@
 defmodule Corex.Dialog.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
 
   alias Corex.Animation.Scale
+
   alias Corex.Selectors
 
   alias Corex.Dialog.Anatomy.{
@@ -17,9 +21,6 @@ defmodule Corex.Dialog.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers,
-    only: [data_state: 3, get_boolean: 1, get_boolean: 2, get_default_boolean: 2]
-
   @spec props(Props.t()) :: map()
   def props(assigns) do
     animation = assigns.animation
@@ -27,14 +28,14 @@ defmodule Corex.Dialog.Connect do
 
     base = %{
       "id" => assigns.id,
-      "data-default-open" => get_default_boolean(assigns.controlled, assigns.open),
-      "data-open" => get_boolean(assigns.controlled, assigns.open),
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-modal" => get_boolean(assigns.modal),
-      "data-close-on-interact-outside" => get_boolean(assigns.close_on_interact_outside),
-      "data-close-on-escape-key-down" => get_boolean(assigns.close_on_escape),
-      "data-prevent-scroll" => get_boolean(assigns.prevent_scroll),
-      "data-restore-focus" => get_boolean(assigns.restore_focus),
+      "data-default-open" => default_presence_attr(assigns.controlled, assigns.open),
+      "data-open" => presence_attr(assigns.controlled, assigns.open),
+      "data-controlled" => presence_attr(assigns.controlled),
+      "data-modal" => presence_attr(assigns.modal),
+      "data-close-on-interact-outside" => presence_attr(assigns.close_on_interact_outside),
+      "data-close-on-escape-key-down" => presence_attr(assigns.close_on_escape),
+      "data-prevent-scroll" => presence_attr(assigns.prevent_scroll),
+      "data-restore-focus" => presence_attr(assigns.restore_focus),
       "data-role" => assigns.role,
       "data-initial-focus" => assigns.initial_focus,
       "data-final-focus" => assigns.final_focus,
