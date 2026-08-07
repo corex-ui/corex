@@ -15,8 +15,8 @@
  translate: var(--x) var(--y);
  scale: var(--scale, 1);
  z-index: var(--z-index);
- /* Stable height — avoid first-height → initial-height snap on expand */
- height: var(--initial-height);
+ /* Zag shared toast.css: height: var(--height) for overlap stack reflow */
+ height: var(--height);
  opacity: var(--opacity);
  will-change: translate, opacity, scale;
 
@@ -24,6 +24,7 @@
  translate 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
  scale 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
  opacity 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
+ height 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
  box-shadow 200ms;
 
  &[data-state="closed"] {

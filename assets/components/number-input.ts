@@ -1,8 +1,8 @@
 import { connect, machine, type Props, type Api } from "@zag-js/number-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component, type SchemaOf } from "../lib/core";
-import { getNumber, getString } from "../lib/util";
-import { formatSubmitValue } from "../lib/number-input-format";
+import { getNumber } from "../lib/util";
+import { resolveNumberInputSubmitValue } from "../lib/number-input-format";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 type Schema = SchemaOf<typeof machine>;
@@ -71,10 +71,11 @@ export class NumberInput extends Component<Props, Api, Schema> {
     );
     if (valueInputEl instanceof HTMLInputElement) {
       const step = getNumber(this.el, "step") ?? 1;
-      const n = this.api.valueAsNumber;
-      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
-      const submit =
-        Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
+      const submit = resolveNumberInputSubmitValue(
+        this.api.valueAsNumber,
+        this.api.value ?? "",
+        step
+      );
       syncHiddenInputValue(
         valueInputEl,
         this.el,

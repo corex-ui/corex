@@ -428,6 +428,7 @@ defmodule Corex.SignaturePad do
         id: assigns.id,
         form_field: form_field,
         field_used: field_used,
+        invalid: assigns.invalid,
         paths: assigns.paths,
         drawing_fill: assigns.drawing_fill,
         drawing_size: assigns.drawing_size,
@@ -533,6 +534,7 @@ defmodule Corex.SignaturePad do
       <div
       :if={!Enum.empty?(@errors)}
       :for={{msg, idx} <- Enum.with_index(@errors)}
+      class={Map.get(Enum.at(@error, 0), :class)}
       {Connect.mounted_error(%Error{id: @id, index: idx})}
     >
       {render_slot(@error, msg)}

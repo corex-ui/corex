@@ -4,7 +4,6 @@
  .file-upload {
  width: 100%;
  max-width: var(--container-md);
- margin-inline: auto;
  }
 
  .file-upload[data-loading] [data-scope="file-upload"][data-part="root"] {
@@ -37,21 +36,21 @@
  .file-upload [data-scope="file-upload"][data-part="root"] {
  display: flex;
  flex-direction: column;
- align-items: center;
+ align-items: stretch;
  gap: var(--spacing-space);
  width: 100%;
  }
 
  .file-upload [data-scope="file-upload"][data-part="label"] {
  align-self: stretch;
- text-align: center;
+ text-align: start;
  }
 
  .file-upload [data-scope="file-upload"][data-part="region"] {
  position: relative;
  display: flex;
  flex-direction: column;
- align-items: center;
+ align-items: stretch;
  align-self: stretch;
  gap: var(--spacing-space);
  border: 1px dashed var(--color-border);
@@ -69,12 +68,12 @@
  .file-upload [data-scope="file-upload"][data-part="dropzone"] {
  display: flex;
  flex-direction: column;
- align-items: center;
+ align-items: flex-start;
  align-self: stretch;
  flex: 1 1 auto;
  min-height: 0;
  cursor: pointer;
- text-align: center;
+ text-align: start;
  position: relative;
  }
 
@@ -162,7 +161,21 @@
  width: auto;
  border-radius: var(--radius-sm);
  --ctl-radius: var(--radius-sm);
- @apply ui-size-sm ui-alert;
+ @apply ui-size-sm;
+ /* Semantic always alert; soft (default) chrome only — ignore host variant. */
+ --ctl-fill: var(--color-alert);
+ --ctl-fill-hover: var(--color-alert-hover);
+ --ctl-fill-active: var(--color-alert-active);
+ --ctl-fill-ink: var(--color-alert-contrast);
+ --ctl-ink-text: var(--color-alert-text);
+ --ctl-muted: var(--color-alert-muted);
+ --ctl-bg: var(--color-ui);
+ --ctl-ink: var(--ctl-ink-text);
+ --ctl-bd: var(--color-border);
+ --ctl-bg-hover: var(--color-ui-hover);
+ --ctl-bg-active: var(--color-ui-active);
+ --ctl-ring: var(--color-focus);
+ color: var(--ctl-ink);
 
  margin-inline-end: var(--spacing-space);
  }

@@ -79,6 +79,37 @@ defmodule E2eWeb.ToastTest do
         assert Toast.toast_count(session) < before
       end
     end
+
+    feature "stacked dismiss leaves remaining toast closable", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Toast, :toast, :api)
+        |> Toast.wait_toast_host_ready()
+        |> Toast.click_server_info()
+        |> Toast.click_server_info()
+
+      Toast.assert_toast_visible(session)
+      Toast.wait_toast_root_count(session, 2)
+      assert Toast.toast_root_count(session) >= 2
+
+      before = Toast.toast_root_count(session)
+
+      session =
+        session
+        |> Toast.dismiss_first_toast()
+        |> Toast.wait(500)
+
+      Toast.wait_toast_root_count(session, before - 1)
+      assert Toast.toast_root_count(session) == before - 1
+      assert Toast.has_close_trigger?(session)
+
+      session
+      |> Toast.dismiss_first_toast()
+      |> Toast.wait(500)
+
+      Toast.wait_toast_root_count(session, 0)
+      assert Toast.toast_root_count(session) == 0
+    end
   end
 
   describe "anatomy" do

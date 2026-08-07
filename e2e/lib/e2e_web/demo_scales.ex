@@ -170,7 +170,7 @@ defmodule E2eWeb.DemoScales do
 
   def styling_variant_axis_steps(host) when is_binary(host) do
     if styling_variant_axis?(host) do
-      Components.variant_steps()
+      Components.variant_steps(host)
     else
       []
     end

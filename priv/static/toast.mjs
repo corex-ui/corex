@@ -1346,11 +1346,15 @@ var ToastGroup = class extends Component {
       } else {
         item.duration = toastData.duration;
         item.showLoading = toastData.meta?.loading === true;
-        item.updateProps({
+        const changed = item.updateProps({
           ...toastData,
           parent: this.machine.service,
           index
         });
+        if (!changed) {
+          item.api = item.initApi();
+          item.render();
+        }
       }
     });
     for (const [id, comp] of this.toastComponents) {
@@ -1382,7 +1386,9 @@ function createToastGroup(container, options) {
     max: options?.max,
     gap: options?.gap,
     offsets: options?.offsets ?? "1rem",
-    pauseOnPageIdle: options?.pauseOnPageIdle
+    pauseOnPageIdle: options?.pauseOnPageIdle,
+    // Match Zag shared toast.css open transitions (400ms height/translate/scale).
+    removeDelay: options?.removeDelay ?? 400
   });
   const group2 = new ToastGroup(container, { id: groupId, store, dir: getDir(container) });
   group2.init();

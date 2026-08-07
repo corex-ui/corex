@@ -3325,7 +3325,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ATDXW7VQ.mjs
+  // ../priv/static/chunks/chunk-F2ZOUSGC.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3359,6 +3359,14 @@ var Corex = (() => {
     const n2 = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
     if (Number.isNaN(n2)) return trimmed.replace(/,/g, "");
     return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n2);
+  }
+  function resolveNumberInputSubmitValue(valueAsNumber, displayValue, step) {
+    if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
+      return formatSubmitValue(valueAsNumber, step);
+    }
+    const stripped = (displayValue != null ? displayValue : "").replace(/,/g, "").trim();
+    if (stripped === "") return "";
+    return formatSubmitValue(stripped, step);
   }
   function formatDisplayValue(value, step) {
     if (value === void 0 || value === null) return "";
@@ -3510,8 +3518,11 @@ var Corex = (() => {
       return base;
     }
     const raw = (_a4 = getString(el, "value")) != null ? _a4 : getBoolean(el, "formField") ? getString(el, "defaultValue") : void 0;
-    if (raw === void 0 || raw === "") {
+    if (raw === void 0) {
       return base;
+    }
+    if (raw === "") {
+      return __spreadProps(__spreadValues({}, base), { value: "" });
     }
     return __spreadProps(__spreadValues({}, base), {
       value: formatDisplayValue(raw, step)
@@ -3554,8 +3565,8 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_ATDXW7VQ = __esm({
-    "../priv/static/chunks/chunk-ATDXW7VQ.mjs"() {
+  var init_chunk_F2ZOUSGC = __esm({
+    "../priv/static/chunks/chunk-F2ZOUSGC.mjs"() {
       "use strict";
       init_chunk_6L36XW7I();
       MAX_FRACTION_DIGITS = 10;
@@ -3862,7 +3873,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_PWP4CBA7();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -4874,7 +4885,7 @@ var Corex = (() => {
       init_chunk_SBGJ6WBJ();
       init_chunk_KHEHQE65();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy2 = createAnatomy("angle-slider").parts(
@@ -7019,7 +7030,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
@@ -7858,7 +7869,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
@@ -14065,7 +14076,7 @@ var Corex = (() => {
       init_chunk_HZLPIQBD();
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy9 = createAnatomy("combobox").parts(
@@ -16445,7 +16456,7 @@ var Corex = (() => {
       init_chunk_F544AH56();
       init_chunk_VOKBRZCH();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy10 = createAnatomy("color-picker", [
@@ -20537,7 +20548,7 @@ var Corex = (() => {
       init_chunk_F544AH56();
       init_chunk_VOKBRZCH();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy11 = createAnatomy("date-picker").parts(
@@ -23252,7 +23263,7 @@ var Corex = (() => {
       init_chunk_PWP4CBA7();
       init_chunk_CI7ZMY4G();
       init_chunk_F544AH56();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy12 = createAnatomy("dialog").parts(
@@ -24667,7 +24678,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_F544AH56();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy13 = createAnatomy("editable").parts(
@@ -25546,6 +25557,28 @@ var Corex = (() => {
     }
     return `${fieldName}_label`;
   }
+  function syncFileFieldNames(opts) {
+    const { fileInput, sentinel, name, filesLength, nameEmptySentinel } = opts;
+    if (fileInput) {
+      if (filesLength > 0 && name) {
+        fileInput.setAttribute("name", name);
+      } else {
+        fileInput.removeAttribute("name");
+      }
+    }
+    if (!sentinel) return;
+    if (filesLength > 0) {
+      sentinel.disabled = true;
+      sentinel.removeAttribute("name");
+      return;
+    }
+    sentinel.disabled = false;
+    if (name && nameEmptySentinel) {
+      sentinel.setAttribute("name", name);
+    } else {
+      sentinel.removeAttribute("name");
+    }
+  }
   function setInputFiles2(inputEl, files) {
     try {
       if (typeof window.DataTransfer !== "undefined") {
@@ -25586,15 +25619,17 @@ var Corex = (() => {
     var _a4;
     return (_a4 = getString(el, "submitName")) != null ? _a4 : getString(el, "name");
   }
-  function ensureEmptySentinelNamed(el, zag, markUsed2) {
+  function ensureEmptySentinelNamed(el, zag, opts = {}) {
     zag.syncFormSubmitInputs({ forSubmit: true });
     const sentinel = el.querySelector('[data-part="hidden-input-sentinel"]');
     if (!sentinel || zag.api.acceptedFiles.length > 0) return;
     const name = formSubmitName2(el);
     if (name) sentinel.setAttribute("name", name);
-    if (markUsed2) {
+    if (opts.markUsed) {
       reapplyLiveViewValueInputUsage(sentinel);
-      notifyPhoenixFormChange(sentinel, "", { force: true });
+      if (opts.notify !== false) {
+        notifyPhoenixFormChange(sentinel, "", { force: true });
+      }
     }
   }
   var anatomy14, parts14, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId13, getDropzoneId, getHiddenInputId4, getTriggerId6, getLabelId9, getItemId5, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine14, ACCEPTED, FileUpload, FileUploadHook;
@@ -26108,18 +26143,13 @@ ${err}`);
             setInputFiles2(fileInput, files);
           }
           this.syncAcceptedNamesHidden(name, files);
-          if (!sentinel) return;
-          if (files.length > 0) {
-            sentinel.disabled = true;
-            sentinel.removeAttribute("name");
-            return;
-          }
-          sentinel.disabled = false;
-          if (name && (forSubmit || fieldUsed || Boolean(this.el.dataset.name))) {
-            sentinel.setAttribute("name", name);
-          } else {
-            sentinel.removeAttribute("name");
-          }
+          syncFileFieldNames({
+            fileInput,
+            sentinel,
+            name,
+            filesLength: files.length,
+            nameEmptySentinel: forSubmit || fieldUsed || Boolean(this.el.dataset.name)
+          });
         }
         syncAcceptedNamesHidden(fieldName, files) {
           var _a4;
@@ -26294,7 +26324,7 @@ ${err}`);
                 serverEventName: getString(el, "onFileChange"),
                 clientEventName: getString(el, "onFileChangeClient")
               });
-              queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+              queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
             },
             onFileAccept: (details) => {
               hook.fieldTouched = true;
@@ -26319,12 +26349,13 @@ ${err}`);
             }
           });
           hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
-            zag.syncFormSubmitInputs({ forSubmit: true });
+            hook.fieldTouched = true;
+            ensureEmptySentinelNamed(el, zag, { markUsed: true, notify: false });
           });
           dom2.add("corex:file-upload:clear-files", () => {
             hook.fieldTouched = true;
             zag.api.clearFiles();
-            queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+            queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
           });
           dom2.add("corex:file-upload:clear-rejected", () => {
             zag.api.clearRejectedFiles();
@@ -26336,7 +26367,7 @@ ${err}`);
             if (!idMatches(el.id, readPayloadId(payload))) return;
             hook.fieldTouched = true;
             zag.api.clearFiles();
-            queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+            queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
           });
           server.add("file_upload_clear_rejected", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -28003,7 +28034,7 @@ ${err}`);
       init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
       init_chunk_QCFVFTGB();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       Listbox = class extends Component {
@@ -31289,36 +31320,19 @@ ${err}`);
       valueAsNumber: api.valueAsNumber
     };
   }
-  function submitValueForHost(el, valueAsNumber) {
+  function submitValueForHost(el, valueAsNumber, displayValue = "") {
     var _a4;
     const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
-    if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
-    return formatSubmitValue(valueAsNumber, step);
-  }
-  function canonicalDatasetValue(el) {
-    var _a4, _b;
-    return (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "";
-  }
-  function hiddenSubmitValue(el, displayValue, valueAsNumber) {
-    var _a4;
-    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
-    if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
-      return submitValueForHost(el, valueAsNumber);
-    }
-    const canonical = canonicalDatasetValue(el);
-    if (canonical !== "") {
-      return formatSubmitValue(canonical, step);
-    }
-    const stripped = (displayValue != null ? displayValue : "").replace(/,/g, "");
-    if (stripped === "") return "";
-    return formatSubmitValue(stripped, step);
+    return resolveNumberInputSubmitValue(valueAsNumber, displayValue, step);
   }
   function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
+    var _a4;
     const valueInput = el.querySelector(
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (!valueInput) return;
-    const v2 = hiddenSubmitValue(el, value, valueAsNumber);
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    const v2 = resolveNumberInputSubmitValue(valueAsNumber, value, step);
     const changed = valueInput.value !== v2;
     if (changed) valueInput.value = v2;
     syncInputFormAssociation(valueInput, el);
@@ -31331,7 +31345,10 @@ ${err}`);
     var _a4;
     const step = (_a4 = getNumber(zag.el, "step")) != null ? _a4 : 1;
     if (typeof value === "number") {
-      if (Number.isNaN(value)) return;
+      if (Number.isNaN(value)) {
+        zag.api.clearValue();
+        return;
+      }
       zag.machine.service.send({
         type: "VALUE.SET",
         value: formatDisplayValue(value, step)
@@ -31339,7 +31356,10 @@ ${err}`);
       return;
     }
     const trimmed = value.trim();
-    if (trimmed === "") return;
+    if (trimmed === "") {
+      zag.api.clearValue();
+      return;
+    }
     zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
   }
   function initialDisplayValue(el) {
@@ -31347,6 +31367,17 @@ ${err}`);
     const binding = mountNumberBinding(el);
     if ("value" in binding) return (_a4 = binding.value) != null ? _a4 : "";
     return (_b = binding.defaultValue) != null ? _b : "";
+  }
+  function bindFormSubmitFlush(el, zag) {
+    const form = el.closest("form");
+    if (!form) return () => {
+    };
+    const onSubmit = () => {
+      var _a4;
+      syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", false, zag.api.valueAsNumber);
+    };
+    form.addEventListener("submit", onSubmit, true);
+    return () => form.removeEventListener("submit", onSubmit, true);
   }
   function buildMachineProps(el, pushEvent, canPush, hook) {
     var _a4;
@@ -31413,7 +31444,7 @@ ${err}`);
       init_chunk_Z3EQ3GCO();
       init_chunk_KHEHQE65();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy18 = createAnatomy("numberInput").parts(
@@ -32236,7 +32267,7 @@ ${err}`);
           return this.zagConnect(connect18);
         }
         render() {
-          var _a4, _b, _c, _d, _e;
+          var _a4, _b, _c, _d;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="number-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -32281,9 +32312,11 @@ ${err}`);
           );
           if (valueInputEl instanceof HTMLInputElement) {
             const step = (_c = getNumber(this.el, "step")) != null ? _c : 1;
-            const n2 = this.api.valueAsNumber;
-            const canonical = (_e = (_d = getString(this.el, "value")) != null ? _d : getString(this.el, "defaultValue")) != null ? _e : "";
-            const submit = Number.isFinite(n2) && !Number.isNaN(n2) ? formatSubmitValue(n2, step) : canonical;
+            const submit = resolveNumberInputSubmitValue(
+              this.api.valueAsNumber,
+              (_d = this.api.value) != null ? _d : "",
+              step
+            );
             syncHiddenInputValue(
               valueInputEl,
               this.el,
@@ -32299,11 +32332,12 @@ ${err}`);
         controlledKeys: ["value", "defaultValue"],
         mount(hook, { dom: dom2, server }) {
           const el = hook.el;
-          hook.fieldTouched = false;
+          hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
           hook.initialValue = initialDisplayValue(el);
           const pushEvent = hook.pushEvent.bind(hook);
           const canPush = () => canPushEvent(hook.liveSocket);
           const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
+          hook.unbindFormSubmit = bindFormSubmitFlush(el, zag);
           const emitState = (respondTo) => {
             const snapshot2 = machineState(zag.api);
             emitResponse({
@@ -32381,10 +32415,10 @@ ${err}`);
           return zag;
         },
         afterInit(hook, zag) {
-          var _a4;
+          var _a4, _b;
           const el = hook.el;
-          const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", false, zag.api.valueAsNumber);
+          const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber, (_a4 = zag.api.value) != null ? _a4 : "");
+          syncNumberInputValueInput(el, (_b = zag.api.value) != null ? _b : "", false, zag.api.valueAsNumber);
           const valueInput = el.querySelector(
             '[data-scope="number-input"][data-part="value-input"]'
           );
@@ -32393,17 +32427,24 @@ ${err}`);
           }
         },
         update(hook, zag) {
-          var _a4, _b;
+          var _a4;
           const el = hook.el;
+          if (getBoolean(el, "fieldUsed")) {
+            hook.fieldTouched = true;
+          }
           const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
-          zag.updateProps(__spreadValues(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
-          syncNumberInputValueInput(
-            el,
-            (_b = (_a4 = zag.api.value) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "",
-            false,
-            zag.api.valueAsNumber
-          );
+          if (valuePatch.value === "") {
+            zag.api.clearValue();
+            zag.updateProps(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
+          } else {
+            zag.updateProps(__spreadValues(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
+          }
+          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", false, zag.api.valueAsNumber);
           zag.render();
+        },
+        destroy(hook) {
+          var _a4;
+          (_a4 = hook.unbindFormSubmit) == null ? void 0 : _a4.call(hook);
         }
       });
     }
@@ -33812,7 +33853,7 @@ ${err}`);
       init_chunk_KHEHQE65();
       init_chunk_3IY2CPWD();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
@@ -34592,7 +34633,7 @@ ${err}`);
       init_chunk_KHEHQE65();
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy22 = createAnatomy("radio-group").parts(
@@ -35595,7 +35636,7 @@ ${err}`);
       init_chunk_HZLPIQBD();
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy23 = createAnatomy("select").parts(
@@ -36998,7 +37039,7 @@ ${err}`);
       "use strict";
       init_chunk_3IY2CPWD();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -37527,7 +37568,7 @@ ${err}`);
       "use strict";
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
@@ -38307,7 +38348,7 @@ ${err}`);
       init_chunk_UFCM6256();
       init_chunk_F544AH56();
       init_chunk_NUQOKDPA();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy26 = createAnatomy("tagsInput").parts(
@@ -39598,7 +39639,7 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
@@ -41312,18 +41353,20 @@ ${err}`);
     return action != null && typeof action === "object" && action.labelHtml === true;
   }
   function createToastGroup(container, options) {
-    var _a4, _b, _c, _d;
+    var _a4, _b, _c, _d, _e;
     const groupId = (_a4 = options == null ? void 0 : options.id) != null ? _a4 : container.id;
     if (toastGroups.has(groupId)) {
       disposeToastGroup(groupId);
     }
-    const store2 = (_d = options == null ? void 0 : options.store) != null ? _d : createToastStore({
+    const store2 = (_e = options == null ? void 0 : options.store) != null ? _e : createToastStore({
       placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom-end",
       overlap: options == null ? void 0 : options.overlap,
       max: options == null ? void 0 : options.max,
       gap: options == null ? void 0 : options.gap,
       offsets: (_c = options == null ? void 0 : options.offsets) != null ? _c : "1rem",
-      pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
+      pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle,
+      // Match Zag shared toast.css open transitions (400ms height/translate/scale).
+      removeDelay: (_d = options == null ? void 0 : options.removeDelay) != null ? _d : 400
     });
     const group2 = new ToastGroup(container, { id: groupId, store: store2, dir: getDir(container) });
     group2.init();
@@ -42182,10 +42225,14 @@ ${err}`);
             } else {
               item.duration = toastData.duration;
               item.showLoading = ((_a4 = toastData.meta) == null ? void 0 : _a4.loading) === true;
-              item.updateProps(__spreadProps(__spreadValues({}, toastData), {
+              const changed = item.updateProps(__spreadProps(__spreadValues({}, toastData), {
                 parent: this.machine.service,
                 index
               }));
+              if (!changed) {
+                item.api = item.initApi();
+                item.render();
+              }
             }
           });
           for (const [id, comp] of this.toastComponents) {
@@ -43190,7 +43237,7 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
@@ -43473,7 +43520,7 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_ATDXW7VQ();
+      init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy32 = createAnatomy("toggle-group").parts("root", "item");

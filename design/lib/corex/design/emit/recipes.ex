@@ -409,12 +409,12 @@ defmodule Corex.Design.Emit.Recipes do
       }
 
       &[data-invalid] {
-        border-color: var(--color-alert);
-        box-shadow: none;
+        box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
       }
 
       &[data-invalid]:focus-visible {
-        box-shadow: none;
+        outline: none;
+        box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
       }
     """
   end
@@ -472,15 +472,14 @@ defmodule Corex.Design.Emit.Recipes do
       }
 
       &[data-invalid] {
-        border-color: var(--color-alert);
-        box-shadow: none;
+        box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
       }
 
       &[data-invalid]:focus,
       &[data-invalid]:focus-within,
       &[data-invalid]:focus-visible {
-        box-shadow: none;
         outline: none;
+        box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
       }
     """
   end

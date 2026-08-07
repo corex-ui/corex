@@ -98,6 +98,15 @@
  background-color: transparent;
  }
 
+ /* Code already frames itself; drop its chrome when tabs content is the frame. */
+ .tabs [data-scope="tabs"][data-part="content"] .code,
+ .tabs [data-scope="tabs"][data-part="content"] pre.code {
+ border: none;
+ border-radius: 0;
+ box-shadow: none;
+ max-width: none;
+ }
+
  .tabs [data-scope="tabs"][data-part="content"][data-orientation="vertical"] > p {
  flex: 1 1 auto;
  }

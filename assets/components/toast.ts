@@ -279,11 +279,18 @@ export class ToastGroup extends Component<GroupProps, GroupApi, GroupSchema> {
         item.duration = toastData.duration;
         (item as ToastItem).showLoading =
           (toastData as { meta?: { loading?: boolean } }).meta?.loading === true;
-        item.updateProps({
+        const changed = item.updateProps({
           ...toastData,
           parent: this.machine.service,
           index,
         });
+        // Parent heights can change without toast props changing (removeHeight
+        // microtask). React re-renders children on every group state change;
+        // vanilla must re-spread getRootProps so --y/--offset update immediately.
+        if (!changed) {
+          item.api = item.initApi();
+          item.render();
+        }
       }
     });
 
@@ -329,6 +336,8 @@ export function createToastGroup(
       gap: options?.gap,
       offsets: options?.offsets ?? "1rem",
       pauseOnPageIdle: options?.pauseOnPageIdle,
+      // Match Zag shared toast.css open transitions (400ms height/translate/scale).
+      removeDelay: options?.removeDelay ?? 400,
     });
 
   const group = new ToastGroup(container, { id: groupId, store, dir: getDir(container) });

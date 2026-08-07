@@ -349,6 +349,104 @@ defmodule E2eWeb.AdminLiveTest do
       refute html =~ "can&#39;t be blank"
     end
 
+    test "validate on name only does not show avatar file-upload errors", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "h",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => ""
+          }
+        })
+
+      file_upload_open =
+        case Regex.run(~r/<div[^>]*data-scope="file-upload"[^>]*>/, html) do
+          [tag] -> tag
+          _ -> flunk("expected file-upload root in html")
+        end
+
+      refute file_upload_open =~ ~r/\bdata-invalid(?:="[^"]*")?(?=[\s>])/
+      refute file_upload_open =~ ~S|data-field-used="true"|
+      refute html =~ ~r/data-scope="file-upload"[^>]*data-part="error"/
+      refute html =~ ~r/id="file:admin_avatar"[\s\S]{0,4000}?can&#39;t be blank/
+    end
+
+    test "stale avatar_label does not clear used empty avatar error", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "Ada",
+            "avatar" => "",
+            "avatar_label" => "stale.png"
+          }
+        })
+
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~r/data-scope="file-upload"/
+      assert html =~ ~r/data-part="error"/
+    end
+
+    test "used empty avatar error survives sibling name validation after submit", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      render_submit(form_live, "save", %{
+        "admin" => %{
+          "name" => "Ada",
+          "avatar" => ""
+        }
+      })
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "Ada Lovelace",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => ""
+          }
+        })
+
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~r/data-scope="file-upload"|data-part="error"/
+    end
+
     test "select and combobox values survive sibling field validation", %{conn: conn} do
       {form_live, _} = live_ok!(conn, ~p"/admins/new")
 
@@ -595,6 +693,37 @@ defmodule E2eWeb.AdminLiveTest do
 
       refute html =~ "Admin created successfully"
       assert html =~ "Save Admin"
+    end
+
+    test "save with empty used avatar shows file-upload error", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_submit(form_live, "save", %{
+          "admin" => %{
+            "name" => "Ada",
+            "country" => "fra",
+            "birth_date" => "1990-01-15",
+            "signature" => [@valid_signature_path],
+            "terms" => "true",
+            "level" => "3",
+            "currency" => "eur",
+            "tags" => ["alpha"],
+            "password" => "password1",
+            "notifications" => "true",
+            "role" => "admin",
+            "pin" => "1234",
+            "accent_color" => "#3b82f6",
+            "heading_angle" => "90.0",
+            "title" => "some title",
+            "avatar" => ""
+          }
+        })
+
+      refute html =~ "Admin created successfully"
+      assert html =~ ~r/data-scope="file-upload"[^>]*data-part="error"|data-part="error"/
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~S|data-field-used="true"|
     end
 
     test "save accepts list signature params from HTTP shape", %{conn: conn} do

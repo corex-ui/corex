@@ -59,15 +59,21 @@ function formSubmitName(el: HTMLElement): string | undefined {
   return getString(el, "submitName") ?? getString(el, "name");
 }
 
-function ensureEmptySentinelNamed(el: HTMLElement, zag: FileUpload, markUsed: boolean): void {
+function ensureEmptySentinelNamed(
+  el: HTMLElement,
+  zag: FileUpload,
+  opts: { markUsed?: boolean; notify?: boolean } = {}
+): void {
   zag.syncFormSubmitInputs({ forSubmit: true });
   const sentinel = el.querySelector<HTMLInputElement>('[data-part="hidden-input-sentinel"]');
   if (!sentinel || zag.api.acceptedFiles.length > 0) return;
   const name = formSubmitName(el);
   if (name) sentinel.setAttribute("name", name);
-  if (markUsed) {
+  if (opts.markUsed) {
     reapplyLiveViewValueInputUsage(sentinel);
-    notifyPhoenixFormChange(sentinel, "", { force: true });
+    if (opts.notify !== false) {
+      notifyPhoenixFormChange(sentinel, "", { force: true });
+    }
   }
 }
 
@@ -111,7 +117,7 @@ const FileUploadHook = createZagLiveHook<FileUploadHookState, FileUpload>({
           serverEventName: getString(el, "onFileChange"),
           clientEventName: getString(el, "onFileChangeClient"),
         });
-        queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+        queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
       },
       onFileAccept: (details: FileAcceptDetails) => {
         hook.fieldTouched = true;
@@ -137,13 +143,16 @@ const FileUploadHook = createZagLiveHook<FileUploadHookState, FileUpload>({
     } as Props);
 
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
-      zag.syncFormSubmitInputs({ forSubmit: true });
+      hook.fieldTouched = true;
+      // Empty required submit: name the sentinel and mark used so LiveView omits
+      // _unused_* and FormField errors become visible — without an extra phx-change.
+      ensureEmptySentinelNamed(el, zag, { markUsed: true, notify: false });
     });
 
     dom.add("corex:file-upload:clear-files", () => {
       hook.fieldTouched = true;
       zag.api.clearFiles();
-      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
     });
 
     dom.add("corex:file-upload:clear-rejected", () => {
@@ -158,7 +167,7 @@ const FileUploadHook = createZagLiveHook<FileUploadHookState, FileUpload>({
       if (!idMatches(el.id, readPayloadId(payload))) return;
       hook.fieldTouched = true;
       zag.api.clearFiles();
-      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
     });
 
     server.add("file_upload_clear_rejected", (payload: unknown) => {

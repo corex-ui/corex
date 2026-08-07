@@ -9,7 +9,7 @@
     id="tree-view-styling-page"
     title={~t"Tree view · Style"}
     subtitle={
-      ~t"Semantic colors, density, corner radius, and max-width via modifier classes on the tree view root."
+      ~t"Semantic colors, density, and max-width via modifier classes on the tree view root."
     }
   >
     <.demo_section
@@ -45,19 +45,6 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_size_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="tree-view-styling-radius"
-      title={~t"Rounded"}
-      code={E2eWeb.Demos.TreeViewDemo.styling_radius_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="tree-view" axis={:radius} />
-      </:description>
-      <:preview>
-        <E2eWeb.Demos.TreeViewDemo.styling_radius_example />
       </:preview>
     </.demo_section>
 

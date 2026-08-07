@@ -18,7 +18,14 @@ defmodule E2eWeb.HomePageTest do
       assert html =~ ~s(id="#{id}")
     end
 
-    assert html =~ "real API"
+    assert html =~ ~S(id="home-hero-rotator")
+    assert html =~ "The Phoenix UI"
+    assert html =~ "with"
+    assert html =~ "API"
+    assert html =~ "Events"
+    assert html =~ "Anatomy"
+    assert html =~ "Design"
+    assert html =~ "Accessibility"
     assert html =~ "Browse components"
     assert html =~ "rounded-md"
     assert html =~ "ui-ghost"
@@ -27,6 +34,7 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "flex-1"
     assert html =~ "lg:grid-cols-2"
     assert html =~ "grid-cols-2 max-sm:grid-cols-1"
+    assert html =~ "on_value_change_client" or html =~ "hero-accordion-changed"
     refute html =~ "md:grid-cols-2"
     refute html =~ "max-h-28"
     assert html =~ ~S(id="site-nav-dialog")
@@ -35,12 +43,53 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "hero-accordion-changed"
     assert html =~ "data-hero-accordion-value"
     refute html =~ ~S(id="hero-code")
+    refute html =~ ~S(id="hero-code-clipboard")
     refute html =~ "min-h-72"
     refute html =~ ~S(id="home-hero-demo")
-    refute html =~ ~S(id="home-anatomy")
     refute html =~ ~S(id="home-api")
     refute html =~ ~S(id="home-cta")
     refute html =~ ~S(id="home-catalog")
+  end
+
+  test "homepage renders anatomy section before installer", %{conn: conn} do
+    conn = get(conn, ~p"/")
+    html = html_response(conn, 200)
+
+    for id <- [
+          "home-anatomy",
+          "home-anatomy-heading",
+          "home-anatomy-items",
+          "home-anatomy-items-preview",
+          "home-anatomy-items-heex-clipboard",
+          "home-anatomy-items-elixir-clipboard",
+          "home-anatomy-manual",
+          "home-anatomy-manual-preview",
+          "home-anatomy-custom",
+          "home-anatomy-custom-preview",
+          "home-anatomy-custom-heex-clipboard"
+        ] do
+      assert html =~ ~s(id="#{id}")
+    end
+
+    assert html =~ "Flexible anatomy with HEEx"
+    assert html =~ "Manual slots"
+    assert html =~ "Custom slots"
+    assert html =~ "Server stack"
+    assert html =~ "Client machine"
+    assert html =~ "&lt;.accordion"
+    assert html =~ "Corex.Content.new"
+    refute html =~ ~S(id="home-showcase")
+    refute html =~ ~S(id="home-anatomy-compound")
+    refute html =~ "Forty-plus parts"
+    refute html =~ "Push toast"
+
+    highlights = :binary.match(html, ~S(id="home-highlights"))
+    anatomy = :binary.match(html, ~S(id="home-anatomy"))
+    installer = :binary.match(html, ~S(id="home-installer"))
+
+    assert highlights && anatomy && installer
+    assert elem(highlights, 0) < elem(anatomy, 0)
+    assert elem(anatomy, 0) < elem(installer, 0)
   end
 
   test "homepage renders highlights section", %{conn: conn} do

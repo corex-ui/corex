@@ -3,6 +3,74 @@
   z-index: 40;
 }
 
+/* Hero headline: fixed-width rotator + vertical roll */
+.home-hero-rotator-phrase {
+  display: inline;
+  white-space: nowrap;
+}
+
+.home-hero-rotator {
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: baseline;
+  text-align: start;
+  justify-items: start;
+  align-items: start;
+}
+
+.home-hero-rotator__sizer,
+.home-hero-rotator__word {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.home-hero-rotator__sizer {
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.home-hero-rotator__word {
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+  pointer-events: none;
+}
+
+.home-hero-rotator__word[data-active] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-rotator__word {
+    transition: none;
+    transform: none;
+  }
+}
+
+/*
+  Hero events table: content-sized (default height), full column width.
+  Keep a bottom border on every data row (including the last).
+*/
+#hero-events-table.data-table {
+  max-width: none;
+  max-height: none;
+  height: fit-content;
+  width: 100%;
+}
+
+#hero-events-table [data-scope="data-table"][data-part="tbody"] > tr[data-part="row"] > td {
+  border-bottom: 1px solid var(--color-border);
+}
+
+#hero-events-table [data-scope="data-table"][data-part="empty"] {
+  padding: var(--spacing-space);
+}
+
 /* Highlights marquee: soft edges against the page root */
 .home-highlights-marquee .marquee [data-scope="marquee"][data-part="edge"] {
   --edge-background: var(--color-root);

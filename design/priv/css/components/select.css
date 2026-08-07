@@ -29,7 +29,8 @@
 
  &[data-invalid][data-focus],
  &[data-invalid][data-focus]:focus-visible {
- box-shadow: none;
+ outline: none;
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
  }
  }
 

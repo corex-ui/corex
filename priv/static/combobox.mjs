@@ -46,7 +46,7 @@ import {
 import {
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-ATDXW7VQ.mjs";
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   idMatches,
   notifyChange,

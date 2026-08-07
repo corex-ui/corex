@@ -92,6 +92,8 @@ defmodule E2eWeb.StylePageExpectations do
 
   def no_variant_layout_ids, do: Components.no_variant_hosts()
 
+  def no_radius_layout_ids, do: Components.no_radius_hosts()
+
   def matrix_layout_ids do
     no_variant = MapSet.new(no_variant_layout_ids())
 

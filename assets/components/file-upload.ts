@@ -37,6 +37,40 @@ export function labelFieldNameFor(fieldName: string): string {
   return `${fieldName}_label`;
 }
 
+/** Empty field: only the sentinel may own `name`. Files present: file input owns it. */
+export function syncFileFieldNames(opts: {
+  fileInput: HTMLInputElement | null;
+  sentinel: HTMLInputElement | null;
+  name: string | undefined;
+  filesLength: number;
+  nameEmptySentinel: boolean;
+}): void {
+  const { fileInput, sentinel, name, filesLength, nameEmptySentinel } = opts;
+
+  if (fileInput) {
+    if (filesLength > 0 && name) {
+      fileInput.setAttribute("name", name);
+    } else {
+      fileInput.removeAttribute("name");
+    }
+  }
+
+  if (!sentinel) return;
+
+  if (filesLength > 0) {
+    sentinel.disabled = true;
+    sentinel.removeAttribute("name");
+    return;
+  }
+
+  sentinel.disabled = false;
+  if (name && nameEmptySentinel) {
+    sentinel.setAttribute("name", name);
+  } else {
+    sentinel.removeAttribute("name");
+  }
+}
+
 function setInputFiles(inputEl: HTMLInputElement, files: File[]): void {
   try {
     if (typeof window.DataTransfer !== "undefined") {
@@ -202,20 +236,13 @@ export class FileUpload extends Component<Props, Api, Schema> {
 
     this.syncAcceptedNamesHidden(name, files);
 
-    if (!sentinel) return;
-
-    if (files.length > 0) {
-      sentinel.disabled = true;
-      sentinel.removeAttribute("name");
-      return;
-    }
-
-    sentinel.disabled = false;
-    if (name && (forSubmit || fieldUsed || Boolean(this.el.dataset.name))) {
-      sentinel.setAttribute("name", name);
-    } else {
-      sentinel.removeAttribute("name");
-    }
+    syncFileFieldNames({
+      fileInput,
+      sentinel,
+      name,
+      filesLength: files.length,
+      nameEmptySentinel: forSubmit || fieldUsed || Boolean(this.el.dataset.name),
+    });
   }
 
   private syncAcceptedNamesHidden(fieldName: string | undefined, files: File[]): void {

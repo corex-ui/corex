@@ -119,13 +119,13 @@
  }
 
  &[data-invalid] {
- border-color: var(--color-alert);
- box-shadow: none;
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
  }
 
  &[data-invalid]:focus-visible,
  &[data-invalid][data-focus] {
- box-shadow: none;
+ outline: none;
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
  }
 
  &[data-required]:not([data-invalid]) {
@@ -207,5 +207,11 @@
  .checkbox [data-scope="checkbox"][data-part="error"].absolute {
  padding-block: 0;
  display: block;
+ width: auto;
+ max-width: none;
+ inset-inline-start: 100%;
+ inset-inline-end: auto;
+ margin-inline-start: var(--spacing-space-sm);
+ top: 0;
  }
 }

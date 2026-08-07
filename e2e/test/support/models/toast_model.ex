@@ -60,6 +60,46 @@ defmodule E2eWeb.ToastModel do
     session
   end
 
+  def toast_root_count(session) do
+    key = {:e2e_toast_root_count, self(), make_ref()}
+
+    _ =
+      Wallaby.Browser.execute_script(
+        session,
+        """
+        var host = document.getElementById('layout-toast');
+        if (!host) return 0;
+        return host.querySelectorAll('[data-scope="toast"][data-part="root"]').length;
+        """,
+        [],
+        fn value -> Process.put(key, value) end
+      )
+
+    case Process.delete(key) do
+      n when is_integer(n) -> n
+      _ -> 0
+    end
+  end
+
+  def wait_toast_root_count(session, expected) when is_integer(expected) do
+    deadline = System.monotonic_time(:millisecond) + 8_000
+    poll_toast_root_count(session, expected, deadline)
+    session
+  end
+
+  defp poll_toast_root_count(session, expected, deadline) do
+    if toast_root_count(session) == expected do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        :ok
+      else
+        Process.sleep(100)
+        poll_toast_root_count(session, expected, deadline)
+      end
+    end
+  end
+
   def has_close_trigger?(session) do
     has?(
       session,

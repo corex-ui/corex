@@ -32,8 +32,16 @@
  @apply ui-readonly;
  }
 
+ .signature-pad[data-invalid] [data-scope="signature-pad"][data-part="control"],
  .signature-pad [data-scope="signature-pad"][data-part="control"][data-invalid] {
  border-color: var(--color-alert);
+ }
+
+ .signature-pad[data-invalid] [data-scope="signature-pad"][data-part="segment"],
+ .signature-pad
+ [data-scope="signature-pad"][data-part="control"][data-invalid]
+ [data-scope="signature-pad"][data-part="segment"] {
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
  }
 
  .signature-pad [data-scope="signature-pad"][data-part="guide"] {

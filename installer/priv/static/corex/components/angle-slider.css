@@ -235,18 +235,11 @@
  .angle-slider
  [data-scope="angle-slider"][data-part="root"][data-invalid]
  [data-scope="angle-slider"][data-part="control"] {
- border-color: var(--color-alert);
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
  }
 
- .angle-slider
- [data-scope="angle-slider"][data-part="root"][data-invalid]
- [data-scope="angle-slider"][data-part="value-text"]
- [data-part="text"],
- .angle-slider
- [data-scope="angle-slider"][data-part="root"][data-invalid]
- [data-scope="angle-slider"][data-part="value-text"]
- [data-part="value"] {
- color: var(--color-alert);
+ .angle-slider [data-scope="angle-slider"][data-part="label"][data-invalid] {
+ color: var(--color-ink);
  }
 
  .angle-slider
@@ -353,5 +346,13 @@
  display: flex;
  flex-wrap: wrap;
  box-sizing: border-box;
+ }
+
+ .angle-slider [data-scope="angle-slider"][data-part="error"].absolute {
+ padding-block: 0;
+ display: block;
+ width: auto;
+ max-width: none;
+ inset-inline-start: auto;
  }
 }

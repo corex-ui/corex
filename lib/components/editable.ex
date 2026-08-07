@@ -344,9 +344,7 @@ defmodule Corex.Editable do
         </div>
 
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="editable" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="editable" errors={@errors} error={@error} />
     </div>
     """
   end

@@ -357,9 +357,7 @@ defmodule Corex.NumberInput do
           </div>
         </div>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="number-input" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="number-input" errors={@errors} error={@error} />
     </div>
     """
   end

@@ -37,7 +37,11 @@ defmodule Mix.Tasks.Corex.Design.Build do
       end
 
     Corex.Design.Bundle.write!(output)
-    Mix.shell().info("Wrote Corex design bundle to #{Path.relative_to_cwd(output)}")
+
+    if Mix.env() != :test do
+      Mix.shell().info("Wrote Corex design bundle to #{Path.relative_to_cwd(output)}")
+    end
+
     :ok
   end
 

@@ -54,7 +54,8 @@ defmodule Corex.SignaturePad.Connect do
       "data-drawing-simulate-pressure" => presence_attr(assigns.drawing_simulate_pressure),
       "data-dir" => assigns.dir,
       "data-on-draw-end" => assigns.on_draw_end,
-      "data-on-draw-end-client" => assigns.on_draw_end_client
+      "data-on-draw-end-client" => assigns.on_draw_end_client,
+      "data-invalid" => presence_attr(assigns.invalid)
     }
 
     paths_attrs = default_paths_attr(assigns)

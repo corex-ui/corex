@@ -290,7 +290,6 @@ defmodule Corex.DataTable do
   [data-scope="data-table"][data-part="action-cell"] {}
   [data-scope="data-table"][data-part="actions"] {}
   [data-scope="data-table"][data-part="empty-row"] {}
-  [data-scope="data-table"][data-part="empty-cell"] {}
   [data-scope="data-table"][data-part="empty"] {}
   ```
 
@@ -398,15 +397,7 @@ defmodule Corex.DataTable do
       )
       |> resolve_row_id()
 
-    col_count =
-      length(assigns.col) +
-        if(assigns.selectable, do: 1, else: 0) +
-        if assigns.action != [], do: 1, else: 0
-
-    assigns =
-      assigns
-      |> assign(:empty_col_count, col_count)
-      |> assign(:selected_set, MapSet.new(List.wrap(assigns.selected)))
+    assigns = assign(assigns, :selected_set, MapSet.new(List.wrap(assigns.selected)))
 
     ~H"""
     <div tabindex="0" dir={@dir} {@rest}>
@@ -467,11 +458,17 @@ defmodule Corex.DataTable do
         </thead>
         <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
           <tr :if={@empty != []} id={"#{@id}-empty"} data-scope="data-table" data-part="empty-row">
-            <td colspan={@empty_col_count} data-scope="data-table" data-part="empty-cell">
-              <div data-scope="data-table" data-part="empty">
+            <td :if={@selectable} data-scope="data-table" data-part="selection-cell"></td>
+            <td
+              :for={{_col, index} <- Enum.with_index(@col)}
+              data-scope="data-table"
+              data-part={cell_data_part(index, length(@col))}
+            >
+              <div :if={index == 0} data-scope="data-table" data-part="empty">
                 {render_slot(@empty)}
               </div>
             </td>
+            <td :if={@action != []} data-scope="data-table" data-part="action-cell"></td>
           </tr>
           <%= for row <- @rows do %>
             <% row_id = @row_id && @row_id.(row) %>

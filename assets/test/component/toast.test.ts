@@ -175,4 +175,38 @@ describe("toast group API", () => {
 
     document.body.removeChild(container);
   });
+
+  it("re-spreads remaining toast styles when updateProps is a no-op", () => {
+    const container = document.createElement("div");
+    container.id = groupId;
+    container.setAttribute("phx-hook", "Toast");
+    document.body.appendChild(container);
+
+    const { group, store } = createToastGroup(container, {
+      id: groupId,
+      overlap: true,
+      removeDelay: 0,
+    });
+
+    store.create({ id: "t-a", title: "A", type: "info", duration: Infinity });
+    store.create({ id: "t-b", title: "B", type: "info", duration: Infinity });
+    group.render();
+
+    const items = (
+      group as unknown as {
+        toastComponents: Map<string, { updateProps: () => boolean; render: () => void }>;
+      }
+    ).toastComponents;
+    const remaining = items.get("t-b");
+    expect(remaining).toBeTruthy();
+
+    vi.spyOn(remaining!, "updateProps").mockReturnValue(false);
+    const renderSpy = vi.spyOn(remaining!, "render");
+
+    group.render();
+
+    expect(renderSpy).toHaveBeenCalled();
+
+    document.body.removeChild(container);
+  });
 });

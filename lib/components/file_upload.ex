@@ -430,9 +430,7 @@ defmodule Corex.FileUpload do
         >
         </ul>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="file-upload" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="file-upload" errors={@errors} error={@error} />
     </div>
     """
   end

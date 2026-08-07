@@ -252,6 +252,12 @@ defmodule Corex.Design.Components do
 
   @shape_hosts ~w(badge button)
 
+  # Item chrome uses a fixed square radius; host `ui-rounded-*` has no effect.
+  @no_radius_hosts ~w(tree-view)
+
+  # Floating panels: ghost (transparent fill) is not a useful surface treatment.
+  @no_ghost_hosts ~w(tooltip)
+
   @no_variant_families MapSet.new([:selection, :field, :static])
 
   def ids, do: @components |> Map.keys() |> Enum.sort()
@@ -330,6 +336,8 @@ defmodule Corex.Design.Components do
     |> Enum.sort()
   end
 
+  def no_radius_hosts, do: @no_radius_hosts
+
   def parts, do: @parts
 
   def parts_for(host) when is_binary(host) do
@@ -363,7 +371,8 @@ defmodule Corex.Design.Components do
 
   def axes_for(host) when is_binary(host) do
     variant_axis(host) ++
-      [:semantic, :size, :radius] ++
+      [:semantic, :size] ++
+      radius_axis(host) ++
       shape_axis(host) ++
       max_height_axis(host) ++ [:width]
   end
@@ -371,6 +380,9 @@ defmodule Corex.Design.Components do
   defp variant_axis(host) do
     if has_variant_axis?(host), do: [:variant], else: []
   end
+
+  defp radius_axis(host) when host in @no_radius_hosts, do: []
+  defp radius_axis(_host), do: [:radius]
 
   defp shape_axis(host) when host in @shape_hosts, do: [:shape]
   defp shape_axis(_host), do: []
@@ -385,6 +397,14 @@ defmodule Corex.Design.Components do
       %{label: "Ghost", modifier: "ui-ghost"}
     ]
   end
+
+  def variant_steps(host) when host in @no_ghost_hosts do
+    Enum.reject(variant_steps(), &(&1.modifier == "ui-ghost"))
+  end
+
+  def variant_steps(host) when is_binary(host), do: variant_steps()
+
+  def no_ghost_hosts, do: @no_ghost_hosts
 
   @doc """
   Resolves a Corex component id (`date_picker`, `action`) to its CSS host id.

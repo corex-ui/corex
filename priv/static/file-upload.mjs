@@ -876,6 +876,28 @@ function labelFieldNameFor(fieldName) {
   }
   return `${fieldName}_label`;
 }
+function syncFileFieldNames(opts) {
+  const { fileInput, sentinel, name, filesLength, nameEmptySentinel } = opts;
+  if (fileInput) {
+    if (filesLength > 0 && name) {
+      fileInput.setAttribute("name", name);
+    } else {
+      fileInput.removeAttribute("name");
+    }
+  }
+  if (!sentinel) return;
+  if (filesLength > 0) {
+    sentinel.disabled = true;
+    sentinel.removeAttribute("name");
+    return;
+  }
+  sentinel.disabled = false;
+  if (name && nameEmptySentinel) {
+    sentinel.setAttribute("name", name);
+  } else {
+    sentinel.removeAttribute("name");
+  }
+}
 function setInputFiles2(inputEl, files) {
   try {
     if (typeof window.DataTransfer !== "undefined") {
@@ -1011,18 +1033,13 @@ var FileUpload = class extends Component {
       setInputFiles2(fileInput, files);
     }
     this.syncAcceptedNamesHidden(name, files);
-    if (!sentinel) return;
-    if (files.length > 0) {
-      sentinel.disabled = true;
-      sentinel.removeAttribute("name");
-      return;
-    }
-    sentinel.disabled = false;
-    if (name && (forSubmit || fieldUsed || Boolean(this.el.dataset.name))) {
-      sentinel.setAttribute("name", name);
-    } else {
-      sentinel.removeAttribute("name");
-    }
+    syncFileFieldNames({
+      fileInput,
+      sentinel,
+      name,
+      filesLength: files.length,
+      nameEmptySentinel: forSubmit || fieldUsed || Boolean(this.el.dataset.name)
+    });
   }
   syncAcceptedNamesHidden(fieldName, files) {
     if (!fieldName) return;
@@ -1185,15 +1202,17 @@ function fileRejectPayload(el, details) {
 function formSubmitName(el) {
   return getString(el, "submitName") ?? getString(el, "name");
 }
-function ensureEmptySentinelNamed(el, zag, markUsed) {
+function ensureEmptySentinelNamed(el, zag, opts = {}) {
   zag.syncFormSubmitInputs({ forSubmit: true });
   const sentinel = el.querySelector('[data-part="hidden-input-sentinel"]');
   if (!sentinel || zag.api.acceptedFiles.length > 0) return;
   const name = formSubmitName(el);
   if (name) sentinel.setAttribute("name", name);
-  if (markUsed) {
+  if (opts.markUsed) {
     reapplyLiveViewValueInputUsage(sentinel);
-    notifyPhoenixFormChange(sentinel, "", { force: true });
+    if (opts.notify !== false) {
+      notifyPhoenixFormChange(sentinel, "", { force: true });
+    }
   }
 }
 var FileUploadHook = createZagLiveHook({
@@ -1235,7 +1254,7 @@ var FileUploadHook = createZagLiveHook({
           serverEventName: getString(el, "onFileChange"),
           clientEventName: getString(el, "onFileChangeClient")
         });
-        queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+        queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
       },
       onFileAccept: (details) => {
         hook.fieldTouched = true;
@@ -1260,12 +1279,13 @@ var FileUploadHook = createZagLiveHook({
       }
     });
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
-      zag.syncFormSubmitInputs({ forSubmit: true });
+      hook.fieldTouched = true;
+      ensureEmptySentinelNamed(el, zag, { markUsed: true, notify: false });
     });
     dom.add("corex:file-upload:clear-files", () => {
       hook.fieldTouched = true;
       zag.api.clearFiles();
-      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
     });
     dom.add("corex:file-upload:clear-rejected", () => {
       zag.api.clearRejectedFiles();
@@ -1277,7 +1297,7 @@ var FileUploadHook = createZagLiveHook({
       if (!idMatches(el.id, readPayloadId(payload))) return;
       hook.fieldTouched = true;
       zag.api.clearFiles();
-      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
+      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, { markUsed: true }));
     });
     server.add("file_upload_clear_rejected", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;

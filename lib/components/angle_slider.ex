@@ -221,7 +221,7 @@ defmodule Corex.AngleSlider do
   attr(:value, :float, default: 0.0, doc: "The initial value in degrees")
   attr(:step, :float, default: 1.0, doc: "Step value")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Direction")
-  attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
+  attr(:orientation, :string, default: "horizontal", values: ["horizontal", "vertical"])
 
   attr(:value_text_as, :string,
     default: "degree",
@@ -389,9 +389,7 @@ defmodule Corex.AngleSlider do
         />
       </div>
 
-      <div :if={not @compound and @error != []} :for={msg <- @errors} data-scope="angle-slider" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors :if={not @compound} scope="angle-slider" errors={@errors} error={@error} />
     </div>
     """
   end

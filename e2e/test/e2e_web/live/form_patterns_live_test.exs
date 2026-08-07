@@ -48,6 +48,10 @@ defmodule E2eWeb.FormPatternsLiveTest do
     assert html =~ "Email notifications"
     assert html =~ "Accent color"
     assert html =~ "Avatar"
+    assert html =~ "Profile"
+    assert html =~ "Account"
+    assert html =~ "Preferences"
+    assert html =~ "Media"
   end
 
   test "custom error shows tooltips without data-invalid on controls", %{conn: conn} do
@@ -56,13 +60,14 @@ defmodule E2eWeb.FormPatternsLiveTest do
     html =
       view
       |> form("#form-patterns-custom-error")
-      |> render_change(%{"patterns_custom" => @invalid_params})
+      |> render_change(%{"patterns_custom" => Map.put(@invalid_params, "level", "1")})
 
     assert html =~ "can&#39;t be blank"
     assert html =~ "must be accepted to continue"
     assert html =~ ~S|id="form-patterns-custom-error-currency-tip"|
     assert html =~ ~S|id="form-patterns-custom-error-notifications-tip"|
     assert html =~ ~S|id="form-patterns-custom-error-avatar-tip"|
+    assert html =~ ~S|id="form-patterns-custom-error-level-tip"|
     refute html =~ ~r/id="form-patterns-custom-error-currency"[^>]*data-invalid=""/
   end
 
@@ -90,6 +95,24 @@ defmodule E2eWeb.FormPatternsLiveTest do
       })
 
     assert html =~ "must be accepted to continue"
+  end
+
+  test "default color and angle are treated as blank", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/forms/patterns")
+
+    html =
+      view
+      |> form("#form-patterns-invalid-on-error")
+      |> render_change(%{
+        "patterns_invalid" =>
+          @valid_params
+          |> Map.put("accent_color", "rgba(0, 0, 0, 1)")
+          |> Map.put("heading_angle", "0")
+      })
+
+    assert html =~ "can&#39;t be blank"
+    assert html =~ ~S(id="form-patterns-invalid-on-error_accent_color")
+    assert html =~ ~S(id="form-patterns-invalid-on-error_heading_angle")
   end
 
   test "invalid form save with valid params pushes toast", %{conn: conn} do

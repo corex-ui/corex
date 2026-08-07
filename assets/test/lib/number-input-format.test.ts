@@ -5,6 +5,7 @@ import {
   formatSubmitValue,
   fractionDigitsForStep,
   mergeFormatOptions,
+  resolveNumberInputSubmitValue,
 } from "../../lib/number-input-format";
 
 describe("number-input-format", () => {
@@ -51,5 +52,16 @@ describe("number-input-format", () => {
     expect(formatSubmitValue(1234.5, 0.1)).toBe("1234.5");
     expect(formatSubmitValue(5000, 1)).toBe("5000");
     expect(formatSubmitValue("1,234.5", 0.1)).toBe("1234.5");
+  });
+
+  it("resolveNumberInputSubmitValue stays empty when NaN / empty", () => {
+    expect(resolveNumberInputSubmitValue(Number.NaN, "", 1)).toBe("");
+    expect(resolveNumberInputSubmitValue(undefined, "", 1)).toBe("");
+    expect(resolveNumberInputSubmitValue(Number.NaN, "   ", 1)).toBe("");
+  });
+
+  it("resolveNumberInputSubmitValue prefers finite valueAsNumber", () => {
+    expect(resolveNumberInputSubmitValue(42, "1,234", 1)).toBe("42");
+    expect(resolveNumberInputSubmitValue(undefined, "1,234", 1)).toBe("1234");
   });
 });

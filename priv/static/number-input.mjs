@@ -19,11 +19,11 @@ import {
 } from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   formatDisplayValue,
-  formatSubmitValue,
   mergeFormatOptions,
   mountNumberBinding,
-  readUpdatedServerNumber
-} from "./chunks/chunk-ATDXW7VQ.mjs";
+  readUpdatedServerNumber,
+  resolveNumberInputSubmitValue
+} from "./chunks/chunk-F2ZOUSGC.mjs";
 import {
   emitResponse,
   idMatches,
@@ -1388,9 +1388,11 @@ var NumberInput = class extends Component {
     );
     if (valueInputEl instanceof HTMLInputElement) {
       const step = getNumber(this.el, "step") ?? 1;
-      const n = this.api.valueAsNumber;
-      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
-      const submit = Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
+      const submit = resolveNumberInputSubmitValue(
+        this.api.valueAsNumber,
+        this.api.value ?? "",
+        step
+      );
       syncHiddenInputValue(
         valueInputEl,
         this.el,
@@ -1412,33 +1414,17 @@ function machineState(api) {
     valueAsNumber: api.valueAsNumber
   };
 }
-function submitValueForHost(el, valueAsNumber) {
+function submitValueForHost(el, valueAsNumber, displayValue = "") {
   const step = getNumber(el, "step") ?? 1;
-  if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
-  return formatSubmitValue(valueAsNumber, step);
-}
-function canonicalDatasetValue(el) {
-  return getString(el, "value") ?? getString(el, "defaultValue") ?? "";
-}
-function hiddenSubmitValue(el, displayValue, valueAsNumber) {
-  const step = getNumber(el, "step") ?? 1;
-  if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
-    return submitValueForHost(el, valueAsNumber);
-  }
-  const canonical = canonicalDatasetValue(el);
-  if (canonical !== "") {
-    return formatSubmitValue(canonical, step);
-  }
-  const stripped = (displayValue ?? "").replace(/,/g, "");
-  if (stripped === "") return "";
-  return formatSubmitValue(stripped, step);
+  return resolveNumberInputSubmitValue(valueAsNumber, displayValue, step);
 }
 function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
   const valueInput = el.querySelector(
     '[data-scope="number-input"][data-part="value-input"]'
   );
   if (!valueInput) return;
-  const v = hiddenSubmitValue(el, value, valueAsNumber);
+  const step = getNumber(el, "step") ?? 1;
+  const v = resolveNumberInputSubmitValue(valueAsNumber, value, step);
   const changed = valueInput.value !== v;
   if (changed) valueInput.value = v;
   syncInputFormAssociation(valueInput, el);
@@ -1450,7 +1436,10 @@ function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber)
 function setZagValue(zag, value) {
   const step = getNumber(zag.el, "step") ?? 1;
   if (typeof value === "number") {
-    if (Number.isNaN(value)) return;
+    if (Number.isNaN(value)) {
+      zag.api.clearValue();
+      return;
+    }
     zag.machine.service.send({
       type: "VALUE.SET",
       value: formatDisplayValue(value, step)
@@ -1458,13 +1447,26 @@ function setZagValue(zag, value) {
     return;
   }
   const trimmed = value.trim();
-  if (trimmed === "") return;
+  if (trimmed === "") {
+    zag.api.clearValue();
+    return;
+  }
   zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
 }
 function initialDisplayValue(el) {
   const binding = mountNumberBinding(el);
   if ("value" in binding) return binding.value ?? "";
   return binding.defaultValue ?? "";
+}
+function bindFormSubmitFlush(el, zag) {
+  const form = el.closest("form");
+  if (!form) return () => {
+  };
+  const onSubmit = () => {
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
+  };
+  form.addEventListener("submit", onSubmit, true);
+  return () => form.removeEventListener("submit", onSubmit, true);
 }
 function buildMachineProps(el, pushEvent, canPush, hook) {
   const step = getNumber(el, "step") ?? 1;
@@ -1526,11 +1528,12 @@ var NumberInputHook = createZagLiveHook({
   controlledKeys: ["value", "defaultValue"],
   mount(hook, { dom, server }) {
     const el = hook.el;
-    hook.fieldTouched = false;
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
     hook.initialValue = initialDisplayValue(el);
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
+    hook.unbindFormSubmit = bindFormSubmitFlush(el, zag);
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
       emitResponse({
@@ -1608,7 +1611,7 @@ var NumberInputHook = createZagLiveHook({
   },
   afterInit(hook, zag) {
     const el = hook.el;
-    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
+    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber, zag.api.value ?? "");
     syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
     const valueInput = el.querySelector(
       '[data-scope="number-input"][data-part="value-input"]'
@@ -1619,19 +1622,28 @@ var NumberInputHook = createZagLiveHook({
   },
   update(hook, zag) {
     const el = hook.el;
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+    }
     const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
-    zag.updateProps({
-      ...numberInputPropsForUpdate(el),
-      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {},
-      ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
-    });
-    syncNumberInputValueInput(
-      el,
-      zag.api.value ?? getString(el, "defaultValue") ?? "",
-      false,
-      zag.api.valueAsNumber
-    );
+    if (valuePatch.value === "") {
+      zag.api.clearValue();
+      zag.updateProps({
+        ...numberInputPropsForUpdate(el),
+        ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
+      });
+    } else {
+      zag.updateProps({
+        ...numberInputPropsForUpdate(el),
+        ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {},
+        ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
+      });
+    }
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
     zag.render();
+  },
+  destroy(hook) {
+    hook.unbindFormSubmit?.();
   }
 });
 export {

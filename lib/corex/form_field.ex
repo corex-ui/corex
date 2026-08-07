@@ -11,6 +11,10 @@ defmodule Corex.FormField do
 
   alias Corex.Checkable.Helpers, as: CheckableHelpers
 
+  # Failed create/update/etc. — show every field error (submit attempted).
+  # `:validate` still gates on `used_input?/1` so typing does not spam siblings.
+  @persistence_actions [:insert, :update, :replace, :delete]
+
   @spec assign_errors(map(), Phoenix.HTML.FormField.t()) :: map()
   def assign_errors(assigns, %Phoenix.HTML.FormField{} = field) do
     assign(assigns, :errors, visible_errors(field))
@@ -22,7 +26,11 @@ defmodule Corex.FormField do
   defp translate_errors(false, _field), do: []
 
   @doc """
-  Returns true when the field has visible errors (`used_input?/1`).
+  Returns true when the field has visible errors.
+
+  On `phx-change` validation (`form.action == :validate`), errors follow
+  `used_input?/1`. After a failed save (`:insert` / `:update` / …), all
+  field errors are shown.
 
       <.select field={@form[:country]} invalid={Corex.FormField.invalid?(@form[:country])} />
   """
@@ -30,6 +38,10 @@ defmodule Corex.FormField do
   def invalid?(%Phoenix.HTML.FormField{} = field), do: field_errors_visible?(field)
 
   defp field_errors_visible?(%Phoenix.HTML.FormField{errors: []}), do: false
+
+  defp field_errors_visible?(%Phoenix.HTML.FormField{form: %{action: action}})
+       when action in @persistence_actions,
+       do: true
 
   defp field_errors_visible?(field), do: Phoenix.Component.used_input?(field)
 
@@ -62,12 +74,18 @@ defmodule Corex.FormField do
       assigns
       |> assign(field: nil)
       |> assign(:form_field, true)
-      |> assign(:field_used, used_input?(field))
+      |> assign(:field_used, field_used?(field))
       |> assign_ids(field)
       |> assign_errors(field)
 
     assign(assigns, :invalid, resolve_invalid(assigns, field))
   end
+
+  defp field_used?(%Phoenix.HTML.FormField{form: %{action: action}})
+       when action in @persistence_actions,
+       do: true
+
+  defp field_used?(field), do: used_input?(field)
 
   defp resolve_invalid(assigns, field) do
     case Map.get(assigns, :invalid) do

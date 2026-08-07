@@ -6,6 +6,10 @@
  --z-index: var(--z-overlay, 1100);
  }
 
+ .tooltip:has([data-scope="tooltip"][data-part="content"][data-state="open"]) {
+ z-index: var(--z-overlay, 1100);
+ }
+
  .tooltip[data-loading] > * {
  @apply ui-loading;
  }
@@ -27,10 +31,6 @@
  pointer-events: auto;
  }
 
- .tooltip:is(.ui-alert, .ui-info, .ui-success, .ui-accent, .ui-brand) {
- --ctl-bg: var(--ctl-muted);
- }
-
  .tooltip [data-scope="tooltip"][data-part="content"] {
  padding: calc(var(--ctl-space, var(--spacing-space)) * 0.75) var(--ctl-space, var(--spacing-space));
  max-width: var(--container-5xs);
@@ -38,25 +38,12 @@
  z-index: 1;
  font-size: var(--ctl-text, var(--text-sm));
  line-height: var(--ctl-text--line-height, var(--text-sm--line-height));
- color: var(--ctl-ink-text, var(--color-ink));
- background-color: var(--ctl-bg, var(--ctl-muted, var(--color-surface)));
- border: 1px solid var(--ctl-border, var(--color-border));
+ color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+ background-color: var(--ctl-bg, var(--color-ui));
+ border: var(--border-width) solid var(--ctl-bd, var(--color-border));
  border-radius: var(--ctl-radius, var(--radius-md));
  box-shadow: var(--shadow-ui);
  opacity: 1;
- }
-
- .tooltip.ui-solid [data-scope="tooltip"][data-part="content"] {
- background-color: var(--ctl-fill, var(--color-ink));
- color: var(--ctl-fill-ink, var(--color-root));
- border-color: transparent;
- }
-
- .tooltip.ui-ghost [data-scope="tooltip"][data-part="content"] {
- background-color: transparent;
- color: var(--ctl-ink-text, var(--color-ink));
- border-color: transparent;
- box-shadow: none;
  }
 
  .tooltip [data-scope="tooltip"][data-part="content"][data-state="closed"] {
@@ -73,25 +60,12 @@
 
  .tooltip [data-scope="tooltip"][data-part="arrow"] {
  --arrow-size: var(--spacing-space);
- --arrow-background: var(--ctl-bg, var(--ctl-muted, var(--color-surface)));
+ --arrow-background: var(--ctl-bg, var(--color-ui));
  z-index: 0;
- }
-
- .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow"] {
- --arrow-background: var(--ctl-fill, var(--color-ink));
- }
-
- .tooltip.ui-ghost [data-scope="tooltip"][data-part="arrow"] {
- --arrow-background: transparent;
  }
 
  .tooltip [data-scope="tooltip"][data-part="arrow-tip"] {
  background: var(--arrow-background);
- border: 1px solid var(--ctl-border, var(--color-border));
- }
-
- .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow-tip"],
- .tooltip.ui-ghost [data-scope="tooltip"][data-part="arrow-tip"] {
- border-color: transparent;
+ border: var(--border-width) solid var(--ctl-bd, var(--color-border));
  }
 }

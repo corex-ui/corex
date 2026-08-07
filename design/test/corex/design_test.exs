@@ -472,6 +472,17 @@ defmodule Corex.Design.ComponentsTest do
     refute :shape in Components.axes_for("select")
     assert :max_height in Components.axes_for("combobox")
     refute :max_height in Components.axes_for("switch")
+    refute :radius in Components.axes_for("tree-view")
+    assert :radius in Components.axes_for("checkbox")
+  end
+
+  test "variant_steps/1 excludes ghost for tooltip and keeps it for button" do
+    tooltip_mods = Enum.map(Components.variant_steps("tooltip"), & &1.modifier)
+    button_mods = Enum.map(Components.variant_steps("button"), & &1.modifier)
+
+    assert tooltip_mods == ["", "ui-solid"]
+    refute "ui-ghost" in tooltip_mods
+    assert button_mods == ["", "ui-solid", "ui-ghost"]
   end
 
   describe "id mapping" do

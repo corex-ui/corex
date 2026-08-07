@@ -1,6 +1,7 @@
 const MAX_EVENT_ROWS = 20
 const ACCORDION_EVENT = "hero-accordion-changed"
 const EVENT_FLASH_MS = 800
+const ROTATOR_DEFAULT_MS = 2800
 
 function formatOpen(value) {
   if (value == null) return " - "
@@ -35,6 +36,7 @@ const HomeHero = {
     this.accordionEl = document.getElementById("hero-accordion")
     this.eventsBadge = document.getElementById("hero-events-badge")
     this.flashTimer = null
+    this.rotatorTimer = null
 
     this.onAccordionChange = (event) => {
       const detail = event.detail ?? {}
@@ -57,6 +59,8 @@ const HomeHero = {
         dispatchAccordionValue(this.accordionEl, value)
       })
     })
+
+    this.startRotator()
   },
 
   destroyed() {
@@ -67,6 +71,30 @@ const HomeHero = {
       clearTimeout(this.flashTimer)
       this.flashTimer = null
     }
+    if (this.rotatorTimer) {
+      clearInterval(this.rotatorTimer)
+      this.rotatorTimer = null
+    }
+  },
+
+  startRotator() {
+    const root = document.getElementById("home-hero-rotator")
+    if (!root) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const words = Array.from(root.querySelectorAll(".home-hero-rotator__word"))
+    if (words.length < 2) return
+
+    let index = words.findIndex((word) => word.hasAttribute("data-active"))
+    if (index < 0) index = 0
+
+    const interval = Number(root.getAttribute("data-interval-ms")) || ROTATOR_DEFAULT_MS
+
+    this.rotatorTimer = setInterval(() => {
+      words[index].removeAttribute("data-active")
+      index = (index + 1) % words.length
+      words[index].setAttribute("data-active", "")
+    }, interval)
   },
 
   flashEventsBadge() {

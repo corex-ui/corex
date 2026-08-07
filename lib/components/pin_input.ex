@@ -317,9 +317,7 @@ defmodule Corex.PinInput do
           />
         </div>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="pin-input" data-part="error">
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="pin-input" errors={@errors} error={@error} />
     </div>
     """
   end

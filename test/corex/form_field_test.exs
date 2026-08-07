@@ -97,6 +97,22 @@ defmodule Corex.FormFieldTest do
     assert render_errors(field) == ""
   end
 
+  test "assign_errors shows unused field errors after failed insert" do
+    field = name_field(%{}, :insert)
+
+    refute used_input?(field)
+    assert render_errors(field) =~ "blank"
+  end
+
+  test "assign_form_field marks field_used on failed insert" do
+    field = name_field(%{}, :insert)
+
+    result = FormField.assign_form_field(%{invalid: nil, __changed__: %{}}, field)
+
+    assert result.field_used == true
+    assert result.errors != []
+  end
+
   test "assign_form_field leaves invalid false by default with visible errors" do
     field = name_field(%{"name" => ""}, :validate)
 
@@ -161,13 +177,6 @@ defmodule Corex.FormFieldTest do
 
     assert result.errors != []
     assert result.invalid == false
-  end
-
-  test "assign_errors does not show all errors on insert action alone" do
-    field = name_field(%{}, :insert)
-
-    refute used_input?(field)
-    assert render_errors(field) == ""
   end
 
   test "list_submit_name appends []" do

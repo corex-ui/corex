@@ -43,6 +43,14 @@ function formatSubmitValue(value, step) {
   if (Number.isNaN(n)) return trimmed.replace(/,/g, "");
   return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n);
 }
+function resolveNumberInputSubmitValue(valueAsNumber, displayValue, step) {
+  if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
+    return formatSubmitValue(valueAsNumber, step);
+  }
+  const stripped = (displayValue ?? "").replace(/,/g, "").trim();
+  if (stripped === "") return "";
+  return formatSubmitValue(stripped, step);
+}
 function formatDisplayValue(value, step) {
   if (value === void 0 || value === null) return "";
   const trimmed = String(value).trim();
@@ -194,8 +202,11 @@ function readUpdatedServerNumber(el, before) {
     return base;
   }
   const raw = getString(el, "value") ?? (getBoolean(el, "formField") ? getString(el, "defaultValue") : void 0);
-  if (raw === void 0 || raw === "") {
+  if (raw === void 0) {
     return base;
+  }
+  if (raw === "") {
+    return { ...base, value: "" };
   }
   return {
     ...base,
@@ -240,7 +251,7 @@ function readControlledOrDefaultStringList(el, valueKey, defaultValueKey) {
 
 export {
   mergeFormatOptions,
-  formatSubmitValue,
+  resolveNumberInputSubmitValue,
   formatDisplayValue,
   readStringControlledZagProps,
   readStringControlledZagUpdate,

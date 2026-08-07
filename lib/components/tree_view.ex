@@ -378,7 +378,7 @@ defmodule Corex.TreeView do
   Stack modifiers on the host (`class` on `<.tree_view
     id="docs-tree">`).
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`). No variant or radius axis. See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables for the filled selected state. Unselected items stay neutral. There is no variant axis.
 

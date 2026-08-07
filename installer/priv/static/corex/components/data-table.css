@@ -183,8 +183,35 @@
  display: none;
  }
 
- .data-table [data-scope="data-table"][data-part="empty"] {
+ .data-table [data-scope="data-table"][data-part="tbody"] tr[data-part="empty-row"] {
+ position: relative;
+ height: 100%;
+ }
+
+ /* Absolute empty copy does not size the row — keep a padded floor on cells. */
+ .data-table [data-scope="data-table"][data-part="tbody"] tr[data-part="empty-row"] > td {
  padding: var(--ctl-space, var(--spacing-space));
+ vertical-align: middle;
+ }
+
+ .data-table [data-scope="data-table"][data-part="tbody"] tr[data-part="empty-row"] > td::before {
+ content: "";
+ display: block;
+ min-height: calc(var(--ctl-space, var(--spacing-space)) * 8);
+ }
+
+ .data-table [data-scope="data-table"][data-part="empty"] {
+ position: absolute;
+ inset: 0;
+ z-index: 1;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ box-sizing: border-box;
+ padding: var(--ctl-space, var(--spacing-space));
+ text-align: center;
+ white-space: normal;
+ pointer-events: none;
  }
 
  .data-table [data-scope="data-table"][data-part="tbody"] tr {

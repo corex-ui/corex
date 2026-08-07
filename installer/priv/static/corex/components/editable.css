@@ -89,6 +89,13 @@
  white-space: nowrap;
  }
 
+ .editable[data-invalid] [data-scope="editable"][data-part="control"],
+ .editable[data-invalid] [data-scope="editable"][data-part="area"],
+ .editable[data-invalid] [data-scope="editable"][data-part="preview"],
+ .editable [data-scope="editable"][data-part="input"][data-invalid] {
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
+ }
+
  .editable [data-part="triggers"] {
  display: inline-flex;
  align-items: center;
@@ -148,10 +155,36 @@
  }
 
  .editable [data-scope="editable"][data-part="cancel-trigger"] {
- @apply ui-alert;
+ /* Semantic always alert; soft (default) chrome only — ignore host variant. */
+ --ctl-fill: var(--color-alert);
+ --ctl-fill-hover: var(--color-alert-hover);
+ --ctl-fill-active: var(--color-alert-active);
+ --ctl-fill-ink: var(--color-alert-contrast);
+ --ctl-ink-text: var(--color-alert-text);
+ --ctl-muted: var(--color-alert-muted);
+ --ctl-bg: var(--color-ui);
+ --ctl-ink: var(--ctl-ink-text);
+ --ctl-bd: var(--color-border);
+ --ctl-bg-hover: var(--color-ui-hover);
+ --ctl-bg-active: var(--color-ui-active);
+ --ctl-ring: var(--color-focus);
+ color: var(--ctl-ink);
  }
 
  .editable [data-scope="editable"][data-part="submit-trigger"] {
- @apply ui-success;
+ /* Semantic always success; soft (default) chrome only — ignore host variant. */
+ --ctl-fill: var(--color-success);
+ --ctl-fill-hover: var(--color-success-hover);
+ --ctl-fill-active: var(--color-success-active);
+ --ctl-fill-ink: var(--color-success-contrast);
+ --ctl-ink-text: var(--color-success-text);
+ --ctl-muted: var(--color-success-muted);
+ --ctl-bg: var(--color-ui);
+ --ctl-ink: var(--ctl-ink-text);
+ --ctl-bd: var(--color-border);
+ --ctl-bg-hover: var(--color-ui-hover);
+ --ctl-bg-active: var(--color-ui-active);
+ --ctl-ring: var(--color-focus);
+ color: var(--ctl-ink);
  }
 }

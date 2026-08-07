@@ -68,22 +68,24 @@ defmodule Corex.Design.Bundle do
   end
 
   defp report!(component_ids) do
-    themes = Theme.themes()
-    modes = Theme.modes()
-    semantics = Filter.semantic_strings()
+    if Mix.env() != :test do
+      themes = Theme.themes()
+      modes = Theme.modes()
+      semantics = Filter.semantic_strings()
 
-    IO.puts([
-      "corex_design: components=",
-      inspect(component_ids),
-      " themes=",
-      inspect(themes),
-      " modes=",
-      inspect(modes),
-      " accessibility=",
-      inspect(Corex.Design.Accessibility.axes()),
-      " semantics=",
-      inspect(semantics)
-    ])
+      Mix.shell().info([
+        "corex_design: components=",
+        inspect(component_ids),
+        " themes=",
+        inspect(themes),
+        " modes=",
+        inspect(modes),
+        " accessibility=",
+        inspect(Corex.Design.Accessibility.axes()),
+        " semantics=",
+        inspect(semantics)
+      ])
+    end
   end
 
   defp copy_infrastructure!(static_root, output_dir) do

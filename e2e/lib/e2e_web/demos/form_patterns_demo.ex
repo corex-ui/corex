@@ -47,7 +47,52 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         |> validate_length(:pin, is: 4)
         |> validate_format(:pin, ~r/^\d+$/)
         |> validate_number(:heading_angle, greater_than_or_equal_to: 0, less_than_or_equal_to: 360)
+        |> validate_accent_color_not_default()
+        |> validate_heading_angle_not_default()
+        |> validate_level_not_default()
+        |> validate_signature_present()
+        |> validate_tags_present()
+        |> validate_avatar_present()
       end
+
+      # Color/angle/level machine defaults — treat as blank until changed.
+      defp validate_accent_color_not_default(changeset) do
+        validate_change(changeset, :accent_color, fn :accent_color, value ->
+          if default_accent_color?(value), do: [accent_color: "can't be blank"], else: []
+        end)
+      end
+
+      defp validate_heading_angle_not_default(changeset) do
+        validate_change(changeset, :heading_angle, fn :heading_angle, value ->
+          if default_heading_angle?(value), do: [heading_angle: "can't be blank"], else: []
+        end)
+      end
+
+      defp validate_level_not_default(changeset) do
+        if default_level?(get_field(changeset, :level)) do
+          add_error(changeset, :level, "can't be blank")
+        else
+          changeset
+        end
+      end
+
+      defp default_accent_color?(value) when is_binary(value) do
+        normalized = value |> String.trim() |> String.downcase()
+
+        normalized in ["#000000", "#000", "000000", "000"] or
+          Regex.match?(~r/^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,/i, normalized) or
+          Regex.match?(~r/^rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)$/i, normalized)
+      end
+
+      defp default_accent_color?(_), do: false
+
+      defp default_heading_angle?(value) when value in [0, 0.0], do: true
+      defp default_heading_angle?(value) when is_binary(value), do: value in ["0", "0.0", "0.00"]
+      defp default_heading_angle?(_), do: false
+
+      defp default_level?(value) when value in [1, 1.0], do: true
+      defp default_level?(value) when is_binary(value), do: value in ["1", "1.0", "1.00"]
+      defp default_level?(_), do: false
     end
     """
   end
@@ -60,6 +105,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       phx-change="validate_custom"
       phx-submit="save_custom"
       multipart
+      class="flex w-full max-w-3xl flex-col gap-size-lg"
     >
       <.native_input field={@form[:name]} type="text" class="native-input relative">
         <:label>Name</:label>
@@ -302,6 +348,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       phx-change="validate_invalid"
       phx-submit="save_invalid"
       multipart
+      class="flex w-full max-w-3xl flex-col gap-size-lg"
     >
       <.native_input field={@form[:name]} type="text" class="native-input" auto_invalid>
         <:label>Name</:label>
@@ -468,7 +515,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       phx-change="validate_custom"
       phx-submit="save_custom"
       multipart
-      class="flex flex-col gap-space-lg w-full max-w-xl"
+      class="flex w-full max-w-3xl flex-col gap-size-lg"
     >
       <FormPatternsFields.custom_fields form={@form} prefix="form-patterns-custom-error" />
       <.action type="submit" id="form-patterns-custom-error-submit" class="button ui-accent">
@@ -488,7 +535,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       phx-change="validate_invalid"
       phx-submit="save_invalid"
       multipart
-      class="flex flex-col gap-space-lg w-full max-w-xl"
+      class="flex w-full max-w-3xl flex-col gap-size-lg"
     >
       <FormPatternsFields.invalid_fields form={@form} prefix="form-patterns-invalid-on-error" />
       <.action type="submit" id="form-patterns-invalid-on-error-submit" class="button ui-accent">

@@ -76,4 +76,20 @@ describe("readUpdatedServerNumber", () => {
       value: "50",
     });
   });
+
+  it("controlled empty data-value clears with empty string patch", () => {
+    const node = el({ controlled: true, value: "", step: 1 });
+    expect(readUpdatedServerNumber(node, { value: "50" })).toEqual({
+      step: 1,
+      value: "",
+    });
+  });
+
+  it("formField empty defaultValue clears with empty string patch", () => {
+    const node = el({ formField: true, defaultValue: "", step: 1 });
+    expect(readUpdatedServerNumber(node, { defaultValue: "1234" })).toEqual({
+      step: 1,
+      value: "",
+    });
+  });
 });

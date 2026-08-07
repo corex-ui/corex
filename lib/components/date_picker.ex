@@ -673,6 +673,7 @@ defmodule Corex.DatePicker do
         <div
           :if={@error != []}
           :for={{msg, idx} <- Enum.with_index(@errors)}
+          class={Map.get(Enum.at(@error, 0), :class)}
           {Connect.mounted_error(%Anatomy.Error{id: @id, index: idx})}
         >
           {render_slot(@error, msg)}

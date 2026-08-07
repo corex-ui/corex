@@ -65,6 +65,19 @@ defmodule E2eWeb.StylePageSectionsTest do
     end
   end
 
+  test "no-radius style pages omit Rounded axis" do
+    for {relative_path, layout_id} <- StylePageExpectations.style_pages(),
+        layout_id in StylePageExpectations.no_radius_layout_ids() do
+      source = StylePageExpectations.read_page(relative_path)
+
+      refute source =~ "axis={:radius}",
+             "no-radius page #{relative_path} (#{layout_id}) must not include Rounded axis"
+
+      refute source =~ "-styling-radius",
+             "no-radius page #{relative_path} (#{layout_id}) must not include a radius section"
+    end
+  end
+
   test "compound style pages keep canonical preview plus semantic variant matrices" do
     for {relative_path, layout_id} <- StylePageExpectations.style_pages(),
         layout_id in StylePageExpectations.canonical_preview_layout_ids() do

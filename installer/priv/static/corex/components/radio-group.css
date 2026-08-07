@@ -6,6 +6,11 @@
  max-width: var(--container-md);
  }
 
+ .radio-group [data-scope="radio-group"][data-part="error"].absolute {
+ padding-block: 0;
+ display: block;
+ }
+
  .radio-group[data-loading] [data-scope="radio-group"][data-part="root"] {
  @apply ui-loading;
  }
@@ -60,7 +65,7 @@
 
  &[data-invalid] {
  color: var(--color-alert);
- border-color: var(--color-alert);
+ box-shadow: inset 0 0 0 var(--ring-width) var(--color-alert);
  }
 
  &[data-required] {

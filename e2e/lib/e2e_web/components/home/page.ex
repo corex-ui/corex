@@ -19,9 +19,34 @@ defmodule E2eWeb.Home.Page do
           <div class="flex w-full max-w-xl flex-col items-center gap-size-md text-center lg:max-w-none lg:items-start lg:text-start">
             <h1
               id="home-hero-heading"
-              class="display m-0 text-balance text-4xl tracking-tighter text-ink sm:text-5xl lg:text-6xl xl:text-7xl"
+              class="display m-0 text-pretty text-4xl tracking-tighter text-ink sm:text-5xl lg:text-5xl xl:text-6xl"
             >
-              {~t"The Phoenix UI with a"} <span class="text-brand-text">{~t"real API"}</span>.
+              <span class="sr-only">
+                {~t"The Phoenix UI with API, Events, Anatomy, Design, and Accessibility."}
+              </span>
+              <span
+                aria-hidden="true"
+                class="flex flex-col items-center gap-0 lg:items-start"
+              >
+                <span>{~t"The Phoenix UI"}</span>
+                <span class="home-hero-rotator-phrase">
+                  {~t"with"}{" "}
+                  <span
+                    id="home-hero-rotator"
+                    class="home-hero-rotator text-brand-text"
+                    data-interval-ms="2800"
+                  >
+                    <span class="home-hero-rotator__sizer" aria-hidden="true">
+                      {~t"Accessibility"}.
+                    </span>
+                    <span class="home-hero-rotator__word" data-active>{~t"API"}.</span>
+                    <span class="home-hero-rotator__word">{~t"Events"}.</span>
+                    <span class="home-hero-rotator__word">{~t"Anatomy"}.</span>
+                    <span class="home-hero-rotator__word">{~t"Design"}.</span>
+                    <span class="home-hero-rotator__word">{~t"Accessibility"}.</span>
+                  </span>
+                </span>
+              </span>
             </h1>
 
             <p class="m-0 max-w-xl text-pretty text-lg text-ink-muted">
@@ -87,21 +112,23 @@ defmodule E2eWeb.Home.Page do
             </div>
 
             <div class="grid min-h-0 flex-1 grid-cols-2 max-sm:grid-cols-1">
-              <div class="flex min-h-0 min-w-0 flex-col gap-space-sm overflow-y-auto border-r border-border p-space max-sm:border-r-0 max-sm:border-b">
-                <span class="badge ui-ghost ui-size-sm self-start">
+              <div class="flex min-h-0 min-w-0 flex-col gap-space-sm border-r border-border p-space max-sm:border-r-0 max-sm:border-b">
+                <span class="badge ui-ghost ui-size-sm shrink-0 self-start">
                   <.heroicon name="hero-bars-3-bottom-left" /> {~t"Accordion"}
                 </span>
-                <.accordion
-                  id="hero-accordion"
-                  class="accordion"
-                  value="machine"
-                  on_value_change_client="hero-accordion-changed"
-                  items={Corex.Content.new(@hero_accordion_items)}
-                >
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.accordion>
+                <div class="min-h-0 flex-1 overflow-y-auto scrollbar scrollbar--sm">
+                  <.accordion
+                    id="hero-accordion"
+                    class="accordion"
+                    value="machine"
+                    on_value_change_client="hero-accordion-changed"
+                    items={Corex.Content.new(@hero_accordion_items)}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </div>
               </div>
 
               <div class="flex min-h-0 min-w-0 flex-col gap-space-sm p-space max-sm:min-h-[12rem]">
@@ -113,13 +140,13 @@ defmodule E2eWeb.Home.Page do
                 </span>
                 <.data_table
                   id="hero-events-table"
-                  class="data-table min-h-0 flex-1 overflow-y-auto text-xs rounded-md"
+                  class="data-table w-full max-w-none text-xs rounded-md"
                   rows={[]}
                 >
                   <:col :let={_row} label={~t"Time"}></:col>
                   <:col :let={_row} label={~t"Open items"}></:col>
                   <:empty>
-                    <p class="m-0 px-space-sm py-space text-center text-xs text-ink-muted">
+                    <p class="m-0 text-center text-xs text-ink-muted">
                       {~t"Toggle the accordion to watch events land."}
                     </p>
                   </:empty>
@@ -194,6 +221,8 @@ defmodule E2eWeb.Home.Page do
           <.home_ctas />
         </div>
       </section>
+
+      <E2eWeb.Home.Anatomy.section />
 
       <section
         id="home-installer"
@@ -363,7 +392,7 @@ defmodule E2eWeb.Home.Page do
     ]}>
       <.navigate
         to={~p"/accordion/playground"}
-        class="button ui-accent ui-solid ui-size-lg"
+        class="button ui-brand ui-solid ui-size-lg"
       >
         {~t"Browse components"}
         <.heroicon name="hero-arrow-right" />

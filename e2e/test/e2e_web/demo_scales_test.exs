@@ -64,6 +64,11 @@ defmodule E2eWeb.DemoScalesTest do
     assert Enum.map(steps, & &1.label) == ["Subtle (default)", "Solid", "Ghost"]
   end
 
+  test "styling_variant_axis_steps excludes ghost for tooltip" do
+    steps = DemoScales.styling_variant_axis_steps("tooltip")
+    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid"]
+  end
+
   test "styling_variant_axis_steps is empty for binary and input hosts" do
     for host <- DemoScales.no_variant_hosts() do
       assert DemoScales.styling_variant_axis_steps(host) == []
