@@ -57,8 +57,8 @@ defmodule CorexMcp.MixProject do
 
   defp dialyzer do
     [
-      plt_local_path: "priv/plts",
-      plt_core_path: "priv/plts",
+      plt_local_path: "_build/plts",
+      plt_core_path: "_build/plts",
       plt_add_apps: [:mix, :ex_unit],
       flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
     ]
