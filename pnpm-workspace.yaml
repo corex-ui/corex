@@ -1,5 +1,4 @@
 packages:
-  - design
   - e2e
 
 allowBuilds:

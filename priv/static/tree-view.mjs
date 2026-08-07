@@ -13,7 +13,7 @@ import {
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunks/chunk-HZLPIQBD.mjs";
+} from "./chunks/chunk-4JICR5HJ.mjs";
 import {
   createValueEmitter,
   idMatches,

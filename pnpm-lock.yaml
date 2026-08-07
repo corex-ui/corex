@@ -159,8 +159,6 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@25.9.1)(happy-dom@20.9.0)(supports-color@7.2.0)
 
-  design: {}
-
   e2e:
     devDependencies:
       motion:

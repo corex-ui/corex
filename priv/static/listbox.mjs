@@ -10,9 +10,9 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-ZGNXOXFS.mjs";
+} from "./chunks/chunk-XGL2LWL4.mjs";
 import "./chunks/chunk-NU3NDRI3.mjs";
-import "./chunks/chunk-HZLPIQBD.mjs";
+import "./chunks/chunk-4JICR5HJ.mjs";
 import "./chunks/chunk-QCFVFTGB.mjs";
 import {
   readStringListControlledZagProps,

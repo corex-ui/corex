@@ -18,7 +18,7 @@ defmodule Corex.Design.AccessibilityTest do
     assert Accessibility.axes() == []
   end
 
-  test "true enables preferred axes" do
+  test "true enables all known axes" do
     CorexDesign.TestConfig.put(accessibility: true)
     assert Accessibility.axes() == Accessibility.preferred_axes()
   end

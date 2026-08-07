@@ -77,7 +77,7 @@ One consumption mode: import `corex.css`. Do not cherry-pick individual componen
 | `modes` | `[:light, :dark]` | Emit only listed color modes |
 | `default_theme` | `:uno` (package fallback) | Theme used when CSS loads with no `data-theme`. `mix corex.new` scaffolds `neo` without `--theme`. |
 | `default_mode` | `:light` | Build default mode |
-| `accessibility` | `false` | `true` (text/focus/links), or axis list (`:text`, `:contrast`, `:motion`, `:cursor`, `:focus`, `:links`) |
+| `accessibility` | `false` | `true` (all six axes), or axis list (`:text`, `:contrast`, `:motion`, `:cursor`, `:focus`, `:links`) |
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,

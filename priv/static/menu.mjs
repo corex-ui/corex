@@ -16,9 +16,9 @@ import {
 } from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   redirectCollectionItem
-} from "./chunks/chunk-ZGNXOXFS.mjs";
+} from "./chunks/chunk-XGL2LWL4.mjs";
 import "./chunks/chunk-NU3NDRI3.mjs";
-import "./chunks/chunk-HZLPIQBD.mjs";
+import "./chunks/chunk-4JICR5HJ.mjs";
 import {
   getInteractionModality,
   setInteractionModality,

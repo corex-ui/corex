@@ -42,7 +42,7 @@ defmodule Corex.Design.Config.Schema do
             ],
             accessibility: [
               doc:
-                "false (default), true (text/focus/links), or axis list: :text :contrast :motion :cursor :focus :links"
+                "false (default), true (all six axes), or axis list: :text :contrast :motion :cursor :focus :links"
             ]
           )
 

@@ -72,13 +72,14 @@ defmodule E2eWeb.ToastTest do
       Toast.assert_toast_visible(session)
       before = Toast.toast_count(session)
 
-      if Toast.has_close_trigger?(session) do
-        session
-        |> Toast.dismiss_first_toast()
-        |> Toast.wait_toast_gone(before)
+      assert Toast.has_close_trigger?(session),
+             "expected a toast close-trigger after creating an info toast"
 
-        assert Toast.toast_count(session) < before
-      end
+      session
+      |> Toast.dismiss_first_toast()
+      |> Toast.wait_toast_gone(before)
+
+      assert Toast.toast_count(session) < before
     end
 
     feature "stacked dismiss leaves remaining toast closable", %{session: session} do

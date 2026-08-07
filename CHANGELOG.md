@@ -1,22 +1,27 @@
 # Changelog
 
-## 0.2.0 - 2026-08-05
+## 0.2.0 - 2026-08-07
 
 Design and MCP ship as separate Hex packages. Theming is config-driven through an Elixir CSS pipeline.
 
 ### Packages
 
-- **`corex_design`** — optional Design package (`runtime: false`, **MIT**): tokens, themes, modes, and component CSS from `config :corex_design`.
+- **`corex_design`** — optional Design package (`runtime: false`, **MIT**): tokens, themes, modes, and component CSS from `config :corex_design`. Hex only (CSS is built in the app with `mix corex.design.build`).
 - **`corex_mcp`** — optional MCP package (`only: [:dev, :test]`, **Apache-2.0**) for AI component and design discovery. Never enable in production. License differs from the MIT siblings because the HTTP MCP stack follows Tidewave’s Apache-2.0 lineage.
-- **`corex`** — unstyled Phoenix components and Zag.js hooks (unchanged role, **MIT**).
+- **`corex`** — unstyled Phoenix components and Zag.js hooks (**MIT**); npm package ships built hooks under `priv/static` only.
 - **`mix corex.new`** — Design and MCP on by default (`--no-design` / `--no-mcp` to skip). Scaffolds `.cursor/mcp.json` when MCP is enabled; optional **`--a11y`** wires accessibility preference CSS.
+
+### Security
+
+- Strip leading C0/space before URL scheme checks in `Corex.Url` and the JS redirect helper so prefixed `javascript:` / `data:` cannot bypass allowlists (same class as LiveView CVE-2026-58228). See [SECURITY.md](SECURITY.md).
+- Require Phoenix LiveView **≥ 1.2.7** and Phoenix **≥ 1.8.9** for upstream link/navigation fixes.
 
 ### Design
 
 - Config-driven Elixir pipeline: declare themes, semantics, and modes, then generate CSS with `mix corex.design.build`.
 - Shared `ui-*` modifiers for roles and variants (subtle / `ui-solid` / `ui-ghost`). `ui-outline` and per-component BEM modifiers are gone.
 - Notable renames: `layer` → `surface`; public token names only (no `--theme-*` indirection).
-- Optional accessibility preference CSS (`--a11y` / design accessibility emit).
+- Optional accessibility preference CSS (`--a11y` / design accessibility emit). `accessibility: true` enables all six axes; `Corex.Design.Accessibility` is documented on Hexdocs.
 
 ### Components
 
@@ -34,6 +39,7 @@ Design and MCP ship as separate Hex packages. Theming is config-driven through a
 ### Requirements
 
 - Elixir `~> 1.17`.
+- Phoenix LiveView `>= 1.2.7`, Phoenix `>= 1.8.9` recommended.
 
 See the [update guide](guides/update.md) when upgrading from 0.1.x.
 

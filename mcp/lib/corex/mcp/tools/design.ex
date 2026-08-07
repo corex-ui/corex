@@ -447,7 +447,7 @@ defmodule Corex.MCP.Tools.Design do
       config: "config :corex_design, accessibility: true",
       flags: "--a11y on mix corex.new / mix corex.tableau.new",
       tip:
-        "accessibility: true enables text/focus/links; pass an axis list to emit a subset. Requires runtime corex_design.",
+        "accessibility: true enables all six axes; pass an axis list to emit a subset. Requires runtime corex_design.",
       guide: "https://hexdocs.pm/corex/accessibility.html"
     }
   end

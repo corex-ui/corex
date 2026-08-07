@@ -19,7 +19,7 @@ config :corex_design,
   accessibility: true
 ```
 
-`true` enables the preferred axes (`:text`, `:focus`, `:links`). Motion follows `prefers-reduced-motion` in recipes; contrast starts from `prefers-contrast`. Or enable a subset / extra axes:
+`true` enables **all six** axes (`:text`, `:contrast`, `:motion`, `:cursor`, `:focus`, `:links`). Motion recipes still respect `prefers-reduced-motion`; contrast can follow `prefers-contrast`. Or enable a subset:
 
 ```elixir
 config :corex_design,

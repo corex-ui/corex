@@ -82,7 +82,6 @@ defmodule CorexDesign.MixProject do
 
   defp aliases do
     [
-      "bundle.build": ["compile", &build_bundle/1],
       test: ["test"],
       lint: [
         "format --check-formatted",
@@ -92,19 +91,6 @@ defmodule CorexDesign.MixProject do
         "sobelow --exit"
       ]
     ]
-  end
-
-  @bundle_dir "dist"
-
-  defp build_bundle(_) do
-    priv_css = Path.join(__DIR__, "priv/css")
-    output = Path.join(__DIR__, @bundle_dir)
-
-    Mix.Task.run("app.start")
-    Corex.Design.Config.validate!()
-    Corex.Design.Tokens.Publish.write_theme_tokens!(priv_css)
-    Mix.Task.run("corex.design.build", ["--output", output])
-    :ok
   end
 
   defp package do
@@ -129,6 +115,7 @@ defmodule CorexDesign.MixProject do
       groups_for_modules: [
         Design: [
           Corex.Design,
+          Corex.Design.Accessibility,
           Corex.Design.Config,
           Corex.Design.Config.Resolved,
           Corex.Design.Config.Schema,
@@ -145,6 +132,7 @@ defmodule CorexDesign.MixProject do
     allowed =
       MapSet.new([
         Corex.Design,
+        Corex.Design.Accessibility,
         Corex.Design.Config,
         Corex.Design.Config.Resolved,
         Corex.Design.Config.Schema,

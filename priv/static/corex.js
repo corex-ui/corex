@@ -12477,35 +12477,48 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-HZLPIQBD.mjs
-  function isAllowedRedirectDestination(destination) {
-    const trimmed = destination.trim();
-    if (!trimmed) return false;
-    if (trimmed.startsWith("//")) return false;
+  // ../priv/static/chunks/chunk-4JICR5HJ.mjs
+  function stripLeadingC0AndSpace(destination) {
+    let i2 = 0;
+    while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
+      i2 += 1;
+    }
+    return destination.slice(i2);
+  }
+  function sanitizeRedirectDestination(destination) {
+    const trimmed = stripLeadingC0AndSpace(destination);
+    if (!trimmed) return null;
+    if (trimmed.startsWith("//")) return null;
     const schemeMatch = SCHEME_PREFIX.exec(trimmed);
     if (schemeMatch) {
       const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
-      return scheme === "http" || scheme === "https";
+      if (scheme !== "http" && scheme !== "https") return null;
     }
-    return true;
+    return trimmed;
+  }
+  function isAllowedRedirectDestination(destination) {
+    return sanitizeRedirectDestination(destination) !== null;
   }
   function readDomItemRedirect(itemEl, fallback2) {
     if (!itemEl) {
-      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
-      return { destination: fallback2 };
+      const destination2 = fallback2 ? sanitizeRedirectDestination(fallback2) : null;
+      if (!destination2) return null;
+      return { destination: destination2 };
     }
     const dataRedirect = itemEl.getAttribute("data-redirect");
     if (dataRedirect === "false") return null;
-    const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    if (!destination || !isAllowedRedirectDestination(destination)) return null;
+    const raw = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
+    const destination = sanitizeRedirectDestination(raw);
+    if (!destination) return null;
     const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
     const newTab = itemEl.hasAttribute("data-new-tab");
     return { destination, mode, newTab };
   }
   function performRedirect(input, ctx) {
-    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
-      return false;
-    const { destination, newTab, mode } = input;
+    if (!input || !input.destination) return false;
+    const destination = sanitizeRedirectDestination(input.destination);
+    if (!destination) return false;
+    const { newTab, mode } = input;
     if (newTab) {
       window.open(destination, "_blank", "noopener,noreferrer");
       return true;
@@ -12525,15 +12538,15 @@ var Corex = (() => {
     return true;
   }
   var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_HZLPIQBD = __esm({
-    "../priv/static/chunks/chunk-HZLPIQBD.mjs"() {
+  var init_chunk_4JICR5HJ = __esm({
+    "../priv/static/chunks/chunk-4JICR5HJ.mjs"() {
       "use strict";
       REDIRECT_MODES = ["href", "patch", "navigate"];
       SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
-  // ../priv/static/chunks/chunk-ZGNXOXFS.mjs
+  // ../priv/static/chunks/chunk-XGL2LWL4.mjs
   function connect8(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -12999,11 +13012,11 @@ var Corex = (() => {
     return result;
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_ZGNXOXFS = __esm({
-    "../priv/static/chunks/chunk-ZGNXOXFS.mjs"() {
+  var init_chunk_XGL2LWL4 = __esm({
+    "../priv/static/chunks/chunk-XGL2LWL4.mjs"() {
       "use strict";
       init_chunk_NU3NDRI3();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_QCFVFTGB();
       init_chunk_6L36XW7I();
       anatomy8 = createAnatomy("listbox").parts(
@@ -14071,9 +14084,9 @@ var Corex = (() => {
       init_chunk_CI7ZMY4G();
       init_chunk_F544AH56();
       init_chunk_VOKBRZCH();
-      init_chunk_ZGNXOXFS();
+      init_chunk_XGL2LWL4();
       init_chunk_NU3NDRI3();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
       init_chunk_F2ZOUSGC();
@@ -28030,9 +28043,9 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_ZGNXOXFS();
+      init_chunk_XGL2LWL4();
       init_chunk_NU3NDRI3();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_QCFVFTGB();
       init_chunk_F2ZOUSGC();
       init_chunk_EAQ6WQNO();
@@ -29540,9 +29553,9 @@ ${err}`);
       init_chunk_CI7ZMY4G();
       init_chunk_F544AH56();
       init_chunk_VOKBRZCH();
-      init_chunk_ZGNXOXFS();
+      init_chunk_XGL2LWL4();
       init_chunk_NU3NDRI3();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_QCFVFTGB();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
@@ -32755,7 +32768,7 @@ ${err}`);
     "../priv/static/pagination.mjs"() {
       "use strict";
       init_chunk_Z3EQ3GCO();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy19 = createAnatomy("pagination").parts(
@@ -35631,9 +35644,9 @@ ${err}`);
       init_chunk_CI7ZMY4G();
       init_chunk_F544AH56();
       init_chunk_VOKBRZCH();
-      init_chunk_ZGNXOXFS();
+      init_chunk_XGL2LWL4();
       init_chunk_NU3NDRI3();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_QCFVFTGB();
       init_chunk_NUQOKDPA();
       init_chunk_F2ZOUSGC();
@@ -44426,7 +44439,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_PWP4CBA7();
       init_chunk_NU3NDRI3();
-      init_chunk_HZLPIQBD();
+      init_chunk_4JICR5HJ();
       init_chunk_EAQ6WQNO();
       init_chunk_6L36XW7I();
       anatomy33 = createAnatomy("tree-view").parts(

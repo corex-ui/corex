@@ -51,7 +51,7 @@ In `config/config.exs`, keys under `config :corex_design` control the **build-ti
 | `themes` | `nil` (all presets) | Emit only listed theme CSS (`neo`, `uno`, `duo`, `leo`) |
 | `default_theme` | `:uno` if omitted | Theme id used when CSS loads with no `data-theme`. New apps from `mix corex.new` set `default_theme: :neo` (and `themes: [:neo]`). Pass `--theme` to scaffold every preset. |
 | `default_mode` | `:light` | Build default mode (`:light` / `:dark`) |
-| `accessibility` | `false` | Preference CSS: `false`, `true` (text/focus/links), or `[:text, :contrast, …]` |
+| `accessibility` | `false` | Preference CSS: `false`, `true` (all six axes), or `[:text, :contrast, …]` |
 
 Run `mix corex.design.options` to print allowed values and your current resolved config.
 

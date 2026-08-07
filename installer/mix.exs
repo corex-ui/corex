@@ -28,17 +28,16 @@ defmodule Corex.New.MixProject do
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
         links: %{"GitHub" => @scm_url},
-        files: ~w(lib priv templates mix.exs README.md)
+        files: ~w(lib priv/gettext priv/static templates mix.exs README.md LICENSE)
       ],
       source_url: @scm_url,
       docs: docs(),
       homepage_url: "https://corex.gigalixirapp.com/en",
       description: """
-      Corex greenfield helper archive.
+      Mix archive for scaffolding Corex into new Phoenix apps and Tableau sites.
 
-      Provides `mix corex.new`, which runs `mix phx.new --no-install` with
-      forwarded Phoenix flags and renders Corex-owned files from templates
-      directly into the generated app. Install the `phx_new` archive first.
+      Install with `mix archive.install hex corex_new`, then run `mix corex.new`
+      or `mix corex.tableau.new`. Requires the `phx_new` archive for Phoenix apps.
       """
     ]
   end

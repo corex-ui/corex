@@ -135,15 +135,20 @@ defmodule E2eWeb.ToastModel do
   end
 
   defp poll_toast_root_count(session, expected, deadline) do
-    if toast_root_count(session) == expected do
-      :ok
-    else
-      if System.monotonic_time(:millisecond) >= deadline do
+    count = toast_root_count(session)
+
+    cond do
+      count == expected ->
         :ok
-      else
+
+      System.monotonic_time(:millisecond) >= deadline ->
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected #layout-toast toast root count #{expected}, got #{count} before timeout"
+
+      true ->
         Process.sleep(100)
         poll_toast_root_count(session, expected, deadline)
-      end
     end
   end
 
@@ -161,15 +166,20 @@ defmodule E2eWeb.ToastModel do
   end
 
   defp poll_toast_count_below(session, target, deadline) do
-    if toast_count(session) < target do
-      :ok
-    else
-      if System.monotonic_time(:millisecond) >= deadline do
+    count = toast_count(session)
+
+    cond do
+      count < target ->
         :ok
-      else
+
+      System.monotonic_time(:millisecond) >= deadline ->
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected #layout-toast toast count below #{target}, got #{count} before timeout"
+
+      true ->
         Process.sleep(100)
         poll_toast_count_below(session, target, deadline)
-      end
     end
   end
 end

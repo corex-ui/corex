@@ -155,13 +155,12 @@
     "type": "git",
     "url": "git://github.com/corex-ui/corex.git"
   },
-  "files": [
+    "files": [
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "package.json",
-    "priv/static/**",
-    "assets/**"
+    "priv/static/**"
   ],
   "scripts": {
     "lint": "eslint assets",

@@ -12,18 +12,35 @@ const REDIRECT_MODES: readonly RedirectMode[] = ["href", "patch", "navigate"];
 
 const SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
 
-export function isAllowedRedirectDestination(destination: string): boolean {
-  const trimmed = destination.trim();
-  if (!trimmed) return false;
-  if (trimmed.startsWith("//")) return false;
+/** Strip leading C0 controls and space (codepoints ≤ 0x20), matching WHATWG URL prep. */
+function stripLeadingC0AndSpace(destination: string): string {
+  let i = 0;
+  while (i < destination.length && destination.charCodeAt(i) <= 0x20) {
+    i += 1;
+  }
+  return destination.slice(i);
+}
+
+/**
+ * Returns a sanitized destination when allowed, otherwise `null`.
+ * Always prefer this over the raw attribute when navigating.
+ */
+export function sanitizeRedirectDestination(destination: string): string | null {
+  const trimmed = stripLeadingC0AndSpace(destination);
+  if (!trimmed) return null;
+  if (trimmed.startsWith("//")) return null;
 
   const schemeMatch = SCHEME_PREFIX.exec(trimmed);
   if (schemeMatch) {
     const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
-    return scheme === "http" || scheme === "https";
+    if (scheme !== "http" && scheme !== "https") return null;
   }
 
-  return true;
+  return trimmed;
+}
+
+export function isAllowedRedirectDestination(destination: string): boolean {
+  return sanitizeRedirectDestination(destination) !== null;
 }
 
 export interface RedirectInput {
@@ -54,16 +71,18 @@ export function readDomItemRedirect(
   fallback?: string
 ): RedirectInput | null {
   if (!itemEl) {
-    if (!fallback || !isAllowedRedirectDestination(fallback)) return null;
-    return { destination: fallback };
+    const destination = fallback ? sanitizeRedirectDestination(fallback) : null;
+    if (!destination) return null;
+    return { destination };
   }
 
   const dataRedirect = itemEl.getAttribute("data-redirect");
   if (dataRedirect === "false") return null;
 
-  const destination =
+  const raw =
     itemEl.getAttribute("data-to") || fallback || itemEl.getAttribute("data-value") || "";
-  if (!destination || !isAllowedRedirectDestination(destination)) return null;
+  const destination = sanitizeRedirectDestination(raw);
+  if (!destination) return null;
 
   const mode = REDIRECT_MODES.includes(dataRedirect as RedirectMode)
     ? (dataRedirect as RedirectMode)
@@ -88,9 +107,10 @@ export function readDomItemRedirect(
  * Returns true when a redirect was attempted, false otherwise.
  */
 export function performRedirect(input: RedirectInput | null, ctx: RedirectContext): boolean {
-  if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
-    return false;
-  const { destination, newTab, mode } = input;
+  if (!input || !input.destination) return false;
+  const destination = sanitizeRedirectDestination(input.destination);
+  if (!destination) return false;
+  const { newTab, mode } = input;
 
   if (newTab) {
     window.open(destination, "_blank", "noopener,noreferrer");
