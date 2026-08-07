@@ -67,6 +67,7 @@ defmodule E2eWeb.ToastTest do
         |> ComponentBehaviorSpec.visit_ready(Toast, :toast, :api)
         |> Toast.wait_toast_host_ready()
         |> Toast.click_server_info()
+        |> Toast.pause_toast_timers()
 
       Toast.assert_toast_visible(session)
       before = Toast.toast_count(session)
@@ -96,11 +97,17 @@ defmodule E2eWeb.ToastTest do
 
       session =
         session
+        |> Toast.pause_toast_timers()
         |> Toast.dismiss_first_toast()
         |> Toast.wait(500)
 
       Toast.wait_toast_root_count(session, before - 1)
       assert Toast.toast_root_count(session) == before - 1
+
+      session =
+        session
+        |> Toast.pause_toast_timers()
+
       assert Toast.has_close_trigger?(session)
 
       session

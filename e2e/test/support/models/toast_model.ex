@@ -55,8 +55,55 @@ defmodule E2eWeb.ToastModel do
     session
   end
 
+  # Zag pauses auto-dismiss and expands the overlap stack on group mouseenter.
+  # Wallaby flows often exceed the demo duration (5s) without this.
+  def pause_toast_timers(session) do
+    _ =
+      Wallaby.Browser.execute_script(
+        session,
+        """
+        var group = document.querySelector(
+          '#layout-toast [data-scope="toast"][data-part="group"]'
+        );
+        if (!group) return false;
+        group.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+        group.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+        return true;
+        """
+      )
+
+    session
+  end
+
   def dismiss_first_toast(session) do
-    click(session, css(~S|#layout-toast [data-scope="toast"] [data-part="close-trigger"]|, at: 0))
+    # Skip closing roots still in removeDelay; click via DOM so overlap /
+    # height reflow does not depend on Wallaby visibility.
+    wait_for_has(
+      session,
+      css(
+        ~S|#layout-toast [data-scope="toast"][data-part="root"][data-state="open"] [data-part="close-trigger"]|,
+        minimum: 1,
+        visible: :any
+      ),
+      timeout: 8_000
+    )
+
+    _ =
+      Wallaby.Browser.execute_script(
+        session,
+        """
+        var host = document.getElementById('layout-toast');
+        if (!host) return false;
+        var root = host.querySelector(
+          '[data-scope="toast"][data-part="root"][data-state="open"]'
+        );
+        var btn = root && root.querySelector('[data-part="close-trigger"]');
+        if (!btn) return false;
+        btn.click();
+        return true;
+        """
+      )
+
     session
   end
 
