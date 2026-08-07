@@ -79,8 +79,7 @@ export function readDomItemRedirect(
   const dataRedirect = itemEl.getAttribute("data-redirect");
   if (dataRedirect === "false") return null;
 
-  const raw =
-    itemEl.getAttribute("data-to") || fallback || itemEl.getAttribute("data-value") || "";
+  const raw = itemEl.getAttribute("data-to") || fallback || itemEl.getAttribute("data-value") || "";
   const destination = sanitizeRedirectDestination(raw);
   if (!destination) return null;
 
