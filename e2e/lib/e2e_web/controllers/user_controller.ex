@@ -18,8 +18,6 @@ defmodule E2eWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    user_params = normalize_avatar_params(user_params)
-
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         conn
@@ -28,7 +26,7 @@ defmodule E2eWeb.UserController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new,
-          form: to_form(changeset, as: :user, id: "e2e-user-form", action: :validate)
+          form: to_form(changeset, as: :user, id: "e2e-user-form", action: :insert)
         )
     end
   end
@@ -53,7 +51,6 @@ defmodule E2eWeb.UserController do
   def update(conn, %{"id" => id, "user" => user_params} = params) do
     user = Accounts.get_user!(id)
     return_to = if params["return_to"] == "show", do: "show", else: "index"
-    user_params = normalize_avatar_params(user_params)
 
     case Accounts.update_user(user, user_params) do
       {:ok, user} ->
@@ -64,13 +61,11 @@ defmodule E2eWeb.UserController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit,
           user: user,
-          form: to_form(changeset, as: :user, id: "e2e-user-form", action: :validate),
+          form: to_form(changeset, as: :user, id: "e2e-user-form", action: :update),
           return_to: return_to
         )
     end
   end
-
-  defp normalize_avatar_params(params), do: E2e.Form.AvatarParams.normalize(params)
 
   def delete(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)

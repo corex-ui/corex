@@ -229,8 +229,8 @@ defmodule E2eWeb.Home.Page do
         class="relative isolate flex min-h-dvh w-full flex-col justify-center overflow-x-hidden border-t border-border py-size-xl"
         aria-labelledby="home-installer-heading"
         phx-hook="HomeInstaller"
-        data-archives-phoenix="mix archive.install hex phx_new\nmix archive.install hex corex_new"
-        data-archives-tableau="mix archive.install hex tableau_new\nmix archive.install hex corex_new"
+        data-archives-phoenix={"mix archive.install hex phx_new\nmix archive.install hex corex_new"}
+        data-archives-tableau={"mix archive.install hex tableau_new\nmix archive.install hex corex_new"}
       >
         <div class="relative z-1 mx-auto flex w-full max-w-6xl flex-col gap-size-xl px-space">
           <div class="flex flex-col gap-space-lg text-center lg:text-start">
@@ -358,7 +358,7 @@ defmodule E2eWeb.Home.Page do
                 tip={
                   ~t"One-time Mix archive install so the generators are available on your machine."
                 }
-                code="mix archive.install hex phx_new\nmix archive.install hex corex_new"
+                code={"mix archive.install hex phx_new\nmix archive.install hex corex_new"}
                 clipboard_id="home-installer-archives-clipboard"
               />
 

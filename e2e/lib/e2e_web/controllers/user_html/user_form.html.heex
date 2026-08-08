@@ -187,18 +187,6 @@
     </:error>
   </.color_picker>
 
-  <.angle_slider
-    field={f[:heading_angle]}
-    marker_values={[0, 90, 180, 270]}
-    class="angle-slider"
-  >
-    <:label>Heading angle</:label>
-    <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
-  </.angle_slider>
-
   <.editable
     field={f[:title]}
     placeholder="Enter title"
@@ -221,17 +209,6 @@
       {msg}
     </:error>
   </.editable>
-
-  <.file_upload field={f[:avatar]} class="file-upload max-w-none">
-    <:label>Avatar</:label>
-    <:close>
-      <.heroicon name="hero-x-mark" />
-    </:close>
-    <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
-  </.file_upload>
 
   <footer class="flex w-full justify-between gap-space-sm">
     <.navigate :if={@return_to} to={@return_to} type="navigate" class="button ui-size-sm">

@@ -27,7 +27,7 @@ defmodule E2eWeb.App.Header do
     <header id={@id} class={Shell.header()}>
       <div class={Shell.header_content()}>
         <div class="flex min-w-0 items-center gap-space-xl">
-          <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden" modal>
+          <.dialog id="site-nav-dialog" class="dialog dialog--side lg:hidden" modal>
             <:trigger
               class="button ui-ghost ui-size-sm ui-trigger--circle"
               aria_label={~t"Open menu"}
@@ -58,7 +58,7 @@ defmodule E2eWeb.App.Header do
                 </.navigate>
               </div>
 
-              <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto px-space-xl py-space">
+              <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto scrollbar scrollbar--sm px-space-xl py-space">
                 <.header_main_nav path={@path} orientation={:vertical} placement={:drawer} />
 
                 <.aside_nav_tree_views

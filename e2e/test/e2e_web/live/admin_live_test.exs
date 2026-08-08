@@ -519,8 +519,8 @@ defmodule E2eWeb.AdminLiveTest do
       refute html =~
                ~r/<input\b(?=[^>]*\bdata-part="array-input")(?=[^>]*\bname="admin\[pin\]\[\]")/
 
-      refute html =~
-               ~r/<input\b(?=[^>]*\bdata-part="hidden-input")(?=[^>]*\bname="admin\[heading_angle\]")/
+      refute html =~ "Heading angle"
+      refute html =~ ~S|data-submit-name="admin[heading_angle]"|
     end
 
     test "validate on name only does not show errors on untouched pin or editable", %{

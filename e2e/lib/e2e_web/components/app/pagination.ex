@@ -14,7 +14,7 @@ defmodule E2eWeb.App.Pagination do
     ~H"""
     <nav
       :if={@prev || @next}
-      class="sticky top-size-lg z-10 w-full flex justify-end items-center px-space-lg py-space-lg gap-0 border-b border-border bg-surface/95 backdrop-blur-sm"
+      class="sticky top-size-lg z-10 w-full flex justify-end items-center px-space-lg py-space-lg gap-0"
       aria-label="Adjacent doc pages"
     >
       <.navigate
