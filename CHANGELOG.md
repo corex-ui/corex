@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 - 2026-08-08
+
+### Bug fixes
+
+- [installer] Ship Tableau scaffold CSS/JS (`blog.css`, `prose.css`, `locale.js`, `heroicons.js`) under `priv/tableau` so `mix corex.tableau.new` works from the Hex mix archive (archives only keep `ebin` + `priv`, not `templates/`)
+- [packaging] Keep Dialyzer PLTs out of Hex `priv` ([#87](https://github.com/corex-ui/corex/pull/87))
+
 ## 0.2.0 - 2026-08-07
 
 Design and MCP ship as separate Hex packages. Theming is config-driven through an Elixir CSS pipeline.
