@@ -1,6 +1,6 @@
 # Manual installation
 
-This guide is the Phoenix **wiring home** for Corex in an existing app: dependency, ESM Esbuild, hooks, root layout module script, `use Corex`, plus optional **Design**, **Theme**, **Mode**, **Accessibility**, and **Locale** plumbing (plugs, config, bridge scripts, `lang`/`dir`, and related hooks).
+This guide is the Phoenix **wiring home** for Corex in an existing app: dependency, ESM Esbuild, hooks, root layout module script, use Corex, plus optional **Design**, **Theme**, **Mode**, **Accessibility**, and **Locale** plumbing (plugs, config, bridge scripts, `lang`/`dir`, and related hooks).
 
 Picker UI (theme select, mode toggle, language switcher, accessibility panel) lives in the dedicated guides after you finish the wiring here:
 
@@ -177,7 +177,7 @@ If your root layout already uses `type="text/javascript"` (the `phx.new` default
 
 ## 5. Import Corex
 
-In your web module (typically `lib/my_app_web.ex`), add `use Corex` inside the `quote` block of `defp html_helpers`, alongside the other imports that apply to HEEx templates:
+In your web module (typically `lib/my_app_web.ex`), add use Corex inside the `quote` block of `defp html_helpers`, alongside the other imports that apply to HEEx templates:
 
 ```elixir
 defp html_helpers do

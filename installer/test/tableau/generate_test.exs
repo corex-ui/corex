@@ -1,7 +1,21 @@
 defmodule Corex.New.Tableau.GenerateTest do
   use ExUnit.Case, async: false
 
+  alias Corex.New.Shared
   alias Corex.New.Tableau.Generate
+
+  test "bundled_tableau_asset! points at installer priv/tableau" do
+    blog = Shared.bundled_tableau_asset!("assets/css/blog.css")
+    prose = Shared.bundled_tableau_asset!("assets/css/prose.css")
+    locale = Shared.bundled_tableau_asset!("assets/js/locale.js")
+    heroicons = Shared.bundled_tableau_asset!("assets/vendor/heroicons.js")
+
+    assert String.ends_with?(blog, "priv/tableau/assets/css/blog.css")
+    assert File.read!(blog) =~ ".blog__nav"
+    assert File.read!(prose) =~ "prose"
+    assert File.read!(locale) =~ "locale"
+    assert File.exists?(heroicons)
+  end
 
   defp base_opts(overrides \\ []) do
     Keyword.merge(
@@ -67,8 +81,10 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.exists?("assets/css/site.css")
       assert File.exists?("assets/css/blog.css")
       assert File.exists?("assets/css/prose.css")
+      assert File.read!("assets/css/blog.css") =~ ".blog__nav"
       assert File.exists?("assets/js/site.js")
       assert File.exists?("assets/vendor/heroicons.js")
+      assert File.read!("assets/vendor/heroicons.js") =~ "heroicons"
       assert File.exists?("config/config.exs")
       assert File.exists?("config/dev.exs")
       assert File.exists?("config/prod.exs")

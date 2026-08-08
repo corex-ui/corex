@@ -101,7 +101,7 @@ That import covers DM Sans and JetBrains Mono (uno), Work Sans and Playfair Disp
 
 If `app.css` still loads **daisyUI** from stock `phx.new`, remove it when using Corex Design—the two token systems conflict.
 
-For Esbuild, hooks, and `use Corex`, follow [Manual installation](manual_installation.html).
+For Esbuild, hooks, and use Corex, follow [Manual installation](manual_installation.html).
 
 ## Modifier classes
 

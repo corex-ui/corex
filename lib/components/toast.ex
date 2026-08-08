@@ -515,17 +515,17 @@ defmodule Corex.Toast do
 
   @spec create(
           String.t(),
-          Corex.Value.coercible(),
-          Corex.Value.coercible(),
-          Corex.Value.coercible(),
+          term(),
+          term(),
+          term(),
           keyword()
         ) :: Phoenix.LiveView.JS.t()
   @spec create(
           Phoenix.LiveView.Socket.t(),
           String.t(),
-          Corex.Value.coercible(),
-          Corex.Value.coercible(),
-          Corex.Value.coercible(),
+          term(),
+          term(),
+          term(),
           keyword()
         ) :: Phoenix.LiveView.Socket.t()
   def create(toast_group_id, title, description, type, opts)

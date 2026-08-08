@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 - 2026-08-08
+
+Patch release aligned with Corex 0.2.1. No Design API changes.
+
+See the monorepo
+[CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+
 ## 0.2.0 - 2026-08-07
 
 Initial Hex release of `corex_design` as a package separate from `corex`.

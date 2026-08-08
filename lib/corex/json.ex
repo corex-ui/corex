@@ -1,10 +1,5 @@
 defmodule Corex.Json do
-  @moduledoc """
-  OTP `:json` wrapper that encodes `nil` as `null` and decodes `null` back to `nil`.
-
-  The single encoder for the `corex` package. `corex_mcp` carries a byte-compatible
-  copy because it does not depend on `corex`.
-  """
+  @moduledoc false
 
   @spec encoder() :: module()
   def encoder, do: __MODULE__

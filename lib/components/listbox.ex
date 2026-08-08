@@ -581,8 +581,8 @@ defmodule Corex.Listbox do
   ```
   """)
 
-  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
-  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_value(String.t(), term()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   def set_value(listbox_id, value) when is_binary(listbox_id) do
     JS.dispatch("corex:listbox:set-value",

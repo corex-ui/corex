@@ -1,12 +1,5 @@
 defmodule Corex.Hook do
-  @moduledoc """
-  Attributes shared by every component root that mounts a JavaScript hook.
-
-  A hook root carries `data-loading` so CSS can style the pre-hydration frame,
-  plus a `phx-mounted` that tells LiveView to stop patching that attribute once
-  the hook removes it. The two must always agree on the attribute name, so they
-  are emitted together rather than repeated per component.
-  """
+  @moduledoc false
 
   alias Phoenix.LiveView.JS
 

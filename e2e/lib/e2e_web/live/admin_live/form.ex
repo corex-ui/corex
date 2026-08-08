@@ -262,18 +262,6 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.color_picker>
 
-        <.angle_slider
-          field={@form[:heading_angle]}
-          marker_values={[0, 90, 180, 270]}
-          class="angle-slider"
-        >
-          <:label>Heading angle</:label>
-          <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.angle_slider>
-
         <.editable
           field={@form[:title]}
           placeholder="Enter title"

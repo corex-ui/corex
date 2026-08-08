@@ -1,26 +1,5 @@
 defmodule Corex.Item do
-  @moduledoc """
-  The shared contract behind `Corex.Content.Item`, `Corex.List.Item`, and
-  `Corex.Tree.Item`.
-
-  The three structs stay separate because their required fields differ: content
-  items carry `:content`, tree items carry `:children`, list items carry neither.
-  Everything else is shared, and this module is where the shared parts live: the
-  field set, the generated `:value`, and the `:items` assign validator.
-
-  ## Shared fields
-
-  All three carry `:value`, `:label`, `:disabled`, and `:meta`. `Corex.List.Item`
-  and `Corex.Tree.Item` add the navigation set: `:to`, `:redirect`, `:new_tab`,
-  and `:group`.
-
-  ## Validation
-
-  `:items` is authored in a template, not received from params, so a wrong shape
-  is a developer mistake and `assert_items!/3` raises rather than coercing. This
-  is the opposite of `Corex.Value`, which coerces because its input comes from
-  `handle_event`.
-  """
+  @moduledoc false
 
   @shared_fields [:value, :label, :disabled, :meta]
   @navigation_fields [:to, :redirect, :new_tab, :group]

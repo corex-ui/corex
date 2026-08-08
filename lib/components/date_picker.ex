@@ -784,8 +784,8 @@ defmodule Corex.DatePicker do
   ```
   """)
 
-  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
-  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_value(String.t(), term()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   def set_value(date_picker_id, value) when is_binary(date_picker_id) do
     case normalize_date_value(value) do

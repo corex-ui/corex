@@ -1,7 +1,7 @@
 defmodule CorexMcp.MixProject do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.2.1"
   @scm_url "https://github.com/corex-ui/corex"
 
   def project do
@@ -95,7 +95,7 @@ defmodule CorexMcp.MixProject do
         "GitHub" => @scm_url,
         "Website" => "https://corex.gigalixirapp.com/en"
       },
-      files: ~w(lib mix.exs README.md LICENSE .formatter.exs guides)
+      files: ~w(lib mix.exs README.md CHANGELOG.md LICENSE .formatter.exs guides)
     ]
   end
 
@@ -104,7 +104,7 @@ defmodule CorexMcp.MixProject do
       main: "mcp",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      extras: ["README.md", "guides/MCP.md"],
+      extras: ["README.md", "CHANGELOG.md", "guides/MCP.md"],
       filter_modules: fn
         Corex.MCP, _ ->
           true

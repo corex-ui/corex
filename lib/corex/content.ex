@@ -17,8 +17,8 @@ defmodule Corex.Content do
   mistake to surface rather than a bad row to skip.
 
   Each item requires `:value`, `:label` and `:content`, with `:disabled` and
-  `:meta` optional. See `Corex.Item` for the fields shared with `Corex.List.Item`
-  and `Corex.Tree.Item`.
+  `:meta` optional. Shared fields match list and tree items (`:value`, `:label`,
+  `:disabled`, `:meta`).
   '''
 
   defmodule Item do
@@ -160,8 +160,7 @@ defmodule Corex.Content do
   @doc """
   Asserts that a component's `:items` assign holds `Item` structs.
 
-  See `Corex.Item.assert_items!/3` for why this raises where `Corex.Value`
-  coerces.
+  Raises on a wrong shape (template authoring mistake) rather than coercing.
   """
   @spec assert_content_items!(map(), String.t(), keyword()) :: map()
   def assert_content_items!(assigns, component, opts \\ []) when is_binary(component) do

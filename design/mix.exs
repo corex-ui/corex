@@ -1,7 +1,7 @@
 defmodule CorexDesign.MixProject do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.2.1"
   @scm_url "https://github.com/corex-ui/corex"
 
   def project do
@@ -110,7 +110,7 @@ defmodule CorexDesign.MixProject do
       main: "readme",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      extras: ["README.md", "guides/modifiers.md"],
+      extras: ["README.md", "CHANGELOG.md", "guides/modifiers.md"],
       filter_modules: &docs_filter_modules/2,
       groups_for_modules: [
         Design: [

@@ -1,20 +1,5 @@
 defmodule Corex.Component do
-  @moduledoc """
-  Preludes for component and Connect modules.
-
-  Every component reaches for the same handful of helper sets, and spelling each
-  one out as an `import ..., only: [...]` list produced dozens of near-identical
-  shapes that drifted as functions were added. `use Corex.Component, :tier` names
-  the set instead:
-
-  - `:connect` - the HTML attribute builders a Connect module emits
-  - `:list` - normalization for the item collections list components render
-  - `:api` - coercions for values arriving from `handle_event` params, plus
-    `respond_to_fields/1` for the imperative API
-  - `:form` - the `form_control_attrs/1` macro and form field plumbing
-
-  Tiers compose, so `use Corex.Component, [:connect, :list]` is valid.
-  """
+  @moduledoc false
 
   @connect [
     presence_attr: 1,

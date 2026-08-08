@@ -153,7 +153,7 @@ Multi-select values (select, combobox, listbox, tags, pin, date-picker ranges, a
 | color_picker `label="…"` | `<:label>…</:label>` |
 | `file_upload_live` `field={:name}` | `upload_name={:name}` |
 | combobox / color_picker `positioning` as `:map` | `Corex.Positioning` |
-| color_picker `Corex.Json.encode!(presets)` | `Corex.Dataset.encode_json(presets)` |
+| color_picker JSON presets helper | `Corex.Dataset.encode_json(presets)` |
 | `mix corex.code` | `mix corex.design.code` |
 
 Zag-faithful attrs (`checked` / `pressed` / `on_checked_change`, and data_table `selected`) stay as-is. Prefer `value` / `on_value_change` for selection components.

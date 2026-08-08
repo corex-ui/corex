@@ -374,8 +374,8 @@ defmodule Corex.PinInput do
   ```
   """)
 
-  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
-  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_value(String.t(), term()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   def set_value(pin_input_id, value) when is_binary(pin_input_id) do
     JS.dispatch("corex:pin-input:set-value",

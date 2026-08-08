@@ -931,8 +931,8 @@ defmodule Corex.Menu do
   ```
   """)
 
-  @spec set_open(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
-  @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_open(String.t(), term()) :: Phoenix.LiveView.JS.t()
+  @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   defdelegate set_open(menu_id, open), to: Api
 
