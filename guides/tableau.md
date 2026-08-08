@@ -133,7 +133,7 @@ defmodule MyApp.RootLayout do
 end
 ```
 
-For theme / mode / locale / accessibility attributes and before-paint scripts, use `mix corex.tableau.new` with the matching flags, or follow the Tableau picker guides and [Accessibility](accessibility.html). Prefer `Corex.Json.encode!/1` (or OTP `:json`) when embedding JSON in head scripts—do not add Jason for Corex.
+For theme / mode / locale / accessibility attributes and before-paint scripts, use `mix corex.tableau.new` with the matching flags, or follow the Tableau picker guides and [Accessibility](accessibility.html). Prefer `Corex.Dataset.encode_json/1` (or OTP `:json`) when embedding JSON in head scripts—do not add Jason for Corex.
 
 ## Try a component
 

@@ -759,7 +759,7 @@ defmodule Corex.ColorPicker do
   """)
 
   @spec set_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
-  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
     JS.dispatch("corex:color-picker:set-value",

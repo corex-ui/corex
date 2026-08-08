@@ -367,8 +367,8 @@ defmodule Corex.ToggleGroup do
   ```
   """)
 
-  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
-  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_value(String.t(), term()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
     JS.dispatch("corex:toggle-group:set-value",

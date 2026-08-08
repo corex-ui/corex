@@ -2,7 +2,7 @@ defmodule Corex.List do
   @moduledoc ~S'''
   Flat selectable items for [Combobox](Corex.Combobox.html), [Listbox](Corex.Listbox.html), and [Select](Corex.Select.html).
 
-  Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`. Each row is a `Corex.List.Item` with required `:label` and optional `:value` (defaults to `item-1`, `item-2`, … when built through `new/1`, or `list-<integer>` from `Corex.Item.generate_value/1` when built only through `Item.new/1`), plus `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`, and `:meta`.
+  Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`. Each row is a `Corex.List.Item` with required `:label` and optional `:value` (defaults to `item-1`, `item-2`, … when built through `new/1`, or a generated `list-<integer>` id when built only through `Item.new/1`), plus `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`, and `:meta`.
 
   ## What the `items` attr accepts
 

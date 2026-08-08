@@ -17,8 +17,8 @@ defmodule Corex.Tree do
 
   Each item requires `:label`. `:value` is generated when absent, `:children`
   nests further items, and `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`
-  and `:meta` are optional. See `Corex.Item` for the fields shared with
-  `Corex.List.Item`.
+  and `:meta` are optional. Shared fields match content and list items
+  (`:value`, `:label`, `:disabled`, `:meta`), plus the navigation set above.
   '''
 
   defmodule Item do

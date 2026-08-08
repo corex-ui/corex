@@ -1,13 +1,5 @@
 defmodule Corex.Value do
-  @moduledoc """
-  Coercions for the values that reach a component from outside the library.
-
-  Imperative API calls carry values that often originate in `handle_event`
-  params, so a bad value is bad user input as often as it is a developer
-  mistake. Every function here coerces and warns rather than raising: dropping
-  the value keeps the LiveView alive, where raising would take the whole process
-  down mid-render.
-  """
+  @moduledoc false
 
   @typedoc """
   A value an imperative API accepts without narrowing it first.

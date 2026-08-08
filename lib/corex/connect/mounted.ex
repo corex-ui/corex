@@ -1,18 +1,5 @@
 defmodule Corex.Connect.Mounted do
-  @moduledoc """
-  Generates `mounted_<part>/1` for each `<part>/1` and `ignore_<part>/1` pair in a
-  Connect module.
-
-  Without it a template names its anatomy struct twice per element, once for
-  `phx-mounted={Connect.ignore_item(%Item{...})}` and once for
-  `{Connect.item(%Item{...})}`. The struct is then built twice per render and the
-  two copies drift whenever only one is edited.
-
-      <div {Connect.mounted_item(%Item{id: @id, value: @value})}>
-
-  Pairs are discovered from the module's own definitions at `@before_compile`,
-  so `use` may sit at the top of the module with the other directives.
-  """
+  @moduledoc false
 
   defmacro __using__(_opts) do
     quote do

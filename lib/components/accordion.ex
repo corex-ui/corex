@@ -1281,8 +1281,8 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
-  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+  @spec set_value(String.t(), term()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), term()) ::
           Phoenix.LiveView.Socket.t()
   defdelegate set_value(accordion_id, value), to: Api
 

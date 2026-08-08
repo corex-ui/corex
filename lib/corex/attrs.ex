@@ -1,13 +1,5 @@
 defmodule Corex.Attrs do
-  @moduledoc """
-  Builders for the HTML attribute maps the Connect modules hand to templates.
-
-  Presence attributes follow the HTML convention where the attribute's mere
-  presence is the signal: `""` renders as a bare attribute and `nil` omits it.
-  That is deliberately different from Checkable.Helpers, which emits the
-  `"true" | "false" | "indeterminate"` enum a tri-state control needs, and from
-  `Corex.FormField.dataset_default_boolean/1`, which always emits a string.
-  """
+  @moduledoc false
 
   @spec presence_attr(boolean() | nil) :: String.t() | nil
   def presence_attr(state) when state not in [nil, false], do: ""
