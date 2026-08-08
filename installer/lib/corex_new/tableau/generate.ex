@@ -167,26 +167,14 @@ defmodule Corex.New.Tableau.Generate do
       Templates.site_css(assigns)
     )
 
-    blog_css_src =
-      Path.join([
-        Path.expand("../../../templates/corex_tableau/assets/css", __DIR__),
-        "blog.css"
-      ])
-
     write!(
       Path.join([install_dir, "assets", "css", "blog.css"]),
-      File.read!(blog_css_src)
+      File.read!(Shared.bundled_tableau_asset!("assets/css/blog.css"))
     )
-
-    prose_css_src =
-      Path.join([
-        Path.expand("../../../templates/corex_tableau/assets/css", __DIR__),
-        "prose.css"
-      ])
 
     write!(
       Path.join([install_dir, "assets", "css", "prose.css"]),
-      File.read!(prose_css_src)
+      File.read!(Shared.bundled_tableau_asset!("assets/css/prose.css"))
     )
 
     unless opts[:design] do
@@ -199,27 +187,15 @@ defmodule Corex.New.Tableau.Generate do
     )
 
     if opts[:lang] do
-      locale_js_src =
-        Path.join([
-          Path.expand("../../../templates/corex_tableau/assets/js", __DIR__),
-          "locale.js"
-        ])
-
       write!(
         Path.join([install_dir, "assets", "js", "locale.js"]),
-        File.read!(locale_js_src)
+        File.read!(Shared.bundled_tableau_asset!("assets/js/locale.js"))
       )
     end
 
-    heroicons_src =
-      Path.join([
-        Path.expand("../../../templates/corex_tableau/assets/vendor", __DIR__),
-        "heroicons.js"
-      ])
-
     write!(
       Path.join([install_dir, "assets", "vendor", "heroicons.js"]),
-      File.read!(heroicons_src)
+      File.read!(Shared.bundled_tableau_asset!("assets/vendor/heroicons.js"))
     )
   end
 

@@ -189,6 +189,29 @@ defmodule Corex.New.Shared do
   end
 
   @doc """
+  Path to a static Tableau scaffold asset under `priv/tableau/` (archive-safe).
+  """
+  def bundled_tableau_asset!(rel) when is_binary(rel) do
+    candidates = [
+      archive_priv_file(Path.join("tableau", rel)),
+      # installer/lib/corex_new → installer/priv/tableau/<rel>
+      Path.expand(Path.join(["../../priv/tableau", rel]), __DIR__)
+    ]
+
+    case Enum.find(candidates, &(is_binary(&1) and File.exists?(&1))) do
+      nil ->
+        Mix.raise("""
+        Corex Tableau scaffold asset is missing: #{rel}
+
+        Expected installer/priv/tableau/#{rel}.
+        """)
+
+      path ->
+        path
+    end
+  end
+
+  @doc """
   Copies the static neo/light Design export into `assets/corex/` for `--no-design` apps.
   """
   def copy_corex_export!(install_dir) do
