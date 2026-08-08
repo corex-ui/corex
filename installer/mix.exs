@@ -28,7 +28,8 @@ defmodule Corex.New.MixProject do
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
         links: %{"GitHub" => @scm_url},
-        files: ~w(lib priv/gettext priv/static priv/tableau templates mix.exs README.md CHANGELOG.md LICENSE)
+        files:
+          ~w(lib priv/gettext priv/static priv/tableau templates mix.exs README.md CHANGELOG.md LICENSE)
       ],
       source_url: @scm_url,
       docs: docs(),
