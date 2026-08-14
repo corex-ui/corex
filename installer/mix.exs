@@ -85,6 +85,7 @@ defmodule Corex.New.MixProject do
     [
       main: "readme",
       extras: ["README.md", "CHANGELOG.md"],
+      assets: %{"../docs/images" => "images"},
       source_ref: "v#{@version}",
       source_url_pattern: "#{@scm_url}/blob/v#{@version}/installer/%{path}#L%{line}"
     ]

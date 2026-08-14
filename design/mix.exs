@@ -99,7 +99,8 @@ defmodule CorexDesign.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => @scm_url,
-        "Website" => "https://corex.gigalixirapp.com/en"
+        "Website" => "https://corex.gigalixirapp.com/en",
+        "Sponsor" => "https://github.com/sponsors/corex-ui"
       },
       files: ~w(lib priv/css mix.exs README.md CHANGELOG.md LICENSE .formatter.exs guides)
     ]
@@ -110,6 +111,7 @@ defmodule CorexDesign.MixProject do
       main: "readme",
       source_url: @scm_url,
       source_ref: "v#{@version}",
+      assets: %{"../docs/images" => "images"},
       extras: ["README.md", "CHANGELOG.md", "guides/modifiers.md"],
       filter_modules: &docs_filter_modules/2,
       groups_for_modules: [

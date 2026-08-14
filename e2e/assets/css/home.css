@@ -82,6 +82,7 @@
 }
 
 #home-highlights > div,
+#home-showcase > div,
 #home-installer > div {
   gap: var(--spacing-size-xl);
 }

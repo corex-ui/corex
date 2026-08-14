@@ -27,7 +27,7 @@ defmodule E2eWeb.App.Header do
     <header id={@id} class={Shell.header()}>
       <div class={Shell.header_content()}>
         <div class="flex min-w-0 items-center gap-space-xl">
-          <.dialog id="site-nav-dialog" class="dialog dialog--side lg:hidden" modal>
+          <.dialog id="site-nav-dialog" class="dialog dialog--side lg:hidden" modal prevent_scroll>
             <:trigger
               class="button ui-ghost ui-size-sm ui-trigger--circle"
               aria_label={~t"Open menu"}

@@ -93,7 +93,8 @@ defmodule CorexMcp.MixProject do
       licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @scm_url,
-        "Website" => "https://corex.gigalixirapp.com/en"
+        "Website" => "https://corex.gigalixirapp.com/en",
+        "Sponsor" => "https://github.com/sponsors/corex-ui"
       },
       files: ~w(lib mix.exs README.md CHANGELOG.md LICENSE .formatter.exs guides)
     ]
@@ -104,6 +105,7 @@ defmodule CorexMcp.MixProject do
       main: "mcp",
       source_url: @scm_url,
       source_ref: "v#{@version}",
+      assets: %{"../docs/images" => "images"},
       extras: ["README.md", "CHANGELOG.md", "guides/MCP.md"],
       filter_modules: fn
         Corex.MCP, _ ->
