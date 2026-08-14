@@ -240,6 +240,7 @@ defmodule Corex.MixProject do
     [
       main: "installation",
       source_ref: "v#{@version}",
+      assets: %{"docs/images" => "images"},
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",

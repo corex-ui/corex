@@ -121,8 +121,10 @@ Design styles apply only when the host carries the component class:
 
 Omit the component class for a fully custom instance.
 
-## Next steps
+## Become a sponsor
 
-- [Design](https://hexdocs.pm/corex/design.html) / [Modifiers](https://hexdocs.pm/corex/modifiers.html) / [Theming](https://hexdocs.pm/corex/theming.html)
-- [Updating Corex](https://hexdocs.pm/corex/update.html) migrate from 0.1.x
-- [corex](https://hexdocs.pm/corex) / [corex_mcp](https://hexdocs.pm/corex_mcp) / [corex_new](https://hex.pm/packages/corex_new)
+Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+
+<p>
+<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+</p>
