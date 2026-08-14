@@ -38,62 +38,163 @@ defmodule E2eWeb.App.Footer do
             </p>
           </div>
 
-          <div class="flex flex-col gap-space-sm">
-            <p class="m-0 text-sm font-semibold text-ink">{~t"Docs"}</p>
-            <.navigate
-              class="link ui-nav ui-size-sm"
-              to={hexdocs_url() <> "/installation.html"}
-              external
-            >
-              {~t"Installation"}
-              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
-            <.navigate
-              class="link ui-nav ui-size-sm"
-              to={hexdocs_url() <> "/forms.html"}
-              external
-            >
-              {~t"Forms"}
-              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
-            <.navigate
-              class="link ui-nav ui-size-sm"
-              to={hexdocs_url() <> "/theming.html"}
-              external
-            >
-              {~t"Theming"}
-              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
-            <.navigate
-              class="link ui-nav ui-size-sm"
-              to={hexdocs_url() <> "/accessibility.html"}
-              external
-            >
-              {~t"Accessibility"}
-              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
+          <div class="grid grid-cols-2 gap-space-sm md:contents">
+            <div class="flex flex-col gap-space-sm">
+              <p class="m-0 text-sm font-semibold text-ink">{~t"Docs"}</p>
+              <.navigate
+                class="link ui-nav ui-size-sm"
+                to={hexdocs_url() <> "/installation.html"}
+                external
+              >
+                {~t"Installation"}
+                <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              <.navigate
+                class="link ui-nav ui-size-sm"
+                to={hexdocs_url() <> "/forms.html"}
+                external
+              >
+                {~t"Forms"}
+                <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              <.navigate
+                class="link ui-nav ui-size-sm"
+                to={hexdocs_url() <> "/theming.html"}
+                external
+              >
+                {~t"Theming"}
+                <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+              <.navigate
+                class="link ui-nav ui-size-sm"
+                to={hexdocs_url() <> "/accessibility.html"}
+                external
+              >
+                {~t"Accessibility"}
+                <.heroicon name="hero-arrow-top-right-on-square" />
+              </.navigate>
+            </div>
+
+            <div class="flex flex-col gap-space-sm">
+              <p class="m-0 text-sm font-semibold text-ink">{~t"Explore"}</p>
+              <.navigate class="link ui-nav ui-size-sm" to={~p"/accordion/anatomy"}>
+                {~t"Components"}
+              </.navigate>
+              <.navigate class="link ui-nav ui-size-sm" to={~p"/showcases"}>
+                {~t"Showcase"}
+              </.navigate>
+              <.navigate class="link ui-nav ui-size-sm" to={~p"/blog"}>
+                {~t"Blog"}
+              </.navigate>
+            </div>
           </div>
 
           <div class="flex flex-col gap-space-sm">
-            <p class="m-0 text-sm font-semibold text-ink">{~t"Explore"}</p>
-            <.navigate class="link ui-nav ui-size-sm" to={~p"/accordion/anatomy"}>
-              {~t"Components"}
-            </.navigate>
-            <.navigate class="link ui-nav ui-size-sm" to={~p"/showcases"}>
-              {~t"Showcase"}
-            </.navigate>
-            <.navigate class="link ui-nav ui-size-sm" to={~p"/blog"}>
-              {~t"Blog"}
-            </.navigate>
-          </div>
-
-          <div class="flex shrink-0 flex-wrap items-center gap-space-sm md:pt-space">
+            <p class="m-0 text-sm font-semibold text-ink">{~t"Sponsors"}</p>
             <.navigate
-              to={~p"/accordion/playground"}
-              class="button ui-accent ui-solid ui-size-sm"
+              to="https://netoum.com"
+              class="inline-flex items-center"
+              external
+              aria_label={~t"Netoum"}
             >
-              {~t"Browse components"}
-              <.heroicon name="hero-arrow-right" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="666.67 1192.15 1333.33 282.37"
+                preserveAspectRatio="xMidYMid meet"
+                class="shell-footer__sponsor-mark"
+                role="img"
+                aria-hidden="true"
+              >
+                <title>Netoum</title>
+                <defs>
+                  <linearGradient
+                    id="footer-netoum-grad-a"
+                    x1="0"
+                    y1="0"
+                    x2="1"
+                    y2="0"
+                    gradientUnits="userSpaceOnUse"
+                    gradientTransform="matrix(-122.33,-2086.6,-2086.6,122.33,5850.04,11026.9)"
+                    spreadMethod="pad"
+                  >
+                    <stop offset="0" stop-color="var(--color-brand)" stop-opacity="1"></stop>
+                    <stop offset="1" stop-color="var(--color-info)" stop-opacity="1"></stop>
+                  </linearGradient>
+                  <clipPath id="footer-netoum-clip-a" clipPathUnits="userSpaceOnUse">
+                    <path d="m 5765.77,10410.7 c -155.26,0 -281.54,126.2 -281.54,281.5 0,155.1 126.28,281.3 281.54,281.3 155.07,0 281.35,-126.2 281.35,-281.3 0,-155.3 -126.28,-281.5 -281.35,-281.5 z m 269.88,33.4 c 60.08,65.3 96.84,152.5 96.84,248.1 0,28 -3.16,55.3 -9.16,81.6 -25.29,92.9 -71.6,154.7 -117.98,195.6 -2.7,2.5 -5.59,5 -8.56,7.3 -6.26,5.2 -12.71,10 -19.17,14.8 -6.65,4.6 -13.57,9.2 -20.49,13.4 0.27,0 0.27,0.2 0.47,0.2 -49.47,30.9 -89.59,39.3 -89.59,39.3 -32.35,9.3 -66.73,14.5 -102.24,14.5 -202.23,0 -366.91,-164.4 -366.91,-366.7 0,-106.8 45.92,-203.1 119.16,-270.3 l -474.61,-274 1028.74,-607 21.94,35.1 c 7.7,12.2 14.49,25.3 20.29,39.2 l -74.38,43.6 -827.29,488.2 382.12,220.6 c 51.12,-26.8 109.15,-42.3 170.94,-42.3 74.11,0 142.95,22.1 200.78,60.1 l 454.99,-262.5 v -722.2 l -625.53,-361.1 -543.92,314.1 c 2.51,9.8 3.76,20 3.76,30.5 0,70.8 -57.18,128.1 -127.93,128.1 -70.74,0 -127.92,-57.3 -127.92,-128.1 0,-70.5 57.18,-128 127.92,-128 29.06,0 55.74,9.8 77.01,26.1 l 591.08,-341.2 710.9,410.3 v 820.7 z">
+                    </path>
+                  </clipPath>
+                  <linearGradient
+                    id="footer-netoum-grad-b"
+                    x1="0"
+                    y1="0"
+                    x2="1"
+                    y2="0"
+                    gradientUnits="userSpaceOnUse"
+                    gradientTransform="matrix(-122.33,-2086.6,-2086.6,122.33,6128.96,11010.6)"
+                    spreadMethod="pad"
+                  >
+                    <stop offset="0" stop-color="var(--color-brand)" stop-opacity="1"></stop>
+                    <stop offset="1" stop-color="var(--color-info)" stop-opacity="1"></stop>
+                  </linearGradient>
+                  <clipPath id="footer-netoum-clip-b" clipPathUnits="userSpaceOnUse">
+                    <path d="m 6176,9620.1 c 3.03,-71.2 -52.21,-131.4 -123.38,-134.4 -71.18,-3 -131.35,52.2 -134.38,123.4 -3.04,71.2 52.2,131.3 123.38,134.4 71.17,3 131.34,-52.2 134.38,-123.4 z">
+                    </path>
+                  </clipPath>
+                </defs>
+                <g transform="matrix(0.13333333,0,0,-0.13333333,0,2666.6667)">
+                  <path
+                    d="m 7998.16,10488.7 v -724.3 l -577.42,724.3 H 7295.7 V 9470.6 h 164.36 v 718.6 l 577.43,-718.6 h 123.65 v 1018.1 h -162.98"
+                    fill="var(--color-brand)"
+                  >
+                  </path>
+                  <path
+                    d="M 8870.86,9630.6 V 9904 h 561.4 v 151.3 h -561.4 v 274.9 h 584.7 v 158.5 H 8707.99 V 9470.6 h 751.95 v 160 h -589.08"
+                    fill="var(--color-brand)"
+                  >
+                  </path>
+                  <path
+                    d="m 9856.96,10488.7 v -146.8 h 334.54 v -871.3 h 164.3 v 871.3 h 333.1 v 146.8 h -831.94"
+                    fill="var(--color-brand)"
+                  >
+                  </path>
+                  <path
+                    d="m 11561.7,9620.4 c -251.7,0 -356.5,193.4 -359.3,373.8 0,222.6 126.5,386.9 362.1,386.9 248.7,-4.4 356.5,-199.2 356.5,-386.9 0,-194.9 -106.3,-373.8 -359.3,-373.8 z m 2.8,909 c -306.9,0 -523.6,-224 -523.6,-533.8 0,-267.6 167.2,-525 520.8,-525 353.4,0 520.6,251.7 520.6,526.5 0,274.9 -170.1,531 -517.8,532.3"
+                    fill="var(--color-brand)"
+                  >
+                  </path>
+                  <path
+                    d="m 13256.1,10506.6 v -595 c 0,-193.4 -119.3,-299.5 -282.1,-290.9 -151.4,5.9 -259,106.3 -259,290.9 v 595 h -161.5 v -595 c 0,-289.4 193.5,-434.8 420.5,-440.7 245.8,-8.7 443.6,141.2 443.6,440.7 v 595 h -161.5"
+                    fill="var(--color-brand)"
+                  >
+                  </path>
+                  <path
+                    d="m 14810.9,10488.7 -334.5,-477 -336.1,477 h -189 V 9470.6 h 162.9 v 781.1 l 341.8,-481.5 h 35 l 346.1,481.5 v -781.1 h 162.9 v 1018.1 h -189.1"
+                    fill="var(--color-brand)"
+                  >
+                  </path>
+                  <path
+                    d="m 5765.77,10410.7 c -155.26,0 -281.54,126.2 -281.54,281.5 0,155.1 126.28,281.3 281.54,281.3 155.07,0 281.35,-126.2 281.35,-281.3 0,-155.3 -126.28,-281.5 -281.35,-281.5 z m 269.88,33.4 c 60.08,65.3 96.84,152.5 96.84,248.1 0,28 -3.16,55.3 -9.16,81.6 -25.29,92.9 -71.6,154.7 -117.98,195.6 -2.7,2.5 -5.59,5 -8.56,7.3 -6.26,5.2 -12.71,10 -19.17,14.8 -6.65,4.6 -13.57,9.2 -20.49,13.4 0.27,0 0.27,0.2 0.47,0.2 -49.47,30.9 -89.59,39.3 -89.59,39.3 -32.35,9.3 -66.73,14.5 -102.24,14.5 -202.23,0 -366.91,-164.4 -366.91,-366.7 0,-106.8 45.92,-203.1 119.16,-270.3 l -474.61,-274 1028.74,-607 21.94,35.1 c 7.7,12.2 14.49,25.3 20.29,39.2 l -74.38,43.6 -827.29,488.2 382.12,220.6 c 51.12,-26.8 109.15,-42.3 170.94,-42.3 74.11,0 142.95,22.1 200.78,60.1 l 454.99,-262.5 v -722.2 l -625.53,-361.1 -543.92,314.1 c 2.51,9.8 3.76,20 3.76,30.5 0,70.8 -57.18,128.1 -127.93,128.1 -70.74,0 -127.92,-57.3 -127.92,-128.1 0,-70.5 57.18,-128 127.92,-128 29.06,0 55.74,9.8 77.01,26.1 l 591.08,-341.2 710.9,410.3 v 820.7 l -471.26,272"
+                    fill="url(#footer-netoum-grad-a)"
+                    clip-path="url(#footer-netoum-clip-a)"
+                  >
+                  </path>
+                  <path
+                    d="m 6176,9620.1 c 3.03,-71.2 -52.21,-131.4 -123.38,-134.4 -71.18,-3 -131.35,52.2 -134.38,123.4 -3.04,71.2 52.2,131.3 123.38,134.4 71.17,3 131.34,-52.2 134.38,-123.4"
+                    fill="url(#footer-netoum-grad-b)"
+                    clip-path="url(#footer-netoum-clip-b)"
+                  >
+                  </path>
+                </g>
+              </svg>
+            </.navigate>
+            <.navigate
+              class="link ui-nav ui-size-sm"
+              to="https://github.com/sponsors/corex-ui"
+              external
+            >
+              {~t"Become a sponsor"}
+              <.heroicon name="hero-arrow-top-right-on-square" />
             </.navigate>
           </div>
         </div>
@@ -169,14 +270,6 @@ defmodule E2eWeb.App.Footer do
           </div>
           <div class={"#{Shell.row()} gap-space flex-wrap justify-end items-center min-w-0"}>
             <.locale_switcher path={@path} />
-            <.navigate
-              class="link ui-nav ui-size-sm"
-              to="https://github.com/sponsors/corex-ui"
-              external
-            >
-              {~t"Become a sponsor"}
-              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
           </div>
         </div>
       </div>

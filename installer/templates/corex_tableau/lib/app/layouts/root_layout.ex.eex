@@ -123,7 +123,7 @@ defmodule <%= @app_module %>.RootLayout do
         <header class="sticky top-0 z-20 flex h-size-lg items-center border-b border-border bg-surface">
           <div class="mx-auto flex h-size-lg w-full max-w-9xl items-center justify-between gap-space-lg px-space-xl">
             <div class="flex min-w-0 items-center gap-space-xl">
-              <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden" modal>
+              <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden" modal prevent_scroll>
                 <:trigger
                   class="button ui-ghost ui-size-sm ui-trigger--circle"
 <%= if @lang do %>                  aria_label={~t"Open menu"}

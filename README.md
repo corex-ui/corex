@@ -89,15 +89,8 @@ Each component documents **API** and **Events** on its Hexdocs page.
 
 ## Become a sponsor
 
-Corex is open source. If you rely on it in production or want to help sustain development, consider [becoming a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
 
-## Next steps
-
-- [Forms](https://hexdocs.pm/corex/forms.html) `field`, validation, and `auto_invalid`
-- [MCP](https://hexdocs.pm/corex/MCP.html) / [corex_mcp](https://hexdocs.pm/corex_mcp) AI tooling in development
-- [Design](https://hexdocs.pm/corex/design.html) tokens, themes, and modifiers
-- [Theming](https://hexdocs.pm/corex/theming.html) / [Dark mode](https://hexdocs.pm/corex/dark_mode.html) / [Localize](https://hexdocs.pm/corex/localize.html) pickers after `--theme` / `--mode` / `--lang`
-- [Updating Corex](https://hexdocs.pm/corex/update.html) migrate to 0.2.x
-- [Production](https://hexdocs.pm/corex/production.html) prod build and run
-- [Manual installation](https://hexdocs.pm/corex/manual_installation.html) add Corex to an existing Phoenix app
-- [Tableau](https://hexdocs.pm/corex/tableau.html) Corex on static Tableau sites
+<p>
+<a href="https://netoum.com"><img src="docs/images/netoum.svg" alt="Netoum" height="40"></a>
+</p>

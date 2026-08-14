@@ -270,3 +270,9 @@
   background-color: transparent !important;
   box-shadow: none !important;
 }
+
+.shell-footer__sponsor-mark {
+  display: block;
+  height: 2.5rem;
+  width: auto;
+}

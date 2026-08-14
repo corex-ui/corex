@@ -156,7 +156,10 @@ config :corex_mcp, debug: true
 | `config :corex_mcp, mcp_verbose_errors: false` | off | Tool failures return a generic message to clients |
 | `config :corex_mcp, debug: true` | off | Verbose MCP JSON-RPC debug logging |
 
-## Related
+## Become a sponsor
 
-- [Corex installation](https://hexdocs.pm/corex/installation.html) — `mix corex.new` enables MCP in dev by default
-- [Corex Design](https://hexdocs.pm/corex_design) — tokens and `ui-*` modifiers
+Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+
+<p>
+<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+</p>

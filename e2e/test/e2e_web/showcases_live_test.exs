@@ -59,25 +59,47 @@ defmodule E2eWeb.ShowcasesLiveTest do
     conn = get(build_conn(), "/en/showcases")
     html = html_response(conn, 200)
     assert html =~ ~S(id="showcases-page")
-    assert html =~ "Landex"
+    assert html =~ "Netoum"
+    assert html =~ "Oranje Patrimoine"
     assert html =~ "Tetrex"
     assert html =~ ~S(class="blog")
     refute html =~ "Leaderboard"
   end
 
-  test "showcases index has View Site for landex" do
+  test "showcases index lists Netoum first with Visit site" do
     conn = get(build_conn(), "/en/showcases")
     html = html_response(conn, 200)
-    assert html =~ "Landex"
-    assert html =~ "View Site"
-    assert html =~ "https://oranje-patrimoine.fr/"
+    assert html =~ "Netoum"
+    assert html =~ "https://netoum.com"
+    assert html =~ "/images/showcases/netoum.png"
+    assert html =~ "Visit site"
+    assert html =~ "blog__card__link"
+    assert html =~ "justify-center"
+    netoum_at = :binary.match(html, "Netoum") |> elem(0)
+    oranje_at = :binary.match(html, "Oranje Patrimoine") |> elem(0)
+    tetrex_at = :binary.match(html, "Tetrex") |> elem(0)
+    soonex_at = :binary.match(html, "Soonex") |> elem(0)
+    assert netoum_at < oranje_at
+    assert oranje_at < tetrex_at
+    assert tetrex_at < soonex_at
   end
 
-  test "showcases index has Play for tetrex" do
+  test "showcases index has Visit site for Oranje Patrimoine" do
+    conn = get(build_conn(), "/en/showcases")
+    html = html_response(conn, 200)
+    assert html =~ "Oranje Patrimoine"
+    assert html =~ "Visit site"
+    assert html =~ "https://oranje-patrimoine.fr/"
+    assert html =~ "/images/showcases/oranje-patrimoine.png"
+  end
+
+  test "showcases index has Play now for tetrex" do
     conn = get(build_conn(), "/en/showcases")
     html = html_response(conn, 200)
     assert html =~ "/showcases/tetrex"
-    assert html =~ "Play"
+    assert html =~ "Play now"
+    assert html =~ "/images/showcases/tetrex.png"
+    assert html =~ "link ui-nav ui-brand ui-size-xl"
     refute html =~ ~S(class="blog__card__arrow")
   end
 

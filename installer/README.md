@@ -60,9 +60,10 @@ cd installer
 MIX_ENV=prod mix do archive.build + archive.install
 ```
 
-## Next steps
+## Become a sponsor
 
-- [Installation](https://hexdocs.pm/corex/installation.html) / [Manual installation](https://hexdocs.pm/corex/manual_installation.html)
-- [Design](https://hexdocs.pm/corex/design.html) / [corex_design](https://hexdocs.pm/corex_design)
-- [MCP](https://hexdocs.pm/corex/MCP.html) / [corex_mcp](https://hexdocs.pm/corex_mcp)
-- [Updating Corex](https://hexdocs.pm/corex/update.html)
+Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+
+<p>
+<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+</p>
