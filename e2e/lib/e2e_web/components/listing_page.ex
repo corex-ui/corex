@@ -39,6 +39,8 @@ defmodule E2eWeb.ListingPage do
   attr(:play_label, :string, default: nil)
   attr(:site_to, :string, default: nil)
   attr(:site_label, :string, default: nil)
+  attr(:image, :string, default: nil)
+  attr(:image_alt, :string, default: nil)
   attr(:tags, :list, default: [])
 
   def listing_card(assigns) do
@@ -51,35 +53,45 @@ defmodule E2eWeb.ListingPage do
       |> assign(:template_card?, template_card?)
       |> assign(:play_card?, play_card?)
       |> assign(:site_card?, site_card?)
+      |> assign(:primary_class, "blog__card__link link ui-nav ui-brand ui-size-xl")
 
     ~H"""
     <article class="blog__card">
-      <h2 class="blog__card__title">{@title}</h2>
-      <p :if={@description} class="blog__card__excerpt">{@description}</p>
-      <ul :if={@tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0 blog__card__tags">
-        <li :for={tag <- @tags}>
-          <span class="badge ui-size-sm">{tag}</span>
-        </li>
-      </ul>
-      <div :if={@template_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@demo_to} class="button ui-size-sm ui-brand" external>
+      <div :if={@image} class="blog__card__media">
+        <img src={@image} alt={@image_alt || ""} loading="lazy" width="1440" height="900" />
+      </div>
+      <div class="blog__card__body">
+        <h2 class="blog__card__title">{@title}</h2>
+        <p :if={@description} class="blog__card__excerpt">{@description}</p>
+        <ul :if={@tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0 blog__card__tags">
+          <li :for={tag <- @tags}>
+            <span class="badge ui-size-sm">{tag}</span>
+          </li>
+        </ul>
+      </div>
+      <div
+        :if={@template_card? or @play_card? or @site_card?}
+        class="blog__card__actions justify-center"
+      >
+        <.navigate :if={@template_card?} to={@demo_to} class={@primary_class} external>
           {~t"Live demo"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
-        <.navigate to={@github_to} class="button ui-size-sm" external>
+        <.navigate
+          :if={@template_card?}
+          to={@github_to}
+          class="blog__card__secondary link ui-nav ui-size-xl"
+          external
+        >
           {~t"GitHub"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
-      </div>
-      <div :if={@play_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@play_to} class="button ui-size-sm ui-brand">
-          {@play_label || ~t"Play"}
+        <.navigate :if={@play_card?} to={@play_to} class={@primary_class}>
+          {@play_label || ~t"Play now"}
           <.heroicon name="hero-arrow-right" class="icon" />
         </.navigate>
-      </div>
-      <div :if={@site_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@site_to} class="button ui-size-sm ui-brand" external>
-          {@site_label || ~t"View Site"}
+        <.navigate :if={@site_card?} to={@site_to} class={@primary_class} external>
+          {@site_label || ~t"Visit site"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
       </div>

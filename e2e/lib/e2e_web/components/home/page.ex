@@ -1,5 +1,6 @@
 defmodule E2eWeb.Home.Page do
   use E2eWeb, :html
+  import E2eWeb.ListingPage, only: [listing_card: 1]
 
   attr(:hero_bullets, :list, required: true)
   attr(:hero_accordion_items, :list, required: true)
@@ -223,6 +224,48 @@ defmodule E2eWeb.Home.Page do
       </section>
 
       <E2eWeb.Home.Anatomy.section />
+
+      <section
+        id="home-showcase"
+        class="relative isolate flex min-h-dvh w-full flex-col justify-center overflow-x-hidden border-t border-border py-size-xl"
+        aria-labelledby="home-showcase-heading"
+      >
+        <div class="relative z-1 mx-auto flex w-full max-w-6xl flex-col gap-size-xl px-space">
+          <div class="flex flex-col items-center justify-between gap-space-lg text-center sm:flex-row sm:items-end sm:text-start">
+            <div class="flex flex-col items-center gap-space-lg sm:items-start">
+              <p class="m-0 text-sm font-medium tracking-wide text-brand-text uppercase">
+                {~t"In production"}
+              </p>
+              <h2
+                id="home-showcase-heading"
+                class="display m-0 text-balance text-3xl tracking-tighter text-ink sm:text-4xl lg:text-5xl"
+              >
+                {~t"Built with Corex"}
+              </h2>
+              <p class="m-0 max-w-2xl text-pretty text-lg text-ink-muted">
+                {~t"Sites and products shipping Corex in the wild."}
+              </p>
+            </div>
+            <.navigate to={~p"/showcases"} class="link ui-nav ui-brand ui-size-lg shrink-0">
+              {~t"See all showcases"}
+              <.heroicon name="hero-arrow-right" />
+            </.navigate>
+          </div>
+
+          <div class="blog__grid">
+            <.listing_card
+              :for={showcase <- E2eWeb.ShowcaseCatalog.home_entries()}
+              title={showcase.title}
+              description={showcase.description}
+              site_to={Map.get(showcase, :site_to)}
+              site_label={Map.get(showcase, :site_label)}
+              image={Map.get(showcase, :image)}
+              image_alt={Map.get(showcase, :image_alt)}
+              tags={showcase.tags}
+            />
+          </div>
+        </div>
+      </section>
 
       <section
         id="home-installer"

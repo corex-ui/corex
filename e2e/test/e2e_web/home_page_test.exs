@@ -78,18 +78,19 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "Client machine"
     assert html =~ "&lt;.accordion"
     assert html =~ "Corex.Content.new"
-    refute html =~ ~S(id="home-showcase")
     refute html =~ ~S(id="home-anatomy-compound")
     refute html =~ "Forty-plus parts"
     refute html =~ "Push toast"
 
     highlights = :binary.match(html, ~S(id="home-highlights"))
     anatomy = :binary.match(html, ~S(id="home-anatomy"))
+    showcase = :binary.match(html, ~S(id="home-showcase"))
     installer = :binary.match(html, ~S(id="home-installer"))
 
-    assert highlights && anatomy && installer
+    assert highlights && anatomy && showcase && installer
     assert elem(highlights, 0) < elem(anatomy, 0)
-    assert elem(anatomy, 0) < elem(installer, 0)
+    assert elem(anatomy, 0) < elem(showcase, 0)
+    assert elem(showcase, 0) < elem(installer, 0)
   end
 
   test "homepage renders highlights section", %{conn: conn} do
@@ -128,6 +129,26 @@ defmodule E2eWeb.HomePageTest do
     refute html =~ "bag of CSS classes"
     assert html =~ "phx-hook=\"Marquee\"" or html =~ "data-scope=\"marquee\""
     refute html =~ "grayscale"
+  end
+
+  test "homepage renders showcase section before installer", %{conn: conn} do
+    conn = get(conn, ~p"/")
+    html = html_response(conn, 200)
+
+    assert html =~ ~S(id="home-showcase")
+    assert html =~ ~S(id="home-showcase-heading")
+    assert html =~ "Netoum"
+    assert html =~ "Oranje Patrimoine"
+    assert html =~ "/images/showcases/netoum.png"
+    assert html =~ "/images/showcases/oranje-patrimoine.png"
+    assert html =~ "See all showcases"
+    assert html =~ ~s(href="/en/showcases")
+    assert html =~ "blog__card__link"
+
+    showcase = :binary.match(html, ~S(id="home-showcase"))
+    installer = :binary.match(html, ~S(id="home-installer"))
+    assert showcase && installer
+    assert elem(showcase, 0) < elem(installer, 0)
   end
 
   test "homepage renders highlights before installer", %{conn: conn} do
