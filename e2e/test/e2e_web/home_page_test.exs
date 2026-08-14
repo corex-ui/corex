@@ -142,7 +142,7 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "/images/showcases/netoum.png"
     assert html =~ "/images/showcases/oranje-patrimoine.png"
     assert html =~ "See all showcases"
-    assert html =~ ~s(href="/en/showcases")
+    assert html =~ ~S(href="/en/showcases")
     assert html =~ "blog__card__link"
 
     showcase = :binary.match(html, ~S(id="home-showcase"))
