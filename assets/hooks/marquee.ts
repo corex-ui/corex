@@ -1,6 +1,6 @@
 import { Marquee } from "../components/marquee";
 import type { Props } from "@zag-js/marquee";
-import { getBoolean, getDir, getNumber, getString } from "../lib/util";
+import { getBoolean, getDir, getNumber, getString, canPushEvent } from "../lib/util";
 import { idMatches, readPayloadId } from "../lib/respond-to";
 import { createZagLiveHook } from "../lib/zag-live-hook";
 
@@ -36,7 +36,7 @@ const MarqueeHook = createZagLiveHook<MarqueeHookState, Marquee>({
       ...readMarqueeProps(el),
       onPauseChange: (details) => {
         const eventName = getString(el, "onPauseChange");
-        if (eventName && hook.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(hook.liveSocket)) {
           pushEvent(eventName, { id: el.id, paused: details.paused });
         }
         const clientEventName = getString(el, "onPauseChangeClient");
@@ -51,7 +51,7 @@ const MarqueeHook = createZagLiveHook<MarqueeHookState, Marquee>({
       },
       onLoopComplete: () => {
         const eventName = getString(el, "onLoopComplete");
-        if (eventName && hook.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(hook.liveSocket)) {
           pushEvent(eventName, { id: el.id });
         }
         const clientEventName = getString(el, "onLoopCompleteClient");
@@ -63,7 +63,7 @@ const MarqueeHook = createZagLiveHook<MarqueeHookState, Marquee>({
       },
       onComplete: () => {
         const eventName = getString(el, "onComplete");
-        if (eventName && hook.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(hook.liveSocket)) {
           pushEvent(eventName, { id: el.id });
         }
         const clientEventName = getString(el, "onCompleteClient");

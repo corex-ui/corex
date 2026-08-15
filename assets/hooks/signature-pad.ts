@@ -1,7 +1,7 @@
 import { SignaturePad } from "../components/signature-pad";
 import type { Props } from "@zag-js/signature-pad";
 
-import { getBoolean, getDir, getNumber, getString } from "../lib/util";
+import { getBoolean, getDir, getNumber, getString, canPushEvent } from "../lib/util";
 import { getJsonStringList, readFormFieldServerPaths } from "../lib/read-props";
 import { idMatches, readPayloadId } from "../lib/respond-to";
 import { createZagLiveHook } from "../lib/zag-live-hook";
@@ -112,7 +112,7 @@ const SignaturePadHook = createZagLiveHook<SignaturePadHookState, SignaturePad>(
           signaturePad.imageURL = url;
 
           const eventName = getString(el, "onDrawEnd");
-          if (eventName && hook.liveSocket.main.isConnected()) {
+          if (eventName && canPushEvent(hook.liveSocket)) {
             pushEvent(eventName, {
               id: el.id,
               paths: details.paths,

@@ -9,10 +9,7 @@ export function mockLiveSocket(connected = true) {
     navigate,
     ctx: {
       liveSocket: {
-        main: {
-          isDead: false,
-          isConnected: () => connected,
-        },
+        getSocket: () => ({ isConnected: () => connected }),
         js: () => ({ patch, navigate }),
       },
     } satisfies RedirectContext,

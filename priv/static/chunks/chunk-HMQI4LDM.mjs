@@ -80,7 +80,7 @@ var generateId = (element, fallbackId = "element") => {
   return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
 };
 function canPushEvent(liveSocket) {
-  return !liveSocket.main.isDead && liveSocket.main.isConnected();
+  return liveSocket.getSocket().isConnected();
 }
 function associateInputWithFormIfOutside(input, hookEl) {
   const formId = getString(hookEl, "form");

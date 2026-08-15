@@ -225,7 +225,7 @@
     "globals": "^17.7.0",
     "happy-dom": "^20.0.10",
     "match-sorter": "^8.3.0",
-    "phoenix_live_view": "^1.1.30",
+    "phoenix_live_view": "^1.2.9",
     "prettier": "^3.8.3",
     "vitest": "^3.2.4"
   }
