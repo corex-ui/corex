@@ -11,7 +11,7 @@ msgstr ""
 "Language: ar\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
-#: lib/e2e_web/components/app/footer.ex:80
+#: lib/e2e_web/components/app/footer.ex:81
 #: lib/e2e_web/components/app/main_nav.ex:38
 #: lib/e2e_web/components/helpers.ex:716
 #: lib/e2e_web/controllers/home_controller.ex:58
@@ -38,8 +38,8 @@ msgstr "فُقد الاتصال"
 msgid "We're trying to reconnect you..."
 msgstr "نحاول إعادة الاتصال بك..."
 
-#: lib/e2e_web/components/app/footer.ex:95
-#: lib/e2e_web/components/home/page.ex:372
+#: lib/e2e_web/components/app/footer.ex:208
+#: lib/e2e_web/components/home/page.ex:442
 #, elixir-autogen, elixir-format
 msgid "Browse components"
 msgstr "تصفّح المكوّنات"
@@ -60,15 +60,15 @@ msgstr "القوالب"
 msgid "Templates · Corex"
 msgstr "القوالب · Corex"
 
-#: lib/e2e_web/components/app/footer.ex:124
-#: lib/e2e_web/components/listing_page.ex:70
+#: lib/e2e_web/components/app/footer.ex:237
+#: lib/e2e_web/components/listing_page.ex:117
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:66
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:117
 #, elixir-autogen, elixir-format
 msgid "GitHub"
 msgstr "GitHub"
 
-#: lib/e2e_web/components/listing_page.ex:66
+#: lib/e2e_web/components/listing_page.ex:108
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:58
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:109
 #, elixir-autogen, elixir-format
@@ -110,20 +110,20 @@ msgstr ""
 "عناصر تحكم تدعم RTL، ونفس خط أنابيب البناء الثابت."
 
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:49
-#: lib/e2e_web/showcase_catalog.ex:12
+#: lib/e2e_web/showcase_catalog.ex:52
 #, elixir-autogen, elixir-format
 msgid "Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN."
 msgstr ""
 "تخطيط «قريبًا» بلغة واحدة مع سمات Neo إلى Leo، يوميات Markdown، قائمة انتظار، وأصول ثابتة مناسبة لـ GitHub Pages أو أي CDN."
 
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:46
-#: lib/e2e_web/showcase_catalog.ex:10
+#: lib/e2e_web/showcase_catalog.ex:50
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Soonex"
 msgstr "Soonex"
 
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:97
-#: lib/e2e_web/showcase_catalog.ex:19
+#: lib/e2e_web/showcase_catalog.ex:62
 #, elixir-autogen, elixir-format
 msgid "Soonex i18n"
 msgstr "Soonex i18n"
@@ -134,7 +134,7 @@ msgid "Soonex i18n preview slides"
 msgstr "شرائح معاينة Soonex i18n"
 
 #: lib/e2e_web/controllers/page_html/templates_page.html.heex:24
-#: lib/e2e_web/showcase_catalog.ex:15
+#: lib/e2e_web/showcase_catalog.ex:58
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Starter kit"
 msgstr "مجموعة البداية"
@@ -161,6 +161,7 @@ msgid "%{a_name} (%{a_iata_code})"
 msgstr "%{a_name} (%{a_iata_code})"
 
 #: lib/e2e_web/components/helpers.ex:76
+#: lib/e2e_web/components/home/page.ex:43
 #, elixir-autogen, elixir-format
 msgid "API"
 msgstr "واجهة برمجية"
@@ -176,7 +177,7 @@ msgid "Accessible by default."
 msgstr "يمكن الوصول إليه افتراضيًا."
 
 #: lib/e2e_web/components/helpers.ex:172
-#: lib/e2e_web/components/home/page.ex:92
+#: lib/e2e_web/components/home/page.ex:118
 #, elixir-autogen, elixir-format
 msgid "Accordion"
 msgstr "الأكورديون"
@@ -227,6 +228,7 @@ msgid "Alice"
 msgstr "Alice"
 
 #: lib/e2e_web/components/helpers.ex:73
+#: lib/e2e_web/components/home/page.ex:45
 #, elixir-autogen, elixir-format
 msgid "Anatomy"
 msgstr "البنية"
@@ -281,9 +283,9 @@ msgstr "Apple"
 msgid "Async"
 msgstr "غير متزامن"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:585
+#: lib/e2e_web/components/form_patterns_fields.ex:617
 #: lib/e2e_web/controllers/user_html.ex:21
-#: lib/e2e_web/live/admin_live/form.ex:470
+#: lib/e2e_web/live/admin_live/form.ex:423
 #, elixir-autogen, elixir-format
 msgid "Australian Dollar"
 msgstr "دولار أسترالي"
@@ -341,7 +343,7 @@ msgstr "كتلة"
 msgid "Block with clipboard"
 msgstr "كتلة مع الحافظة"
 
-#: lib/e2e_web/components/app/footer.ex:86
+#: lib/e2e_web/components/app/footer.ex:87
 #: lib/e2e_web/components/app/main_nav.ex:52
 #: lib/e2e_web/components/helpers.ex:718
 #: lib/e2e_web/controllers/blog_controller.ex:16
@@ -359,9 +361,9 @@ msgstr "Bob"
 msgid "Bring your own CSS or opt into Corex Design tokens, themes and modes."
 msgstr "استخدم CSS الخاص بك أو فعّل رموز Corex Design والسمات والأوضاع."
 
-#: lib/e2e_web/components/form_patterns_fields.ex:581
+#: lib/e2e_web/components/form_patterns_fields.ex:613
 #: lib/e2e_web/controllers/user_html.ex:17
-#: lib/e2e_web/live/admin_live/form.ex:466
+#: lib/e2e_web/live/admin_live/form.ex:419
 #, elixir-autogen, elixir-format
 msgid "British Pound"
 msgstr "جنيه إسترليني"
@@ -376,9 +378,9 @@ msgstr "مدمج"
 msgid "Built-in JS animation, instant mode, and custom Motion-driven transitions."
 msgstr "حركة JS مدمجة، وضع فوري، وانتقالات مخصّصة عبر Motion."
 
-#: lib/e2e_web/components/form_patterns_fields.ex:584
+#: lib/e2e_web/components/form_patterns_fields.ex:616
 #: lib/e2e_web/controllers/user_html.ex:20
-#: lib/e2e_web/live/admin_live/form.ex:469
+#: lib/e2e_web/live/admin_live/form.ex:422
 #, elixir-autogen, elixir-format
 msgid "Canadian Dollar"
 msgstr "دولار كندي"
@@ -414,7 +416,7 @@ msgid "Charlie"
 msgstr "Charlie"
 
 #: lib/e2e_web/components/helpers.ex:235
-#: lib/e2e_web/showcase_catalog.ex:40
+#: lib/e2e_web/showcase_catalog.ex:46
 #, elixir-autogen, elixir-format
 msgid "Checkbox"
 msgstr "مربع الاختيار"
@@ -475,7 +477,7 @@ msgstr "الحافظة"
 msgid "Clipboard Anatomy"
 msgstr "بنية الحافظة"
 
-#: lib/e2e_web/components/home/page.ex:85
+#: lib/e2e_web/components/home/page.ex:111
 #, elixir-autogen, elixir-format
 msgid "Close all"
 msgstr "إغلاق الكل"
@@ -814,8 +816,8 @@ msgstr "المدة"
 #: lib/e2e_web/live/pages_live/date_picker_form_live.ex:430
 #: lib/e2e_web/live/pages_live/editable_form_live.ex:166
 #: lib/e2e_web/live/pages_live/file_upload_form_live.ex:182
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:123
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:137
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:136
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:150
 #: lib/e2e_web/live/pages_live/native_input_form_live.ex:146
 #: lib/e2e_web/live/pages_live/number_input_form_live.ex:159
 #: lib/e2e_web/live/pages_live/password_input_api_live.ex:110
@@ -858,7 +860,7 @@ msgid "Editable · Style"
 msgstr "الحقل القابل للتحرير · النمط البصري"
 
 #: lib/e2e_web/components/home/anatomy.ex:42
-#: lib/e2e_web/components/home/anatomy.ex:109
+#: lib/e2e_web/components/home/anatomy.ex:111
 #: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:297
 #: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:388
 #: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:502
@@ -919,8 +921,8 @@ msgstr "الحقل القابل للتحرير · النمط البصري"
 #: lib/e2e_web/live/pages_live/file_upload_api_live.ex:48
 #: lib/e2e_web/live/pages_live/file_upload_form_live.ex:168
 #: lib/e2e_web/live/pages_live/file_upload_form_live.ex:181
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:122
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:136
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:135
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:149
 #: lib/e2e_web/live/pages_live/listbox_api_live.ex:98
 #: lib/e2e_web/live/pages_live/listbox_api_live.ex:173
 #: lib/e2e_web/live/pages_live/listbox_events_live.ex:74
@@ -990,9 +992,9 @@ msgstr "Elixir"
 msgid "Empty"
 msgstr "فارغ"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:579
+#: lib/e2e_web/components/form_patterns_fields.ex:611
 #: lib/e2e_web/controllers/user_html.ex:15
-#: lib/e2e_web/live/admin_live/form.ex:464
+#: lib/e2e_web/live/admin_live/form.ex:417
 #, elixir-autogen, elixir-format
 msgid "Euro"
 msgstr "يورو"
@@ -1002,7 +1004,8 @@ msgstr "يورو"
 msgid "Event"
 msgstr "الحدث"
 
-#: lib/e2e_web/components/home/page.ex:114
+#: lib/e2e_web/components/home/page.ex:44
+#: lib/e2e_web/components/home/page.ex:140
 #, elixir-autogen, elixir-format
 msgid "Events"
 msgstr "الأحداث"
@@ -1145,7 +1148,7 @@ msgstr "مفاتيح تبديل مجمّعة بتسميات نصية أو مشغ
 #: lib/e2e_web/components/demo_page.ex:430
 #: lib/e2e_web/components/home/anatomy.ex:36
 #: lib/e2e_web/components/home/anatomy.ex:67
-#: lib/e2e_web/components/home/anatomy.ex:103
+#: lib/e2e_web/components/home/anatomy.ex:105
 #: lib/e2e_web/live/pages_live/accordion/accordion_animation_live.ex:194
 #: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:259
 #: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:291
@@ -1228,8 +1231,8 @@ msgstr "مفاتيح تبديل مجمّعة بتسميات نصية أو مشغ
 #: lib/e2e_web/live/pages_live/file_upload_api_live.ex:45
 #: lib/e2e_web/live/pages_live/file_upload_form_live.ex:167
 #: lib/e2e_web/live/pages_live/file_upload_form_live.ex:180
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:121
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:135
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:134
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:148
 #: lib/e2e_web/live/pages_live/listbox_api_live.ex:66
 #: lib/e2e_web/live/pages_live/listbox_api_live.ex:95
 #: lib/e2e_web/live/pages_live/listbox_api_live.ex:147
@@ -1360,7 +1363,7 @@ msgstr "القيمة الأولية"
 msgid "Inline"
 msgstr "مضمّن"
 
-#: lib/e2e_web/components/home/page.ex:219
+#: lib/e2e_web/components/home/page.ex:289
 #, elixir-autogen, elixir-format
 msgid "Install Corex"
 msgstr "تثبيت Corex"
@@ -1450,9 +1453,9 @@ msgstr "حالة العنصر (الخادم)"
 msgid "JS"
 msgstr "JS"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:582
+#: lib/e2e_web/components/form_patterns_fields.ex:614
 #: lib/e2e_web/controllers/user_html.ex:18
-#: lib/e2e_web/live/admin_live/form.ex:467
+#: lib/e2e_web/live/admin_live/form.ex:420
 #, elixir-autogen, elixir-format
 msgid "Japanese Yen"
 msgstr "ين ياباني"
@@ -1655,7 +1658,7 @@ msgstr "حد أقصى 5 أيام"
 #: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:69
 #: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:88
 #: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:86
-#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:41
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:54
 #: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:64
 #: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:61
 #: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:77
@@ -1837,9 +1840,9 @@ msgstr "بلا قيمة، قيمة أولية، إعدادات مسبقة، وم
 msgid "No visible trigger"
 msgstr "بلا مشغّل مرئي"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:587
+#: lib/e2e_web/components/form_patterns_fields.ex:619
 #: lib/e2e_web/controllers/user_html.ex:23
-#: lib/e2e_web/live/admin_live/form.ex:472
+#: lib/e2e_web/live/admin_live/form.ex:425
 #, elixir-autogen, elixir-format
 msgid "Norwegian Krone"
 msgstr "كرونة نرويجية"
@@ -2018,12 +2021,12 @@ msgstr "مفتوح المصدر"
 msgid "Open Source and free to use. MIT License"
 msgstr "مفتوح المصدر ومجاني للاستخدام. رخصة MIT"
 
-#: lib/e2e_web/components/home/page.ex:78
+#: lib/e2e_web/components/home/page.ex:104
 #, elixir-autogen, elixir-format
 msgid "Open all"
 msgstr "فتح الكل"
 
-#: lib/e2e_web/components/home/page.ex:122
+#: lib/e2e_web/components/home/page.ex:148
 #, elixir-autogen, elixir-format
 msgid "Open items"
 msgstr "العناصر المفتوحة"
@@ -2397,9 +2400,9 @@ msgstr "لوحة التوقيع · الحدث"
 msgid "Signature pad"
 msgstr "لوحة التوقيع"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:588
+#: lib/e2e_web/components/form_patterns_fields.ex:620
 #: lib/e2e_web/controllers/user_html.ex:24
-#: lib/e2e_web/live/admin_live/form.ex:473
+#: lib/e2e_web/live/admin_live/form.ex:426
 #, elixir-autogen, elixir-format
 msgid "Singapore Dollar"
 msgstr "دولار سنغافوري"
@@ -2557,16 +2560,16 @@ msgstr ""
 msgid "Subscribe to visibility changes from LiveView or the client."
 msgstr "الاشتراك في تغييرات الظهور من LiveView أو العميل."
 
-#: lib/e2e_web/components/form_patterns_fields.ex:586
+#: lib/e2e_web/components/form_patterns_fields.ex:618
 #: lib/e2e_web/controllers/user_html.ex:22
-#: lib/e2e_web/live/admin_live/form.ex:471
+#: lib/e2e_web/live/admin_live/form.ex:424
 #, elixir-autogen, elixir-format
 msgid "Swedish Krona"
 msgstr "كرونة سويدية"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:583
+#: lib/e2e_web/components/form_patterns_fields.ex:615
 #: lib/e2e_web/controllers/user_html.ex:19
-#: lib/e2e_web/live/admin_live/form.ex:468
+#: lib/e2e_web/live/admin_live/form.ex:421
 #, elixir-autogen, elixir-format
 msgid "Swiss Franc"
 msgstr "فرنك سويسري"
@@ -2690,7 +2693,7 @@ msgstr "إدخال الوسوم · النمط البصري"
 msgid "Text"
 msgstr "نص"
 
-#: lib/e2e_web/components/home/page.ex:121
+#: lib/e2e_web/components/home/page.ex:147
 #, elixir-autogen, elixir-format
 msgid "Time"
 msgstr "الوقت"
@@ -2755,7 +2758,7 @@ msgstr "مجموعة التبديل · الأحداث"
 msgid "Toggle group · Style"
 msgstr "مجموعة التبديل · النمط البصري"
 
-#: lib/e2e_web/components/home/page.ex:125
+#: lib/e2e_web/components/home/page.ex:151
 #, elixir-autogen, elixir-format
 msgid "Toggle the accordion to watch events land."
 msgstr "بدّل الأكورديون لمشاهدة وصول الأحداث."
@@ -2848,9 +2851,9 @@ msgstr "بلا تنسيق فعلياً."
 msgid "Type"
 msgstr "النوع"
 
-#: lib/e2e_web/components/form_patterns_fields.ex:580
+#: lib/e2e_web/components/form_patterns_fields.ex:612
 #: lib/e2e_web/controllers/user_html.ex:16
-#: lib/e2e_web/live/admin_live/form.ex:465
+#: lib/e2e_web/live/admin_live/form.ex:418
 #, elixir-autogen, elixir-format
 msgid "US Dollar"
 msgstr "دولار أمريكي"
@@ -3197,7 +3200,7 @@ msgstr "Corex"
 msgid "Corex "
 msgstr "روابط Corex"
 
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:119
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:132
 #, elixir-autogen, elixir-format
 msgid "Custom error"
 msgstr ""
@@ -3238,7 +3241,7 @@ msgstr "أمثلة"
 msgid "Focus the game area, then play."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:114
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:127
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Forms · Pattern"
 msgstr "صندوق التحرير والسرد · الأنماط"
@@ -3269,7 +3272,7 @@ msgstr ""
 msgid "Games in progress. Click Watch or use the action."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:133
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:146
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Invalid on error"
 msgstr "غير صالح"
@@ -3594,7 +3597,6 @@ msgstr "نموذج Phoenix (changeset)"
 msgid "Pin Input · Style"
 msgstr "إدخال الرمز · الحدث"
 
-#: lib/e2e_web/components/listing_page.ex:76
 #: lib/e2e_web/live/tetrex_live.ex:906
 #, elixir-autogen, elixir-format
 msgid "Play"
@@ -3702,7 +3704,7 @@ msgstr ""
 msgid "Server-driven filtering."
 msgstr "تصفية يقودها الخادم وقيمة مُتحكَّم بها."
 
-#: lib/e2e_web/components/app/footer.ex:83
+#: lib/e2e_web/components/app/footer.ex:84
 #: lib/e2e_web/components/app/main_nav.ex:45
 #: lib/e2e_web/components/helpers.ex:717
 #: lib/e2e_web/controllers/showcases_controller.ex:12
@@ -3753,7 +3755,7 @@ msgstr "المفتاح"
 #: lib/e2e_web/live/tetrex_index_live.ex:88
 #: lib/e2e_web/live/tetrex_live.ex:24
 #: lib/e2e_web/live/tetrex_live.ex:25
-#: lib/e2e_web/showcase_catalog.ex:36
+#: lib/e2e_web/showcase_catalog.ex:38
 #, elixir-autogen, elixir-format
 msgid "Tetrex"
 msgstr ""
@@ -3803,11 +3805,6 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: lib/e2e_web/components/listing_page.ex:82
-#, elixir-autogen, elixir-format
-msgid "View Site"
-msgstr ""
-
 #: lib/e2e_web/live/tetrex_index_live.ex:152
 #, elixir-autogen, elixir-format
 msgid "Watch"
@@ -3828,7 +3825,7 @@ msgstr ""
 msgid "Watchers"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/form_patterns_live.ex:115
+#: lib/e2e_web/live/pages_live/form_patterns_live.ex:128
 #, elixir-autogen, elixir-format
 msgid "Ways to surface validation errors on form fields."
 msgstr ""
@@ -3870,66 +3867,60 @@ msgstr ""
 msgid "type, phx-click, and Corex JS commands on <.action>."
 msgstr ""
 
-#: lib/e2e_web/showcase_catalog.ex:30
-#, elixir-autogen, elixir-format
-msgid "A landing page built with Corex, Tableau, and Motion. Contact form using a Cloudflare Worker and the Resend API."
-msgstr ""
-"صفحة هبوط مبنية بـ Corex وTableau وMotion. نموذج اتصال عبر Cloudflare Worker وواجهة Resend."
-
-#: lib/e2e_web/components/home/page.ex:28
+#: lib/e2e_web/components/home/page.ex:54
 #, elixir-autogen, elixir-format
 msgid "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
 msgstr ""
 "مكوّنات Phoenix يمكن الوصول إليها وغير منمّقة، بواجهة برمجية كاملة على الخادم والعميل، مدعومة بـ"
 
-#: lib/e2e_web/components/app/footer.ex:177
+#: lib/e2e_web/components/app/footer.ex:198
 #, elixir-autogen, elixir-format
 msgid "Become a sponsor"
 msgstr "كن راعيًا"
 
-#: lib/e2e_web/showcase_catalog.ex:38
+#: lib/e2e_web/showcase_catalog.ex:40
 #, elixir-autogen, elixir-format
 msgid "Checkbox Tetris with semantic piece colors, live sessions, top-10 leaderboard, and frame replay."
 msgstr ""
 "تتريس مربعات الاختيار بألوان قطع دلالية، جلسات مباشرة، لوحة أفضل 10، وإعادة إطارات."
 
-#: lib/e2e_web/components/home/page.ex:60
+#: lib/e2e_web/components/home/page.ex:86
 #, elixir-autogen, elixir-format
 msgid "Interactive preview"
 msgstr "معاينة تفاعلية"
 
-#: lib/e2e_web/showcase_catalog.ex:28
-#, elixir-autogen, elixir-format
-msgid "Landex"
-msgstr "Landex"
-
-#: lib/e2e_web/showcase_catalog.ex:32
+#: lib/e2e_web/showcase_catalog.ex:34
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Landing"
 msgstr "صفحة هبوط"
 
-#: lib/e2e_web/showcase_catalog.ex:40
+#: lib/e2e_web/showcase_catalog.ex:46
 #, elixir-autogen, elixir-format, fuzzy
 msgid "LiveView"
 msgstr "Live View"
 
-#: lib/e2e_web/showcase_catalog.ex:24
+#: lib/e2e_web/showcase_catalog.ex:70
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Locales"
 msgstr "لغات"
 
-#: lib/e2e_web/showcase_catalog.ex:21
+#: lib/e2e_web/showcase_catalog.ex:64
 #, elixir-autogen, elixir-format
 msgid "Locales and RTL on the same stack: localized routes, Arabic typography, and the same Corex component set as Soonex."
 msgstr ""
 "لغات واتجاه RTL على نفس المكدس: مسارات مترجمة، طباعة عربية، ونفس مجموعة مكوّنات Corex كما في Soonex."
 
-#: lib/e2e_web/showcase_catalog.ex:32
+#: lib/e2e_web/showcase_catalog.ex:34
 #, elixir-autogen, elixir-format
 msgid "Motion"
 msgstr "Motion"
 
-#: lib/e2e_web/components/home/page.ex:71
+#: lib/e2e_web/showcase_catalog.ex:32
+#, elixir-autogen, elixir-format
+msgid "CMS"
+msgstr "نظام إدارة المحتوى"
+
+#: lib/e2e_web/components/home/page.ex:97
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Open first"
 msgstr "افتح أولاً"
@@ -3939,34 +3930,24 @@ msgstr "افتح أولاً"
 msgid "Open menu"
 msgstr "فتح القائمة"
 
-#: lib/e2e_web/showcase_catalog.ex:24
+#: lib/e2e_web/showcase_catalog.ex:70
 #, elixir-autogen, elixir-format
 msgid "RTL"
 msgstr "RTL"
 
 #: lib/e2e_web/controllers/home_controller.ex:101
-#: lib/e2e_web/showcase_catalog.ex:15
-#: lib/e2e_web/showcase_catalog.ex:32
+#: lib/e2e_web/showcase_catalog.ex:34
+#: lib/e2e_web/showcase_catalog.ex:58
 #, elixir-autogen, elixir-format
 msgid "Tableau"
 msgstr "Tableau"
 
-#: lib/e2e_web/components/home/page.ex:24
-#, elixir-autogen, elixir-format
-msgid "The Phoenix UI with a"
-msgstr "واجهة Phoenix مع"
-
-#: lib/e2e_web/components/home/page.ex:380
+#: lib/e2e_web/components/home/page.ex:450
 #, elixir-autogen, elixir-format
 msgid "Visit Hexdocs"
 msgstr "زيارة Hexdocs"
 
-#: lib/e2e_web/components/home/page.ex:24
-#, elixir-autogen, elixir-format
-msgid "real API"
-msgstr "واجهة برمجية حقيقية"
-
-#: lib/e2e_web/components/home/page.ex:32
+#: lib/e2e_web/components/home/page.ex:58
 #, elixir-autogen, elixir-format, fuzzy
 msgid "state machines."
 msgstr "آلات الحالة"
@@ -4275,6 +4256,7 @@ msgstr ""
 #: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:51
 #: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:66
 #: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:41
 #: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:64
 #: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:51
 #, elixir-autogen, elixir-format
@@ -4307,6 +4289,7 @@ msgstr ""
 msgid "43+"
 msgstr ""
 
+#: lib/e2e_web/components/listing_page.ex:80
 #: lib/e2e_web/controllers/home_controller.ex:72
 #: lib/e2e_web/controllers/home_controller.ex:141
 #, elixir-autogen, elixir-format
@@ -4316,7 +4299,9 @@ msgstr ""
 #: lib/e2e_web/components/accessibility_toggle.ex:29
 #: lib/e2e_web/components/accessibility_toggle.ex:32
 #: lib/e2e_web/components/accessibility_toggle.ex:94
-#: lib/e2e_web/components/app/footer.ex:72
+#: lib/e2e_web/components/app/footer.ex:73
+#: lib/e2e_web/components/home/page.ex:41
+#: lib/e2e_web/components/home/page.ex:47
 #, elixir-autogen, elixir-format
 msgid "Accessibility"
 msgstr ""
@@ -4326,7 +4311,7 @@ msgstr ""
 msgid "Accessible Phoenix UI with a real server-and-client API."
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:303
+#: lib/e2e_web/components/home/page.ex:373
 #, elixir-autogen, elixir-format
 msgid "Add-ons"
 msgstr ""
@@ -4346,13 +4331,13 @@ msgstr "منزلق الزاوية · النموذج"
 msgid "Angle Slider · Live Form"
 msgstr "منزلق الزاوية · النموذج"
 
-#: lib/e2e_web/components/home/page.ex:254
-#: lib/e2e_web/components/home/page.ex:270
+#: lib/e2e_web/components/home/page.ex:324
+#: lib/e2e_web/components/home/page.ex:340
 #, elixir-autogen, elixir-format
 msgid "App name"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:332
+#: lib/e2e_web/components/home/page.ex:402
 #, elixir-autogen, elixir-format
 msgid "Archives"
 msgstr ""
@@ -4372,7 +4357,7 @@ msgstr ""
 msgid "Basic setup, edit triggers, and activation without an edit button."
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:146
+#: lib/e2e_web/components/home/page.ex:172
 #, elixir-autogen, elixir-format
 msgid "Built for the Elixir ecosystem"
 msgstr ""
@@ -4407,18 +4392,18 @@ msgstr "صندوق التحرير والسرد · النموذج"
 msgid "Combobox · Live Form"
 msgstr "صندوق التحرير والسرد · النموذج"
 
-#: lib/e2e_web/components/home/page.ex:342
+#: lib/e2e_web/components/home/page.ex:412
 #, elixir-autogen, elixir-format
 msgid "Command"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:222
+#: lib/e2e_web/components/home/page.ex:292
 #, elixir-autogen, elixir-format
 msgid "Compose your generator command, then copy from the terminal."
 msgstr ""
 
-#: lib/e2e_web/components/home/anatomy.ex:195
-#: lib/e2e_web/components/home/page.ex:429
+#: lib/e2e_web/components/home/anatomy.ex:197
+#: lib/e2e_web/components/home/page.ex:499
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Copy code"
 msgstr "نسخ"
@@ -4443,11 +4428,12 @@ msgstr "منتقي التاريخ · النموذج"
 msgid "Declarative items list with a shared indicator slot."
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:276
+#: lib/e2e_web/components/home/page.ex:346
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Defaults"
 msgstr "افتراضي"
 
+#: lib/e2e_web/components/home/page.ex:46
 #: lib/e2e_web/controllers/home_controller.ex:111
 #, elixir-autogen, elixir-format
 msgid "Design"
@@ -4463,7 +4449,7 @@ msgstr ""
 msgid "Dev MCP server for AI tooling. Deselect for --no-mcp."
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:42
+#: lib/e2e_web/components/app/footer.ex:43
 #, elixir-autogen, elixir-format
 msgid "Docs"
 msgstr ""
@@ -4495,17 +4481,17 @@ msgstr "الحقل القابل للتحرير · النموذج"
 msgid "Editable · Live Form"
 msgstr "الحقل القابل للتحرير · النموذج"
 
-#: lib/e2e_web/components/app/footer.ex:78
+#: lib/e2e_web/components/app/footer.ex:79
 #, elixir-autogen, elixir-format
 msgid "Explore"
 msgstr ""
 
-#: lib/e2e_web/components/home/anatomy.ex:145
+#: lib/e2e_web/components/home/anatomy.ex:147
 #, elixir-autogen, elixir-format
 msgid "Explore accordion anatomy"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:307
+#: lib/e2e_web/components/home/page.ex:377
 #, elixir-autogen, elixir-format
 msgid "Extra capabilities you opt into. Each selection appends its --flag to the command."
 msgstr ""
@@ -4530,7 +4516,7 @@ msgstr "رفع الملفات · النموذج"
 msgid "Flexible anatomy with HEEx"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:56
+#: lib/e2e_web/components/app/footer.ex:57
 #, elixir-autogen, elixir-format
 msgid "Forms"
 msgstr ""
@@ -4540,32 +4526,32 @@ msgstr ""
 msgid "Full LiveView server application with Corex."
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:230
+#: lib/e2e_web/components/home/page.ex:300
 #, elixir-autogen, elixir-format
 msgid "Generator"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:213
+#: lib/e2e_web/components/home/page.ex:283
 #, elixir-autogen, elixir-format
 msgid "Get started"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:166
+#: lib/e2e_web/components/app/footer.ex:279
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Hexdocs"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:37
+#: lib/e2e_web/components/home/page.ex:63
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Highlights"
 msgstr "قسم أبرز النقاط"
 
-#: lib/e2e_web/components/home/page.ex:280
+#: lib/e2e_web/components/home/page.ex:350
 #, elixir-autogen, elixir-format
 msgid "Included unless you turn them off. Deselecting adds the matching --no-* flag."
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:48
+#: lib/e2e_web/components/app/footer.ex:49
 #, elixir-autogen, elixir-format
 msgid "Installation"
 msgstr ""
@@ -4595,7 +4581,7 @@ msgstr ""
 msgid "Light and dark mode wiring with a toggle. Adds --mode."
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:344
+#: lib/e2e_web/components/home/page.ex:414
 #, elixir-autogen, elixir-format
 msgid "Live preview of mix corex.new / mix corex.tableau.new from your selections. Copy and paste into a terminal."
 msgstr ""
@@ -4632,7 +4618,7 @@ msgstr ""
 msgid "Mode"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:400
+#: lib/e2e_web/components/home/page.ex:470
 #, elixir-autogen, elixir-format
 msgid "More info"
 msgstr ""
@@ -4696,7 +4682,7 @@ msgstr "عند تغيير القيمة (الخادم)"
 msgid "On Select (Server)"
 msgstr "تعيين القيمة (الخادم)"
 
-#: lib/e2e_web/components/home/page.ex:334
+#: lib/e2e_web/components/home/page.ex:404
 #, elixir-autogen, elixir-format
 msgid "One-time Mix archive install so the generators are available on your machine."
 msgstr ""
@@ -4726,7 +4712,7 @@ msgstr "إدخال كلمة المرور · النموذج"
 msgid "Password Input · Live Form"
 msgstr "إدخال كلمة المرور · النموذج"
 
-#: lib/e2e_web/components/home/page.ex:234
+#: lib/e2e_web/components/home/page.ex:304
 #, elixir-autogen, elixir-format
 msgid "Phoenix scaffolds a LiveView server app. Tableau scaffolds a static site."
 msgstr ""
@@ -4741,7 +4727,7 @@ msgstr "إدخال الرمز · النموذج"
 msgid "Pin Input · Live Form"
 msgstr "إدخال الرمز · النموذج"
 
-#: lib/e2e_web/components/home/page.ex:168
+#: lib/e2e_web/components/home/page.ex:194
 #, elixir-autogen, elixir-format
 msgid "Powered by the stack you already use"
 msgstr ""
@@ -4764,7 +4750,7 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: lib/e2e_web/components/home/page.ex:258
+#: lib/e2e_web/components/home/page.ex:328
 #, elixir-autogen, elixir-format
 msgid "Project folder name. Use lowercase letters, numbers, and underscores."
 msgstr ""
@@ -4974,7 +4960,7 @@ msgstr "إدخال الوسوم · النموذج"
 msgid "Theme"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:64
+#: lib/e2e_web/components/app/footer.ex:65
 #, elixir-autogen, elixir-format
 msgid "Theming"
 msgstr ""
@@ -5016,17 +5002,170 @@ msgstr ""
 msgid "documentation"
 msgstr "تنقّل التوثيق"
 
-#: lib/e2e_web/components/home/anatomy.ex:63
+#: lib/e2e_web/components/form_patterns_fields.ex:84
+#: lib/e2e_web/components/form_patterns_fields.ex:352
 #, elixir-autogen, elixir-format
-msgid "Author each trigger and content by value — no items list required."
+msgid "Account"
 msgstr ""
 
-#: lib/e2e_web/components/home/anatomy.ex:99
+#: lib/e2e_web/components/home/anatomy.ex:63
 #, elixir-autogen, elixir-format, fuzzy
-msgid "Own the trigger, content, and indicator with :let={item} — stack your own chrome."
+msgid "Author each trigger and content by value. No items list required."
 msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:22
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Company"
+msgstr ""
+
+#: lib/e2e_web/components/form_patterns_fields.ex:235
+#: lib/e2e_web/components/form_patterns_fields.ex:523
+#, elixir-autogen, elixir-format
+msgid "Media"
+msgstr ""
+
+#: lib/e2e_web/components/app/footer.ex:98
+#: lib/e2e_web/showcase_catalog.ex:14
+#, elixir-autogen, elixir-format
+msgid "Netoum"
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:22
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Open source"
+msgstr "مفتوح المصدر"
+
+#: lib/e2e_web/components/home/anatomy.ex:100
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Own the trigger, content, and indicator with :let={item}. Stack your own chrome."
+msgstr ""
+
+#: lib/e2e_web/components/form_patterns_fields.ex:150
+#: lib/e2e_web/components/form_patterns_fields.ex:426
+#, elixir-autogen, elixir-format
+msgid "Preferences"
+msgstr ""
+
+#: lib/e2e_web/components/form_patterns_fields.ex:9
+#: lib/e2e_web/components/form_patterns_fields.ex:269
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Profile"
+msgstr "من ملف"
 
 #: lib/e2e_web/components/home/anatomy.ex:24
 #, elixir-autogen, elixir-format, fuzzy
-msgid "Same Zag machine. Items, manual slots, or custom slots — pick the shape that fits your markup."
+msgid "Same Zag machine. Items, manual slots, or custom slots. Pick the shape that fits your markup."
+msgstr ""
+
+#: lib/e2e_web/components/app/footer.ex:93
+#, elixir-autogen, elixir-format
+msgid "Sponsors"
+msgstr ""
+
+#: lib/e2e_web/components/home/page.ex:32
+#, elixir-autogen, elixir-format, fuzzy
+msgid "The Phoenix UI"
+msgstr "واجهة Phoenix مع"
+
+#: lib/e2e_web/components/home/page.ex:26
+#, elixir-autogen, elixir-format
+msgid "The Phoenix UI with API, Events, Anatomy, Design, and Accessibility."
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:16
+#, elixir-autogen, elixir-format
+msgid "The company behind Corex: product design, accessible web apps, and open-source tooling."
+msgstr ""
+
+#: lib/e2e_web/components/home/page.ex:34
+#, elixir-autogen, elixir-format, fuzzy
+msgid "with"
+msgstr "المفتاح"
+
+#: lib/e2e_web/showcase_catalog.ex:20
+#, elixir-autogen, elixir-format
+msgid "Netoum homepage"
+msgstr ""
+
+#: lib/e2e_web/components/listing_page.ex:121
+#: lib/e2e_web/showcase_catalog.ex:42
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Play now"
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:68
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Soonex i18n live demo"
+msgstr "Soonex i18n"
+
+#: lib/e2e_web/showcase_catalog.ex:56
+#, elixir-autogen, elixir-format
+msgid "Soonex live demo"
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:44
+#, elixir-autogen, elixir-format
+msgid "Tetrex gameplay"
+msgstr ""
+
+#: lib/e2e_web/components/listing_page.ex:125
+#: lib/e2e_web/showcase_catalog.ex:18
+#: lib/e2e_web/showcase_catalog.ex:30
+#, elixir-autogen, elixir-format
+msgid "Visit site"
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:26
+#, elixir-autogen, elixir-format
+msgid "Oranje Patrimoine"
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:32
+#, elixir-autogen, elixir-format
+msgid "Oranje Patrimoine homepage"
+msgstr ""
+
+#: lib/e2e_web/showcase_catalog.ex:28
+#, elixir-autogen, elixir-format
+msgid "Paris property-management site built with Corex, a CMS admin, and a contact form."
+msgstr "موقع إدارة عقارات في باريس مبني بـ Corex، مع لوحة إدارة محتوى ونموذج تواصل."
+
+#: lib/e2e_web/components/home/page.ex:243
+#, elixir-autogen, elixir-format
+msgid "Built with Corex"
+msgstr ""
+
+#: lib/e2e_web/components/home/page.ex:237
+#, elixir-autogen, elixir-format
+msgid "In production"
+msgstr ""
+
+#: lib/e2e_web/components/home/page.ex:250
+#, elixir-autogen, elixir-format
+msgid "See all showcases"
+msgstr ""
+
+#: lib/e2e_web/components/home/page.ex:246
+#, elixir-autogen, elixir-format
+msgid "Sites and products shipping Corex in the wild."
+msgstr ""
+
+#: lib/e2e_web/components/listing_page.ex:86
+#, elixir-autogen, elixir-format
+msgid "BP"
+msgstr ""
+
+#: lib/e2e_web/components/listing_page.ex:69
+#, elixir-autogen, elixir-format
+msgid "Lighthouse scores"
+msgstr ""
+
+#: lib/e2e_web/components/listing_page.ex:74
+#, elixir-autogen, elixir-format
+msgid "Perf"
+msgstr ""
+
+#: lib/e2e_web/components/listing_page.ex:92
+#, elixir-autogen, elixir-format
+msgid "SEO"
 msgstr ""

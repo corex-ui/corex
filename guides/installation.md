@@ -89,15 +89,8 @@ Each component documents **API** and **Events** on its Hexdocs page (helpers, `o
 
 ## Become a sponsor
 
-Corex is open source. If you rely on it in production or want to help sustain development, consider [becoming a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
 
-## Next steps
-
-- [Forms](forms.html) `field`, validation, and `auto_invalid`
-- [Manual installation](manual_installation.html) add Corex (and optional theme / mode / locale wiring) to an existing app
-- [Theming](theming.html) / [Dark mode](dark_mode.html) / [Localize](localize.html) picker UI after install or `--theme` / `--mode` / `--lang`
-- [Design](design.html) tokens, themes, and modifiers ([corex_design](https://hexdocs.pm/corex_design))
-- [MCP](MCP.html) / [corex_mcp](https://hexdocs.pm/corex_mcp) AI tooling in development
-- [Updating Corex](update.html) migrate to 0.2.x
-- [Production](production.html) prod build and run
-- [Tableau](tableau.html) Corex on static Tableau sites
+<p>
+<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+</p>

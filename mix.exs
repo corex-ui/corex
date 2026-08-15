@@ -77,7 +77,7 @@ defmodule Corex.MixProject do
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:tidewave, "~> 0.5.5", only: :dev},
+      {:tidewave, "~> 0.8.2", only: :dev},
       {:corex_design, path: "design", runtime: false, only: :test}
     ] ++ maybe_ex_slop() ++ maybe_json_polyfill()
   end
@@ -240,6 +240,7 @@ defmodule Corex.MixProject do
     [
       main: "installation",
       source_ref: "v#{@version}",
+      assets: %{"docs/images" => "images"},
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
