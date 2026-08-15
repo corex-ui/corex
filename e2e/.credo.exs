@@ -233,7 +233,6 @@
           # Refactoring Suggestions
           {OeditusCredo.Check.Refactoring.SuggestFSM, []},
           # Telemetry & Observability
-          {OeditusCredo.Check.Warning.MissingTelemetryInObanWorker, []},
           {OeditusCredo.Check.Warning.TelemetryInRecursiveFunction, []},
           {OeditusCredo.Check.Warning.MissingTelemetryInAuthPlug,
            [files: %{excluded: ["lib/e2e_web/plugs/demo_auth.ex"]}]},

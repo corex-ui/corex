@@ -70,7 +70,7 @@ defmodule Corex.MixProject do
       {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},
       {:makeup_syntect, "~> 0.1.0", only: [:dev, :test, :docs], optional: true},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.11.0", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
