@@ -104,7 +104,7 @@ defmodule E2e.MixProject do
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:usage_rules, "~> 1.1", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.11.0", only: [:dev, :test], runtime: false},
       {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
     ]
   end

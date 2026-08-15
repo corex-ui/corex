@@ -47,7 +47,7 @@ defmodule CorexDesign.MixProject do
       {:excoveralls, "~> 0.18", only: :test},
       {:castore, "~> 1.0", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.11.0", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ] ++ maybe_ex_slop() ++ maybe_json_polyfill()
