@@ -128,11 +128,8 @@ describe("generateId", () => {
 
 describe("canPushEvent", () => {
   it.each([
-    ["connected", { main: { isDead: false, isConnected: (): boolean => true } }, true],
-    ["dead", { main: { isDead: true, isConnected: (): boolean => true } }, false],
-    ["disconnected", { main: { isDead: false, isConnected: (): boolean => false } }, false],
-    ["getSocket connected", { getSocket: () => ({ isConnected: (): boolean => true }) }, true],
-    ["getSocket disconnected", { getSocket: () => ({ isConnected: (): boolean => false }) }, false],
+    ["connected", { getSocket: () => ({ isConnected: (): boolean => true }) }, true],
+    ["disconnected", { getSocket: () => ({ isConnected: (): boolean => false }) }, false],
   ] as const)("%s", (_label, socket, expected) => {
     expect(canPushEvent(socket)).toBe(expected);
   });

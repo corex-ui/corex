@@ -150,18 +150,13 @@ export const generateId = (element?: HTMLElement, fallbackId: string = "element"
   return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
 };
 
-/** Duck type for LiveView's LiveSocket. `main` is runtime-present but @internal in 1.2.x types. */
+/** Duck type for LiveView's public LiveSocket connection check. */
 export type LiveSocketPushable = {
-  getSocket?: () => { isConnected: () => boolean };
-  main?: { isDead?: boolean; isConnected?: () => boolean } | null;
+  getSocket: () => { isConnected: () => boolean };
 };
 
 export function canPushEvent(liveSocket: LiveSocketPushable): boolean {
-  const main = liveSocket.main;
-  if (main) {
-    return !main.isDead && (main.isConnected?.() ?? false);
-  }
-  return liveSocket.getSocket?.()?.isConnected() ?? false;
+  return liveSocket.getSocket().isConnected();
 }
 
 export function associateInputWithFormIfOutside(input: HTMLElement, hookEl: HTMLElement): void {

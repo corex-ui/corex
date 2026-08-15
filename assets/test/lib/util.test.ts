@@ -168,16 +168,11 @@ describe("generateId", () => {
 });
 
 describe("canPushEvent", () => {
-  it("is true when connected", () => {
-    expect(canPushEvent({ main: { isDead: false, isConnected: () => true } })).toBe(true);
-  });
-
-  it("is false when dead", () => {
-    expect(canPushEvent({ main: { isDead: true, isConnected: () => true } })).toBe(false);
-  });
-
-  it("uses getSocket when main is absent", () => {
+  it("is true when the socket is connected", () => {
     expect(canPushEvent({ getSocket: () => ({ isConnected: () => true }) })).toBe(true);
+  });
+
+  it("is false when the socket is disconnected", () => {
     expect(canPushEvent({ getSocket: () => ({ isConnected: () => false }) })).toBe(false);
   });
 });
