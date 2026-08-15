@@ -337,7 +337,7 @@ const DatePickerHook = createZagLiveHook<DatePickerHookState, DatePicker>({
       },
       onFocusChange: (details: { focused?: boolean }) => {
         const eventName = getString(el, "onFocusChange");
-        if (eventName && liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             focused: details.focused ?? false,
@@ -346,7 +346,7 @@ const DatePickerHook = createZagLiveHook<DatePickerHookState, DatePicker>({
       },
       onViewChange: (details) => {
         const eventName = getString(el, "onViewChange");
-        if (eventName && liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             view: details.view,
@@ -355,7 +355,7 @@ const DatePickerHook = createZagLiveHook<DatePickerHookState, DatePicker>({
       },
       onVisibleRangeChange: (details: { start?: unknown; end?: unknown }) => {
         const eventName = getString(el, "onVisibleRangeChange");
-        if (eventName && liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             start: details.start,

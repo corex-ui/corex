@@ -175,6 +175,11 @@ describe("canPushEvent", () => {
   it("is false when dead", () => {
     expect(canPushEvent({ main: { isDead: true, isConnected: () => true } })).toBe(false);
   });
+
+  it("uses getSocket when main is absent", () => {
+    expect(canPushEvent({ getSocket: () => ({ isConnected: () => true }) })).toBe(true);
+    expect(canPushEvent({ getSocket: () => ({ isConnected: () => false }) })).toBe(false);
+  });
 });
 
 describe("getDir", () => {

@@ -1,3 +1,5 @@
+import { canPushEvent, type LiveSocketPushable } from "./util";
+
 /**
  * Shared redirect helper used by tree-view, menu, select, listbox, and combobox hooks.
  *
@@ -50,8 +52,7 @@ export interface RedirectInput {
 }
 
 export interface RedirectContext {
-  liveSocket: {
-    main: { isDead: boolean; isConnected: () => boolean };
+  liveSocket: LiveSocketPushable & {
     js: () => { patch: (url: string) => void; navigate: (url: string) => void };
   };
 }
@@ -116,8 +117,7 @@ export function performRedirect(input: RedirectInput | null, ctx: RedirectContex
     return true;
   }
 
-  const main = ctx.liveSocket.main;
-  const connected = !main.isDead && main.isConnected();
+  const connected = canPushEvent(ctx.liveSocket);
 
   if (!connected || !mode || mode === "href") {
     window.location.href = destination;
