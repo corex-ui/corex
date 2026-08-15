@@ -1,3 +1,7 @@
+import {
+  canPushEvent
+} from "./chunk-HMQI4LDM.mjs";
+
 // lib/redirect.ts
 var REDIRECT_MODES = ["href", "patch", "navigate"];
 var SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
@@ -46,8 +50,7 @@ function performRedirect(input, ctx) {
     window.open(destination, "_blank", "noopener,noreferrer");
     return true;
   }
-  const main = ctx.liveSocket.main;
-  const connected = !main.isDead && main.isConnected();
+  const connected = canPushEvent(ctx.liveSocket);
   if (!connected || !mode || mode === "href") {
     window.location.href = destination;
     return true;
