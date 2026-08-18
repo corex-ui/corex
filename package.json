@@ -191,7 +191,7 @@
     "@zag-js/collection": "^1.42.0",
     "@zag-js/color-picker": "^1.42.0",
     "@zag-js/combobox": "^1.42.0",
-    "@zag-js/core": "^1.42.0",
+    "@zag-js/core": "^1.43.0",
     "@zag-js/date-picker": "^1.42.0",
     "@zag-js/dialog": "^1.42.0",
     "@zag-js/editable": "^1.42.0",
