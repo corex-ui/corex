@@ -33,7 +33,9 @@ function cssThumbSize(el: HTMLElement): { width: number; height: number } | unde
 }
 
 /** Read thumb dimensions from SSR markup so contain alignment stays visible on hydrate. */
-export function readSliderThumbSize(el: HTMLElement): { width: number; height: number } | undefined {
+export function readSliderThumbSize(
+  el: HTMLElement
+): { width: number; height: number } | undefined {
   const thumb = el.querySelector<HTMLElement>('[data-scope="slider"][data-part="thumb"]');
   if (!thumb) return cssThumbSize(el);
 
