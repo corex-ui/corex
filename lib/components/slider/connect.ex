@@ -330,11 +330,13 @@ defmodule Corex.Slider.Connect do
       "id" => "slider:#{assigns.id}:thumb:#{index}",
       "dir" => assigns.dir,
       "data-orientation" => orient,
+      "role" => "slider",
       "style" => thumb_style(index, orient),
       "data-disabled" => presence_attr(assigns.disabled),
       "data-invalid" => presence_attr(assigns.invalid),
       "data-readonly" => presence_attr(assigns.read_only)
     }
+    |> maybe_put("tabindex", if(assigns.disabled in [nil, false], do: "0"))
   end
 
   def ignore_thumb(assigns) do

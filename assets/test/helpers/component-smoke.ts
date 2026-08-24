@@ -414,7 +414,7 @@ export function angleSliderTree(): HTMLElement {
 export function sliderTree(thumbs = 1): HTMLElement {
   const thumbChildren = Array.from({ length: thumbs }, (_, index) => ({
     part: "thumb",
-    attrs: { "data-index": String(index) },
+    attrs: { "data-index": String(index), role: "slider" },
     children: [{ part: "hidden-input", attrs: { "data-index": String(index) } }],
   }));
 

@@ -45,7 +45,7 @@ defmodule E2eWeb.SliderModel do
         session,
         """
         const s = document.querySelector(#{Jason.encode!("#" <> section_dom_id)});
-        const t = s && s.querySelector('[data-part="thumb"]');
+        const t = s && s.querySelector('[data-scope="slider"][data-part="thumb"]');
         if (t) t.focus();
         """,
         []

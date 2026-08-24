@@ -21,6 +21,7 @@ defmodule Corex.SliderTest do
       assert html =~ ~r/data-part="track"/
       assert html =~ ~r/data-part="range"/
       assert html =~ ~r/data-part="thumb"/
+      assert html =~ ~S(role="slider")
       assert html =~ ~r/data-part="hidden-input"/
       assert html =~ ~r/data-part="value-text"/
       assert html =~ ~S(data-default-value="[30)
