@@ -403,8 +403,7 @@ pre.code,
 }
 
 .checkbox :where([data-scope="checkbox"][data-part="control"]),
-.radio-group :where([data-scope="radio-group"][data-part="item-control"]),
-.slider :where([data-scope="slider"][data-part="control"]) {
+.radio-group :where([data-scope="radio-group"][data-part="item-control"]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;

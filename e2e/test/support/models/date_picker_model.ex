@@ -58,6 +58,64 @@ defmodule E2eWeb.DatePickerModel do
     )
   end
 
+  def wait_content_open_in_section(session, section_dom_id, opts \\ []) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
+      raise ArgumentError, "invalid section dom id"
+    end
+
+    wait_for_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def close_date_picker_in_section(session, section_dom_id, opts \\ []) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
+      raise ArgumentError, "invalid section dom id"
+    end
+
+    open_q =
+      css(
+        ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
+        visible: :any,
+        timeout: 250
+      )
+
+    if has?(session, open_q) do
+      _ =
+        execute_script(
+          session,
+          """
+          const section = document.getElementById(arguments[0]);
+          const trigger = section?.querySelector(
+            '[phx-hook="DatePicker"] [data-scope="date-picker"][data-part="trigger"]'
+          );
+          if (trigger) trigger.click();
+          """,
+          [section_dom_id]
+        )
+
+      wait_for_has(
+        session,
+        css(
+          ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"]:not([data-state="open"])|,
+          visible: :any
+        ),
+        opts
+      )
+    end
+
+    session
+  end
+
   def open_date_picker_by_host_id(session, host_dom_id) when is_binary(host_dom_id) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid date picker host dom id"

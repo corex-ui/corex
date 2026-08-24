@@ -193,7 +193,6 @@ defmodule Corex.Design.Components do
     {"signature-pad", "error", :error},
     {"slider", "root", :root},
     {"slider", "label", :label},
-    {"slider", "control", :control},
     {"slider", "error", :error},
     {"switch", "label", :label},
     {"switch", "error", :error},
