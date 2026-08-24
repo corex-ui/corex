@@ -268,6 +268,31 @@ defmodule E2eWeb.Home.Page do
       </section>
 
       <section
+        id="home-admin"
+        class="relative isolate flex min-h-[50dvh] w-full flex-col justify-center overflow-x-hidden border-t border-border py-size-xl"
+        aria-labelledby="home-admin-heading"
+      >
+        <div class="relative z-1 mx-auto flex w-full max-w-6xl flex-col gap-size-lg px-space">
+          <p class="m-0 text-sm font-medium tracking-wide text-brand-text uppercase">
+            {~t"Backoffice"}
+          </p>
+          <h2
+            id="home-admin-heading"
+            class="display m-0 text-balance text-3xl tracking-tighter text-ink sm:text-4xl lg:text-5xl"
+          >
+            {~t"Corex Admin"}
+          </h2>
+          <p class="m-0 max-w-2xl text-pretty text-lg text-ink-muted">
+            {~t"A context-first, deny-by-default LiveView admin. This demo uses a per-session scope so your edits stay isolated and reset periodically."}
+          </p>
+          <.navigate to={~p"/admin"} class="button ui-accent self-start">
+            {~t"Open admin demo"}
+            <.heroicon name="hero-arrow-right" />
+          </.navigate>
+        </div>
+      </section>
+
+      <section
         id="home-installer"
         class="relative isolate flex min-h-dvh w-full flex-col justify-center overflow-x-hidden border-t border-border py-size-xl"
         aria-labelledby="home-installer-heading"

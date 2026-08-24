@@ -51,6 +51,13 @@ defmodule E2eWeb.App.MainNav do
       >
         {~t"Blog"}
       </.navigate>
+      <.navigate
+        to={~p"/admin"}
+        class={@link_class}
+        aria-current={nav_admin_aria_current(@path)}
+      >
+        {~t"Admin"}
+      </.navigate>
     </nav>
     """
   end
@@ -62,6 +69,8 @@ defmodule E2eWeb.App.MainNav do
   defp nav_showcases_aria_current(path), do: section_aria_current(path, "/showcases")
 
   defp nav_blog_aria_current(path), do: section_aria_current(path, "/blog")
+
+  defp nav_admin_aria_current(path), do: section_aria_current(path, "/admin")
 
   defp section_aria_current(path, root) when is_binary(path) do
     case normalize_path(path) do
@@ -78,6 +87,7 @@ defmodule E2eWeb.App.MainNav do
     cond do
       path == "" or String.starts_with?(path, "/showcases") -> nil
       String.starts_with?(path, "/admins") -> nil
+      String.starts_with?(path, "/admin") -> nil
       String.starts_with?(path, "/users") -> nil
       String.starts_with?(path, "/forms") -> nil
       not doc_navigation_path?(path) -> nil

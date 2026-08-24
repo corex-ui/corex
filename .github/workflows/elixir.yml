@@ -121,6 +121,18 @@ jobs:
         env:
           MIX_ENV: test
 
+      - name: Install admin dependencies
+        working-directory: admin
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — admin
+        working-directory: admin
+        run: mix lint
+        env:
+          MIX_ENV: test
+
       - name: Set up pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
@@ -173,9 +185,11 @@ jobs:
             design/_build
             mcp/deps
             mcp/_build
+            admin/deps
+            admin/_build
             installer/deps
             installer/_build
-          key: dialyzer-deps-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'installer/mix.lock') }}
+          key: dialyzer-deps-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'admin/mix.lock', 'installer/mix.lock') }}
           restore-keys: |
             dialyzer-deps-${{ runner.os }}-28.3-1.19.5
 
@@ -186,8 +200,9 @@ jobs:
             priv/plts
             design/priv/plts
             mcp/priv/plts
+            admin/priv/plts
             installer/priv/plts
-          key: plt-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'installer/mix.lock') }}
+          key: plt-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'admin/mix.lock', 'installer/mix.lock') }}
           restore-keys: |
             plt-${{ runner.os }}-28.3-1.19.5
 
@@ -200,6 +215,10 @@ jobs:
 
       - name: Dialyzer — mcp
         working-directory: mcp
+        run: mix deps.get && mix dialyzer
+
+      - name: Dialyzer — admin
+        working-directory: admin
         run: mix deps.get && mix dialyzer
 
       - name: Dialyzer — installer
@@ -550,6 +569,51 @@ jobs:
 
       - name: Run mcp tests
         working-directory: mcp
+        run: mix test
+
+  admin-tests:
+    name: Admin tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
+    runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
+
+    strategy:
+      matrix:
+        include:
+          - elixir: 1.19.5
+            otp: "28.3"
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Restore admin dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            admin/deps
+            admin/_build
+            deps
+            _build
+          key: deps-admin-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('admin/mix.lock', 'mix.lock') }}
+          restore-keys: |
+            deps-admin-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+
+      - name: Install admin dependencies
+        working-directory: admin
+        run: mix deps.get
+
+      - name: Compile admin (warnings as errors)
+        working-directory: admin
+        run: mix compile --warnings-as-errors
+
+      - name: Run admin tests
+        working-directory: admin
         run: mix test
 
   integration-tests:
