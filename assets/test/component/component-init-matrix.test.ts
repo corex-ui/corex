@@ -25,6 +25,7 @@ import { PinInput } from "../../components/pin-input";
 import { RadioGroup } from "../../components/radio-group";
 import { Select } from "../../components/select";
 import { SignaturePad } from "../../components/signature-pad";
+import { Slider } from "../../components/slider";
 import { Switch } from "../../components/switch";
 import { Tabs } from "../../components/tabs";
 import { TagsInput } from "../../components/tags-input";
@@ -59,6 +60,7 @@ import {
   sampleTreeRoot,
   selectTree,
   signaturePadTree,
+  sliderTree,
   tabsTree,
   tagsInputTree,
   timerTree,
@@ -308,6 +310,22 @@ const cases: [string, Factory][] = [
     () => {
       const el = signaturePadTree();
       const c = new SignaturePad(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Slider",
+    () => {
+      const el = sliderTree();
+      const c = new Slider(el, { id: el.id, defaultValue: [0] });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Slider range",
+    () => {
+      const el = sliderTree(2);
+      const c = new Slider(el, { id: el.id, defaultValue: [20, 80] });
       return { init: () => c.init(), destroy: () => c.destroy() };
     },
   ],

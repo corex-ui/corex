@@ -12,14 +12,15 @@ import {
   getBoolean,
   getDir,
   getNumber,
-  getString
-} from "./chunks/chunk-6L36XW7I.mjs";
+  getString,
+  mergeWithDefault
+} from "./chunks/chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.42.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
+// ../node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.42.0/node_modules/@zag-js/marquee/dist/marquee.dom.mjs
+// ../node_modules/@zag-js/marquee/dist/marquee.dom.mjs
 var dom = {
   getRootId: (ctx) => ctx.ids?.root ?? `marquee:${ctx.id}`,
   getViewportId: (ctx) => ctx.ids?.viewport ?? `marquee:${ctx.id}:viewport`,
@@ -29,7 +30,7 @@ var dom = {
   getContentEl: (ctx, index) => ctx.getById(dom.getContentId(ctx, index))
 };
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.42.0/node_modules/@zag-js/marquee/dist/marquee.utils.mjs
+// ../node_modules/@zag-js/marquee/dist/marquee.utils.mjs
 var getEdgePositionStyles = (options) => {
   const { side } = options;
   switch (side) {
@@ -70,10 +71,21 @@ var getMarqueeTranslate = (options) => {
   const shouldBeNegative = side === "start" && dir === "ltr" || side === "end" && dir === "rtl";
   return shouldBeNegative ? "-100%" : "100%";
 };
+function calculateDuration(options) {
+  const { contentSize, speed, multiplier, autoFill } = options;
+  if (autoFill) {
+    return contentSize * multiplier / speed;
+  }
+  return contentSize / speed;
+}
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.42.0/node_modules/@zag-js/marquee/dist/marquee.connect.mjs
+// ../node_modules/@zag-js/marquee/dist/marquee.connect.mjs
+var defaultTranslations = {
+  root: "Marquee content"
+};
 function connect(service, normalize) {
   const { scope, send, context, computed, prop } = service;
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   const side = prop("side");
   const paused = context.get("paused");
   const duration = context.get("duration");
@@ -107,7 +119,7 @@ function connect(service, normalize) {
         role: "region",
         "aria-roledescription": "marquee",
         "aria-live": "off",
-        "aria-label": prop("translations").root,
+        "aria-label": translations.root,
         "data-state": paused ? "paused" : "idle",
         "data-orientation": orientation,
         "data-paused": dataAttr(paused),
@@ -223,7 +235,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.42.0/node_modules/@zag-js/marquee/dist/marquee.machine.mjs
+// ../node_modules/@zag-js/marquee/dist/marquee.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -237,9 +249,6 @@ var machine = createMachine({
       pauseOnInteraction: false,
       reverse: false,
       defaultPaused: false,
-      translations: {
-        root: "Marquee content"
-      },
       ...props
     };
   },
@@ -393,13 +402,6 @@ var machine = createMachine({
     }
   }
 });
-function calculateDuration(options) {
-  const { rootSize, contentSize, speed, multiplier, autoFill } = options;
-  if (autoFill) {
-    return contentSize * multiplier / speed;
-  }
-  return contentSize < rootSize ? rootSize / speed : contentSize / speed;
-}
 
 // components/marquee.ts
 var PHX_ATTR_PREFIX = "phx-";

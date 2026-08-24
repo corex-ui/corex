@@ -1,15 +1,15 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-QCFVFTGB.mjs";
+} from "./chunks/chunk-MEBO2IC2.mjs";
 import {
   syncCheckableHiddenInput,
   syncCheckedHiddenInput
-} from "./chunks/chunk-NUQOKDPA.mjs";
+} from "./chunks/chunk-Y6K7DMC3.mjs";
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-F2ZOUSGC.mjs";
+} from "./chunks/chunk-RCF57L3G.mjs";
 import {
   checkedChangePayload,
   emitResponse,
@@ -37,13 +37,13 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.42.0/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
+// ../node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.42.0/node_modules/@zag-js/checkbox/dist/checkbox.dom.mjs
+// ../node_modules/@zag-js/checkbox/dist/checkbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `checkbox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `checkbox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `checkbox:${ctx.id}:control`;
@@ -51,7 +51,7 @@ var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `checkbox:${ctx.id}:inpu
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.42.0/node_modules/@zag-js/checkbox/dist/checkbox.connect.mjs
+// ../node_modules/@zag-js/checkbox/dist/checkbox.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, computed, scope } = service;
   const disabled = !!prop("disabled");
@@ -167,7 +167,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.42.0/node_modules/@zag-js/checkbox/dist/checkbox.machine.mjs
+// ../node_modules/@zag-js/checkbox/dist/checkbox.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {

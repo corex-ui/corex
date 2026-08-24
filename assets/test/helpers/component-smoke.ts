@@ -411,6 +411,37 @@ export function angleSliderTree(): HTMLElement {
   );
 }
 
+export function sliderTree(thumbs = 1): HTMLElement {
+  const thumbChildren = Array.from({ length: thumbs }, (_, index) => ({
+    part: "thumb",
+    attrs: { "data-index": String(index) },
+    children: [{ part: "hidden-input", attrs: { "data-index": String(index) } }],
+  }));
+
+  return withId(
+    scopeTree("slider", [
+      {
+        part: "root",
+        children: [
+          { part: "label", text: "Volume" },
+          {
+            part: "control",
+            children: [
+              { part: "track", children: [{ part: "range" }] },
+              ...thumbChildren,
+            ],
+          },
+          {
+            part: "marker-group",
+            children: [{ part: "marker", attrs: { "data-value": "0" } }],
+          },
+          { part: "value-text", children: [{ part: "value", text: "0" }] },
+        ],
+      },
+    ])
+  );
+}
+
 export function avatarTree(): HTMLElement {
   return withId(
     scopeTree("avatar", [

@@ -552,6 +552,87 @@ defmodule E2eWeb.PageController do
     |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
   end
 
+  defp assign_slider_form_docs(conn, scroll_to) do
+    conn
+    |> assign(:scroll_to, scroll_to)
+    |> assign(:form_ecto, E2eWeb.Demos.SliderDemo.form_ecto())
+    |> assign(:phoenix_heex, E2eWeb.Demos.SliderDemo.form_phoenix_heex())
+    |> assign(:phoenix_elixir, E2eWeb.Demos.SliderDemo.form_phoenix_elixir())
+    |> assign(:ecto_heex, E2eWeb.Demos.SliderDemo.form_ecto_heex())
+    |> assign(:ecto_elixir, E2eWeb.Demos.SliderDemo.form_ecto_elixir())
+    |> assign(:native_heex, E2eWeb.Demos.SliderDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.SliderDemo.form_native_elixir())
+  end
+
+  def slider_form_page(conn, _params) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"volume" => "0"},
+        as: :slider_phoenix,
+        id: "slider-form-phoenix"
+      )
+
+    ecto_form =
+      %E2e.Form.SliderForm{}
+      |> E2e.Form.SliderForm.changeset_validate(%{})
+      |> Phoenix.Component.to_form(as: :slider_ecto, id: "slider-form-ecto")
+
+    conn
+    |> assign_slider_form_docs(nil)
+    |> render(:slider_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+  end
+
+  def slider_form_submit(conn, %{"slider_phoenix" => %{"volume" => volume}}) do
+    conn
+    |> put_flash(:info, "Submitted: volume=#{volume}")
+    |> redirect(to: ~p"/slider/form#slider-form-phoenix")
+  end
+
+  def slider_form_submit(conn, %{"slider_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.SliderForm{}
+      |> E2e.Form.SliderForm.changeset_validate(ecto_params)
+
+    if changeset.valid? do
+      volume = ecto_params["volume"] || "0"
+
+      conn
+      |> put_flash(:info, "Submitted: volume=#{volume}")
+      |> redirect(to: ~p"/slider/form#slider-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
+
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :slider_ecto,
+          id: "slider-form-ecto"
+        )
+
+      phoenix_form =
+        Phoenix.Component.to_form(%{"volume" => "0"},
+          as: :slider_phoenix,
+          id: "slider-form-phoenix"
+        )
+
+      conn
+      |> assign_slider_form_docs("slider-form-ecto")
+      |> render(:slider_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+    end
+  end
+
+  def slider_form_submit(conn, %{"slider_form" => form_params}) do
+    volume = Map.get(form_params, "volume", "0")
+
+    conn
+    |> put_flash(:info, "Submitted: volume=#{volume}")
+    |> redirect(to: ~p"/slider/form#slider-form-native")
+  end
+
+  def slider_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: volume=0")
+    |> redirect(to: ~p"/slider/form#slider-form-native")
+  end
+
   defp assign_color_picker_form_docs(conn, scroll_to) do
     conn
     |> assign(:scroll_to, scroll_to)
@@ -959,6 +1040,14 @@ defmodule E2eWeb.PageController do
 
   def angle_slider_styling_page(conn, _params) do
     render(conn, :angle_slider_styling_page)
+  end
+
+  def slider_page(conn, _params) do
+    render(conn, :slider_page)
+  end
+
+  def slider_styling_page(conn, _params) do
+    render(conn, :slider_styling_page)
   end
 
   def avatar_page(conn, _params) do

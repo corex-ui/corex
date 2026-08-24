@@ -114,6 +114,10 @@
       "types": "./priv/static/types/hooks/signature-pad.d.ts",
       "import": "./priv/static/signature-pad.mjs"
     },
+    "./slider": {
+      "types": "./priv/static/types/hooks/slider.d.ts",
+      "import": "./priv/static/slider.mjs"
+    },
     "./switch": {
       "types": "./priv/static/types/hooks/switch.d.ts",
       "import": "./priv/static/switch.mjs"
@@ -208,6 +212,7 @@
     "@zag-js/radio-group": "^1.42.0",
     "@zag-js/select": "^1.42.0",
     "@zag-js/signature-pad": "^1.42.0",
+    "@zag-js/slider": "^1.42.0",
     "@zag-js/switch": "^1.42.0",
     "@zag-js/tabs": "^1.42.0",
     "@zag-js/tags-input": "^1.42.0",

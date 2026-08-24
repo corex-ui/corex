@@ -6,7 +6,7 @@ import {
   getNumber,
   getString,
   getStringList
-} from "./chunk-6L36XW7I.mjs";
+} from "./chunk-NHD23A5Q.mjs";
 
 // lib/number-input-format.ts
 var MAX_FRACTION_DIGITS = 10;
@@ -213,6 +213,48 @@ function readUpdatedServerNumber(el, before) {
     value: formatDisplayValue(raw, step)
   };
 }
+function parseDatasetNumberList(raw) {
+  if (raw === void 0) return [];
+  const trimmed = raw.trim();
+  if (trimmed === "") return [];
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (!Array.isArray(parsed)) return [];
+      const nums = parsed.map((item) => Number(item)).filter((n2) => Number.isFinite(n2));
+      return nums;
+    } catch {
+      return [];
+    }
+  }
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? [n] : [];
+}
+function numberListOrDefault(values) {
+  return values.length > 0 ? values : [0];
+}
+function mountNumberListBinding(el) {
+  if (getBoolean(el, "controlled")) {
+    return { value: numberListOrDefault(parseDatasetNumberList(el.dataset.value)) };
+  }
+  return {
+    defaultValue: numberListOrDefault(parseDatasetNumberList(el.dataset.defaultValue))
+  };
+}
+function readUpdatedServerNumberList(el, before) {
+  const sync = getBoolean(el, "controlled") || getBoolean(el, "formField");
+  if (!sync) {
+    return {};
+  }
+  if (!anyDatasetKeyChanged(before, el, ["value", "defaultValue"])) {
+    return {};
+  }
+  const raw = getString(el, "value") ?? (getBoolean(el, "formField") ? getString(el, "defaultValue") : void 0);
+  if (raw === void 0) {
+    return {};
+  }
+  return { value: numberListOrDefault(parseDatasetNumberList(raw)) };
+}
 function mountNumberBinding(el) {
   const step = numberInputStep(el);
   if (getBoolean(el, "controlled")) {
@@ -269,6 +311,8 @@ export {
   mountCheckedBinding,
   mountTagsBinding,
   readUpdatedServerNumber,
+  mountNumberListBinding,
+  readUpdatedServerNumberList,
   mountNumberBinding,
   readStringListControlledZagUpdate,
   readPressedControlledZagUpdate,

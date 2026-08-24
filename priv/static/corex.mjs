@@ -246,6 +246,7 @@ var Hooks = {
   RadioGroup: createLazyHook(() => import("corex/radio-group"), "RadioGroup"),
   Select: createLazyHook(() => import("corex/select"), "Select"),
   SignaturePad: createLazyHook(() => import("corex/signature-pad"), "SignaturePad"),
+  Slider: createLazyHook(() => import("corex/slider"), "Slider"),
   Switch: createLazyHook(() => import("corex/switch"), "Switch"),
   TagsInput: createLazyHook(() => import("corex/tags-input"), "TagsInput"),
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),

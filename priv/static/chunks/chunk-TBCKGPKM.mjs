@@ -1,6 +1,6 @@
 import {
   trackInteractOutside
-} from "./chunk-F544AH56.mjs";
+} from "./chunk-4F3TQ7OK.mjs";
 import {
   addDomEvent,
   contains,
@@ -8,16 +8,15 @@ import {
   getDocument,
   getEventTarget,
   getWindow,
-  isFunction,
   isHTMLElement,
   nextTick,
-  raf,
   setStyle,
   waitForElement,
-  warn
-} from "./chunk-6L36XW7I.mjs";
+  warn,
+  whenNode
+} from "./chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+dismissable@1.42.0/node_modules/@zag-js/dismissable/dist/escape-keydown.mjs
+// ../node_modules/@zag-js/dismissable/dist/escape-keydown.mjs
 function trackEscapeKeydown(node, fn) {
   const handleKeyDown = (event) => {
     if (event.key !== "Escape") return;
@@ -27,7 +26,7 @@ function trackEscapeKeydown(node, fn) {
   return addDomEvent(getDocument(node), "keydown", handleKeyDown, { capture: true });
 }
 
-// ../node_modules/.pnpm/@zag-js+dismissable@1.42.0/node_modules/@zag-js/dismissable/dist/layer-stack.mjs
+// ../node_modules/@zag-js/dismissable/dist/layer-stack.mjs
 var LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
 var layerStack = {
   layers: [],
@@ -183,7 +182,7 @@ function addListenerOnce(el, type, callback) {
   el.addEventListener(type, callback, { once: true });
 }
 
-// ../node_modules/.pnpm/@zag-js+dismissable@1.42.0/node_modules/@zag-js/dismissable/dist/pointer-event-outside.mjs
+// ../node_modules/@zag-js/dismissable/dist/pointer-event-outside.mjs
 var originalBodyPointerEvents = /* @__PURE__ */ new WeakMap();
 var layerObservers = /* @__PURE__ */ new WeakMap();
 function getDesiredPointerEvents(node) {
@@ -260,16 +259,8 @@ function disablePointerEventsOutside(node, persistentElements) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dismissable@1.42.0/node_modules/@zag-js/dismissable/dist/dismissable-layer.mjs
+// ../node_modules/@zag-js/dismissable/dist/dismissable-layer.mjs
 function trackDismissableElementImpl(node, options) {
-  const { warnOnMissingNode = true } = options;
-  if (warnOnMissingNode && !node) {
-    warn("[@zag-js/dismissable] node is `null` or `undefined`");
-    return;
-  }
-  if (!node) {
-    return;
-  }
   const {
     onDismiss,
     onRequestDismiss,
@@ -320,7 +311,6 @@ function trackDismissableElementImpl(node, options) {
     }
   }
   function exclude(target) {
-    if (!node) return false;
     const containers = typeof excludeContainers === "function" ? excludeContainers() : excludeContainers;
     const _containers = Array.isArray(containers) ? containers : [containers];
     const persistentElements = options.persistentElements?.map((fn) => fn()).filter(isHTMLElement);
@@ -340,39 +330,26 @@ function trackDismissableElementImpl(node, options) {
   };
 }
 function trackDismissableElement(nodeOrFn, options) {
-  const { defer } = options;
-  const func = defer ? raf : (v) => v();
-  const cleanups = [];
-  cleanups.push(
-    func(() => {
-      const node = isFunction(nodeOrFn) ? nodeOrFn() : nodeOrFn;
-      cleanups.push(trackDismissableElementImpl(node, options));
-    })
-  );
-  return () => {
-    cleanups.forEach((fn) => fn?.());
-  };
+  const { warnOnMissingNode = true } = options;
+  return whenNode(nodeOrFn, (node) => trackDismissableElementImpl(node, options), {
+    defer: options.defer,
+    onMissing: warnOnMissingNode ? () => warn("[@zag-js/dismissable] node is `null` or `undefined`") : void 0
+  });
 }
 function trackDismissableBranch(nodeOrFn, options = {}) {
-  const { defer } = options;
-  const func = defer ? raf : (v) => v();
-  const cleanups = [];
-  cleanups.push(
-    func(() => {
-      const node = isFunction(nodeOrFn) ? nodeOrFn() : nodeOrFn;
-      if (!node) {
-        warn("[@zag-js/dismissable] branch node is `null` or `undefined`");
-        return;
-      }
+  return whenNode(
+    nodeOrFn,
+    (node) => {
       layerStack.addBranch(node);
-      cleanups.push(() => {
+      return () => {
         layerStack.removeBranch(node);
-      });
-    })
+      };
+    },
+    {
+      defer: options.defer,
+      onMissing: () => warn("[@zag-js/dismissable] branch node is `null` or `undefined`")
+    }
   );
-  return () => {
-    cleanups.forEach((fn) => fn?.());
-  };
 }
 
 export {

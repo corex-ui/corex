@@ -28,6 +28,13 @@ defmodule Corex.RegistryCompletenessTest do
     fns = function_components!(:angle_slider)
     assert Enum.any?(fns, &(&1.name == :angle_slider_root))
     assert Enum.any?(fns, &(&1.name == :angle_slider_control))
+
+    fns = function_components!(:slider)
+    assert Enum.any?(fns, &(&1.name == :slider_root))
+    assert Enum.any?(fns, &(&1.name == :slider_track))
+    assert Enum.any?(fns, &(&1.name == :slider_range))
+    assert Enum.any?(fns, &(&1.name == :slider_thumb))
+    assert Enum.any?(fns, &(&1.name == :slider_skeleton))
   end
 
   defp function_components!(id) do

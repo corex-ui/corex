@@ -17,10 +17,11 @@ import {
   getDir,
   getString,
   isLeftClick,
+  mergeWithDefault,
   uuid
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
+// ../node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
 var anatomy = createAnatomy("password-input").parts(
   "root",
   "input",
@@ -31,11 +32,14 @@ var anatomy = createAnatomy("password-input").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
+// ../node_modules/@zag-js/password-input/dist/password-input.dom.mjs
 var getInputId = (ctx) => ctx.ids?.input ?? `p-input-${ctx.id}-input`;
 var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
+// ../node_modules/@zag-js/password-input/dist/password-input.connect.mjs
+var defaultTranslations = {
+  visibilityTrigger: (visible) => visible ? "Hide password" : "Show password"
+};
 function connect(service, normalize) {
   const { scope, prop, context } = service;
   const visible = context.get("visible");
@@ -44,7 +48,7 @@ function connect(service, normalize) {
   const readOnly = !!prop("readOnly");
   const required = !!prop("required");
   const interactive = !(readOnly || disabled);
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   return {
     visible,
     disabled,
@@ -150,7 +154,7 @@ var passwordManagerProps = {
   "data-protonpass-ignore": "true"
 };
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
+// ../node_modules/@zag-js/password-input/dist/password-input.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -158,13 +162,7 @@ var machine = createMachine({
       defaultVisible: false,
       autoComplete: "current-password",
       ignorePasswordManagers: false,
-      ...props,
-      translations: {
-        visibilityTrigger(visible) {
-          return visible ? "Hide password" : "Show password";
-        },
-        ...props.translations
-      }
+      ...props
     };
   },
   context({ prop, bindable }) {

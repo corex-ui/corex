@@ -24,6 +24,7 @@ defmodule E2eWeb.DocA11yRoutesTest do
 
     for {slug, comp} <- [
           {"angle-slider", :angle_slider},
+          {"slider", :slider},
           {"checkbox", :checkbox},
           {"listbox", :listbox},
           {"switch", :switch},
@@ -40,6 +41,7 @@ defmodule E2eWeb.DocA11yRoutesTest do
 
     for {slug, comp} <- [
           {"angle-slider", :angle_slider},
+          {"slider", :slider},
           {"checkbox", :checkbox},
           {"switch", :switch},
           {"combobox", :combobox}

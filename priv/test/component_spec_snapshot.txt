@@ -32,6 +32,7 @@ pin_input:pin_input
 radio_group:radio_group
 select:select
 signature_pad:signature_pad
+slider:slider,slider_control,slider_hidden_input,slider_label,slider_marker,slider_marker_group,slider_range,slider_root,slider_skeleton,slider_thumb,slider_track,slider_value,slider_value_text
 switch:switch
 tabs:tabs,tabs_content,tabs_indicator,tabs_list,tabs_root,tabs_skeleton,tabs_trigger
 tags_input:tags_input

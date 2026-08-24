@@ -2,7 +2,19 @@ defmodule Corex.ComponentRenderPathsTest do
   use CorexTest.ComponentCase, async: true
   import Phoenix.Component
 
-  alias Corex.{AngleSlider, Carousel, Content, Menu, PinInput, Tabs, Timer, Tree, TreeView}
+  alias Corex.{
+    AngleSlider,
+    Carousel,
+    Content,
+    Menu,
+    PinInput,
+    Slider,
+    Tabs,
+    Timer,
+    Tree,
+    TreeView
+  }
+
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Root}
   alias Corex.PinInput.Connect, as: PinConnect
   alias Corex.Timer.Anatomy.{ActionTrigger, Item, ItemLabel, Segment, Separator}
@@ -412,6 +424,119 @@ defmodule Corex.ComponentRenderPathsTest do
       assert html =~ "Heading"
       assert html =~ "Custom"
       assert html =~ "120"
+      assert html =~ "Too low"
+      assert html =~ ~S(data-part="marker-group")
+    end
+  end
+
+  describe "slider compound" do
+    test "compound mode renders track, range, and thumb" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Slider.slider
+              id="compound-slider"
+              compound
+              :let={ctx}
+              value={30}
+              name="volume"
+            >
+              <Slider.slider_root ctx={ctx}>
+                <Slider.slider_label ctx={ctx}>Volume</Slider.slider_label>
+                <Slider.slider_control ctx={ctx}>
+                  <Slider.slider_track ctx={ctx}>
+                    <Slider.slider_range ctx={ctx} />
+                  </Slider.slider_track>
+                  <Slider.slider_thumb ctx={ctx} index={0}>
+                    <Slider.slider_hidden_input ctx={ctx} index={0} />
+                  </Slider.slider_thumb>
+                </Slider.slider_control>
+              </Slider.slider_root>
+            </Slider.slider>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Volume"
+      assert html =~ ~S(data-part="thumb")
+      assert html =~ ~S(data-part="track")
+      assert html =~ ~S(data-part="range")
+      assert html =~ ~S(data-index="0")
+    end
+
+    test "compound mode with markers, value text, and hidden input" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Slider.slider
+              id="compound-slider-full"
+              compound
+              :let={ctx}
+              value={[20, 80]}
+              name="price"
+              marker_values={[0, 50]}
+            >
+              <Slider.slider_root ctx={ctx}>
+                <Slider.slider_marker_group ctx={ctx}>
+                  <Slider.slider_marker ctx={ctx} value={0} />
+                  <Slider.slider_marker ctx={ctx} value={50} />
+                </Slider.slider_marker_group>
+                <Slider.slider_value_text ctx={ctx} />
+                <Slider.slider_thumb ctx={ctx} index={0}>
+                  <Slider.slider_hidden_input ctx={ctx} index={0} />
+                </Slider.slider_thumb>
+                <Slider.slider_thumb ctx={ctx} index={1}>
+                  <Slider.slider_hidden_input ctx={ctx} index={1} />
+                </Slider.slider_thumb>
+              </Slider.slider_root>
+            </Slider.slider>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-part="marker")
+      assert html =~ "20 – 80"
+      assert html =~ ~S(type="hidden")
+      assert html =~ ~S(data-index="1")
+    end
+
+    test "slider_skeleton renders loading markup" do
+      html = render_component(&Slider.slider_skeleton/1, [])
+      assert html =~ ~S(data-loading)
+      assert html =~ ~S(data-part="marker-group")
+    end
+  end
+
+  describe "slider default render paths" do
+    test "renders value_text slot and errors" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Slider.slider
+              id="slider-full"
+              value={40}
+              name="volume"
+              marker_values={[0, 50, 100]}
+              errors={["Too low"]}
+              invalid
+            >
+              <:label>Volume</:label>
+              <:value_text class="slider-value">Custom</:value_text>
+              <:error :let={msg}>{msg}</:error>
+            </Slider.slider>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Volume"
+      assert html =~ "Custom"
+      assert html =~ "40"
       assert html =~ "Too low"
       assert html =~ ~S(data-part="marker-group")
     end

@@ -23,6 +23,7 @@ import { PinInput } from "../../components/pin-input";
 import { RadioGroup } from "../../components/radio-group";
 import { Select } from "../../components/select";
 import { SignaturePad } from "../../components/signature-pad";
+import { Slider } from "../../components/slider";
 import { Switch } from "../../components/switch";
 import { Tabs } from "../../components/tabs";
 import { TagsInput } from "../../components/tags-input";
@@ -60,6 +61,7 @@ import {
   sampleTreeRoot,
   selectTree,
   signaturePadTree,
+  sliderTree,
   smokeId,
   tabsTree,
   tagsInputTree,
@@ -234,6 +236,11 @@ describe("component render smoke", () => {
 
   smoke("SignaturePad", () => {
     const c = new SignaturePad(signaturePadTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Slider", () => {
+    const c = new Slider(sliderTree(), { id: smokeId, defaultValue: [0] });
     return { render: () => c.render(), destroy: () => c.destroy() };
   });
 

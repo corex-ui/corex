@@ -2,14 +2,14 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-X7GOMWQ5.mjs";
+} from "./chunks/chunk-UDOXAGZO.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CI7ZMY4G.mjs";
-import "./chunks/chunk-F544AH56.mjs";
+} from "./chunks/chunk-TBCKGPKM.mjs";
+import "./chunks/chunk-4F3TQ7OK.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-VOKBRZCH.mjs";
+} from "./chunks/chunk-NB2X5AJC.mjs";
 import {
   applyItems,
   firstSelectedValue,
@@ -18,26 +18,26 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-XGL2LWL4.mjs";
+} from "./chunks/chunk-UKRXMCAJ.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-NU3NDRI3.mjs";
+} from "./chunks/chunk-5GSPM2B3.mjs";
 import "./chunks/chunk-4JICR5HJ.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-QCFVFTGB.mjs";
+} from "./chunks/chunk-MEBO2IC2.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-NUQOKDPA.mjs";
+} from "./chunks/chunk-Y6K7DMC3.mjs";
 import {
   readStringListControlledZagProps,
   readUpdatedServerStringList
-} from "./chunks/chunk-F2ZOUSGC.mjs";
+} from "./chunks/chunk-RCF57L3G.mjs";
 import {
   idMatches,
   notifyChange,
@@ -69,6 +69,7 @@ import {
   isInternalChangeEvent,
   isValidTabEvent,
   markAsInternalChangeEvent,
+  mergeWithDefault,
   observeAttributes,
   partPropsMethod,
   raf,
@@ -76,9 +77,9 @@ import {
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
+// ../node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -98,7 +99,7 @@ var anatomy = createAnatomy("select").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.collection.mjs
+// ../node_modules/@zag-js/select/dist/select.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -106,7 +107,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.dom.mjs
+// ../node_modules/@zag-js/select/dist/select.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
@@ -128,10 +129,13 @@ var getItemEl = (ctx, id) => {
   return ctx.getById(getItemId(ctx, id));
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.connect.mjs
+// ../node_modules/@zag-js/select/dist/select.connect.mjs
+var defaultTranslations = {
+  clearTriggerLabel: "Clear value"
+};
 function connect(service, normalize) {
   const { context, prop, scope, state, computed, send } = service;
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   const disabled = prop("disabled") || context.get("fieldsetDisabled");
   const invalid = !!prop("invalid");
   const required = !!prop("required");
@@ -363,6 +367,7 @@ function connect(service, normalize) {
         "aria-disabled": ariaAttr(itemState.disabled),
         onPointerMove(event) {
           if (itemState.disabled || event.pointerType !== "mouse") return;
+          if (getInteractionModality() !== "pointer") return;
           if (itemState.value === highlightedValue) return;
           send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
         },
@@ -375,8 +380,7 @@ function connect(service, normalize) {
           if (itemState.disabled) return;
           if (props.persistFocus) return;
           if (event.pointerType !== "mouse") return;
-          const pointerMoved = service.event.previous()?.type.includes("POINTER");
-          if (!pointerMoved) return;
+          if (getInteractionModality() !== "pointer") return;
           send({ type: "ITEM.POINTER_LEAVE" });
         }
       });
@@ -555,7 +559,7 @@ var getSelectedValues = (el) => {
   return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.machine.mjs
+// ../node_modules/@zag-js/select/dist/select.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -566,10 +570,6 @@ var machine = createMachine({
       defaultValue: [],
       ...props,
       collection: props.collection ?? collection.empty(),
-      translations: {
-        clearTriggerLabel: "Clear value",
-        ...props.translations
-      },
       positioning: {
         placement: "bottom-start",
         gutter: 8,

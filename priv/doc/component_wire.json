@@ -33,6 +33,7 @@
   {"id": "radio_group", "phx_hook": "RadioGroup", "connect_module": "Corex.RadioGroup.Connect"},
   {"id": "select", "phx_hook": "Select", "connect_module": "Corex.Select.Connect"},
   {"id": "signature_pad", "phx_hook": "SignaturePad", "connect_module": "Corex.SignaturePad.Connect"},
+  {"id": "slider", "phx_hook": "Slider", "connect_module": "Corex.Slider.Connect"},
   {"id": "switch", "phx_hook": "Switch", "connect_module": "Corex.Switch.Connect"},
   {"id": "tabs", "phx_hook": "Tabs", "connect_module": "Corex.Tabs.Connect"},
   {"id": "tags_input", "phx_hook": "TagsInput", "connect_module": "Corex.TagsInput.Connect"},

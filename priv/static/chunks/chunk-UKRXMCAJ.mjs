@@ -6,7 +6,7 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunk-NU3NDRI3.mjs";
+} from "./chunk-5GSPM2B3.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -15,7 +15,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-QCFVFTGB.mjs";
+} from "./chunk-MEBO2IC2.mjs";
 import {
   ariaAttr,
   contains,
@@ -38,9 +38,9 @@ import {
   safeParseJson,
   scrollIntoView,
   setup
-} from "./chunk-6L36XW7I.mjs";
+} from "./chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
+// ../node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
   "label",
   "input",
@@ -55,7 +55,7 @@ var anatomy = createAnatomy("listbox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.collection.mjs
+// ../node_modules/@zag-js/listbox/dist/listbox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -69,7 +69,7 @@ gridCollection.empty = () => {
   return new GridCollection({ items: [], columnCount: 0 });
 };
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.dom.mjs
+// ../node_modules/@zag-js/listbox/dist/listbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `listbox:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `listbox:${ctx.id}:content`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `listbox:${ctx.id}:label`;
@@ -79,7 +79,7 @@ var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `listbox
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getItemEl = (ctx, id) => ctx.getById(getItemId(ctx, id));
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.connect.mjs
+// ../node_modules/@zag-js/listbox/dist/listbox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, computed, send, refs } = service;
   const disabled = prop("disabled");
@@ -274,6 +274,7 @@ function connect(service, normalize) {
         onPointerMove(event) {
           if (!props.highlightOnHover) return;
           if (itemState.disabled || event.pointerType !== "mouse") return;
+          if (getInteractionModality() !== "pointer") return;
           if (itemState.highlighted) return;
           send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
         },
@@ -466,7 +467,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.machine.mjs
+// ../node_modules/@zag-js/listbox/dist/listbox.machine.mjs
 var { guards, createMachine } = setup();
 var { or } = guards;
 var machine = createMachine({

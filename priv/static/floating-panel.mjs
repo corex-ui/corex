@@ -1,16 +1,19 @@
 import {
+  createStore
+} from "./chunks/chunk-6WY2W74J.mjs";
+import {
   __publicField,
   addPoints,
   createRect,
   subtractPoints
-} from "./chunks/chunk-SBGJ6WBJ.mjs";
+} from "./chunks/chunk-Q2AJHHID.mjs";
 import {
   clampValue,
   toPx
-} from "./chunks/chunk-KHEHQE65.mjs";
+} from "./chunks/chunk-ANUDZOQU.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-VOKBRZCH.mjs";
+} from "./chunks/chunk-NB2X5AJC.mjs";
 import {
   idMatches,
   notifyChange,
@@ -37,15 +40,14 @@ import {
   isHTMLElement,
   isLeftClick,
   match,
+  mergeWithDefault,
   pick,
-  proxy,
   raf,
   resizeObserverBorderBox,
-  subscribe,
   trackPointerMove
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.42.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
+// ../node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(
   "trigger",
   "positioner",
@@ -61,7 +63,7 @@ var anatomy = createAnatomy("floating-panel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
+// ../node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
 var AffineTransform = class _AffineTransform {
   constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
     __publicField(this, "m00");
@@ -221,7 +223,7 @@ var AffineTransform = class _AffineTransform {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/clamp.mjs
+// ../node_modules/@zag-js/rect-utils/dist/clamp.mjs
 var clamp = (value, min2, max) => Math.min(Math.max(value, min2), max);
 var clampPoint = (position, size, boundaryRect) => {
   const x = clamp(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size.width);
@@ -243,7 +245,7 @@ var clampSize = (size, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/constrain.mjs
+// ../node_modules/@zag-js/rect-utils/dist/constrain.mjs
 var constrainRect = (rect, boundary) => {
   const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
   const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
@@ -255,7 +257,7 @@ var constrainRect = (rect, boundary) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/equality.mjs
+// ../node_modules/@zag-js/rect-utils/dist/equality.mjs
 var isSizeEqual = (a, b) => {
   return a.width === b?.width && a.height === b?.height;
 };
@@ -263,7 +265,7 @@ var isPointEqual = (a, b) => {
   return a.x === b?.x && a.y === b?.y;
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/from-element.mjs
+// ../node_modules/@zag-js/rect-utils/dist/from-element.mjs
 var styleCache = /* @__PURE__ */ new WeakMap();
 function getCacheComputedStyle(el) {
   if (!styleCache.has(el)) {
@@ -300,7 +302,7 @@ function getClientRect(el, opts = {}) {
 var px = (v) => parseFloat(v.replace("px", ""));
 var sum = (...vals) => vals.reduce((sum2, v) => sum2 + (v ? px(v) : 0), 0);
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/from-window.mjs
+// ../node_modules/@zag-js/rect-utils/dist/from-window.mjs
 function getWindowRect(win, opts = {}) {
   return createRect(getViewportRect(win, opts));
 }
@@ -319,7 +321,7 @@ function getViewportRect(win, opts) {
   return rect;
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/compass.mjs
+// ../node_modules/@zag-js/rect-utils/dist/compass.mjs
 var compassDirectionMap = {
   n: { x: 0.5, y: 0 },
   ne: { x: 1, y: 0 },
@@ -341,7 +343,7 @@ var oppositeDirectionMap = {
   nw: "se"
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/resize.mjs
+// ../node_modules/@zag-js/rect-utils/dist/resize.mjs
 var { sign, abs, min } = Math;
 function getRectExtentPoint(rect, direction) {
   const { minX, minY, maxX, maxY, midX, midY } = rect;
@@ -425,7 +427,7 @@ function transformRect(rect, transform, normalized = true) {
   return createRectFromPoints(p1, p2, normalized);
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.42.0/node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
+// ../node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `float:${ctx.id}:trigger`;
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `float:${ctx.id}:positioner`;
 var getContentId = (ctx) => ctx.ids?.content ?? `float:${ctx.id}:content`;
@@ -456,7 +458,7 @@ var getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
   return pick(boundaryRect, ["x", "y", "width", "height"]);
 };
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.42.0/node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
+// ../node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
 function getResizeAxisStyle(axis) {
   switch (axis) {
     case "n":
@@ -520,14 +522,21 @@ function getResizeAxisStyle(axis) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.42.0/node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
+// ../node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
+var defaultTranslations = {
+  minimize: "Minimize window",
+  maximize: "Maximize window",
+  restore: "Restore window"
+};
 var validStages = /* @__PURE__ */ new Set(["minimized", "maximized", "default"]);
 function connect(service, normalize) {
   const { state, send, scope, prop, computed, context } = service;
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   const open = state.hasTag("open");
   const dragging = state.matches("open.dragging");
   const resizing = state.matches("open.resizing");
   const isTopmost = context.get("isTopmost");
+  const stackIndex = context.get("stackIndex");
   const size = context.get("size");
   const position = context.get("position");
   const isMaximized = computed("isMaximized");
@@ -591,9 +600,12 @@ function connect(service, normalize) {
           "--height": toPx(size?.height),
           "--x": toPx(position?.x),
           "--y": toPx(position?.y),
+          "--z-index": stackIndex > -1 ? stackIndex + 1 : void 0,
           position: prop("strategy"),
+          isolation: "isolate",
           top: "var(--y)",
-          left: "var(--x)"
+          left: "var(--x)",
+          zIndex: "var(--z-index)"
         }
       });
     },
@@ -668,7 +680,6 @@ function connect(service, normalize) {
       if (!validStages.has(props.stage)) {
         throw new Error(`[zag-js] Invalid stage: ${props.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
       }
-      const translations = prop("translations");
       const actionProps = match(props.stage, {
         minimized: () => ({
           "aria-label": translations.minimize,
@@ -818,40 +829,42 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.42.0/node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
-var panelStack = proxy({
-  stack: [],
+// ../node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
+var store = createStore({ stack: [] });
+var panelStack = {
+  subscribe: store.subscribe,
   count() {
-    return this.stack.length;
+    return store.get("stack").length;
   },
   add(panelId) {
-    if (this.stack.includes(panelId)) return;
-    this.stack.push(panelId);
+    const stack = store.get("stack");
+    if (stack.includes(panelId)) return;
+    store.set("stack", [...stack, panelId]);
   },
   remove(panelId) {
-    const index = this.stack.indexOf(panelId);
-    if (index < 0) return;
-    this.stack.splice(index, 1);
+    const stack = store.get("stack");
+    if (!stack.includes(panelId)) return;
+    store.set(
+      "stack",
+      stack.filter((id) => id !== panelId)
+    );
   },
-  bringToFront(id) {
-    this.remove(id);
-    this.add(id);
+  bringToFront(panelId) {
+    const stack = store.get("stack");
+    if (stack[stack.length - 1] === panelId) return;
+    store.set("stack", [...stack.filter((id) => id !== panelId), panelId]);
   },
-  isTopmost(id) {
-    return this.stack[this.stack.length - 1] === id;
+  isTopmost(panelId) {
+    const stack = store.get("stack");
+    return stack[stack.length - 1] === panelId;
   },
-  indexOf(id) {
-    return this.stack.indexOf(id);
+  indexOf(panelId) {
+    return store.get("stack").indexOf(panelId);
   }
-});
-
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.42.0/node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
-var { not, and } = createGuards();
-var defaultTranslations = {
-  minimize: "Minimize window",
-  maximize: "Maximize window",
-  restore: "Restore window"
 };
+
+// ../node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
+var { not, and } = createGuards();
 var FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
 var FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
 var machine = createMachine({
@@ -863,11 +876,7 @@ var machine = createMachine({
       allowOverflow: true,
       resizable: true,
       draggable: true,
-      ...props,
-      translations: {
-        ...defaultTranslations,
-        ...props.translations
-      }
+      ...props
     };
   },
   initialState({ prop }) {
@@ -915,6 +924,9 @@ var machine = createMachine({
       })),
       isTopmost: bindable(() => ({
         defaultValue: void 0
+      })),
+      stackIndex: bindable(() => ({
+        defaultValue: -1
       }))
     };
   },
@@ -972,6 +984,7 @@ var machine = createMachine({
     open: {
       tags: ["open"],
       entry: ["bringToFrontOfPanelStack"],
+      exit: ["removeFromPanelStack"],
       initial: "idle",
       on: {
         "CONTROLLED.CLOSE": {
@@ -1112,13 +1125,9 @@ var machine = createMachine({
         return addDomEvent(win, "resize", exec);
       },
       trackPanelStack({ context, scope }) {
-        const unsub = subscribe(panelStack, () => {
+        const unsub = panelStack.subscribe(() => {
           context.set("isTopmost", panelStack.isTopmost(scope.id));
-          const contentEl = getContentEl(scope);
-          if (!contentEl) return;
-          const index = panelStack.indexOf(scope.id);
-          if (index === -1) return;
-          contentEl.style.setProperty("--z-index", `${index + 1}`);
+          context.set("stackIndex", panelStack.indexOf(scope.id));
         });
         return () => {
           panelStack.remove(scope.id);
@@ -1318,6 +1327,9 @@ var machine = createMachine({
       },
       bringToFrontOfPanelStack({ prop }) {
         panelStack.bringToFront(prop("id"));
+      },
+      removeFromPanelStack({ prop }) {
+        panelStack.remove(prop("id"));
       },
       invokeOnOpen({ prop }) {
         prop("onOpenChange")?.({ open: true });

@@ -35,7 +35,7 @@ Surface treatment for **Action** hosts (buttons, badges, links, compound trigger
 
 Add `ui-solid` or `ui-ghost` for an explicit surface. Subtle needs no class.
 
-**Selection hosts** (`toggle`, `toggle-group`, `checkbox`, `radio-group`, `switch`, `tabs`, `pagination`, `tree-view`, `angle-slider`) and **Field hosts** (`native-input`, `number-input`, `password-input`, `pin-input`, `tags-input`) have **no variant axis**. Use semantic, size, and radius only — except **tree-view**, which has no radius axis (row items stay square).
+**Selection hosts** (`toggle`, `toggle-group`, `checkbox`, `radio-group`, `switch`, `tabs`, `pagination`, `tree-view`, `angle-slider`, `slider`) and **Field hosts** (`native-input`, `number-input`, `password-input`, `pin-input`, `tags-input`) have **no variant axis**. Use semantic, size, and radius only — except **tree-view**, which has no radius axis (row items stay square).
 
 How surfaces behave:
 

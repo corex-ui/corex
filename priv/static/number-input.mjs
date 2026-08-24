@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-Z3EQ3GCO.mjs";
+} from "./chunks/chunk-67EMJLUU.mjs";
 import {
   clampValue,
   decrementValue,
@@ -10,20 +10,20 @@ import {
   isValueWithinRange,
   roundToDpr,
   wrap
-} from "./chunks/chunk-KHEHQE65.mjs";
+} from "./chunks/chunk-ANUDZOQU.mjs";
 import {
   dispatchFormInputEvents,
   markUsed,
   syncFormInput,
   syncHiddenInputValue
-} from "./chunks/chunk-NUQOKDPA.mjs";
+} from "./chunks/chunk-Y6K7DMC3.mjs";
 import {
   formatDisplayValue,
   mergeFormatOptions,
   mountNumberBinding,
   readUpdatedServerNumber,
   resolveNumberInputSubmitValue
-} from "./chunks/chunk-F2ZOUSGC.mjs";
+} from "./chunks/chunk-RCF57L3G.mjs";
 import {
   emitResponse,
   idMatches,
@@ -53,6 +53,7 @@ import {
   isLeftClick,
   isModifierKey,
   isSafari,
+  mergeWithDefault,
   observeAttributes,
   raf,
   requestPointerLock,
@@ -61,9 +62,9 @@ import {
   setup,
   syncInputFormAssociation,
   trackFormControl
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-NHD23A5Q.mjs";
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
+// ../node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(
   "root",
   "label",
@@ -76,7 +77,7 @@ var anatomy = createAnatomy("numberInput").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/cursor.mjs
+// ../node_modules/@zag-js/number-input/dist/cursor.mjs
 function recordCursor(inputEl, scope) {
   if (!inputEl || !scope.isActiveElement(inputEl)) return;
   try {
@@ -156,7 +157,7 @@ function getNextCursorPosition(oldValue, newValue, oldPosition) {
   return newValue.length;
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
+// ../node_modules/@zag-js/number-input/dist/number-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `number-input:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `number-input:${ctx.id}:input`;
 var getIncrementTriggerId = (ctx) => ctx.ids?.incrementTrigger ?? `number-input:${ctx.id}:inc`;
@@ -244,7 +245,13 @@ var createVirtualCursor = (ctx, point) => {
   doc.body.appendChild(el);
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
+// ../node_modules/@zag-js/number-input/dist/number-input.translations.mjs
+var defaultTranslations = {
+  incrementLabel: "increment value",
+  decrementLabel: "decrease value"
+};
+
+// ../node_modules/@zag-js/number-input/dist/number-input.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope, computed } = service;
   const focused = state.hasTag("focus");
@@ -256,7 +263,7 @@ function connect(service, normalize) {
   const invalid = prop("invalid") !== void 0 ? !!prop("invalid") : computed("isOutOfRange");
   const isIncrementDisabled = disabled || !computed("canIncrement") || readOnly;
   const isDecrementDisabled = disabled || !computed("canDecrement") || readOnly;
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   return {
     focused,
     invalid,
@@ -514,7 +521,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@internationalized+number@3.6.7/node_modules/@internationalized/number/dist/private/NumberFormatter.mjs
+// ../node_modules/@internationalized/number/dist/private/NumberFormatter.mjs
 var $1dfb119a85e764e5$var$formatterCache = /* @__PURE__ */ new Map();
 var $1dfb119a85e764e5$var$supportsSignDisplay = false;
 try {
@@ -654,7 +661,7 @@ function $1dfb119a85e764e5$export$711b50b3c525e0f2(numberFormat, signDisplay, nu
   }
 }
 
-// ../node_modules/.pnpm/@internationalized+number@3.6.7/node_modules/@internationalized/number/dist/private/NumberParser.mjs
+// ../node_modules/@internationalized/number/dist/private/NumberParser.mjs
 var $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX = new RegExp("^.*\\(.*\\).*$");
 var $eb76cf4feb040f77$var$NUMBERING_SYSTEMS = [
   "latn",
@@ -888,7 +895,7 @@ function $eb76cf4feb040f77$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
+// ../node_modules/@zag-js/number-input/dist/number-input.utils.mjs
 var createFormatter = (locale, options = {}) => {
   return new Intl.NumberFormat(locale, options);
 };
@@ -915,7 +922,7 @@ var getDefaultStep = (step, formatOptions) => {
   return defaultStep;
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
+// ../node_modules/@zag-js/number-input/dist/number-input.machine.mjs
 var { choose, guards, createMachine } = setup();
 var { not, and } = guards;
 var machine = createMachine({
@@ -936,12 +943,7 @@ var machine = createMachine({
       spinOnPress: true,
       ...props,
       largeStep: props.largeStep ?? 10 * step,
-      smallStep: props.smallStep ?? step / 10,
-      translations: {
-        incrementLabel: "increment value",
-        decrementLabel: "decrease value",
-        ...props.translations
-      }
+      smallStep: props.smallStep ?? step / 10
     };
   },
   initialState() {
@@ -979,7 +981,10 @@ var machine = createMachine({
     isDisabled: ({ prop, context }) => !!prop("disabled") || context.get("fieldsetDisabled"),
     canIncrement: ({ prop, computed }) => prop("allowOverflow") || !computed("isAtMax"),
     canDecrement: ({ prop, computed }) => prop("allowOverflow") || !computed("isAtMin"),
-    valueText: ({ prop, context }) => prop("translations").valueText?.(context.get("value")),
+    valueText: ({ prop, context }) => {
+      const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+      return translations.valueText?.(context.get("value"));
+    },
     formatter: memo(
       ({ prop }) => [prop("locale"), prop("formatOptions")],
       ([locale, formatOptions]) => createFormatter(locale, formatOptions)
