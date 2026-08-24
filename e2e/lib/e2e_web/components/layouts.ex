@@ -120,6 +120,54 @@ defmodule E2eWeb.Layouts do
     """
   end
 
+  # LiveView layout (`live_session layout:` / hub `layout:`). Uses `@inner_content`.
+  def admin(assigns) do
+    ~H"""
+    <div class="flex min-h-dvh flex-col">
+      <header class="sticky top-0 z-20 flex h-size-lg shrink-0 items-center border-b border-border bg-surface">
+        <div class="flex w-full items-center justify-between gap-space px-space-xl">
+          <.navigate to={~p"/"} class="link ui-nav ui-size-sm">
+            {~t"Back to site"}
+          </.navigate>
+          <div class="flex shrink-0 items-center gap-space-sm">
+            <.navigate to={~p"/accordion/anatomy"} class="link ui-nav ui-size-sm">
+              {~t"Components"}
+            </.navigate>
+            <.theme_toggle id="admin-theme-select" theme={@theme} />
+            <.mode_toggle id="admin-mode-switcher" mode={@mode} />
+          </div>
+        </div>
+      </header>
+      <p class="shrink-0 border-b border-border px-space-xl py-space-xs text-sm text-ink-muted">
+        Isolated Corex Admin demo — your data is scoped to this browser session and resets periodically.
+        The unauthenticated
+        <.navigate to={~p"/admins"} class="link">/admins</.navigate>
+        CRUD is a counterexample — do not copy it.
+      </p>
+      <main id="main-content" class="flex min-h-0 min-w-0 flex-1 flex-col">
+        {@inner_content}
+        <.toast_group
+          id="layout-toast"
+          class="toast"
+          phx-update="ignore"
+          flash={@flash}
+        >
+          <:loading>
+            <.heroicon name="hero-arrow-path" class="icon" />
+          </:loading>
+        </.toast_group>
+        <.toast_client_error
+          toast_group_id="layout-toast"
+          title={~t"We lost the connection"}
+          description={~t"We're trying to reconnect you..."}
+          type={:error}
+          duration={:infinity}
+        />
+      </main>
+    </div>
+    """
+  end
+
   def marketing(assigns) do
     path = path_resolved(assigns)
     assigns = assign(assigns, :path, path)

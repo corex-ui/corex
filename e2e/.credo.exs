@@ -293,6 +293,7 @@
                  "lib/e2e_web/seo.ex",
                  "lib/e2e_web/components/blog_page.ex",
                  "lib/e2e_web/live/pages_live/blog_post_live.ex",
+                 "lib/e2e_web/admin/ticket_resource.ex",
                  "test/"
                ]
              }

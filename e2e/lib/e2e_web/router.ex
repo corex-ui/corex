@@ -1,5 +1,6 @@
 defmodule E2eWeb.Router do
   use E2eWeb, :router
+  import CorexAdmin.Router
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -20,6 +21,7 @@ defmodule E2eWeb.Router do
     plug(Localize.Plug.PutSession)
     plug(E2eWeb.Plugs.Path)
     plug(E2eWeb.Plugs.SEO)
+    plug(E2eWeb.Plugs.AdminDemoSession)
     plug(:put_root_layout, html: {E2eWeb.Layouts, :root})
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
@@ -246,6 +248,8 @@ defmodule E2eWeb.Router do
       live("/tooltip/events", TooltipEventsLive)
       live("/tooltip/patterns", TooltipPatternsLive)
     end
+
+    live_corex_admin("/admin", E2eWeb.Admin)
 
     get("/templates", ShowcaseRedirectController, :to_showcases)
     get("/games", ShowcaseRedirectController, :to_showcases)
