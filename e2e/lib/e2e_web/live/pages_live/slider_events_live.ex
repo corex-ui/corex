@@ -157,8 +157,11 @@ defmodule E2eWeb.SliderEventsLive do
                         const el = document.getElementById(id);
                         if(!el) return;
                         el.addEventListener(event, (e) => {
-                          const d = e.detail;
-                          this.pushEvent("slider_client_changed", d);
+                          const d = e.detail ?? {};
+                          this.pushEvent("slider_client_changed", {
+                            id: d.id,
+                            value: d.value,
+                          });
                         });
                       };
                       attach("events-slider-on-value-change-client", "slider-changed");
@@ -197,7 +200,7 @@ defmodule E2eWeb.SliderEventsLive do
         |> Calendar.strftime("%H:%M:%S"),
       source: source,
       slider_id: slider_id,
-      value: inspect(value)
+      value: E2eWeb.ComponentEventLog.format_numeric_value(value)
     }
   end
 end
