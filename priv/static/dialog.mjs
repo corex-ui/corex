@@ -4,15 +4,15 @@ import {
   readScaleAnimationOptions,
   runScaleAnimation,
   stripHiddenFromProps
-} from "./chunks/chunk-GEX3MOUM.mjs";
+} from "./chunks/chunk-PWP4CBA7.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-TBCKGPKM.mjs";
-import "./chunks/chunk-4F3TQ7OK.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readBooleanControlledZagProps,
   readControlledOrDefaultBoolean
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   idMatches,
   notifyChange,
@@ -24,7 +24,6 @@ import {
   addDomEvent,
   canPushEvent,
   compact,
-  contains,
   createAnatomy,
   createMachine,
   createZagLiveHook,
@@ -32,7 +31,6 @@ import {
   findControlledElements,
   getActiveElement,
   getBoolean,
-  getByOwnerId,
   getComputedStyle,
   getControlledElements,
   getDir,
@@ -51,15 +49,14 @@ import {
   isFunction,
   isHTMLElement,
   isIos,
-  isOverflowElement,
   isTabbable,
   queryAll,
   raf,
   setStyle,
   setStyleProperty
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
 var anatomy = createAnatomy("dialog").parts(
   "trigger",
   "backdrop",
@@ -71,7 +68,7 @@ var anatomy = createAnatomy("dialog").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/dialog/dist/dialog.dom.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.dom.mjs
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `dialog:${ctx.id}:positioner`;
 var getBackdropId = (ctx) => ctx.ids?.backdrop ?? `dialog:${ctx.id}:backdrop`;
 var getContentId = (ctx) => ctx.ids?.content ?? `dialog:${ctx.id}:content`;
@@ -90,7 +87,7 @@ var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
 var getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
 var getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
 var getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
-var getTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="dialog"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
+var getTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
 var getActiveTriggerEl = (ctx, value) => {
   if (value == null) {
     return getTriggerEl(ctx) ?? getTriggerEls(ctx)[0];
@@ -98,7 +95,7 @@ var getActiveTriggerEl = (ctx, value) => {
   return ctx.getById(getTriggerId(ctx, value));
 };
 
-// ../node_modules/@zag-js/dialog/dist/dialog.connect.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const ariaLabel = prop("aria-label");
@@ -205,7 +202,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.42.0/node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
 var counterMap = /* @__PURE__ */ new WeakMap();
 var uncontrolledNodes = /* @__PURE__ */ new WeakMap();
 var markerMap = {};
@@ -309,7 +306,7 @@ var walkTreeOutside = (originalTarget, props) => {
   };
 };
 
-// ../node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.42.0/node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
 var getParentNode = (originalTarget) => {
   const target = Array.isArray(originalTarget) ? originalTarget[0] : originalTarget;
   return target.ownerDocument.body;
@@ -325,7 +322,7 @@ var hideOthers = (originalTarget, parentNode = getParentNode(originalTarget), ma
   });
 };
 
-// ../node_modules/@zag-js/aria-hidden/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.42.0/node_modules/@zag-js/aria-hidden/dist/index.mjs
 var raf2 = (fn) => {
   const frameId = requestAnimationFrame(() => fn());
   return () => cancelAnimationFrame(frameId);
@@ -347,12 +344,12 @@ function ariaHidden(targetsOrFn, options = {}) {
   };
 }
 
-// ../node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.42.0/node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.42.0/node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
 var activeFocusTraps = {
   activateTrap(trapStack, trap) {
     if (trapStack.length > 0) {
@@ -396,7 +393,6 @@ var FocusTrap = class {
       delayInitialFocusTimer: void 0,
       recentNavEvent: void 0
     });
-    __publicField(this, "lastInteractionType", "keyboard");
     __publicField(this, "portalContainers", /* @__PURE__ */ new Set());
     __publicField(this, "listenerCleanups", []);
     __publicField(this, "handleFocus", (event) => {
@@ -455,7 +451,6 @@ var FocusTrap = class {
       this.state.recentNavEvent = void 0;
     });
     __publicField(this, "handlePointerDown", (event) => {
-      this.lastInteractionType = "pointer";
       const target = getEventTarget(event);
       if (this.findContainerIndex(target, event) >= 0) {
         return;
@@ -484,7 +479,6 @@ var FocusTrap = class {
       event.stopImmediatePropagation();
     });
     __publicField(this, "handleTabKey", (event) => {
-      this.lastInteractionType = "keyboard";
       if (this.config.isKeyForward(event) || this.config.isKeyBackward(event)) {
         this.state.recentNavEvent = event;
         const isBackward = this.config.isKeyBackward(event);
@@ -582,14 +576,14 @@ var FocusTrap = class {
       }
       return node;
     });
-    __publicField(this, "tryFocus", (node, focusOptions) => {
+    __publicField(this, "tryFocus", (node) => {
       if (node === false) return;
       if (node === getActiveElement(this.doc)) return;
       if (!node || !node.focus) {
         this.tryFocus(this.getInitialFocusNode());
         return;
       }
-      node.focus({ preventScroll: !!this.config.preventScroll, ...focusOptions });
+      node.focus({ preventScroll: !!this.config.preventScroll });
       this.state.mostRecentlyFocusedNode = node;
       if (isSelectableInput(node)) {
         node.select();
@@ -618,10 +612,9 @@ var FocusTrap = class {
       onDeactivate?.();
       const finishDeactivation = () => {
         delay(() => {
-          if (returnFocus && this.isSafeToOverrideFocus()) {
+          if (returnFocus) {
             const returnFocusNode = this.getReturnFocusNode(this.state.nodeFocusedBeforeActivation);
-            const focusOptions = this.lastInteractionType === "keyboard" ? { focusVisible: true } : void 0;
-            this.tryFocus(returnFocusNode, focusOptions);
+            this.tryFocus(returnFocusNode);
           }
           onPostDeactivate?.();
         });
@@ -655,15 +648,8 @@ var FocusTrap = class {
       const onPostUnpause = this.getOption(unpauseOptions, "onPostUnpause");
       this.state.paused = false;
       onUnpause?.();
-      try {
-        this.updateTabbableNodes();
-      } catch {
-      }
-      this.attachListeners();
-      try {
-        this.commitInitialFocus();
-      } catch {
-      }
+      this.updateTabbableNodes();
+      this.addListeners();
       this.updateObservedNodes();
       onPostUnpause?.();
       return this;
@@ -811,21 +797,12 @@ var FocusTrap = class {
   findContainerIndex(element, event) {
     const composedPath = typeof event?.composedPath === "function" ? event.composedPath() : void 0;
     return this.state.containerGroups.findIndex(
-      ({ container, tabbableNodes }) => container.contains(element) || composedPath?.includes(container) || tabbableNodes.find((node) => node === element) || this.isControlledElement(container, element) || this.isPersistentElement(element, event)
+      ({ container, tabbableNodes }) => container.contains(element) || composedPath?.includes(container) || tabbableNodes.find((node) => node === element) || this.isControlledElement(container, element)
     );
   }
   isControlledElement(container, element) {
     if (!this.config.followControlledElements) return false;
     return isControlledElement(container, element);
-  }
-  isPersistentElement(element, event) {
-    const persistentElements = this.config.persistentElements;
-    if (!persistentElements || persistentElements.length === 0) return false;
-    const composedPath = typeof event?.composedPath === "function" ? event.composedPath() : void 0;
-    return persistentElements.some((getEl) => {
-      const el = getEl();
-      return contains(el, element) || el != null && composedPath?.includes(el);
-    });
   }
   updateTabbableNodes() {
     this.state.containerGroups = this.state.containers.map((container) => {
@@ -884,9 +861,12 @@ var FocusTrap = class {
       );
     }
   }
-  attachListeners() {
+  addListeners() {
     if (!this.state.active) return;
     activeFocusTraps.activateTrap(this.trapStack, this);
+    this.state.delayInitialFocusTimer = this.config.delayInitialFocus ? delay(() => {
+      this.tryFocus(this.getInitialFocusNode());
+    }) : this.tryFocus(this.getInitialFocusNode());
     this.listenerCleanups.push(
       addDomEvent(this.doc, "focusin", this.handleFocus, true),
       addDomEvent(this.doc, "mousedown", this.handlePointerDown, { capture: true, passive: false }),
@@ -897,33 +877,11 @@ var FocusTrap = class {
     );
     return this;
   }
-  commitInitialFocus() {
-    this.state.delayInitialFocusTimer = this.config.delayInitialFocus ? delay(() => {
-      this.tryFocus(this.getInitialFocusNode());
-    }) : this.tryFocus(this.getInitialFocusNode());
-    return this;
-  }
-  addListeners() {
-    if (!this.state.active) return;
-    this.attachListeners();
-    this.commitInitialFocus();
-    return this;
-  }
   removeListeners() {
     if (!this.state.active) return;
     this.listenerCleanups.forEach((cleanup) => cleanup());
     this.listenerCleanups = [];
     return this;
-  }
-  containsElement(element) {
-    return this.state.containers.some((container) => contains(container, element));
-  }
-  // Don't override focus that something else (incl. another trap in the stack) already claimed since deactivation.
-  isSafeToOverrideFocus() {
-    const activeEl = getActiveElement(this.doc);
-    if (!activeEl || activeEl === this.doc.body) return true;
-    if (this.containsElement(activeEl)) return true;
-    return this.trapStack.some((trap) => trap !== this && trap.containsElement(activeEl));
   }
   activate(activateOptions) {
     if (this.state.active) {
@@ -964,7 +922,7 @@ var isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
 var delay = (fn) => setTimeout(fn, 0);
 var isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
 
-// ../node_modules/@zag-js/focus-trap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.42.0/node_modules/@zag-js/focus-trap/dist/index.mjs
 function trapFocus(el, options = {}) {
   let trap;
   const cleanup = raf(() => {
@@ -993,7 +951,7 @@ function trapFocus(el, options = {}) {
   };
 }
 
-// ../node_modules/@zag-js/remove-scroll/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+remove-scroll@1.42.0/node_modules/@zag-js/remove-scroll/dist/index.mjs
 var LOCK_CLASSNAME = "data-scroll-lock";
 var lockMap = /* @__PURE__ */ new WeakMap();
 function getPaddingProperty(documentElement) {
@@ -1006,27 +964,22 @@ function hasStableScrollbarGutter(element) {
   const scrollbarGutter = styles?.scrollbarGutter;
   return scrollbarGutter === "stable" || scrollbarGutter?.startsWith("stable ") === true;
 }
-function getScrollContainer(doc) {
-  const { documentElement, body } = doc;
-  return isOverflowElement(documentElement) ? documentElement : body;
-}
 function applyLock(doc) {
   const win = doc.defaultView ?? window;
   const { documentElement, body } = doc;
-  const scroller = getScrollContainer(doc);
   const hasStableGutter = hasStableScrollbarGutter(documentElement) || hasStableScrollbarGutter(body);
   const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
   body.setAttribute(LOCK_CLASSNAME, "");
   const setScrollbarWidthProperty = () => setStyleProperty(documentElement, "--scrollbar-width", `${scrollbarWidth}px`);
   const paddingProperty = getPaddingProperty(documentElement);
-  const setScrollerStyle = () => {
+  const setBodyStyle = () => {
     const styles = {
       overflow: "hidden"
     };
     if (!hasStableGutter && scrollbarWidth > 0) {
       styles[paddingProperty] = `${scrollbarWidth}px`;
     }
-    return setStyle(scroller, styles);
+    return setStyle(body, styles);
   };
   const setBodyStyleIOS = () => {
     const { scrollX, scrollY, visualViewport } = win;
@@ -1048,7 +1001,7 @@ function applyLock(doc) {
       win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
     };
   };
-  const cleanups = [setScrollbarWidthProperty(), isIos() ? setBodyStyleIOS() : setScrollerStyle()];
+  const cleanups = [setScrollbarWidthProperty(), isIos() ? setBodyStyleIOS() : setBodyStyle()];
   return () => {
     cleanups.forEach((fn) => fn?.());
     body.removeAttribute(LOCK_CLASSNAME);
@@ -1075,7 +1028,7 @@ function preventBodyScroll(_document) {
   };
 }
 
-// ../node_modules/@zag-js/dialog/dist/dialog.machine.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.42.0/node_modules/@zag-js/dialog/dist/dialog.machine.mjs
 var machine = createMachine({
   props({ props, scope }) {
     const alertDialog = props.role === "alertdialog";
@@ -1227,10 +1180,7 @@ var machine = createMachine({
         return trapFocus(contentEl, {
           preventScroll: true,
           returnFocusOnDeactivate: !!prop("restoreFocus"),
-          initialFocus: () => getInitialFocus({
-            root: getContentEl(scope),
-            getInitialEl: prop("initialFocusEl")
-          }),
+          initialFocus: prop("initialFocusEl"),
           setReturnFocus: (el) => {
             const finalFocusEl = prop("finalFocusEl")?.();
             if (finalFocusEl) return finalFocusEl;

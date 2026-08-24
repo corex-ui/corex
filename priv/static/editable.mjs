@@ -1,13 +1,13 @@
 import {
   trackInteractOutside
-} from "./chunks/chunk-4F3TQ7OK.mjs";
+} from "./chunks/chunk-F544AH56.mjs";
 import {
   setScalarValue
-} from "./chunks/chunk-Y6K7DMC3.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountStringBinding,
   readUpdatedServerString
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   idMatches,
   notifyChange,
@@ -29,13 +29,12 @@ import {
   getString,
   isApple,
   isComposingEvent,
-  mergeWithDefault,
   raf,
   setElementValue,
   syncInputFormAssociation
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/editable/dist/editable.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
   "root",
   "area",
@@ -49,7 +48,7 @@ var anatomy = createAnatomy("editable").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/editable/dist/editable.dom.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `editable:${ctx.id}`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `editable:${ctx.id}:area`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `editable:${ctx.id}:label`;
@@ -65,13 +64,7 @@ var getSubmitTriggerEl = (ctx) => ctx.getById(getSubmitTriggerId(ctx));
 var getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
 var getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
 
-// ../node_modules/@zag-js/editable/dist/editable.connect.mjs
-var defaultTranslations = {
-  input: "editable input",
-  edit: "edit",
-  submit: "submit",
-  cancel: "cancel"
-};
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.connect.mjs
 function connect(service, normalize) {
   const { state, context, send, prop, scope, computed } = service;
   const disabled = !!prop("disabled");
@@ -80,7 +73,7 @@ function connect(service, normalize) {
   const required = !!prop("required");
   const invalid = !!prop("invalid");
   const autoResize = !!prop("autoResize");
-  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+  const translations = prop("translations");
   const editing = state.matches("edit");
   const placeholderProp = prop("placeholder");
   const placeholder = typeof placeholderProp === "string" ? { edit: placeholderProp, preview: placeholderProp } : placeholderProp;
@@ -307,7 +300,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/editable/dist/editable.machine.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -315,7 +308,14 @@ var machine = createMachine({
       submitMode: "both",
       defaultValue: "",
       selectOnFocus: true,
-      ...props
+      ...props,
+      translations: {
+        input: "editable input",
+        edit: "edit",
+        submit: "submit",
+        cancel: "cancel",
+        ...props.translations
+      }
     };
   },
   initialState({ prop }) {

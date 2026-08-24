@@ -6,10 +6,10 @@ import {
   prepareJsHeightInitialState,
   runHeightOpenTransition,
   stripHiddenFromProps
-} from "./chunks/chunk-GEX3MOUM.mjs";
+} from "./chunks/chunk-PWP4CBA7.mjs";
 import {
   TreeCollection
-} from "./chunks/chunk-5GSPM2B3.mjs";
+} from "./chunks/chunk-NU3NDRI3.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -51,7 +51,6 @@ import {
   isLeftClick,
   isModifierKey,
   last,
-  mergeWithDefault,
   partition,
   raf,
   remove,
@@ -59,9 +58,9 @@ import {
   setElementValue,
   toArray,
   uniq
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
 var anatomy = createAnatomy("tree-view").parts(
   "branch",
   "branchContent",
@@ -81,7 +80,7 @@ var anatomy = createAnatomy("tree-view").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/tree-view/dist/tree-view.collection.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.collection.mjs
 var collection = (options) => {
   return new TreeCollection(options);
 };
@@ -89,7 +88,7 @@ collection.empty = () => {
   return new TreeCollection({ rootNode: { children: [] } });
 };
 
-// ../node_modules/@zag-js/tree-view/dist/tree-view.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tree:${ctx.id}:root`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `tree:${ctx.id}:label`;
 var getNodeId = (ctx, value) => ctx.ids?.node?.(value) ?? `tree:${ctx.id}:node:${value}`;
@@ -103,7 +102,7 @@ var getRenameInputEl = (ctx, value) => {
   return ctx.getById(getRenameInputId(ctx, value));
 };
 
-// ../node_modules/@zag-js/tree-view/dist/utils/checked-state.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/utils/checked-state.mjs
 function getCheckedState(collection2, node, checkedValue) {
   const value = collection2.getNodeValue(node);
   if (!collection2.isBranchNode(node)) {
@@ -135,15 +134,11 @@ function getCheckedValueMap(collection2, checkedValue) {
   return map;
 }
 
-// ../node_modules/@zag-js/tree-view/dist/tree-view.connect.mjs
-var defaultTranslations = {
-  treeLabel: "Tree View",
-  renameInputLabel: "Rename tree item"
-};
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.connect.mjs
 function connect(service, normalize) {
   const { context, scope, computed, prop, send } = service;
   const collection2 = prop("collection");
-  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+  const translations = prop("translations");
   const expandedValue = Array.from(context.get("expandedValue"));
   const selectedValue = Array.from(context.get("selectedValue"));
   const checkedValue = Array.from(context.get("checkedValue"));
@@ -595,7 +590,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/tree-view/dist/utils/expand-branch.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/utils/expand-branch.mjs
 function expandBranches(params, values) {
   const { context, prop, refs } = params;
   if (!prop("loadChildren")) {
@@ -673,7 +668,7 @@ function expandBranches(params, values) {
   });
 }
 
-// ../node_modules/@zag-js/tree-view/dist/utils/visit-skip.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/utils/visit-skip.mjs
 function skipFn(params) {
   const { prop, context } = params;
   return function skip({ indexPath }) {
@@ -682,7 +677,7 @@ function skipFn(params) {
   };
 }
 
-// ../node_modules/@zag-js/tree-view/dist/tree-view.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.machine.mjs
 var { and } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -693,7 +688,12 @@ var machine = createMachine({
       expandOnClick: true,
       defaultExpandedValue: [],
       defaultSelectedValue: [],
-      ...props
+      ...props,
+      translations: {
+        treeLabel: "Tree View",
+        renameInputLabel: "Rename tree item",
+        ...props.translations
+      }
     };
   },
   initialState() {

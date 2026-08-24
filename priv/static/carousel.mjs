@@ -1,6 +1,6 @@
 import {
   clampValue
-} from "./chunks/chunk-ANUDZOQU.mjs";
+} from "./chunks/chunk-SYRKLN4X.mjs";
 import {
   idMatches,
   notifyChange,
@@ -32,7 +32,6 @@ import {
   isFocusable,
   isLeftClick,
   isObject,
-  mergeWithDefault,
   nextIndex,
   prevIndex,
   queryAll,
@@ -42,9 +41,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",
@@ -59,7 +58,7 @@ var anatomy = createAnatomy("carousel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/carousel/dist/carousel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
 var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
 var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
@@ -77,16 +76,7 @@ var syncTabIndex = (ctx) => {
   el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
 };
 
-// ../node_modules/@zag-js/carousel/dist/carousel.connect.mjs
-var defaultTranslations = {
-  nextTrigger: "Next slide",
-  prevTrigger: "Previous slide",
-  indicator: (index) => `Go to slide ${index + 1}`,
-  item: (index, count) => `${index + 1} of ${count}`,
-  autoplayStart: "Start slide rotation",
-  autoplayStop: "Stop slide rotation",
-  progressText: ({ page, totalPages }) => `${page} / ${totalPages}`
-};
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
 function connect(service, normalize) {
   const { state, context, computed, send, scope, prop } = service;
   const isPlaying = state.matches("autoplay");
@@ -100,7 +90,7 @@ function connect(service, normalize) {
   const activePage = pageSnapPoints.length ? clampValue(page, 0, pageSnapPoints.length - 1) : 0;
   const slidesPerPage = prop("slidesPerPage");
   const padding = prop("padding");
-  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+  const translations = prop("translations");
   return {
     isPlaying,
     isDragging,
@@ -215,7 +205,7 @@ function connect(service, normalize) {
         "data-inview": dataAttr(isInView),
         "aria-roledescription": "slide",
         "data-orientation": prop("orientation"),
-        "aria-label": translations.item?.(props.index, prop("slideCount")),
+        "aria-label": translations.item(props.index, prop("slideCount")),
         "aria-hidden": ariaAttr(!isInView),
         style: {
           flex: "0 0 auto",
@@ -326,7 +316,7 @@ function connect(service, normalize) {
         "data-index": props.index,
         "data-readonly": dataAttr(props.readOnly),
         "data-current": dataAttr(props.index === activePage),
-        "aria-label": translations.indicator?.(props.index),
+        "aria-label": translations.indicator(props.index),
         onClick(event) {
           if (event.defaultPrevented) return;
           if (props.readOnly) return;
@@ -355,7 +345,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.42.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
 var convert = (raw, size) => {
   let n = parseFloat(raw);
@@ -500,30 +490,28 @@ function findSnapPoint(parent, axis, predicate) {
   const dir = getDirection(parent);
   const scrollPadding = getScrollPadding(parent);
   const snapPositions = getSnapPositions(parent);
+  const items = [...snapPositions[axis].start, ...snapPositions[axis].center, ...snapPositions[axis].end];
   const isRtl = dir === "rtl";
   const usesNegativeScrollLeft = isRtl && axis === "x" && parent.scrollLeft <= 0;
-  const layoutSize = axis === "x" ? parent.offsetWidth : parent.offsetHeight;
-  const maxScroll = axis === "x" ? parent.scrollWidth - parent.offsetWidth : parent.scrollHeight - parent.offsetHeight;
-  for (const alignment of ["start", "center", "end"]) {
-    for (const item of snapPositions[axis][alignment]) {
-      if (!predicate(item.node)) continue;
-      let position = item.position;
-      if (alignment === "center") {
-        position -= layoutSize / 2;
-      } else if (alignment === "end") {
-        position -= layoutSize - (axis === "x" ? isRtl ? scrollPadding.x.before : scrollPadding.x.after : scrollPadding.y.after);
+  for (const item of items) {
+    if (predicate(item.node)) {
+      let position;
+      if (axis === "x" && isRtl) {
+        position = item.position - scrollPadding.x.after;
+        if (usesNegativeScrollLeft) {
+          position = -position;
+        }
       } else {
-        position -= axis === "x" ? isRtl ? scrollPadding.x.after : scrollPadding.x.before : scrollPadding.y.before;
+        position = item.position - (axis === "x" ? scrollPadding.x.before : scrollPadding.y.before);
       }
-      position = clamp(0, maxScroll)(position);
-      return usesNegativeScrollLeft ? -position : position;
+      return position;
     }
   }
 }
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.42.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
 var DRIFT_THRESHOLD = 1;
 var machine = createMachine({
   props({ props }) {
@@ -541,7 +529,17 @@ var machine = createMachine({
       allowMouseDrag: false,
       inViewThreshold: 0.6,
       autoSize: false,
-      ...props
+      ...props,
+      translations: {
+        nextTrigger: "Next slide",
+        prevTrigger: "Previous slide",
+        indicator: (index) => `Go to slide ${index + 1}`,
+        item: (index, count) => `${index + 1} of ${count}`,
+        autoplayStart: "Start slide rotation",
+        autoplayStop: "Stop slide rotation",
+        progressText: ({ page, totalPages }) => `${page} / ${totalPages}`,
+        ...props.translations
+      }
     };
   },
   refs() {

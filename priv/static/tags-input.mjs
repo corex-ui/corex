@@ -1,18 +1,18 @@
 import {
   createLiveRegion
-} from "./chunks/chunk-6BQZXDSK.mjs";
+} from "./chunks/chunk-UFCM6256.mjs";
 import {
   trackInteractOutside
-} from "./chunks/chunk-4F3TQ7OK.mjs";
+} from "./chunks/chunk-F544AH56.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   setArrayValues
-} from "./chunks/chunk-Y6K7DMC3.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   isZagValueControlled,
   mountTagsBinding
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   idMatches,
   notifyChange,
@@ -48,7 +48,6 @@ import {
   isComposingEvent,
   isEqual,
   isLeftClick,
-  mergeWithDefault,
   nextById,
   parseJsonStringList,
   prevById,
@@ -60,9 +59,9 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(
   "root",
   "label",
@@ -77,7 +76,7 @@ var anatomy = createAnatomy("tagsInput").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/tags-input/dist/tags-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tags-input:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `tags-input:${ctx.id}:input`;
 var getClearTriggerId = (ctx) => ctx.ids?.clearBtn ?? `tags-input:${ctx.id}:clear-btn`;
@@ -117,21 +116,7 @@ var dispatchInputEvent = (ctx, value) => {
   dispatchInputValueEvent(inputEl, { value });
 };
 
-// ../node_modules/@zag-js/tags-input/dist/tags-input.translations.mjs
-var defaultTranslations = {
-  clearTriggerLabel: "Clear all tags",
-  deleteTagTriggerLabel: (value) => `Delete tag ${value}`,
-  tagAdded: (value) => `Added tag ${value}`,
-  tagsPasted: (values) => `Pasted ${values.length} tags`,
-  tagEdited: (value) => `Editing tag ${value}. Press enter to save or escape to cancel.`,
-  tagUpdated: (value) => `Tag update to ${value}`,
-  tagDeleted: (value) => `Tag ${value} deleted`,
-  tagSelected: (value) => `Tag ${value} selected. Press enter to edit, delete or backspace to remove.`,
-  noTagsSelected: "No tags selected",
-  inputLabel: (count) => count === 1 ? "1 tag" : `${count} tags`
-};
-
-// ../node_modules/@zag-js/tags-input/dist/tags-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.connect.mjs
 function connect(service, normalize) {
   const { state, send, computed, prop, scope, context } = service;
   const interactive = computed("isInteractive");
@@ -139,7 +124,7 @@ function connect(service, normalize) {
   const readOnly = !!prop("readOnly");
   const required = !!prop("required");
   const invalid = prop("invalid") || computed("isOverflowing");
-  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+  const translations = prop("translations");
   const focused = state.hasTag("focused");
   const editingTag = state.matches("editing:tag");
   const empty = computed("count") === 0;
@@ -366,7 +351,7 @@ function connect(service, normalize) {
       return normalize.input({
         ...parts.itemInput.attrs,
         dir: prop("dir"),
-        "aria-label": translations.tagEdited(props.value),
+        "aria-label": translations?.tagEdited?.(props.value),
         disabled,
         id: getItemInputId(scope, props),
         tabIndex: -1,
@@ -411,7 +396,7 @@ function connect(service, normalize) {
         id: getItemDeleteTriggerId(scope, props),
         type: "button",
         disabled: itemState.disabled,
-        "aria-label": translations.deleteTagTriggerLabel(props.value),
+        "aria-label": translations?.deleteTagTriggerLabel?.(props.value),
         tabIndex: -1,
         onPointerDown(event) {
           if (!isLeftClick(event)) return;
@@ -442,7 +427,7 @@ function connect(service, normalize) {
         type: "button",
         "data-readonly": dataAttr(readOnly),
         disabled,
-        "aria-label": translations.clearTriggerLabel,
+        "aria-label": translations?.clearTriggerLabel,
         hidden: empty,
         onClick() {
           if (!interactive) return;
@@ -458,14 +443,14 @@ function endsWith(str, del) {
   return new RegExp(`${del.source}$`).test(str);
 }
 
-// ../node_modules/@zag-js/auto-resize/dist/visual-style.mjs
+// ../node_modules/.pnpm/@zag-js+auto-resize@1.42.0/node_modules/@zag-js/auto-resize/dist/visual-style.mjs
 function getVisualStyles(node) {
   if (!node) return;
   const style = getComputedStyle(node);
   return "box-sizing:" + style.boxSizing + ";border-left:" + style.borderLeftWidth + " solid red;border-right:" + style.borderRightWidth + " solid red;font-family:" + style.fontFamily + ";font-feature-settings:" + style.fontFeatureSettings + ";font-kerning:" + style.fontKerning + ";font-size:" + style.fontSize + ";font-stretch:" + style.fontStretch + ";font-style:" + style.fontStyle + ";font-variant:" + style.fontVariant + ";font-variant-caps:" + style.fontVariantCaps + ";font-variant-ligatures:" + style.fontVariantLigatures + ";font-variant-numeric:" + style.fontVariantNumeric + ";font-weight:" + style.fontWeight + ";letter-spacing:" + style.letterSpacing + ";margin-left:" + style.marginLeft + ";margin-right:" + style.marginRight + ";padding-left:" + style.paddingLeft + ";padding-right:" + style.paddingRight + ";text-indent:" + style.textIndent + ";text-transform:" + style.textTransform;
 }
 
-// ../node_modules/@zag-js/auto-resize/dist/autoresize-input.mjs
+// ../node_modules/.pnpm/@zag-js+auto-resize@1.42.0/node_modules/@zag-js/auto-resize/dist/autoresize-input.mjs
 function createGhostElement(doc) {
   const el = doc.createElement("div");
   el.id = "ghost";
@@ -482,7 +467,7 @@ function autoResizeInput(input) {
   if (cssText) ghost.style.cssText += cssText;
   function resize() {
     win.requestAnimationFrame(() => {
-      ghost.textContent = input.value;
+      ghost.innerHTML = input.value;
       const rect = win.getComputedStyle(ghost);
       input?.style.setProperty("width", rect.width);
     });
@@ -497,7 +482,7 @@ function autoResizeInput(input) {
   };
 }
 
-// ../node_modules/@zag-js/tags-input/dist/tags-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -512,7 +497,18 @@ var machine = createMachine({
       defaultInputValue: "",
       max: Infinity,
       sanitizeValue: (value) => value.trim(),
-      ...props
+      ...props,
+      translations: {
+        clearTriggerLabel: "Clear all tags",
+        deleteTagTriggerLabel: (value) => `Delete tag ${value}`,
+        tagAdded: (value) => `Added tag ${value}`,
+        tagsPasted: (values) => `Pasted ${values.length} tags`,
+        tagEdited: (value) => `Editing tag ${value}. Press enter to save or escape to cancel.`,
+        tagUpdated: (value) => `Tag update to ${value}`,
+        tagDeleted: (value) => `Tag ${value} deleted`,
+        tagSelected: (value) => `Tag ${value} selected. Press enter to edit, delete or backspace to remove.`,
+        ...props.translations
+      }
     };
   },
   initialState({ prop }) {
@@ -1135,7 +1131,7 @@ var machine = createMachine({
       // queue logs with screen reader and get it announced
       announceLog({ refs, prop }) {
         const liveRegion = refs.get("liveRegion");
-        const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+        const translations = prop("translations");
         const log = refs.get("log");
         if (!log.current || liveRegion == null) return;
         const region = liveRegion;
@@ -1161,9 +1157,6 @@ var machine = createMachine({
             } else if (prev?.type === "update") {
               msg = `${translations.tagUpdated(prev.value)}. ${msg}`;
             }
-            break;
-          case "clear":
-            msg = translations.noTagsSelected;
             break;
           default:
             break;

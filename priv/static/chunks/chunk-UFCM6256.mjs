@@ -1,4 +1,4 @@
-// ../node_modules/@zag-js/live-region/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+live-region@1.42.0/node_modules/@zag-js/live-region/dist/index.mjs
 var ID = "__live-region__";
 var DEBUG_ID = "__live-region-debug__";
 var DEBUG_STYLES = "position:fixed;inset-inline:0;bottom:0;z-index:2147483647;padding:12px 16px;background:black;color:white;font-size:14px;line-height:20px;text-align:center;pointer-events:none;";

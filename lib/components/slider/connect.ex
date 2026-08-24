@@ -104,19 +104,51 @@ defmodule Corex.Slider.Connect do
     end
   end
 
-  defp thumb_offset_vars(values, min, max) do
+  defp thumb_offset_css(value, min, max, index, thumb_alignment) do
+    pct = format_number(percent(value, min, max))
+
+    if thumb_alignment in [nil, "contain"] do
+      "--slider-thumb-offset-#{index}:calc(#{pct}% - (var(--thumb-size) * (#{pct} / 100 - 0.5)));"
+    else
+      "--slider-thumb-offset-#{index}:#{pct}%;"
+    end
+  end
+
+  defp thumb_offset_vars(values, min, max, thumb_alignment) do
     values
     |> effective_values()
     |> Enum.with_index()
     |> Enum.map_join("", fn {value, index} ->
-      "--slider-thumb-offset-#{index}:#{format_number(percent(value, min, max))}%;"
+      thumb_offset_css(value, min, max, index, thumb_alignment)
     end)
   end
 
-  defp root_style(values, min, max, origin, orientation, dir) do
+  defp marker_translate(orientation, dir) do
+    cond do
+      orientation == "vertical" -> "--translate-x:0%;--translate-y:50%;"
+      dir == "rtl" -> "--translate-x:50%;--translate-y:0%;"
+      true -> "--translate-x:-50%;--translate-y:0%;"
+    end
+  end
+
+  defp marker_placement_style(value, min, max, orientation, thumb_alignment) do
+    pct = format_number(percent(value, min, max))
+    prop = if orientation == "vertical", do: "bottom", else: "inset-inline-start"
+
+    offset =
+      if thumb_alignment in [nil, "contain"] do
+        "calc(#{pct}% - (var(--thumb-size) * (#{pct} / 100 - 0.5)))"
+      else
+        "#{pct}%"
+      end
+
+    "#{prop}:#{offset};"
+  end
+
+  defp root_style(values, min, max, origin, orientation, dir, thumb_alignment) do
     {start_off, end_off} = range_offsets(values, min, max, origin)
 
-    "#{thumb_offset_vars(values, min, max)}--slider-thumb-transform:#{thumb_transform(orientation, dir)};--slider-range-start:#{start_off};--slider-range-end:#{end_off};"
+    "#{thumb_offset_vars(values, min, max, thumb_alignment)}--slider-thumb-transform:#{thumb_transform(orientation, dir)};--slider-range-start:#{start_off};--slider-range-end:#{end_off};"
   end
 
   defp range_style(values, min, max, origin) do
@@ -178,6 +210,7 @@ defmodule Corex.Slider.Connect do
     max = Map.get(assigns, :max, 100)
     origin = Map.get(assigns, :origin, "start")
     orient = orientation(assigns)
+    thumb_alignment = Map.get(assigns, :thumb_alignment)
 
     %{
       "data-scope" => "slider",
@@ -185,7 +218,16 @@ defmodule Corex.Slider.Connect do
       "id" => "slider:#{assigns.id}",
       "dir" => assigns.dir,
       "data-orientation" => orient,
-      "style" => root_style(values, min, max, origin, orient, Map.get(assigns, :dir)),
+      "style" =>
+        root_style(
+          values,
+          min,
+          max,
+          origin,
+          orient,
+          Map.get(assigns, :dir),
+          thumb_alignment
+        ),
       "data-disabled" => presence_attr(assigns.disabled),
       "data-invalid" => presence_attr(assigns.invalid),
       "data-readonly" => presence_attr(assigns.read_only)
@@ -391,6 +433,10 @@ defmodule Corex.Slider.Connect do
   def marker(assigns) do
     values = effective_values(assigns.slider_value)
     {lo, hi} = Enum.min_max(values)
+    min = Map.get(assigns, :min, 0)
+    max = Map.get(assigns, :max, 100)
+    orient = orientation(assigns)
+    thumb_alignment = Map.get(assigns, :thumb_alignment)
 
     state =
       case values do
@@ -416,7 +462,8 @@ defmodule Corex.Slider.Connect do
       "data-state" => state,
       "id" => "slider:#{assigns.id}:marker:#{assigns.value}",
       "dir" => assigns.dir,
-      "style" => "--marker-value:#{format_number(assigns.value)};",
+      "style" =>
+        "#{marker_placement_style(assigns.value, min, max, orient, thumb_alignment)}translate:var(--translate-x) var(--translate-y);#{marker_translate(orient, assigns.dir)}",
       "data-disabled" => presence_attr(assigns.disabled)
     }
   end

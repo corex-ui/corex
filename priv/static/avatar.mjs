@@ -15,20 +15,20 @@ import {
   getString,
   observeAttributes,
   observeChildren
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/avatar/dist/avatar.dom.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `avatar:${ctx.id}`;
 var getImageId = (ctx) => ctx.ids?.image ?? `avatar:${ctx.id}:image`;
 var getFallbackId = (ctx) => ctx.ids?.fallback ?? `avatar:${ctx.id}:fallback`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getImageEl = (ctx) => ctx.getById(getImageId(ctx));
 
-// ../node_modules/@zag-js/avatar/dist/avatar.connect.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope } = service;
   const loaded = state.matches("loaded");
@@ -78,7 +78,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/avatar/dist/avatar.machine.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.machine.mjs
 var machine = createMachine({
   initialState() {
     return "loading";

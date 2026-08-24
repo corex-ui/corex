@@ -1,21 +1,21 @@
 import {
   setValueAtIndex
-} from "./chunks/chunk-ANUDZOQU.mjs";
+} from "./chunks/chunk-SYRKLN4X.mjs";
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-JRBNXWVV.mjs";
+} from "./chunks/chunk-3IY2CPWD.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   setArrayValues,
   setScalarValue,
   syncHiddenInputValue
-} from "./chunks/chunk-Y6K7DMC3.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   getJsonStringList,
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   emitResponse,
   idMatches,
@@ -34,7 +34,6 @@ import {
   dispatchInputValueEvent,
   getBeforeInputValue,
   getBoolean,
-  getByOwnerId,
   getDir,
   getEventKey,
   getNativeEvent,
@@ -43,20 +42,19 @@ import {
   invariant,
   isComposingEvent,
   isEqual,
+  isHTMLElement,
   isModifierKey,
-  isOwnedBy,
-  mergeWithDefault,
   queryAll,
   raf,
   setup,
   visuallyHiddenStyle
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.42.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.42.0/node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `pin-input:${ctx.id}`;
 var getInputId = (ctx, id) => ctx.ids?.input?.(id) ?? `pin-input:${ctx.id}:${id}`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `pin-input:${ctx.id}:hidden`;
@@ -64,7 +62,8 @@ var getLabelId = (ctx) => ctx.ids?.label ?? `pin-input:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `pin-input:${ctx.id}:control`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getInputEls = (ctx) => {
-  const selector = `input${getByOwnerId(getRootId(ctx))}`;
+  const ownerId = CSS.escape(getRootId(ctx));
+  const selector = `input[data-ownedby=${ownerId}]`;
   return queryAll(getRootEl(ctx), selector);
 };
 var getInputElAtIndex = (ctx, index) => getInputEls(ctx)[index];
@@ -75,7 +74,7 @@ var setInputValue = (inputEl, value) => {
   inputEl.setAttribute("value", value);
 };
 
-// ../node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.42.0/node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
 var REGEX = {
   numeric: /^[0-9]+$/,
   alphabetic: /^[A-Za-z]+$/,
@@ -91,10 +90,7 @@ function isValidValue(value, type, pattern) {
   return regex.test(value);
 }
 
-// ../node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
-var defaultTranslations = {
-  inputLabel: (index, length) => `pin code ${index + 1} of ${length}`
-};
+// ../node_modules/.pnpm/@zag-js+pin-input@1.42.0/node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
 function connect(service, normalize) {
   const { send, context, computed, prop, scope } = service;
   const complete = computed("isValueComplete");
@@ -102,7 +98,7 @@ function connect(service, normalize) {
   const readOnly = !!prop("readOnly");
   const invalid = !!prop("invalid");
   const required = !!prop("required");
-  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+  const translations = prop("translations");
   const focusedIndex = context.get("focusedIndex");
   function focus() {
     getFirstInputEl(scope)?.focus();
@@ -302,7 +298,7 @@ function connect(service, normalize) {
         },
         onBlur(event) {
           const target = event.relatedTarget;
-          if (isOwnedBy(target, getRootId(scope))) return;
+          if (isHTMLElement(target) && target.dataset.ownedby === getRootId(scope)) return;
           send({ type: "INPUT.BLUR", index });
         }
       });
@@ -310,7 +306,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.42.0/node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
 var { choose, createMachine } = setup();
 var machine = createMachine({
   props({ props }) {
@@ -319,7 +315,11 @@ var machine = createMachine({
       otp: false,
       type: "numeric",
       defaultValue: props.count ? fill([], props.count) : [],
-      ...props
+      ...props,
+      translations: {
+        inputLabel: (index, length) => `pin code ${index + 1} of ${length}`,
+        ...props.translations
+      }
     };
   },
   initialState() {

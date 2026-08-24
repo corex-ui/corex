@@ -1,21 +1,21 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-JRBNXWVV.mjs";
+} from "./chunks/chunk-3IY2CPWD.mjs";
 import {
   createLiveRegion
-} from "./chunks/chunk-6BQZXDSK.mjs";
+} from "./chunks/chunk-UFCM6256.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-UDOXAGZO.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-TBCKGPKM.mjs";
-import "./chunks/chunk-4F3TQ7OK.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-NB2X5AJC.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   firstSelectedValue,
   initCollectionItems,
@@ -25,28 +25,28 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-UKRXMCAJ.mjs";
+} from "./chunks/chunk-XGL2LWL4.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-5GSPM2B3.mjs";
+} from "./chunks/chunk-NU3NDRI3.mjs";
 import "./chunks/chunk-4JICR5HJ.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-MEBO2IC2.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
 import {
   markUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-Y6K7DMC3.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   idMatches,
   notifyChange,
@@ -79,7 +79,6 @@ import {
   isLeftClick,
   isOpeningInNewTab,
   match,
-  mergeWithDefault,
   nextTick,
   observeAttributes,
   partPropsMethod,
@@ -90,9 +89,9 @@ import {
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
   "root",
   "clearTrigger",
@@ -111,7 +110,7 @@ var anatomy = createAnatomy("combobox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/combobox/dist/combobox.collection.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -119,7 +118,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/@zag-js/combobox/dist/combobox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
@@ -155,14 +154,10 @@ var focusTriggerEl = (ctx) => {
   triggerEl?.focus({ preventScroll: true });
 };
 
-// ../node_modules/@zag-js/combobox/dist/combobox.connect.mjs
-var defaultTranslations = {
-  triggerLabel: "Toggle suggestions",
-  clearTriggerLabel: "Clear value"
-};
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
 function connect(service, normalize) {
-  const { context, prop, state, send, scope, computed } = service;
-  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
+  const { context, prop, state, send, scope, computed, event } = service;
+  const translations = prop("translations");
   const collection2 = prop("collection");
   const disabled = !!prop("disabled");
   const interactive = computed("isInteractive");
@@ -259,9 +254,9 @@ function connect(service, normalize) {
         "data-invalid": dataAttr(invalid),
         "data-required": dataAttr(required),
         "data-focus": dataAttr(focused),
-        onClick(event) {
+        onClick(event2) {
           if (composite) return;
-          event.preventDefault();
+          event2.preventDefault();
           getTriggerEl(scope)?.focus({ preventScroll: true });
         }
       });
@@ -311,8 +306,8 @@ function connect(service, normalize) {
         "aria-expanded": open,
         "data-state": open ? "open" : "closed",
         "aria-activedescendant": highlightedValue ? getItemId(scope, highlightedValue) : void 0,
-        onClick(event) {
-          if (event.defaultPrevented) return;
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
           if (!prop("openOnClick")) return;
           if (!interactive) return;
           send({ type: "INPUT.CLICK", src: "input-click" });
@@ -325,48 +320,48 @@ function connect(service, normalize) {
           if (disabled) return;
           send({ type: "INPUT.BLUR" });
         },
-        onChange(event) {
-          send({ type: "INPUT.CHANGE", value: event.currentTarget.value, src: "input-change" });
+        onChange(event2) {
+          send({ type: "INPUT.CHANGE", value: event2.currentTarget.value, src: "input-change" });
         },
-        onKeyDown(event) {
-          if (event.defaultPrevented) return;
+        onKeyDown(event2) {
+          if (event2.defaultPrevented) return;
           if (!interactive) return;
-          if (event.ctrlKey || event.shiftKey || isComposingEvent(event)) return;
+          if (event2.ctrlKey || event2.shiftKey || isComposingEvent(event2)) return;
           const openOnKeyPress = prop("openOnKeyPress");
-          const isModifierKey = event.ctrlKey || event.metaKey || event.shiftKey;
+          const isModifierKey = event2.ctrlKey || event2.metaKey || event2.shiftKey;
           const keypress = true;
           const keymap = {
-            ArrowDown(event2) {
+            ArrowDown(event3) {
               if (!openOnKeyPress && !open) return;
-              send({ type: event2.altKey ? "OPEN" : "INPUT.ARROW_DOWN", keypress, src: "arrow-key" });
-              event2.preventDefault();
+              send({ type: event3.altKey ? "OPEN" : "INPUT.ARROW_DOWN", keypress, src: "arrow-key" });
+              event3.preventDefault();
             },
             ArrowUp() {
               if (!openOnKeyPress && !open) return;
-              send({ type: event.altKey ? "CLOSE" : "INPUT.ARROW_UP", keypress, src: "arrow-key" });
-              event.preventDefault();
+              send({ type: event2.altKey ? "CLOSE" : "INPUT.ARROW_UP", keypress, src: "arrow-key" });
+              event2.preventDefault();
             },
-            Home(event2) {
+            Home(event3) {
               if (isModifierKey) return;
               send({ type: "INPUT.HOME", keypress });
               if (open) {
-                event2.preventDefault();
+                event3.preventDefault();
               }
             },
-            End(event2) {
+            End(event3) {
               if (isModifierKey) return;
               send({ type: "INPUT.END", keypress });
               if (open) {
-                event2.preventDefault();
+                event3.preventDefault();
               }
             },
-            Enter(event2) {
+            Enter(event3) {
               send({ type: "INPUT.ENTER", keypress, src: "item-select" });
               const hasHighlight = highlightedValue != null;
               const alwaysSubmit = prop("alwaysSubmitOnEnter");
               const willBeRejected = computed("isCustomValue") && !prop("allowCustomValue");
               if (open && !alwaysSubmit && (hasHighlight || willBeRejected)) {
-                event2.preventDefault();
+                event3.preventDefault();
               }
               if (highlightedValue == null) return;
               const itemEl = getItemEl(scope, highlightedValue);
@@ -376,12 +371,12 @@ function connect(service, normalize) {
             },
             Escape() {
               send({ type: "INPUT.ESCAPE", keypress, src: "escape-key" });
-              event.preventDefault();
+              event2.preventDefault();
             }
           };
-          const key = getEventKey(event, { dir: prop("dir") });
+          const key = getEventKey(event2, { dir: prop("dir") });
           const exec = keymap[key];
-          exec?.(event);
+          exec?.(event2);
         }
       });
     },
@@ -406,23 +401,23 @@ function connect(service, normalize) {
           if (!props.focusable) return;
           send({ type: "INPUT.FOCUS", src: "trigger" });
         },
-        onClick(event) {
-          if (event.defaultPrevented) return;
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
           if (!interactive) return;
-          if (!isLeftClick(event)) return;
+          if (!isLeftClick(event2)) return;
           send({ type: "TRIGGER.CLICK", src: "trigger-click" });
         },
-        onPointerDown(event) {
+        onPointerDown(event2) {
           if (!interactive) return;
-          if (event.pointerType === "touch") return;
-          if (!isLeftClick(event)) return;
-          event.preventDefault();
+          if (event2.pointerType === "touch") return;
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
           queueMicrotask(() => {
             focusInputEl(scope);
           });
         },
-        onKeyDown(event) {
-          if (event.defaultPrevented) return;
+        onKeyDown(event2) {
+          if (event2.defaultPrevented) return;
           if (composite) return;
           const keyMap = {
             ArrowDown() {
@@ -432,11 +427,11 @@ function connect(service, normalize) {
               send({ type: "INPUT.ARROW_UP", src: "arrow-key" });
             }
           };
-          const key = getEventKey(event, { dir: prop("dir") });
+          const key = getEventKey(event2, { dir: prop("dir") });
           const exec = keyMap[key];
           if (exec) {
-            exec(event);
-            event.preventDefault();
+            exec(event2);
+            event2.preventDefault();
           }
         }
       });
@@ -455,9 +450,9 @@ function connect(service, normalize) {
         "aria-labelledby": getLabelId(scope),
         "aria-multiselectable": prop("multiple") && composite ? true : void 0,
         "data-empty": dataAttr(collection2.size === 0),
-        onPointerDown(event) {
-          if (!isLeftClick(event)) return;
-          event.preventDefault();
+        onPointerDown(event2) {
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
         }
       });
     },
@@ -482,12 +477,12 @@ function connect(service, normalize) {
         "aria-label": translations.clearTriggerLabel,
         "aria-controls": getInputId(scope),
         hidden: !context.get("value").length,
-        onPointerDown(event) {
-          if (!isLeftClick(event)) return;
-          event.preventDefault();
+        onPointerDown(event2) {
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
         },
-        onClick(event) {
-          if (event.defaultPrevented) return;
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
           if (!interactive) return;
           send({ type: "VALUE.CLEAR", src: "clear-trigger" });
         }
@@ -511,20 +506,21 @@ function connect(service, normalize) {
         "data-value": itemState.value,
         onPointerMove() {
           if (itemState.disabled) return;
-          if (getInteractionModality() !== "pointer") return;
           if (itemState.highlighted) return;
           send({ type: "ITEM.POINTER_MOVE", value });
         },
         onPointerLeave() {
           if (props.persistFocus) return;
           if (itemState.disabled) return;
-          if (getInteractionModality() !== "pointer") return;
+          const prev = event.previous();
+          const mouseMoved = prev?.type.includes("POINTER");
+          if (!mouseMoved) return;
           send({ type: "ITEM.POINTER_LEAVE", value });
         },
-        onClick(event) {
-          if (isDownloadingEvent(event)) return;
-          if (isOpeningInNewTab(event)) return;
-          if (isContextMenuEvent(event)) return;
+        onClick(event2) {
+          if (isDownloadingEvent(event2)) return;
+          if (isOpeningInNewTab(event2)) return;
+          if (isContextMenuEvent(event2)) return;
           if (itemState.disabled) return;
           send({ type: "ITEM.CLICK", src: "item-select", value });
         }
@@ -573,7 +569,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/@zag-js/combobox/dist/combobox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
 var { guards, createMachine, choose } = setup();
 var { and, not } = guards;
 var machine = createMachine({
@@ -600,6 +596,11 @@ var machine = createMachine({
         placement: "bottom",
         sameWidth: true,
         ...props.positioning
+      },
+      translations: {
+        triggerLabel: "Toggle suggestions",
+        clearTriggerLabel: "Clear value",
+        ...props.translations
       }
     };
   },

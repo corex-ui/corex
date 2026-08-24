@@ -20,9 +20,51 @@ function thumbIndex(el: HTMLElement): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function cssThumbSize(el: HTMLElement): { width: number; height: number } | undefined {
+  const sized =
+    el.querySelector<HTMLElement>('[data-scope="slider"][data-part="control"]') ??
+    el.querySelector<HTMLElement>('[data-scope="slider"][data-part="root"]') ??
+    el;
+
+  const raw = getComputedStyle(sized).getPropertyValue("--thumb-size").trim();
+  const px = Number.parseFloat(raw);
+  if (Number.isFinite(px) && px > 0) return { width: px, height: px };
+  return undefined;
+}
+
+/** Read thumb dimensions from SSR markup so contain alignment stays visible on hydrate. */
+export function readSliderThumbSize(el: HTMLElement): { width: number; height: number } | undefined {
+  const thumb = el.querySelector<HTMLElement>('[data-scope="slider"][data-part="thumb"]');
+  if (!thumb) return cssThumbSize(el);
+
+  const { width, height } = thumb.getBoundingClientRect();
+  if (width > 0 && height > 0) return { width, height };
+
+  const offsetWidth = thumb.offsetWidth;
+  const offsetHeight = thumb.offsetHeight;
+  if (offsetWidth > 0 && offsetHeight > 0) {
+    return { width: offsetWidth, height: offsetHeight };
+  }
+
+  const style = getComputedStyle(thumb);
+  const computedWidth = Number.parseFloat(style.width);
+  const computedHeight = Number.parseFloat(style.height);
+  if (computedWidth > 0 && computedHeight > 0) {
+    return { width: computedWidth, height: computedHeight };
+  }
+
+  return cssThumbSize(el);
+}
+
+function withMeasuredThumbSize(props: Props, el: HTMLElement): Props {
+  if (props.thumbSize || props.thumbAlignment === "center") return props;
+  const thumbSize = readSliderThumbSize(el);
+  return thumbSize ? { ...props, thumbSize } : props;
+}
+
 export class Slider extends Component<Props, Api, Schema> {
   initMachine(props: Props): VanillaMachine<Schema> {
-    return new VanillaMachine(machine, props);
+    return new VanillaMachine(machine, withMeasuredThumbSize(props, this.el));
   }
 
   initApi(): Api {

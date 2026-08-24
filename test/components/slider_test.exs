@@ -190,6 +190,24 @@ defmodule Corex.SliderTest do
 
       assert result["style"] =~ "--slider-range-start:0%"
       assert result["style"] =~ "--slider-range-end:70%"
+      assert result["style"] =~ "--slider-thumb-offset-0:calc(30%"
+    end
+
+    test "uses plain percent offsets for center alignment" do
+      result =
+        Connect.root(%{
+          id: "test-slider",
+          dir: "ltr",
+          value: 30,
+          min: 0,
+          max: 100,
+          origin: "start",
+          thumb_alignment: "center",
+          disabled: false,
+          invalid: false,
+          read_only: false
+        })
+
       assert result["style"] =~ "--slider-thumb-offset-0:30%"
     end
 
@@ -391,6 +409,7 @@ defmodule Corex.SliderTest do
 
       assert m["data-state"] == "at-value"
       assert m["data-value"] == "50"
+      assert m["style"] =~ "inset-inline-start:calc(50%"
     end
 
     test "under-value and over-value" do

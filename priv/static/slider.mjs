@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-67EMJLUU.mjs";
+} from "./chunks/chunk-Z3EQ3GCO.mjs";
 import {
   clampPercent,
   clampValue,
@@ -14,15 +14,15 @@ import {
   setValueAtIndex,
   snapValueToStep,
   toPx
-} from "./chunks/chunk-ANUDZOQU.mjs";
+} from "./chunks/chunk-SYRKLN4X.mjs";
 import {
   notifyPhoenixFormChange,
   syncHiddenInputValue
-} from "./chunks/chunk-Y6K7DMC3.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountNumberListBinding,
   readUpdatedServerNumberList
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   emitResponse,
   idMatches,
@@ -60,9 +60,9 @@ import {
   setElementValue,
   trackFormControl,
   trackPointerMove
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/slider/dist/slider.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.anatomy.mjs
 var anatomy = createAnatomy("slider").parts(
   "root",
   "label",
@@ -77,7 +77,7 @@ var anatomy = createAnatomy("slider").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/slider/dist/slider.dom.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `slider:${ctx.id}`;
 var getThumbId = (ctx, index) => ctx.ids?.thumb?.(index) ?? `slider:${ctx.id}:thumb:${index}`;
 var getHiddenInputId = (ctx, index) => ctx.ids?.hiddenInput?.(index) ?? `slider:${ctx.id}:input:${index}`;
@@ -155,7 +155,7 @@ var getOffsetRect = (el) => ({
   height: el?.offsetHeight ?? 0
 });
 
-// ../node_modules/@zag-js/slider/dist/slider.style.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.style.mjs
 function getBounds(value) {
   const firstValue = value[0];
   const lastThumb = value[value.length - 1];
@@ -294,7 +294,7 @@ function getMarkerGroupStyle() {
   };
 }
 
-// ../node_modules/@zag-js/slider/dist/slider.utils.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.utils.mjs
 function getThumbBounds(ctx) {
   const { index, values, min, max, gap } = ctx;
   const prevThumb = values[index - 1];
@@ -441,7 +441,7 @@ function selectMovableThumb(params, index) {
   return index;
 }
 
-// ../node_modules/@zag-js/slider/dist/slider.connect.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.connect.mjs
 function connect(service, normalize2) {
   const { state, send, context, prop, computed, scope } = service;
   const ariaLabel = prop("aria-label");
@@ -752,7 +752,7 @@ function connect(service, normalize2) {
   };
 }
 
-// ../node_modules/@zag-js/slider/dist/slider.machine.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.machine.mjs
 var isEqualSize = (a, b) => {
   return a?.width === b?.width && a?.height === b?.height;
 };
@@ -1094,9 +1094,39 @@ function thumbIndex(el) {
   const n = raw === void 0 ? 0 : Number(raw);
   return Number.isFinite(n) ? n : 0;
 }
+function cssThumbSize(el) {
+  const sized = el.querySelector('[data-scope="slider"][data-part="control"]') ?? el.querySelector('[data-scope="slider"][data-part="root"]') ?? el;
+  const raw = getComputedStyle(sized).getPropertyValue("--thumb-size").trim();
+  const px = Number.parseFloat(raw);
+  if (Number.isFinite(px) && px > 0) return { width: px, height: px };
+  return void 0;
+}
+function readSliderThumbSize(el) {
+  const thumb = el.querySelector('[data-scope="slider"][data-part="thumb"]');
+  if (!thumb) return cssThumbSize(el);
+  const { width, height } = thumb.getBoundingClientRect();
+  if (width > 0 && height > 0) return { width, height };
+  const offsetWidth = thumb.offsetWidth;
+  const offsetHeight = thumb.offsetHeight;
+  if (offsetWidth > 0 && offsetHeight > 0) {
+    return { width: offsetWidth, height: offsetHeight };
+  }
+  const style = getComputedStyle(thumb);
+  const computedWidth = Number.parseFloat(style.width);
+  const computedHeight = Number.parseFloat(style.height);
+  if (computedWidth > 0 && computedHeight > 0) {
+    return { width: computedWidth, height: computedHeight };
+  }
+  return cssThumbSize(el);
+}
+function withMeasuredThumbSize(props, el) {
+  if (props.thumbSize || props.thumbAlignment === "center") return props;
+  const thumbSize = readSliderThumbSize(el);
+  return thumbSize ? { ...props, thumbSize } : props;
+}
 var Slider = class extends Component {
   initMachine(props) {
-    return new VanillaMachine(machine, props);
+    return new VanillaMachine(machine, withMeasuredThumbSize(props, this.el));
   }
   initApi() {
     return this.zagConnect(connect);

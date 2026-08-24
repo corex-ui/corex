@@ -72,6 +72,7 @@ defmodule Corex.Slider.Anatomy do
       :max,
       origin: "start",
       orientation: "horizontal",
+      thumb_alignment: nil,
       disabled: false,
       read_only: false,
       invalid: false
@@ -85,6 +86,7 @@ defmodule Corex.Slider.Anatomy do
             max: number(),
             origin: String.t(),
             orientation: String.t(),
+            thumb_alignment: String.t() | nil,
             disabled: boolean(),
             read_only: boolean(),
             invalid: boolean()
@@ -355,14 +357,27 @@ defmodule Corex.Slider.Anatomy do
 
   defmodule Marker do
     @moduledoc false
-    defstruct [:id, :value, :slider_value, :dir, orientation: "horizontal", disabled: false]
+    defstruct [
+      :id,
+      :value,
+      :slider_value,
+      :dir,
+      :min,
+      :max,
+      orientation: "horizontal",
+      thumb_alignment: nil,
+      disabled: false
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             value: number(),
             slider_value: [number()],
             dir: String.t(),
+            min: number(),
+            max: number(),
             orientation: String.t(),
+            thumb_alignment: String.t() | nil,
             disabled: boolean()
           }
 

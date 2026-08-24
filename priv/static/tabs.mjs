@@ -1,10 +1,10 @@
 import {
   toPx
-} from "./chunks/chunk-ANUDZOQU.mjs";
+} from "./chunks/chunk-SYRKLN4X.mjs";
 import {
   readStringControlledZagProps,
   readStringControlledZagUpdate
-} from "./chunks/chunk-RCF57L3G.mjs";
+} from "./chunks/chunk-4M2QDFLS.mjs";
 import {
   idMatches,
   notifyChange,
@@ -21,7 +21,6 @@ import {
   createZagLiveHook,
   dataAttr,
   first,
-  getByOwnerId,
   getDir,
   getEventKey,
   getEventTarget,
@@ -40,13 +39,13 @@ import {
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunks/chunk-NHD23A5Q.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
-// ../node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/@zag-js/tabs/dist/tabs.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
 var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
 var getContentId = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
@@ -57,7 +56,8 @@ var getContentEl = (ctx, value) => ctx.getById(getContentId(ctx, value));
 var getTriggerEl = (ctx, value) => value != null ? ctx.getById(getTriggerId(ctx, value)) : null;
 var getIndicatorEl = (ctx) => ctx.getById(getIndicatorId(ctx));
 var getElements = (ctx) => {
-  const selector = `[role=tab]${getByOwnerId(getListId(ctx))}:not([disabled])`;
+  const ownerId = CSS.escape(getListId(ctx));
+  const selector = `[role=tab][data-ownedby='${ownerId}']:not([disabled])`;
   return queryAll(getListEl(ctx), selector);
 };
 var getFirstTriggerEl = (ctx) => first(getElements(ctx));
@@ -75,7 +75,7 @@ var getRectByValue = (ctx, value) => {
   return getOffsetRect(tab);
 };
 
-// ../node_modules/@zag-js/tabs/dist/tabs.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const translations = prop("translations");
@@ -269,7 +269,7 @@ function connect(service, normalize) {
 }
 var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/@zag-js/tabs/dist/tabs.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
 var { createMachine } = setup();
 var machine = createMachine({
   props({ props }) {
