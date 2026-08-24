@@ -24,12 +24,7 @@ defmodule E2eWeb.Demos.SliderDemo do
 
   def minimal_example(assigns) do
     ~H"""
-    <.slider
-      id="slider-minimal"
-      class="slider"
-      value={50.0}
-      markers marker_values={marker_values()}
-    />
+    <.slider id="slider-minimal" class="slider" value={50.0} markers marker_values={marker_values()} />
     """
   end
 
@@ -39,7 +34,8 @@ defmodule E2eWeb.Demos.SliderDemo do
       id="slider-with-label"
       class="slider"
       value={50.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
     >
       <:label>Volume</:label>
     </.slider>
@@ -52,7 +48,8 @@ defmodule E2eWeb.Demos.SliderDemo do
       id="slider-custom-slots"
       class="slider"
       value={50.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
     >
       <:label>Volume</:label>
       <:value_text class="font-bold">
@@ -81,7 +78,8 @@ defmodule E2eWeb.Demos.SliderDemo do
       id="slider-with-marks"
       class="slider"
       value={50.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
     >
       <:label>Volume</:label>
     </.slider>
@@ -95,7 +93,8 @@ defmodule E2eWeb.Demos.SliderDemo do
       id="slider-compound"
       class="slider"
       value={50.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
       name="volume"
       compound
     >
@@ -190,7 +189,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-color-default"
         class="slider"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Default</:label>
       </.slider>
@@ -198,7 +198,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-color-accent"
         class="slider ui-accent"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Accent</:label>
       </.slider>
@@ -206,7 +207,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-color-brand"
         class="slider ui-brand"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Brand</:label>
       </.slider>
@@ -214,7 +216,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-color-alert"
         class="slider ui-alert"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Alert</:label>
       </.slider>
@@ -222,7 +225,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-color-info"
         class="slider ui-info"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Info</:label>
       </.slider>
@@ -230,7 +234,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-color-success"
         class="slider ui-success"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Success</:label>
       </.slider>
@@ -247,7 +252,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-sm"
         class="slider ui-size-sm"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>SM</:label>
       </.slider>
@@ -255,7 +261,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-md"
         class="slider ui-size-md"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>MD</:label>
       </.slider>
@@ -263,7 +270,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-lg"
         class="slider ui-size-lg"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>LG</:label>
       </.slider>
@@ -271,7 +279,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-xl"
         class="slider ui-size-xl"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>XL</:label>
       </.slider>
@@ -287,7 +296,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         class="slider"
         value={50.0}
         disabled
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Disabled</:label>
       </.slider>
@@ -296,7 +306,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         class="slider"
         value={50.0}
         read_only
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Read only</:label>
       </.slider>
@@ -305,7 +316,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         class="slider"
         value={50.0}
         invalid
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Invalid</:label>
       </.slider>
@@ -320,7 +332,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-markers"
         class="slider"
         value={50.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Markers</:label>
       </.slider>
@@ -379,7 +392,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-variant-subtle"
         class="slider"
         value={50.0}
-        markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+        markers
+        marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
       >
         <:label>Subtle (default)</:label>
       </.slider>
@@ -387,7 +401,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-style-variant-solid"
         class="slider ui-solid"
         value={50.0}
-        markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+        markers
+        marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
       >
         <:label>Solid</:label>
       </.slider>
@@ -423,7 +438,8 @@ defmodule E2eWeb.Demos.SliderDemo do
             id={"slider-matrix-#{semantic_index}-#{variant_index}"}
             class={DemoScales.join_matrix_modifiers("slider", semantic.modifier, variant.modifier)}
             value={50.0}
-            markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+            markers
+            marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
           >
             <:label>{semantic.label}</:label>
           </.slider>
@@ -485,7 +501,8 @@ defmodule E2eWeb.Demos.SliderDemo do
           id={"slider-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("slider", variant.modifier)}
           value={50.0}
-          markers marker_values={marker_values()}
+          markers
+          marker_values={marker_values()}
         />
       </div>
     </div>
@@ -503,7 +520,8 @@ defmodule E2eWeb.Demos.SliderDemo do
           id={"slider-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("slider", variant.modifier)}
           value={50.0}
-          markers marker_values={marker_values()}
+          markers
+          marker_values={marker_values()}
         />
       </div>
     </div>
@@ -1323,7 +1341,8 @@ defmodule E2eWeb.Demos.SliderDemo do
       <.slider
         field={f[:volume]}
         id="slider-form-changeset-volume"
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
         <:label>Volume</:label>
@@ -1358,7 +1377,8 @@ defmodule E2eWeb.Demos.SliderDemo do
       <.slider
         field={f[:volume]}
         id="slider-form-validate-volume"
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
         <:label>Volume (0–90)</:label>
@@ -1394,7 +1414,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         name="slider_form[volume]"
         id="slider-form-volume"
         value={0.0}
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
         <:label>Volume</:label>
@@ -1421,7 +1442,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-live-form-changeset-volume"
         field={@form[:volume]}
         value={@volume_value}
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         on_value_change="volume_changed_basic"
         class="slider"
       >
@@ -1458,7 +1480,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-live-form-validate-volume"
         field={@form[:volume]}
         value={@volume_value}
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
         <:label>Volume (0–90)</:label>
@@ -1497,11 +1520,7 @@ defmodule E2eWeb.Demos.SliderDemo do
       method="post"
       class="flex flex-col gap-space-lg w-full max-w-xl"
     >
-      <.slider
-        field={f[:volume]}
-        markers marker_values={[0, 25, 50, 75, 100]}
-        class="slider"
-      >
+      <.slider field={f[:volume]} markers marker_values={[0, 25, 50, 75, 100]} class="slider">
         <:label>Volume</:label>
       </.slider>
       <.action type="submit" class="button ui-accent">Submit</.action>
@@ -1521,11 +1540,7 @@ defmodule E2eWeb.Demos.SliderDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
-      <.slider
-        field={@form[:volume]}
-        markers marker_values={[0, 25, 50, 75, 100]}
-        class="slider"
-      >
+      <.slider field={@form[:volume]} markers marker_values={[0, 25, 50, 75, 100]} class="slider">
         <:label>Volume</:label>
       </.slider>
       <.action type="submit" class="button ui-accent">Submit</.action>
@@ -1692,7 +1707,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-live-form-validate-controlled-volume"
         field={@form[:volume]}
         value={@volume_value}
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
         <:label>Volume (0–90)</:label>
@@ -1727,7 +1743,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         id="slider-live-form-validate-invalid-volume"
         field={@form[:volume]}
         value={@volume_value}
-        markers marker_values={[0, 25, 50, 75, 100]}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
         invalid={Corex.FormField.invalid?(@form[:volume])}
         class="slider"
       >

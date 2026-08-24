@@ -745,8 +745,6 @@ defmodule Corex.AngleSlider do
     end
   end
 
-  defp default_angle_marker_values(0, 360), do: [0, 90, 180, 270]
-
   defp default_angle_marker_values(min, max) do
     span = max - min
 

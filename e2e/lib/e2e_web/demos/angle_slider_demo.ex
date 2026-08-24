@@ -26,7 +26,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       id="angle-slider-minimal"
       class="angle-slider"
       value={90.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
     />
     """
   end
@@ -37,7 +38,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       id="angle-slider-with-label"
       class="angle-slider"
       value={90.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
     >
       <:label>Angle</:label>
     </.angle_slider>
@@ -50,7 +52,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       id="angle-slider-custom-slots"
       class="angle-slider"
       value={90.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
     >
       <:label>Angle</:label>
       <:value_text class="font-bold">
@@ -67,7 +70,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       id="angle-slider-compound"
       class="angle-slider"
       value={90.0}
-      markers marker_values={marker_values()}
+      markers
+      marker_values={marker_values()}
       name="angle"
       compound
     >
@@ -139,7 +143,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-color-default"
         class="angle-slider"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Default</:label>
       </.angle_slider>
@@ -147,7 +152,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-color-accent"
         class="angle-slider ui-accent"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Accent</:label>
       </.angle_slider>
@@ -155,7 +161,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-color-brand"
         class="angle-slider ui-brand"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Brand</:label>
       </.angle_slider>
@@ -163,7 +170,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-color-alert"
         class="angle-slider ui-alert"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Alert</:label>
       </.angle_slider>
@@ -171,7 +179,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-color-info"
         class="angle-slider ui-info"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Info</:label>
       </.angle_slider>
@@ -179,7 +188,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-color-success"
         class="angle-slider ui-success"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Success</:label>
       </.angle_slider>
@@ -196,7 +206,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-sm"
         class="angle-slider ui-size-sm"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>SM</:label>
       </.angle_slider>
@@ -204,7 +215,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-md"
         class="angle-slider ui-size-md"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>MD</:label>
       </.angle_slider>
@@ -212,7 +224,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-lg"
         class="angle-slider ui-size-lg"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>LG</:label>
       </.angle_slider>
@@ -220,7 +233,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-xl"
         class="angle-slider ui-size-xl"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>XL</:label>
       </.angle_slider>
@@ -236,7 +250,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         class="angle-slider"
         value={90.0}
         disabled
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Disabled</:label>
       </.angle_slider>
@@ -245,7 +260,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         class="angle-slider"
         value={90.0}
         read_only
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Read only</:label>
       </.angle_slider>
@@ -254,7 +270,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         class="angle-slider"
         value={90.0}
         invalid
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Invalid</:label>
       </.angle_slider>
@@ -269,7 +286,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-markers"
         class="angle-slider"
         value={90.0}
-        markers marker_values={marker_values()}
+        markers
+        marker_values={marker_values()}
       >
         <:label>Markers</:label>
       </.angle_slider>
@@ -328,7 +346,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-variant-subtle"
         class="angle-slider"
         value={90.0}
-        markers marker_values={[0.0, 90.0, 180.0, 270.0]}
+        markers
+        marker_values={[0.0, 90.0, 180.0, 270.0]}
       >
         <:label>Subtle (default)</:label>
       </.angle_slider>
@@ -336,7 +355,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-style-variant-solid"
         class="angle-slider ui-solid"
         value={90.0}
-        markers marker_values={[0.0, 90.0, 180.0, 270.0]}
+        markers
+        marker_values={[0.0, 90.0, 180.0, 270.0]}
       >
         <:label>Solid</:label>
       </.angle_slider>
@@ -374,7 +394,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
               DemoScales.join_matrix_modifiers("angle-slider", semantic.modifier, variant.modifier)
             }
             value={90.0}
-            markers marker_values={[0.0, 90.0, 180.0, 270.0]}
+            markers
+            marker_values={[0.0, 90.0, 180.0, 270.0]}
           >
             <:label>{semantic.label}</:label>
           </.angle_slider>
@@ -436,7 +457,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           id={"angle-slider-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("angle-slider", variant.modifier)}
           value={90.0}
-          markers marker_values={marker_values()}
+          markers
+          marker_values={marker_values()}
         />
       </div>
     </div>
@@ -454,7 +476,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           id={"angle-slider-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("angle-slider", variant.modifier)}
           value={90.0}
-          markers marker_values={marker_values()}
+          markers
+          marker_values={marker_values()}
         />
       </div>
     </div>
@@ -1274,7 +1297,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.angle_slider
         field={f[:angle]}
         id="angle-slider-form-changeset-angle"
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle</:label>
@@ -1309,7 +1333,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.angle_slider
         field={f[:angle]}
         id="angle-slider-form-validate-angle"
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle (0–90)</:label>
@@ -1345,7 +1370,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         name="angle_slider_form[angle]"
         id="angle-slider-form-angle"
         value={0.0}
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle</:label>
@@ -1372,7 +1398,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-live-form-changeset-angle"
         field={@form[:angle]}
         value={@angle_value}
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         on_value_change="angle_changed_basic"
         class="angle-slider"
       >
@@ -1409,7 +1436,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-live-form-validate-angle"
         field={@form[:angle]}
         value={@angle_value}
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle (0–90)</:label>
@@ -1448,11 +1476,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       method="post"
       class="flex flex-col gap-space-lg w-full max-w-xl"
     >
-      <.angle_slider
-        field={f[:angle]}
-        markers marker_values={[0, 90, 180, 270]}
-        class="angle-slider"
-      >
+      <.angle_slider field={f[:angle]} markers marker_values={[0, 90, 180, 270]} class="angle-slider">
         <:label>Angle</:label>
       </.angle_slider>
       <.action type="submit" class="button ui-accent">Submit</.action>
@@ -1474,7 +1498,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.angle_slider
         field={@form[:angle]}
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle</:label>
@@ -1643,7 +1668,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-live-form-validate-controlled-angle"
         field={@form[:angle]}
         value={@angle_value}
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle (0–90)</:label>
@@ -1678,7 +1704,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         id="angle-slider-live-form-validate-invalid-angle"
         field={@form[:angle]}
         value={@angle_value}
-        markers marker_values={[0, 90, 180, 270]}
+        markers
+        marker_values={[0, 90, 180, 270]}
         invalid={Corex.FormField.invalid?(@form[:angle])}
         class="angle-slider"
       >

@@ -79,7 +79,8 @@ defmodule E2eWeb.SliderEventsLive do
                 <.slider
                   id={@id_server_change}
                   class="slider"
-                  markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+                  markers
+                  marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
                   on_value_change="slider_changed"
                 >
                   <:label>On Change</:label>
@@ -88,7 +89,8 @@ defmodule E2eWeb.SliderEventsLive do
                 <.slider
                   id={@id_server_end}
                   class="slider"
-                  markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+                  markers
+                  marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
                   value={50.0}
                   on_value_change_end="slider_change_ended"
                 >
@@ -127,7 +129,8 @@ defmodule E2eWeb.SliderEventsLive do
                 <.slider
                   id={@id_client_change}
                   class="slider"
-                  markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+                  markers
+                  marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
                   on_value_change_client={@client_event_change}
                 >
                   <:label>On Change</:label>
@@ -136,7 +139,8 @@ defmodule E2eWeb.SliderEventsLive do
                 <.slider
                   id={@id_client_end}
                   class="slider"
-                  markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+                  markers
+                  marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
                   value={50.0}
                   on_value_change_end_client={@client_event_end}
                 >

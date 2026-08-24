@@ -54,7 +54,8 @@ defmodule E2eWeb.SliderPatternsLive do
                 id={@id_async}
                 class="slider"
                 value={slider.value}
-                markers marker_values={[0, 25, 50, 75, 100]}
+                markers
+                marker_values={[0, 25, 50, 75, 100]}
               >
                 <:label>Volume</:label>
               </.slider>
