@@ -169,7 +169,10 @@ defmodule E2eWeb.SliderFormLive do
     assigns =
       assigns
       |> assign(:validate_volume_value, get_volume_from_form(assigns.validate_form))
-      |> assign(:validate_invalid_volume_value, get_volume_from_form(assigns.validate_invalid_form))
+      |> assign(
+        :validate_invalid_volume_value,
+        get_volume_from_form(assigns.validate_invalid_form)
+      )
 
     ~H"""
     <Layouts.app

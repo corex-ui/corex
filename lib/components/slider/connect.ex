@@ -223,7 +223,7 @@ defmodule Corex.Slider.Connect do
   def hidden_input(assigns) do
     index = Map.get(assigns, :index, 0)
 
-    base = %{
+    %{
       "data-scope" => "slider",
       "data-part" => "hidden-input",
       "data-index" => Integer.to_string(index),
@@ -232,31 +232,17 @@ defmodule Corex.Slider.Connect do
       "id" => "slider:#{assigns.id}:input:#{index}",
       "dir" => assigns.dir
     }
-
-    base =
-      case assigns.name do
-        name when is_binary(name) and name != "" -> Map.put(base, "name", name)
-        _ -> base
-      end
-
-    base =
-      case Map.get(assigns, :form) do
-        form when is_binary(form) and form != "" -> Map.put(base, "form", form)
-        _ -> base
-      end
-
-    base =
-      if Map.get(assigns, :required) not in [nil, false] do
-        Map.put(base, "required", "")
-      else
-        base
-      end
-
-    case assigns.value do
-      nil -> base
-      value -> Map.put(base, "value", to_string(value))
-    end
+    |> maybe_put("name", nonempty_string(assigns.name))
+    |> maybe_put("form", nonempty_string(Map.get(assigns, :form)))
+    |> maybe_put("required", presence_attr(Map.get(assigns, :required)))
+    |> maybe_put("value", value_string(assigns.value))
   end
+
+  defp nonempty_string(value) when is_binary(value) and value != "", do: value
+  defp nonempty_string(_), do: nil
+
+  defp value_string(nil), do: nil
+  defp value_string(value), do: to_string(value)
 
   def ignore_hidden_input(assigns) do
     index = Map.get(assigns, :index, 0)

@@ -23,7 +23,7 @@ defmodule Corex.SliderTest do
       assert html =~ ~r/data-part="thumb"/
       assert html =~ ~r/data-part="hidden-input"/
       assert html =~ ~r/data-part="value-text"/
-      assert html =~ ~s(data-default-value="[30)
+      assert html =~ ~S(data-default-value="[30)
       refute html =~ ~r/\bdata-value="/
     end
 
@@ -35,9 +35,9 @@ defmodule Corex.SliderTest do
           name: "price"
         )
 
-      assert html =~ ~s(data-index="0")
-      assert html =~ ~s(data-index="1")
-      assert html =~ ~s(data-submit-name="price[]")
+      assert html =~ ~S(data-index="0")
+      assert html =~ ~S(data-index="1")
+      assert html =~ ~S(data-submit-name="price[]")
       assert html =~ "20 – 80"
     end
   end

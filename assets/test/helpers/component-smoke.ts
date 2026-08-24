@@ -426,10 +426,7 @@ export function sliderTree(thumbs = 1): HTMLElement {
           { part: "label", text: "Volume" },
           {
             part: "control",
-            children: [
-              { part: "track", children: [{ part: "range" }] },
-              ...thumbChildren,
-            ],
+            children: [{ part: "track", children: [{ part: "range" }] }, ...thumbChildren],
           },
           {
             part: "marker-group",

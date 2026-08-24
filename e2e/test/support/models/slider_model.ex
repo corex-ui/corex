@@ -16,7 +16,9 @@ defmodule E2eWeb.SliderModel do
   )
 
   def anatomy_section_ids, do: @anatomy_sections
-  def anatomy_single_section_ids, do: ~W(slider-anatomy-basic slider-anatomy-with-marks slider-anatomy-compound)
+
+  def anatomy_single_section_ids,
+    do: ~W(slider-anatomy-basic slider-anatomy-with-marks slider-anatomy-compound)
 
   def wait_section_slider_ready(session, section_dom_id) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
@@ -276,9 +278,7 @@ defmodule E2eWeb.SliderModel do
     session =
       assert_has(
         session,
-        css(
-          "#events-slider-on-value-change-server[phx-hook='Slider']:not([data-loading])"
-        )
+        css("#events-slider-on-value-change-server[phx-hook='Slider']:not([data-loading])")
       )
 
     execute_script(

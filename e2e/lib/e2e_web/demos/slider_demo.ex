@@ -422,9 +422,7 @@ defmodule E2eWeb.Demos.SliderDemo do
           <.slider
             :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
             id={"slider-matrix-#{semantic_index}-#{variant_index}"}
-            class={
-              DemoScales.join_matrix_modifiers("slider", semantic.modifier, variant.modifier)
-            }
+            class={DemoScales.join_matrix_modifiers("slider", semantic.modifier, variant.modifier)}
             value={50.0}
             marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
           >

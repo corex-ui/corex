@@ -6,8 +6,8 @@ defmodule E2eWeb.SliderTest do
 
   import Wallaby.Query
 
-  alias E2eWeb.SliderModel, as: Slider
   alias E2eWeb.ComponentBehaviorSpec
+  alias E2eWeb.SliderModel, as: Slider
 
   @moduletag :slider
 
@@ -156,18 +156,14 @@ defmodule E2eWeb.SliderTest do
             |> Slider.wait_playground_slider_ready()
 
           sess =
-            Slider.check_accessibility(sess, css("#my-slider"),
-              filter: E2eWeb.A11yDocPageFilter
-            )
+            Slider.check_accessibility(sess, css("#my-slider"), filter: E2eWeb.A11yDocPageFilter)
 
           sess
           |> Slider.focus_thumb_in_section("my-slider")
           |> Slider.press_key(:right_arrow, 1)
           |> Slider.wait(200)
           |> then(
-            &Slider.check_accessibility(&1, css("#my-slider"),
-              filter: E2eWeb.A11yDocPageFilter
-            )
+            &Slider.check_accessibility(&1, css("#my-slider"), filter: E2eWeb.A11yDocPageFilter)
           )
       end
     end
