@@ -180,23 +180,33 @@
  }
 
  .slider [data-scope="slider"][data-part="marker-group"] {
- position: relative;
- width: 100%;
- height: var(--spacing-space-lg);
+ position: absolute;
+ inset-inline: calc(var(--thumb-size) / 2);
+ top: 50%;
+ height: var(--track-thickness);
+ translate: 0 -50%;
+ width: auto;
  pointer-events: none;
  user-select: none;
+ z-index: 0;
  }
 
- .slider [data-scope="slider"][data-part="root"][data-orientation="vertical"]
+ .slider [data-scope="slider"][data-part="control"][data-orientation="vertical"]
  [data-scope="slider"][data-part="marker-group"] {
- width: var(--spacing-space-lg);
- height: var(--container-3xs);
+ inset-inline: auto;
+ inset-block: calc(var(--thumb-size) / 2);
+ left: 50%;
+ top: auto;
+ width: var(--track-thickness);
+ height: auto;
+ translate: -50% 0;
  }
 
  .slider [data-scope="slider"][data-part="marker"] {
  position: absolute;
+ top: 0;
  width: 2px;
- height: var(--spacing-space);
+ height: 100%;
  background-color: var(--marker-color, var(--color-ink-muted));
  border-radius: 1px;
  }

@@ -435,12 +435,12 @@ export function sliderTree(thumbs = 1): HTMLElement {
             children: [
               { part: "track", attrs: { id: "slider:corex-smoke:track" }, children: [{ part: "range", attrs: { id: "slider:corex-smoke:range" } }] },
               ...thumbChildren,
+              {
+                part: "marker-group",
+                attrs: { id: "slider:corex-smoke:marker-group" },
+                children: [{ part: "marker", attrs: { "data-value": "0", id: "slider:corex-smoke:marker:0" } }],
+              },
             ],
-          },
-          {
-            part: "marker-group",
-            attrs: { id: "slider:corex-smoke:marker-group" },
-            children: [{ part: "marker", attrs: { "data-value": "0", id: "slider:corex-smoke:marker:0" } }],
           },
           {
             part: "value-text",

@@ -18,7 +18,7 @@ defmodule Corex.AngleSlider do
   ### With marks
 
   ```heex
-  <.angle_slider class="angle-slider" marker_values={[0, 90, 180, 270]}>
+  <.angle_slider class="angle-slider" markers marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
   </.angle_slider>
   ```
@@ -57,6 +57,7 @@ defmodule Corex.AngleSlider do
   <.angle_slider
     class="angle-slider"
     on_value_change="angle_changed"
+    markers
     marker_values={[0, 90, 180, 270]}
   >
     <:label>Angle</:label>
@@ -166,7 +167,7 @@ defmodule Corex.AngleSlider do
 
   ```heex
   <.form :let={f} for={@form} action={@action} method="post">
-    <.angle_slider field={f[:angle]} class="angle-slider" marker_values={[0, 90, 180, 270]}>
+    <.angle_slider field={f[:angle]} class="angle-slider" markers marker_values={[0, 90, 180, 270]}>
       <:label>Angle</:label>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -255,9 +256,14 @@ defmodule Corex.AngleSlider do
     doc: "Client event when the user releases the thumb"
   )
 
+  attr(:markers, :boolean,
+    default: false,
+    doc: "Show tick marks on the dial. Use marker_values to customize positions."
+  )
+
   attr(:marker_values, :list,
-    default: [],
-    doc: "List of angle values to show as markers (e.g. [0, 90, 180, 270])"
+    default: nil,
+    doc: "Tick positions when markers is true (defaults to quarter steps between min and max)"
   )
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
@@ -296,6 +302,7 @@ defmodule Corex.AngleSlider do
       |> update(:value, &normalize_angle_value/1)
 
     hidden_name = angle_hidden_input_name(assigns)
+    marker_values = effective_marker_values(assigns)
 
     ctx = %{
       id: assigns.id,
@@ -307,7 +314,8 @@ defmodule Corex.AngleSlider do
       read_only: assigns.read_only,
       invalid: assigns.invalid,
       name: hidden_name,
-      marker_values: assigns.marker_values,
+      markers: assigns.markers,
+      marker_values: marker_values,
       value_text_as: assigns.value_text_as
     }
 
@@ -315,6 +323,7 @@ defmodule Corex.AngleSlider do
       assigns
       |> assign(:ctx, ctx)
       |> assign(:hidden_name, hidden_name)
+      |> assign(:marker_values, marker_values)
 
     ~H"""
     <div
@@ -694,8 +703,8 @@ defmodule Corex.AngleSlider do
   ```
 
   ```elixir
-  def handle_event("set_angle", %{"value" => v}, socket) do
-    {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", v)}
+  def handle_event("set_angle", %{"value" => value}, socket) do
+    {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", value)}
   end
   ```
   """)
@@ -725,6 +734,33 @@ defmodule Corex.AngleSlider do
     )
 
     0
+  end
+
+  defp effective_marker_values(%{markers: false}), do: []
+
+  defp effective_marker_values(%{markers: true} = assigns) do
+    case Map.get(assigns, :marker_values) do
+      values when is_list(values) and values != [] -> values
+      _ -> default_angle_marker_values(0, 360)
+    end
+  end
+
+  defp default_angle_marker_values(0, 360), do: [0, 90, 180, 270]
+
+  defp default_angle_marker_values(min, max) do
+    span = max - min
+
+    if span <= 0 do
+      [min]
+    else
+      [
+        min,
+        min + span * 0.25,
+        min + span * 0.5,
+        min + span * 0.75,
+        max
+      ]
+    end
   end
 
   @doc false

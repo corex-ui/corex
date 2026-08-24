@@ -32,13 +32,7 @@ defmodule E2eWeb.SliderApiLive do
 
   @impl true
   def handle_event("api_set_value", %{"value" => value}, socket) do
-    volume =
-      case Float.parse(to_string(value)) do
-        {num, _} -> num
-        :error -> 0.0
-      end
-
-    {:noreply, Corex.Slider.set_value(socket, @id_sv_server, volume)}
+    {:noreply, Corex.Slider.set_value(socket, @id_sv_server, value)}
   end
 
   @impl true

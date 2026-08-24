@@ -54,7 +54,7 @@ defmodule E2eWeb.AngleSliderPatternsLive do
                 id={@id_async}
                 class="angle-slider"
                 value={angle_slider.value}
-                marker_values={[0, 90, 180, 270]}
+                markers marker_values={[0, 90, 180, 270]}
               >
                 <:label>Angle</:label>
               </.angle_slider>

@@ -11,6 +11,7 @@ defmodule CorexWeb.AngleSlider do
             },
             with_markers: %{
               class: "angle-slider",
+              markers: true,
               marker_values: [0, 90, 180, 270],
               label: [%{inner_block: "Angle"}]
             },
@@ -41,6 +42,7 @@ defmodule CorexWeb.AngleSlider do
               class: "angle-slider",
               value: 45,
               step: 15,
+              markers: true,
               marker_values: [0, 45, 90, 135, 180, 225, 270, 315],
               label: [%{inner_block: "Angle"}]
             }

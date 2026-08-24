@@ -11,6 +11,7 @@ defmodule CorexWeb.Slider do
             },
             with_markers: %{
               class: "slider",
+              markers: true,
               marker_values: [0, 25, 50, 75, 100],
               label: [%{inner_block: "Volume"}]
             },
@@ -46,6 +47,7 @@ defmodule CorexWeb.Slider do
               class: "slider",
               value: 25,
               step: 5,
+              markers: true,
               marker_values: [0, 25, 50, 75, 100],
               label: [%{inner_block: "Volume"}]
             }

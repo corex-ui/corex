@@ -179,7 +179,8 @@ defmodule E2eWeb.SliderPlayLive do
           <.slider
             id="my-slider"
             class="slider"
-            marker_values={if(@controls.show_markers, do: [0, 25, 50, 75, 100], else: [])}
+            markers={@controls.show_markers}
+            marker_values={[0, 25, 50, 75, 100]}
             value={@volume}
             step={@controls.step}
             disabled={@controls.disabled}

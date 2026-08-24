@@ -79,7 +79,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_server_change}
                   class="angle-slider"
-                  marker_values={[0.0, 90.0, 180.0, 270.0]}
+                  markers marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change="angle_slider_changed"
                 >
                   <:label>On Change</:label>
@@ -88,7 +88,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_server_end}
                   class="angle-slider"
-                  marker_values={[0.0, 90.0, 180.0, 270.0]}
+                  markers marker_values={[0.0, 90.0, 180.0, 270.0]}
                   value={90.0}
                   on_value_change_end="angle_slider_change_ended"
                 >
@@ -127,7 +127,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_client_change}
                   class="angle-slider"
-                  marker_values={[0.0, 90.0, 180.0, 270.0]}
+                  markers marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change_client={@client_event_change}
                 >
                   <:label>On Change</:label>
@@ -136,7 +136,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_client_end}
                   class="angle-slider"
-                  marker_values={[0.0, 90.0, 180.0, 270.0]}
+                  markers marker_values={[0.0, 90.0, 180.0, 270.0]}
                   value={90.0}
                   on_value_change_end_client={@client_event_end}
                 >

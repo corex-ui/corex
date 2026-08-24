@@ -32,13 +32,7 @@ defmodule E2eWeb.AngleSliderApiLive do
 
   @impl true
   def handle_event("api_set_value", %{"value" => value}, socket) do
-    angle =
-      case Float.parse(to_string(value)) do
-        {num, _} -> num
-        :error -> 0.0
-      end
-
-    {:noreply, Corex.AngleSlider.set_value(socket, @id_sv_server, angle)}
+    {:noreply, Corex.AngleSlider.set_value(socket, @id_sv_server, value)}
   end
 
   @impl true

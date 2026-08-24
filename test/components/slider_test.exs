@@ -115,6 +115,24 @@ defmodule Corex.SliderTest do
   end
 
   describe "slider/1 direct rendering" do
+    test "hides markers by default" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Slider.slider id="test-slider-plain" class="slider" value={45}>
+              <:label>Volume</:label>
+            </Corex.Slider.slider>
+            """
+          end,
+          %{}
+        )
+
+      refute html =~ ~S(data-part="marker-group")
+    end
+
     test "renders with all attributes and markers" do
       html =
         render_component(
@@ -135,6 +153,7 @@ defmodule Corex.SliderTest do
               on_value_change_end="change_end"
               on_value_change_client="change_client"
               on_value_change_end_client="change_end_client"
+              markers
               marker_values={[0, 25, 50]}
             >
               <:label>Volume</:label>

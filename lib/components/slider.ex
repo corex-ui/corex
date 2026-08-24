@@ -27,7 +27,7 @@ defmodule Corex.Slider do
   ### With marks
 
   ```heex
-  <.slider class="slider" marker_values={[0, 25, 50, 75, 100]}>
+  <.slider class="slider" markers marker_values={[0, 25, 50, 75, 100]}>
     <:label>Volume</:label>
   </.slider>
   ```
@@ -75,7 +75,7 @@ defmodule Corex.Slider do
   <.slider
     class="slider"
     on_value_change="slider_changed"
-    marker_values={[0, 25, 50, 75, 100]}
+    markers marker_values={[0, 25, 50, 75, 100]}
   >
     <:label>Volume</:label>
   </.slider>
@@ -187,7 +187,7 @@ defmodule Corex.Slider do
 
   ```heex
   <.form :let={f} for={@form} action={@action} method="post">
-    <.slider field={f[:volume]} class="slider" marker_values={[0, 25, 50, 75, 100]}>
+    <.slider field={f[:volume]} class="slider" markers marker_values={[0, 25, 50, 75, 100]}>
       <:label>Volume</:label>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -301,9 +301,14 @@ defmodule Corex.Slider do
     doc: "Client event when the user releases a thumb"
   )
 
+  attr(:markers, :boolean,
+    default: false,
+    doc: "Show tick marks on the track. Use marker_values to customize positions."
+  )
+
   attr(:marker_values, :list,
-    default: [],
-    doc: "List of values to show as markers (e.g. [0, 25, 50, 75, 100])"
+    default: nil,
+    doc: "Tick positions when markers is true (defaults to quarter steps between min and max)"
   )
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
@@ -346,6 +351,7 @@ defmodule Corex.Slider do
     display_value = Connect.effective_values(assigns.value)
     submit_name = slider_submit_name(assigns.name, display_value)
     hidden_name = slider_hidden_input_name(assigns, submit_name)
+    marker_values = effective_marker_values(assigns)
 
     ctx = %{
       id: assigns.id,
@@ -353,6 +359,7 @@ defmodule Corex.Slider do
       orientation: assigns.orientation,
       origin: assigns.origin,
       thumb_alignment: assigns.thumb_alignment,
+      markers: assigns.markers,
       value: display_value,
       min: assigns.min,
       max: assigns.max,
@@ -363,7 +370,7 @@ defmodule Corex.Slider do
       required: assigns.required,
       name: hidden_name,
       form: assigns.form,
-      marker_values: assigns.marker_values
+      marker_values: marker_values
     }
 
     assigns =
@@ -372,6 +379,7 @@ defmodule Corex.Slider do
       |> assign(:display_value, display_value)
       |> assign(:hidden_name, hidden_name)
       |> assign(:submit_name, submit_name)
+      |> assign(:marker_values, marker_values)
 
     ~H"""
     <div
@@ -503,25 +511,25 @@ defmodule Corex.Slider do
               })}
             />
           </div>
-        </div>
-        <div
-          :if={@marker_values != []}
-          {Connect.mounted_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
-        >
           <div
-            :for={val <- @marker_values}
-            {Connect.mounted_marker(%Marker{
-              id: @id,
-              value: val,
-              slider_value: @display_value,
-              min: @min,
-              max: @max,
-              thumb_alignment: @thumb_alignment,
-              disabled: @disabled,
-              dir: @dir,
-              orientation: @orientation
-            })}
-          />
+            :if={@marker_values != []}
+            {Connect.mounted_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
+          >
+            <div
+              :for={val <- @marker_values}
+              {Connect.mounted_marker(%Marker{
+                id: @id,
+                value: val,
+                slider_value: @display_value,
+                min: @min,
+                max: @max,
+                thumb_alignment: @thumb_alignment,
+                disabled: @disabled,
+                dir: @dir,
+                orientation: @orientation
+              })}
+            />
+          </div>
         </div>
         <div
           {Connect.mounted_value_text(%ValueText{
@@ -860,11 +868,11 @@ defmodule Corex.Slider do
             <div data-scope="slider" data-part="range"></div>
           </div>
           <div data-scope="slider" data-part="thumb" data-index="0"></div>
-        </div>
-        <div data-scope="slider" data-part="marker-group">
-          <span data-scope="slider" data-part="marker" data-value="0"></span>
-          <span data-scope="slider" data-part="marker" data-value="50"></span>
-          <span data-scope="slider" data-part="marker" data-value="100"></span>
+          <div data-scope="slider" data-part="marker-group">
+            <span data-scope="slider" data-part="marker" data-value="0"></span>
+            <span data-scope="slider" data-part="marker" data-value="50"></span>
+            <span data-scope="slider" data-part="marker" data-value="100"></span>
+          </div>
         </div>
         <div data-scope="slider" data-part="value-text">
           <span data-scope="slider" data-part="value"></span>
@@ -907,8 +915,8 @@ defmodule Corex.Slider do
   Set the slider value from `handle_event`. Accepts a number, a list, or a numeric string.
 
   ```elixir
-  def handle_event("set_volume", %{"value" => v}, socket) do
-    {:noreply, Corex.Slider.set_value(socket, "my-slider", v)}
+  def handle_event("set_volume", %{"value" => value}, socket) do
+    {:noreply, Corex.Slider.set_value(socket, "my-slider", value)}
   end
   ```
   """)
@@ -1168,6 +1176,33 @@ defmodule Corex.Slider do
     Corex.Dev.warn("Corex.Slider expected a number, got #{inspect(value)}, using 0")
 
     0
+  end
+
+  defp effective_marker_values(%{markers: markers, min: min, max: max} = assigns) do
+    if markers != true do
+      []
+    else
+      case Map.get(assigns, :marker_values) do
+        values when is_list(values) and values != [] -> values
+        _ -> default_marker_values(min, max)
+      end
+    end
+  end
+
+  defp default_marker_values(min, max) do
+    span = max - min
+
+    if span <= 0 do
+      [min]
+    else
+      [
+        min,
+        min + span * 0.25,
+        min + span * 0.5,
+        min + span * 0.75,
+        max
+      ]
+    end
   end
 
   defp to_float(value) when is_float(value), do: value

@@ -370,7 +370,7 @@ defmodule Corex.ComponentRenderPathsTest do
               :let={ctx}
               value={45}
               name="angle"
-              marker_values={[0, 180]}
+              markers marker_values={[0, 180]}
             >
               <AngleSlider.angle_slider_root ctx={ctx}>
                 <AngleSlider.angle_slider_marker_group ctx={ctx}>
@@ -408,7 +408,7 @@ defmodule Corex.ComponentRenderPathsTest do
               id="angle-full"
               value={120}
               name="angle"
-              marker_values={[0, 90, 180]}
+              markers marker_values={[0, 90, 180]}
               errors={["Too low"]}
               invalid
             >
@@ -477,7 +477,7 @@ defmodule Corex.ComponentRenderPathsTest do
               :let={ctx}
               value={[20, 80]}
               name="price"
-              marker_values={[0, 50]}
+              markers marker_values={[0, 50]}
             >
               <Slider.slider_root ctx={ctx}>
                 <Slider.slider_marker_group ctx={ctx}>
@@ -521,7 +521,7 @@ defmodule Corex.ComponentRenderPathsTest do
               id="slider-full"
               value={40}
               name="volume"
-              marker_values={[0, 50, 100]}
+              markers marker_values={[0, 50, 100]}
               errors={["Too low"]}
               invalid
             >
