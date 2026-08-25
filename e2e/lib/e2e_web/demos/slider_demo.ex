@@ -717,6 +717,180 @@ defmodule E2eWeb.Demos.SliderDemo do
     """
   end
 
+  def api_set_range_client_binding_code do
+    ~S"""
+    <.action phx-click={Corex.Slider.set_value("api-slider-range", [0, 100])}>0 – 100</.action>
+    <.action phx-click={Corex.Slider.set_value("api-slider-range", [20, 80])}>20 – 80</.action>
+    <.action phx-click={Corex.Slider.set_value("api-slider-range", [25, 75])}>25 – 75</.action>
+    <.action phx-click={Corex.Slider.set_value("api-slider-range", [40, 60])}>40 – 60</.action>
+    <.slider class="slider" value={[20, 80]} markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}>
+      <:label>Price</:label>
+    </.slider>
+    """
+  end
+
+  def api_set_range_client_binding_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
+      <.action phx-click={Corex.Slider.set_value(@id, [0, 100])} class="button ui-size-sm">
+        0 – 100
+      </.action>
+      <.action phx-click={Corex.Slider.set_value(@id, [20, 80])} class="button ui-size-sm">
+        20 – 80
+      </.action>
+      <.action phx-click={Corex.Slider.set_value(@id, [25, 75])} class="button ui-size-sm">
+        25 – 75
+      </.action>
+      <.action phx-click={Corex.Slider.set_value(@id, [40, 60])} class="button ui-size-sm">
+        40 – 60
+      </.action>
+    </div>
+    <.slider id={@id} class="slider" value={[20, 80]} markers marker_values={marker_values()}>
+      <:label>Price</:label>
+    </.slider>
+    """
+  end
+
+  def api_set_range_client_js_heex do
+    ~S"""
+    <.action
+      phx-click={
+        JS.dispatch("corex:slider:set-value",
+          to: "#api-slider-range-js",
+          detail: %{value: [25, 75]},
+          bubbles: false
+        )
+      }
+    >
+      25 – 75
+    </.action>
+    <.slider class="slider" value={[20, 80]} markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}>
+      <:label>Price</:label>
+    </.slider>
+    """
+  end
+
+  def api_set_range_client_js_js do
+    ~S"""
+    const el = document.getElementById("api-slider-range-js")
+    el?.dispatchEvent(new CustomEvent("corex:slider:set-value", {
+      detail: { value: [25, 75] },
+      bubbles: false
+    }))
+    """
+  end
+
+  def api_set_range_client_js_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("api-slider-range-js")
+    el?.dispatchEvent(
+      new CustomEvent<{ value: number[] }>("corex:slider:set-value", {
+        detail: { value: [25, 75] },
+        bubbles: false
+      })
+    )
+    """
+  end
+
+  def api_set_range_client_js_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
+      <.action
+        phx-click={
+          JS.dispatch("corex:slider:set-value",
+            to: "##{@id}",
+            detail: %{value: [0, 100]},
+            bubbles: false
+          )
+        }
+        class="button ui-size-sm"
+      >
+        0 – 100
+      </.action>
+      <.action
+        phx-click={
+          JS.dispatch("corex:slider:set-value",
+            to: "##{@id}",
+            detail: %{value: [20, 80]},
+            bubbles: false
+          )
+        }
+        class="button ui-size-sm"
+      >
+        20 – 80
+      </.action>
+      <.action
+        phx-click={
+          JS.dispatch("corex:slider:set-value",
+            to: "##{@id}",
+            detail: %{value: [25, 75]},
+            bubbles: false
+          )
+        }
+        class="button ui-size-sm"
+      >
+        25 – 75
+      </.action>
+      <.action
+        phx-click={
+          JS.dispatch("corex:slider:set-value",
+            to: "##{@id}",
+            detail: %{value: [40, 60]},
+            bubbles: false
+          )
+        }
+        class="button ui-size-sm"
+      >
+        40 – 60
+      </.action>
+    </div>
+    <.slider id={@id} class="slider" value={[20, 80]} markers marker_values={marker_values()}>
+      <:label>Price</:label>
+    </.slider>
+    """
+  end
+
+  def api_set_range_server_heex do
+    ~S"""
+    <.action phx-click="api_set_range_value" phx-value-lo="0" phx-value-hi="100" class="button ui-size-sm">
+      Server: 0 – 100
+    </.action>
+    <.action phx-click="api_set_range_value" phx-value-lo="20" phx-value-hi="80" class="button ui-size-sm">
+      Server: 20 – 80
+    </.action>
+    """
+  end
+
+  def api_set_range_server_elixir do
+    ~S"""
+    def handle_event("api_set_range_value", %{"lo" => lo, "hi" => hi}, socket) do
+      {:noreply, Corex.Slider.set_value(socket, "api-slider-range-server", [lo, hi])}
+    end
+    """
+  end
+
+  def api_set_range_server_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
+      <.action phx-click={@event} phx-value-lo="0" phx-value-hi="100" class="button ui-size-sm">
+        Server: 0 – 100
+      </.action>
+      <.action phx-click={@event} phx-value-lo="20" phx-value-hi="80" class="button ui-size-sm">
+        Server: 20 – 80
+      </.action>
+      <.action phx-click={@event} phx-value-lo="25" phx-value-hi="75" class="button ui-size-sm">
+        Server: 25 – 75
+      </.action>
+      <.action phx-click={@event} phx-value-lo="40" phx-value-hi="60" class="button ui-size-sm">
+        Server: 40 – 60
+      </.action>
+    </div>
+    <.slider id={@id} class="slider" value={[20, 80]} markers marker_values={marker_values()}>
+      <:label>Price</:label>
+    </.slider>
+    """
+  end
+
   def events_on_value_change_server_heex do
     ~S"""
     <.slider
@@ -835,6 +1009,69 @@ defmodule E2eWeb.Demos.SliderDemo do
     """
   end
 
+  def events_range_server_heex do
+    ~S"""
+    <.slider
+      class="slider"
+      value={[20, 80]}
+      markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+      on_value_change="slider_changed"
+    >
+      <:label>On Change</:label>
+    </.slider>
+
+    <.slider
+      class="slider"
+      value={[20, 80]}
+      markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+      on_value_change_end="slider_change_ended"
+    >
+      <:label>On End</:label>
+    </.slider>
+    """
+  end
+
+  def events_range_client_heex do
+    ~S"""
+    <.slider
+      class="slider"
+      value={[20, 80]}
+      markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+      on_value_change_client="slider-changed"
+    >
+      <:label>On Change</:label>
+    </.slider>
+
+    <.slider
+      class="slider"
+      value={[20, 80]}
+      markers marker_values={[0.0, 25.0, 50.0, 75.0, 100.0]}
+      on_value_change_end_client="slider-change-ended"
+    >
+      <:label>On End</:label>
+    </.slider>
+    """
+  end
+
+  def events_range_client_js do
+    ~S"""
+    const a = document.getElementById("events-slider-range-on-value-change-client");
+    const b = document.getElementById("events-slider-range-on-value-change-end-client");
+    a?.addEventListener("slider-changed", (event) => console.log(event.detail));
+    b?.addEventListener("slider-change-ended", (event) => console.log(event.detail));
+    """
+  end
+
+  def events_range_client_ts do
+    ~S"""
+    type Detail = { id: string; value: number[]; dragging?: boolean };
+    const a = document.getElementById("events-slider-range-on-value-change-client");
+    const b = document.getElementById("events-slider-range-on-value-change-end-client");
+    a?.addEventListener("slider-changed", (event: Event) => console.log((event as CustomEvent<Detail>).detail));
+    b?.addEventListener("slider-change-ended", (event: Event) => console.log((event as CustomEvent<Detail>).detail));
+    """
+  end
+
   def patterns_async_heex_full do
     ~S"""
     <.async_result :let={slider} assign={@slider}>
@@ -887,7 +1124,7 @@ defmodule E2eWeb.Demos.SliderDemo do
       import Ecto.Changeset
 
       embedded_schema do
-        field :volume, :float, default: 0.0
+        field :volume, :float
       end
 
       def changeset(form, attrs \\ %{}) do
@@ -901,9 +1138,8 @@ defmodule E2eWeb.Demos.SliderDemo do
         |> cast(attrs, [:volume])
         |> validate_required([:volume])
         |> validate_number(:volume,
-          greater_than_or_equal_to: 0.0,
-          less_than_or_equal_to: 90.0,
-          message: "must be between 0 and 90"
+          greater_than: 90.0,
+          message: "must be over 90"
         )
       end
     end
@@ -1051,7 +1287,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         markers marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1199,18 +1435,16 @@ defmodule E2eWeb.Demos.SliderDemo do
     ~S"""
     <.form
       for={@form}
-     
-      phx-change="validate_volume_range"
-      phx-submit="save_volume_range"
+      phx-change="validate_volume"
+      phx-submit="save_volume"
       class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.slider
         field={@form[:volume]}
         markers marker_values={[0, 25, 50, 75, 100]}
-        on_value_change="volume_range_changed"
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1237,7 +1471,7 @@ defmodule E2eWeb.Demos.SliderDemo do
        )}
     end
 
-    def handle_event("validate_volume_range", %{"slider_validated" => params}, socket) do
+    def handle_event("validate_volume", %{"slider_validated" => params}, socket) do
       changeset =
         %MyApp.Forms.Slider{}
         |> MyApp.Forms.Slider.changeset_validate(params)
@@ -1253,25 +1487,7 @@ defmodule E2eWeb.Demos.SliderDemo do
        )}
     end
 
-    def handle_event("volume_range_changed", %{"value" => value}, socket) do
-      params = %{"volume" => to_string(value)}
-
-      changeset =
-        %MyApp.Forms.Slider{}
-        |> MyApp.Forms.Slider.changeset_validate(params)
-        |> Map.put(:action, :validate)
-
-      {:noreply,
-       assign(socket, :form,
-         Phoenix.Component.to_form(changeset,
-           action: :validate,
-           as: :slider_validated,
-           id: "live-product-volume-validated-form"
-         )
-       )}
-    end
-
-    def handle_event("save_volume_range", %{"slider_validated" => params}, socket) do
+    def handle_event("save_volume", %{"slider_validated" => params}, socket) do
       case MyApp.Forms.Slider.changeset_validate(%MyApp.Forms.Slider{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           {:noreply,
@@ -1381,7 +1597,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1484,7 +1700,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1653,7 +1869,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         markers marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1679,7 +1895,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         invalid={Corex.FormField.invalid?(@validate_invalid_form[:volume])}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1711,7 +1927,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         marker_values={[0, 25, 50, 75, 100]}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1748,7 +1964,7 @@ defmodule E2eWeb.Demos.SliderDemo do
         invalid={Corex.FormField.invalid?(@form[:volume])}
         class="slider"
       >
-        <:label>Volume (0–90)</:label>
+        <:label>Volume (over 90)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
@@ -1794,6 +2010,551 @@ defmodule E2eWeb.Demos.SliderDemo do
         save_ecto_invalid(socket, Map.get(params, "slider_validate_invalid", %{}))
       end
     end
+    """
+  end
+
+  def form_ecto_range do
+    ~S"""
+    defmodule MyApp.Forms.SliderRange do
+      use Ecto.Schema
+      import Ecto.Changeset
+
+      embedded_schema do
+        field :volume, {:array, :float}
+      end
+
+      def changeset(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:volume])
+        |> validate_required([:volume])
+      end
+
+      def changeset_validate(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:volume])
+        |> validate_required([:volume])
+        |> validate_length(:volume, is: 2, message: "must have two values")
+        |> validate_high_over_90()
+      end
+
+      defp validate_high_over_90(changeset) do
+        case get_field(changeset, :volume) do
+          [_, high] when is_number(high) and high > 90 ->
+            changeset
+
+          [_, _high] ->
+            add_error(changeset, :volume, "must be over 90")
+
+          _ ->
+            changeset
+        end
+      end
+    end
+    """
+  end
+
+  def form_doc_controller_phoenix_range_heex do
+    ~S"""
+    <.form
+      for={@form}
+      action={~p"/slider/form"}
+      method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={@form[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume</:label>
+      </.slider>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_range_elixir do
+    ~S"""
+    def slider_form_page(conn, _params) do
+      phoenix_range_form =
+        Phoenix.Component.to_form(%{"volume" => ["20", "80"]},
+          as: :slider_phoenix_range,
+          id: "slider-form-phoenix-range"
+        )
+
+      render(conn, :slider_form_page, phoenix_range_form: phoenix_range_form)
+    end
+
+    def slider_form_submit(conn, %{"slider_phoenix_range" => params}) do
+      volume = params["volume"] || []
+
+      conn
+      |> put_flash(:info, "Submitted: volume=#{inspect(volume)}")
+      |> redirect(to: ~p"/slider/form#slider-form-phoenix-range")
+    end
+    """
+  end
+
+  def form_doc_controller_validate_range_heex do
+    ~S"""
+    <.form
+      for={@form}
+      action={~p"/slider/form"}
+      method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={@form[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume (high over 90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.slider>
+
+      <.action type="submit" class="button ui-accent">Submit</:action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_validate_range_elixir do
+    ~S"""
+    def product_form_validated_page(conn, _params) do
+      changeset =
+        MyApp.Forms.SliderRange.changeset_validate(%MyApp.Forms.SliderRange{}, %{})
+
+      form =
+        Phoenix.Component.to_form(changeset,
+          as: :slider_validated_range,
+          id: "product-volume-validated-range-form"
+        )
+
+      render(conn, :product_form_validated_range, form: form)
+    end
+
+    def product_form_validated_range_create(conn, %{"slider_validated_range" => params}) do
+      case MyApp.Forms.SliderRange.changeset_validate(%MyApp.Forms.SliderRange{}, params) do
+        %Ecto.Changeset{valid?: true} = changeset ->
+          data = Ecto.Changeset.apply_changes(changeset)
+          conn
+          |> put_flash(:info, "Saved volume=#{inspect(data.volume)}")
+          |> redirect(to: ~p"/products")
+
+        changeset ->
+          changeset = Map.put(changeset, :action, :insert)
+
+          form =
+            Phoenix.Component.to_form(changeset,
+              as: :slider_validated_range,
+              id: "product-volume-validated-range-form"
+            )
+
+          render(conn, :product_form_validated_range, form: form)
+      end
+    end
+    """
+  end
+
+  def form_doc_native_range_heex do
+    ~S"""
+    <form action={~p"/slider/form"} method="post" class="flex flex-col gap-space-lg w-full max-w-xl">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.slider
+        name="slider_form_range[volume]"
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume</:label>
+      </.slider>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </form>
+    """
+  end
+
+  def form_doc_native_range_elixir do
+    ~S"""
+    def slider_form_submit(conn, %{"slider_form_range" => %{"volume" => volume}}) do
+      conn
+      |> put_flash(:info, "Submitted: volume=#{inspect(volume)}")
+      |> redirect(to: ~p"/slider/form")
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_range_heex do
+    ~S"""
+    <.form for={@form} phx-submit="save_phoenix_range" class="flex flex-col gap-space-lg w-full max-w-xl">
+      <.slider
+        field={@form[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume</:label>
+      </.slider>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_range_elixir do
+    ~S"""
+    def mount(_params, _session, socket) do
+      phoenix_range_form =
+        Phoenix.Component.to_form(%{"volume" => ["20", "80"]},
+          as: :slider_phoenix_range,
+          id: "slider-live-form-phoenix-range"
+        )
+
+      {:ok, assign(socket, :phoenix_range_form, phoenix_range_form)}
+    end
+
+    def handle_event("save_phoenix_range", %{"slider_phoenix_range" => params}, socket) do
+      volume = params["volume"] || []
+
+      {:noreply,
+       assign(
+         socket,
+         :phoenix_range_form,
+         Phoenix.Component.to_form(%{"volume" => volume},
+           as: :slider_phoenix_range,
+           id: "slider-live-form-phoenix-range"
+         )
+       )}
+    end
+    """
+  end
+
+  def form_doc_live_validate_range_heex do
+    ~S"""
+    <.form
+      for={@form}
+      phx-change="validate_volume_range"
+      phx-submit="save_volume_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={@form[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume (high over 90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.slider>
+
+      <.action type="submit" class="button ui-accent">Submit</:action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_validate_range_elixir do
+    ~S"""
+    def mount(_params, _session, socket) do
+      changeset =
+        MyApp.Forms.SliderRange.changeset_validate(%MyApp.Forms.SliderRange{}, %{})
+
+      {:ok,
+       assign(socket, :form,
+         Phoenix.Component.to_form(changeset,
+           as: :slider_validated_range,
+           id: "live-product-volume-validated-range-form"
+         )
+       )}
+    end
+
+    def handle_event("validate_volume_range", %{"slider_validated_range" => params}, socket) do
+      changeset =
+        %MyApp.Forms.SliderRange{}
+        |> MyApp.Forms.SliderRange.changeset_validate(params)
+        |> Map.put(:action, :validate)
+
+      {:noreply,
+       assign(socket, :form,
+         Phoenix.Component.to_form(changeset,
+           action: :validate,
+           as: :slider_validated_range,
+           id: "live-product-volume-validated-range-form"
+         )
+       )}
+    end
+
+    def handle_event("save_volume_range", %{"slider_validated_range" => params}, socket) do
+      case MyApp.Forms.SliderRange.changeset_validate(%MyApp.Forms.SliderRange{}, params) do
+        %Ecto.Changeset{valid?: true} = changeset ->
+          {:noreply,
+           assign(socket, :form,
+             Phoenix.Component.to_form(changeset,
+               as: :slider_validated_range,
+               id: "live-product-volume-validated-range-form"
+             )
+           )}
+
+        changeset ->
+          {:noreply,
+           assign(socket, :form,
+             Phoenix.Component.to_form(changeset,
+               action: :insert,
+               as: :slider_validated_range,
+               id: "live-product-volume-validated-range-form"
+             )
+           )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_invalid_range_heex do
+    ~S"""
+    <.form for={@form} phx-change="validate_invalid_range" phx-submit="save_invalid_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={@form[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers marker_values={[0, 25, 50, 75, 100]}
+        invalid={Corex.FormField.invalid?(@form[:volume])}
+        class="slider"
+      >
+        <:label>Volume (high over 90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.slider>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_range_elixir do
+    ~S"""
+    def handle_event("validate_invalid_range", params, socket) do
+      validate_ecto_invalid_range(socket, Map.get(params, "slider_validate_invalid_range", %{}))
+    end
+
+    def handle_event("save_invalid_range", params, socket) do
+      save_ecto_invalid_range(socket, Map.get(params, "slider_validate_invalid_range", %{}))
+    end
+    """
+  end
+
+  def form_ecto_range_heex, do: form_doc_controller_validate_range_heex()
+  def form_ecto_range_elixir, do: form_doc_controller_validate_range_elixir()
+  def form_phoenix_range_heex, do: form_doc_controller_phoenix_range_heex()
+  def form_phoenix_range_elixir, do: form_doc_controller_phoenix_range_elixir()
+  def form_native_range_heex, do: form_doc_native_range_heex()
+  def form_native_range_elixir, do: form_doc_native_range_elixir()
+  def form_doc_live_ecto_range_heex, do: form_doc_live_validate_range_heex()
+  def form_doc_live_ecto_range_elixir, do: form_doc_live_validate_range_elixir()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix_range(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/slider/form"}
+      method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={f[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume</:label>
+      </.slider>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, Phoenix.HTML.Form, required: true)
+
+  def form_preview_controller_validate_range(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/slider/form"}
+      method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={f[:volume]}
+        id="slider-form-validate-range-volume"
+        min_steps_between_thumbs={1}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume (high over 90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.slider>
+
+      <.action
+        type="submit"
+        id="slider-form-validate-range-submit"
+        class="button ui-accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto_range(assigns),
+    do: form_preview_controller_validate_range(assigns)
+
+  def form_preview_controller_native_range(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form
+      action={~p"/slider/form"}
+      method="post"
+      id="slider-plain-form-range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.slider
+        name="slider_form_range[volume]"
+        id="slider-form-range-volume"
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume</:label>
+      </.slider>
+      <.action type="submit" id="slider-form-range-submit" class="button ui-accent">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix_range(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      phx-submit="save_phoenix_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        field={@form[:volume]}
+        value={[20, 80]}
+        min_steps_between_thumbs={1}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume</:label>
+      </.slider>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, Phoenix.HTML.Form, required: true)
+  attr(:volume_value, :any, required: true)
+
+  def form_preview_live_validate_range(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      phx-change="validate_validate_range"
+      phx-submit="save_validate_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        id="slider-live-form-validate-range-volume"
+        field={@form[:volume]}
+        value={@volume_value}
+        min_steps_between_thumbs={1}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
+        class="slider"
+      >
+        <:label>Volume (high over 90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.slider>
+
+      <.action
+        type="submit"
+        id="slider-live-form-validate-range-submit"
+        class="button ui-accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+  attr(:volume_value, :any, required: true)
+
+  def form_preview_live_validate_invalid_range(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      phx-change="validate_invalid_range"
+      phx-submit="save_invalid_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.slider
+        id="slider-live-form-validate-invalid-range-volume"
+        field={@form[:volume]}
+        value={@volume_value}
+        min_steps_between_thumbs={1}
+        markers
+        marker_values={[0, 25, 50, 75, 100]}
+        invalid={Corex.FormField.invalid?(@form[:volume])}
+        class="slider"
+      >
+        <:label>Volume (high over 90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.slider>
+      <.action
+        type="submit"
+        id="slider-live-form-validate-invalid-range-submit"
+        class="button ui-accent"
+      >
+        Submit
+      </.action>
+    </.form>
     """
   end
 end

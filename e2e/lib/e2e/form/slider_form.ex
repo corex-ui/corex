@@ -3,7 +3,7 @@ defmodule E2e.Form.SliderForm do
   import Ecto.Changeset
 
   embedded_schema do
-    field :volume, :float, default: 0.0
+    field :volume, :float
   end
 
   def changeset(form, attrs \\ %{}) do
@@ -17,9 +17,8 @@ defmodule E2e.Form.SliderForm do
     |> cast(attrs, [:volume])
     |> validate_required([:volume])
     |> validate_number(:volume,
-      greater_than_or_equal_to: 0.0,
-      less_than_or_equal_to: 90.0,
-      message: "must be between 0 and 90"
+      greater_than: 90.0,
+      message: "must be over 90"
     )
   end
 end

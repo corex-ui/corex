@@ -170,6 +170,10 @@ defmodule Corex.SliderTest do
       assert html =~ "data-step=\"5\""
       assert html =~ "data-part=\"marker-group\""
       assert html =~ "data-part=\"marker\""
+
+      {:ok, doc} = Floki.parse_document(html)
+      assert Floki.find(doc, ~s([data-part="control"] [data-part="marker-group"])) == []
+      assert [_] = Floki.find(doc, ~s([data-part="root"] > [data-part="marker-group"]))
     end
   end
 
@@ -274,11 +278,24 @@ defmodule Corex.SliderTest do
       assert m["data-disabled"] == ""
       assert m["data-readonly"] == ""
       assert m["data-invalid"] == ""
+      assert m["data-range"] == nil
       assert m["data-default-value"] == "[30]"
       assert m["data-value"] == nil
       assert m["data-on-value-change"] == "a"
       assert m["data-orientation"] == "horizontal"
       assert m["data-submit-name"] == "volume"
+    end
+
+    test "sets data-range for multi-thumb values" do
+      m =
+        Connect.props(%Props{
+          id: "s",
+          value: [20, 80],
+          min: 0,
+          max: 100
+        })
+
+      assert m["data-range"] == ""
     end
   end
 
@@ -457,18 +474,33 @@ defmodule Corex.SliderTest do
       assert o["data-state"] == "over-value"
     end
 
-    test "range uses min and max thumbs" do
-      m =
-        Connect.marker(%{
-          id: "x",
-          value: 50,
-          slider_value: [20, 80],
-          dir: "ltr",
-          orientation: "horizontal",
-          disabled: false
-        })
+    test "range uses at-value in-between and under/over outside" do
+      assert Connect.marker(%{
+               id: "x",
+               value: 50,
+               slider_value: [20, 80],
+               dir: "ltr",
+               orientation: "horizontal",
+               disabled: false
+             })["data-state"] == "at-value"
 
-      assert m["data-state"] == "at-value"
+      assert Connect.marker(%{
+               id: "x",
+               value: 10,
+               slider_value: [20, 80],
+               dir: "ltr",
+               orientation: "horizontal",
+               disabled: false
+             })["data-state"] == "under-value"
+
+      assert Connect.marker(%{
+               id: "x",
+               value: 90,
+               slider_value: [20, 80],
+               dir: "ltr",
+               orientation: "horizontal",
+               disabled: false
+             })["data-state"] == "over-value"
     end
   end
 end

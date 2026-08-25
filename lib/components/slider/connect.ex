@@ -179,6 +179,7 @@ defmodule Corex.Slider.Connect do
       "data-readonly" => presence_attr(assigns.read_only),
       "data-invalid" => presence_attr(assigns.invalid),
       "data-required" => presence_attr(assigns.required),
+      "data-range" => presence_attr(length(values) > 1),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
@@ -438,21 +439,14 @@ defmodule Corex.Slider.Connect do
     orient = orientation(assigns)
     thumb_alignment = Map.get(assigns, :thumb_alignment)
 
+    # Zag: under = below first thumb, over = above last, at = in range (or at single value).
+    # Single-thumb CSS treats under/over as fill contrast; range CSS treats at vs under|over
+    # as in-between vs out.
     state =
-      case values do
-        [current] ->
-          cond do
-            assigns.value < current -> "under-value"
-            assigns.value > current -> "over-value"
-            true -> "at-value"
-          end
-
-        _ ->
-          cond do
-            assigns.value < lo -> "under-value"
-            assigns.value > hi -> "over-value"
-            true -> "at-value"
-          end
+      cond do
+        assigns.value < lo -> "under-value"
+        assigns.value > hi -> "over-value"
+        true -> "at-value"
       end
 
     %{

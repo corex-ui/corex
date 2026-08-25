@@ -511,25 +511,25 @@ defmodule Corex.Slider do
               })}
             />
           </div>
+        </div>
+        <div
+          :if={@marker_values != []}
+          {Connect.mounted_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
+        >
           <div
-            :if={@marker_values != []}
-            {Connect.mounted_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
-          >
-            <div
-              :for={val <- @marker_values}
-              {Connect.mounted_marker(%Marker{
-                id: @id,
-                value: val,
-                slider_value: @display_value,
-                min: @min,
-                max: @max,
-                thumb_alignment: @thumb_alignment,
-                disabled: @disabled,
-                dir: @dir,
-                orientation: @orientation
-              })}
-            />
-          </div>
+            :for={val <- @marker_values}
+            {Connect.mounted_marker(%Marker{
+              id: @id,
+              value: val,
+              slider_value: @display_value,
+              min: @min,
+              max: @max,
+              thumb_alignment: @thumb_alignment,
+              disabled: @disabled,
+              dir: @dir,
+              orientation: @orientation
+            })}
+          />
         </div>
         <div
           {Connect.mounted_value_text(%ValueText{
@@ -868,11 +868,11 @@ defmodule Corex.Slider do
             <div data-scope="slider" data-part="range"></div>
           </div>
           <div data-scope="slider" data-part="thumb" data-index="0"></div>
-          <div data-scope="slider" data-part="marker-group">
-            <span data-scope="slider" data-part="marker" data-value="0"></span>
-            <span data-scope="slider" data-part="marker" data-value="50"></span>
-            <span data-scope="slider" data-part="marker" data-value="100"></span>
-          </div>
+        </div>
+        <div data-scope="slider" data-part="marker-group">
+          <span data-scope="slider" data-part="marker" data-value="0"></span>
+          <span data-scope="slider" data-part="marker" data-value="50"></span>
+          <span data-scope="slider" data-part="marker" data-value="100"></span>
         </div>
         <div data-scope="slider" data-part="value-text">
           <span data-scope="slider" data-part="value"></span>

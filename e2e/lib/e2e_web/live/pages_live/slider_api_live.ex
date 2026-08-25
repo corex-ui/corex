@@ -6,6 +6,9 @@ defmodule E2eWeb.SliderApiLive do
   @id_sv_client "api-slider"
   @id_sv_js "api-slider-client-js"
   @id_sv_server "api-slider-server"
+  @id_range_client "api-slider-range"
+  @id_range_js "api-slider-range-js"
+  @id_range_server "api-slider-range-server"
 
   @impl true
   def mount(_params, _session, socket) do
@@ -14,6 +17,9 @@ defmodule E2eWeb.SliderApiLive do
      |> assign(:id_sv_client, @id_sv_client)
      |> assign(:id_sv_js, @id_sv_js)
      |> assign(:id_sv_server, @id_sv_server)
+     |> assign(:id_range_client, @id_range_client)
+     |> assign(:id_range_js, @id_range_js)
+     |> assign(:id_range_server, @id_range_server)
      |> assign(:codes, demo_codes())}
   end
 
@@ -26,13 +32,24 @@ defmodule E2eWeb.SliderApiLive do
       js: m.api_set_value_client_js_js(),
       js_ts: m.api_set_value_client_js_ts(),
       server_heex: m.api_set_value_server_heex(),
-      server_elixir: m.api_set_value_server_elixir()
+      server_elixir: m.api_set_value_server_elixir(),
+      range_binding: m.api_set_range_client_binding_code(),
+      range_js_heex: m.api_set_range_client_js_heex(),
+      range_js: m.api_set_range_client_js_js(),
+      range_js_ts: m.api_set_range_client_js_ts(),
+      range_server_heex: m.api_set_range_server_heex(),
+      range_server_elixir: m.api_set_range_server_elixir()
     }
   end
 
   @impl true
   def handle_event("api_set_value", %{"value" => value}, socket) do
     {:noreply, Corex.Slider.set_value(socket, @id_sv_server, value)}
+  end
+
+  @impl true
+  def handle_event("api_set_range_value", %{"lo" => lo, "hi" => hi}, socket) do
+    {:noreply, Corex.Slider.set_value(socket, @id_range_server, [lo, hi])}
   end
 
   @impl true
@@ -61,6 +78,16 @@ defmodule E2eWeb.SliderApiLive do
         </.demo_section>
 
         <.demo_section
+          id="slider-api-set-range-binding"
+          title="Set Range (Client Binding)"
+          code={@codes.range_binding}
+        >
+          <:preview>
+            <E2eWeb.Demos.SliderDemo.api_set_range_client_binding_example id={@id_range_client} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
           id="slider-api-set-value-js"
           title="Set Value (Client JS)"
           code_tabs={[
@@ -71,6 +98,20 @@ defmodule E2eWeb.SliderApiLive do
         >
           <:preview>
             <E2eWeb.Demos.SliderDemo.api_set_value_client_js_example id={@id_sv_js} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="slider-api-set-range-js"
+          title="Set Range (Client JS)"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.range_js_heex},
+            %{value: "js", label: "JS", language: :js, code: @codes.range_js},
+            %{value: "ts", label: "TS", language: :javascript, code: @codes.range_js_ts}
+          ]}
+        >
+          <:preview>
+            <E2eWeb.Demos.SliderDemo.api_set_range_client_js_example id={@id_range_js} />
           </:preview>
         </.demo_section>
 
@@ -86,6 +127,27 @@ defmodule E2eWeb.SliderApiLive do
             <E2eWeb.Demos.SliderDemo.api_set_value_server_example
               id={@id_sv_server}
               event="api_set_value"
+            />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="slider-api-set-range-server"
+          title="Set Range (Server)"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.range_server_heex},
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: @codes.range_server_elixir
+            }
+          ]}
+        >
+          <:preview>
+            <E2eWeb.Demos.SliderDemo.api_set_range_server_example
+              id={@id_range_server}
+              event="api_set_range_value"
             />
           </:preview>
         </.demo_section>

@@ -22,20 +22,24 @@ defmodule E2eWeb.SliderFormTest do
       |> Slider.see_flash("volume=90")
     end
 
-    feature "changeset section submits default volume", %{session: session} do
+    feature "changeset section submits volume over 90", %{session: session} do
       session
       |> Slider.goto_form(:static)
       |> Slider.wait_static_changeset_slider_ready()
+      |> Slider.dispatch_set_value_in_section("slider-form-ecto", 95.0)
+      |> Slider.wait_value_text_in_section("slider-form-ecto", 95)
       |> Slider.submit_static_changeset()
-      |> Slider.see_flash("Submitted: volume=0")
+      |> Slider.see_flash("Submitted: volume=95")
     end
 
-    feature "validate section submits default valid volume", %{session: session} do
+    feature "validate section submits volume over 90", %{session: session} do
       session
       |> Slider.goto_form(:static)
       |> Slider.wait_static_validate_slider_ready()
+      |> Slider.dispatch_set_value_in_section("slider-form-ecto", 95.0)
+      |> Slider.wait_value_text_in_section("slider-form-ecto", 95)
       |> Slider.submit_static_validate()
-      |> Slider.see_flash("Submitted: volume=0")
+      |> Slider.see_flash("Submitted: volume=95")
     end
 
     feature "has no A11y violations", %{session: session} do
@@ -61,12 +65,14 @@ defmodule E2eWeb.SliderFormTest do
       |> Slider.see_flash("Submitted: volume=90")
     end
 
-    feature "validate section submits default volume", %{session: session} do
+    feature "validate section submits volume over 90", %{session: session} do
       session
       |> Slider.goto_form(:live)
       |> Slider.wait_live_validate_volume_section_ready()
+      |> Slider.dispatch_set_value_in_section("slider-validate-form-live", 95.0)
+      |> Slider.wait_value_text_in_section("slider-validate-form-live", 95)
       |> Slider.submit_live_validate()
-      |> Slider.see_flash("Submitted: volume=0")
+      |> Slider.see_flash("Submitted: volume=95")
     end
 
     feature "has no A11y violations", %{session: session} do

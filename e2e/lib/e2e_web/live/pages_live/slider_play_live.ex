@@ -12,7 +12,7 @@ defmodule E2eWeb.SliderPlayLive do
       dir: "ltr",
       orientation: "horizontal",
       step: 1,
-      show_markers: true
+      show_markers: false
     }
 
     socket =

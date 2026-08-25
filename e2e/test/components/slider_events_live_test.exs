@@ -14,4 +14,16 @@ defmodule E2eWeb.SliderEventsLiveTest do
 
     assert html =~ ~S(data-part="row")
   end
+
+  test "slider_changed range inserts a log row", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/slider/events")
+
+    html =
+      render_click(view, "slider_changed", %{
+        "id" => "events-slider-range-on-value-change-server",
+        "value" => [30.0, 70.0]
+      })
+
+    assert html =~ ~S(data-part="row")
+  end
 end

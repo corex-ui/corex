@@ -69,6 +69,14 @@ defmodule E2eWeb.SliderTest do
       |> Slider.wait_value_text_in_section("slider-api-set-value-binding", "0")
     end
 
+    feature "binding range  -  Set 40 – 60 updates value text", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :api)
+      |> Slider.wait_value_text_in_section("slider-api-set-range-binding", "20 – 80")
+      |> Slider.click_set_range_api("40 – 60")
+      |> Slider.wait_value_text_in_section("slider-api-set-range-binding", "40 – 60")
+    end
+
     feature "client js  -  Set to 25 updates value text", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :api)
@@ -76,11 +84,25 @@ defmodule E2eWeb.SliderTest do
       |> Slider.wait_value_text_in_section("slider-api-set-value-js", "25")
     end
 
+    feature "client js range  -  Set 25 – 75 updates value text", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :api)
+      |> Slider.click_api_js_set_range("25 – 75")
+      |> Slider.wait_value_text_in_section("slider-api-set-range-js", "25 – 75")
+    end
+
     feature "server  -  Server 75 updates value text", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :api)
       |> Slider.click_api_server_value(75)
       |> Slider.wait_value_text_in_section("slider-api-set-value-server", "75")
+    end
+
+    feature "server range  -  Server 40 – 60 updates value text", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :api)
+      |> Slider.click_api_server_range("Server: 40 – 60")
+      |> Slider.wait_value_text_in_section("slider-api-set-range-server", "40 – 60")
     end
   end
 
@@ -97,6 +119,20 @@ defmodule E2eWeb.SliderTest do
       |> Slider.slider_events_server_dispatch()
 
       assert Slider.slider_events_server_log_has_row?(session)
+    end
+
+    feature "server range  -  programmatic change logs a row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :events)
+        |> Slider.prepare_live_form()
+
+      refute Slider.slider_events_range_server_log_has_row?(session)
+
+      session
+      |> Slider.slider_events_range_server_dispatch()
+
+      assert Slider.slider_events_range_server_log_has_row?(session)
     end
 
     feature "client  -  programmatic change logs client row", %{session: session} do
@@ -118,6 +154,27 @@ defmodule E2eWeb.SliderTest do
       )
 
       assert Slider.slider_events_client_log_has_row?(session)
+    end
+
+    feature "client range  -  programmatic change logs client row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Slider, :slider, :events)
+        |> Slider.prepare_live_form()
+
+      refute Slider.slider_events_range_client_log_has_row?(session)
+
+      session
+      |> Slider.slider_events_client_dispatch_value(
+        "events-slider-range-on-value-change-client",
+        [30.0, 70.0]
+      )
+      |> Slider.wait_for_has(
+        css("#slider-events-log-range-client tr[data-part='row']", count: 1),
+        timeout: 10_000
+      )
+
+      assert Slider.slider_events_range_client_log_has_row?(session)
     end
   end
 

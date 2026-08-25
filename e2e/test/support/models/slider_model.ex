@@ -264,6 +264,58 @@ defmodule E2eWeb.SliderModel do
     session
   end
 
+  def click_set_range_api(session, label) when is_binary(label) do
+    click(
+      session,
+      Wallaby.Query.xpath(
+        "//*[@id='slider-api-set-range-binding']//button[contains(normalize-space(), #{Jason.encode!(label)})]"
+      )
+    )
+
+    session
+  end
+
+  def click_api_js_set_range(session, label) when is_binary(label) do
+    session =
+      assert_has(
+        session,
+        css("#slider-api-set-range-js [phx-hook='Slider']:not([data-loading])",
+          visible: :any,
+          minimum: 1
+        )
+      )
+
+    click(
+      session,
+      xpath(
+        "//*[@id='slider-api-set-range-js']//button[contains(normalize-space(), #{Jason.encode!(label)})]"
+      )
+    )
+
+    session
+  end
+
+  def click_api_server_range(session, label) when is_binary(label) do
+    session =
+      assert_has(
+        session,
+        css(
+          "#slider-api-set-range-server [phx-hook='Slider']:not([data-loading])",
+          visible: :any,
+          minimum: 1
+        )
+      )
+
+    click(
+      session,
+      xpath(
+        "//*[@id='slider-api-set-range-server']//button[contains(normalize-space(), #{Jason.encode!(label)})]"
+      )
+    )
+
+    session
+  end
+
   def slider_api_root_style(session) do
     el =
       find(
@@ -303,6 +355,39 @@ defmodule E2eWeb.SliderModel do
 
   def slider_events_client_log_has_row?(session) do
     has?(session, css("#slider-events-log-client tr[data-part='row']"))
+  end
+
+  def slider_events_range_server_log_has_row?(session) do
+    has?(session, css("#slider-events-log-range-server tr[data-part='row']"))
+  end
+
+  def slider_events_range_client_log_has_row?(session) do
+    has?(session, css("#slider-events-log-range-client tr[data-part='row']"))
+  end
+
+  def slider_events_range_server_dispatch(session) do
+    session =
+      assert_has(
+        session,
+        css(
+          "#events-slider-range-on-value-change-server[phx-hook='Slider']:not([data-loading])"
+        )
+      )
+
+    execute_script(
+      session,
+      """
+      const el = document.getElementById('events-slider-range-on-value-change-server');
+      if (el) {
+        el.dispatchEvent(new CustomEvent('corex:slider:set-value', {
+          detail: { value: [30.0, 70.0] },
+          bubbles: false
+        }));
+      }
+      """
+    )
+
+    session
   end
 
   def wait_playground_slider_ready(session) do
