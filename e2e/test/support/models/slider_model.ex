@@ -369,9 +369,7 @@ defmodule E2eWeb.SliderModel do
     session =
       assert_has(
         session,
-        css(
-          "#events-slider-range-on-value-change-server[phx-hook='Slider']:not([data-loading])"
-        )
+        css("#events-slider-range-on-value-change-server[phx-hook='Slider']:not([data-loading])")
       )
 
     execute_script(
