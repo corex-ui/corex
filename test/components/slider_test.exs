@@ -171,9 +171,14 @@ defmodule Corex.SliderTest do
       assert html =~ "data-part=\"marker-group\""
       assert html =~ "data-part=\"marker\""
 
-      {:ok, doc} = Floki.parse_document(html)
-      assert Floki.find(doc, ~s([data-part="control"] [data-part="marker-group"])) == []
-      assert [_] = Floki.find(doc, ~s([data-part="root"] > [data-part="marker-group"]))
+      doc =
+        case Floki.parse_document(html) do
+          {:ok, parsed} -> parsed
+          {:error, reason} -> flunk("failed to parse slider HTML: #{inspect(reason)}")
+        end
+
+      assert Floki.find(doc, ~S([data-part="control"] [data-part="marker-group"])) == []
+      assert [_] = Floki.find(doc, ~S([data-part="root"] > [data-part="marker-group"]))
     end
   end
 
