@@ -150,8 +150,8 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
       phoenix_live_view:
-        specifier: ^1.2.9
-        version: 1.2.9
+        specifier: ^1.2.10
+        version: 1.2.10
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -978,6 +978,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -1160,10 +1161,6 @@ packages:
   minimatch@3.1.5:
     resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
 
-  morphdom@https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430}
-    version: 2.7.8
-
   motion-dom@12.42.2:
     resolution: {integrity: sha512-5gIMWLp/PycBtJRJWRgjxke5n8dlvkSn2DrYW+tr3XcqAZY1xZh6BJyooJXCM8wdfM7wfMjkBJNLge1CKPUIRA==}
 
@@ -1229,8 +1226,8 @@ packages:
   perfect-freehand@1.2.3:
     resolution: {integrity: sha512-bHZSfqDHGNlPpgH2yxXgPHlQSPpEbo+qg7li0M78J9vNAi2yjwLeA4x79BEQhX44lEWpCLSFCeRZwpw0niiXPA==}
 
-  phoenix_live_view@1.2.9:
-    resolution: {integrity: sha512-XJo3rSOyvtoK6EzXLz3/+xjfaz6Uo9AazJpvysxll0+W61HfCtkUI5giqbGXK8UurgyPUxXaOaz6/nF+mgMX0w==}
+  phoenix_live_view@1.2.10:
+    resolution: {integrity: sha512-fDSIs4R04ubLZ71JkwgnsnTtIwBYGSMvrGgf1rIDyH7zJnhd2umsFR/nw9/6yHGKqyb7XYaOU3f01wjRZ1lsOg==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -2600,8 +2597,6 @@ snapshots:
     dependencies:
       brace-expansion: 1.1.14
 
-  morphdom@https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430: {}
-
   motion-dom@12.42.2:
     dependencies:
       motion-utils: 12.39.0
@@ -2650,9 +2645,7 @@ snapshots:
 
   perfect-freehand@1.2.3: {}
 
-  phoenix_live_view@1.2.9:
-    dependencies:
-      morphdom: https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430
+  phoenix_live_view@1.2.10: {}
 
   picocolors@1.1.1: {}
 
