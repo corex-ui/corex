@@ -59,9 +59,7 @@ describe("Slider", () => {
       });
       c.init();
 
-      const markers = Array.from(
-        el.querySelectorAll<HTMLElement>('[data-part="marker"]')
-      );
+      const markers = Array.from(el.querySelectorAll<HTMLElement>('[data-part="marker"]'));
       expect(markers).toHaveLength(3);
 
       const insets = markers.map(markerInset);
