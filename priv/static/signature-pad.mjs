@@ -1,16 +1,16 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-3IY2CPWD.mjs";
+} from "./chunks/chunk-EI57MRQD.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-NUQOKDPA.mjs";
+} from "./chunks/chunk-UHCKUOWC.mjs";
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-4M2QDFLS.mjs";
+} from "./chunks/chunk-WBNYDZIL.mjs";
 import {
   idMatches,
   readPayloadId
@@ -18,6 +18,7 @@ import {
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createMachine,
   createZagLiveHook,
@@ -33,7 +34,7 @@ import {
   isModifierKey,
   query,
   trackPointerMove
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-HMQI4LDM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
@@ -726,7 +727,7 @@ var SignaturePadHook = createZagLiveHook({
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
-          if (eventName && hook.liveSocket.main.isConnected()) {
+          if (eventName && canPushEvent(hook.liveSocket)) {
             pushEvent(eventName, {
               id: el.id,
               paths: details.paths,

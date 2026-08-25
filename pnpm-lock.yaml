@@ -153,8 +153,8 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
       phoenix_live_view:
-        specifier: ^1.1.30
-        version: 1.1.30
+        specifier: ^1.2.9
+        version: 1.2.9
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -1167,8 +1167,9 @@ packages:
   minimatch@3.1.5:
     resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
 
-  morphdom@2.7.8:
-    resolution: {integrity: sha512-D/fR4xgGUyVRbdMGU6Nejea1RFzYxYtyurG4Fbv2Fi/daKlWKuXGLOdXtl+3eIwL110cI2hz1ZojGICjjFLgTg==}
+  morphdom@https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430}
+    version: 2.7.8
 
   motion-dom@12.42.2:
     resolution: {integrity: sha512-5gIMWLp/PycBtJRJWRgjxke5n8dlvkSn2DrYW+tr3XcqAZY1xZh6BJyooJXCM8wdfM7wfMjkBJNLge1CKPUIRA==}
@@ -1235,8 +1236,8 @@ packages:
   perfect-freehand@1.2.3:
     resolution: {integrity: sha512-bHZSfqDHGNlPpgH2yxXgPHlQSPpEbo+qg7li0M78J9vNAi2yjwLeA4x79BEQhX44lEWpCLSFCeRZwpw0niiXPA==}
 
-  phoenix_live_view@1.1.30:
-    resolution: {integrity: sha512-M5fQmoJj9H4mQ98sqdKKc7E2PxLWMJJU7TzZfSC+tcNHTgDDhZKi33NpOKosLmNbkIdlnA6DZ1J6TfgndKV+6w==}
+  phoenix_live_view@1.2.9:
+    resolution: {integrity: sha512-XJo3rSOyvtoK6EzXLz3/+xjfaz6Uo9AazJpvysxll0+W61HfCtkUI5giqbGXK8UurgyPUxXaOaz6/nF+mgMX0w==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -2612,7 +2613,7 @@ snapshots:
     dependencies:
       brace-expansion: 1.1.14
 
-  morphdom@2.7.8: {}
+  morphdom@https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430: {}
 
   motion-dom@12.42.2:
     dependencies:
@@ -2662,9 +2663,9 @@ snapshots:
 
   perfect-freehand@1.2.3: {}
 
-  phoenix_live_view@1.1.30:
+  phoenix_live_view@1.2.9:
     dependencies:
-      morphdom: 2.7.8
+      morphdom: https://codeload.github.com/SteffenDE/morphdom/tar.gz/3a35c8bbd3f2621f5eab967f777eb8ce7e1b9430
 
   picocolors@1.1.1: {}
 

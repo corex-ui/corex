@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-6L36XW7I.mjs
+  // ../priv/static/chunks/chunk-HMQI4LDM.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -153,7 +153,7 @@ var Corex = (() => {
     return true;
   }
   function canPushEvent(liveSocket) {
-    return !liveSocket.main.isDead && liveSocket.main.isConnected();
+    return liveSocket.getSocket().isConnected();
   }
   function associateInputWithFormIfOutside(input, hookEl) {
     const formId = getString(hookEl, "form");
@@ -2005,8 +2005,8 @@ var Corex = (() => {
     return out;
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, REGISTRIES, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, HEAVY_PROP_KEYS, objectRefIds, nextObjectRefId, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_6L36XW7I = __esm({
-    "../priv/static/chunks/chunk-6L36XW7I.mjs"() {
+  var init_chunk_HMQI4LDM = __esm({
+    "../priv/static/chunks/chunk-HMQI4LDM.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2995,7 +2995,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-PWP4CBA7.mjs
+  // ../priv/static/chunks/chunk-YKO7SKQD.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -3317,15 +3317,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_PWP4CBA7 = __esm({
-    "../priv/static/chunks/chunk-PWP4CBA7.mjs"() {
+  var init_chunk_YKO7SKQD = __esm({
+    "../priv/static/chunks/chunk-YKO7SKQD.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-4M2QDFLS.mjs
+  // ../priv/static/chunks/chunk-WBNYDZIL.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3608,10 +3608,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_4M2QDFLS = __esm({
-    "../priv/static/chunks/chunk-4M2QDFLS.mjs"() {
+  var init_chunk_WBNYDZIL = __esm({
+    "../priv/static/chunks/chunk-WBNYDZIL.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
@@ -3915,10 +3915,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_PWP4CBA7();
-      init_chunk_4M2QDFLS();
+      init_chunk_YKO7SKQD();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4458,7 +4458,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-NUQOKDPA.mjs
+  // ../priv/static/chunks/chunk-UHCKUOWC.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -4665,10 +4665,10 @@ var Corex = (() => {
     syncLiveViewFormInput(input, getValue, onTouched);
   }
   var PHX_HAS_FOCUSED;
-  var init_chunk_NUQOKDPA = __esm({
-    "../priv/static/chunks/chunk-NUQOKDPA.mjs"() {
+  var init_chunk_UHCKUOWC = __esm({
+    "../priv/static/chunks/chunk-UHCKUOWC.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
@@ -4959,10 +4959,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_SBGJ6WBJ();
       init_chunk_SYRKLN4X();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -5404,7 +5404,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -6068,7 +6068,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_SYRKLN4X();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6811,7 +6811,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-QCFVFTGB.mjs
+  // ../priv/static/chunks/chunk-PXE4MUCM.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6930,10 +6930,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_QCFVFTGB = __esm({
-    "../priv/static/chunks/chunk-QCFVFTGB.mjs"() {
+  var init_chunk_PXE4MUCM = __esm({
+    "../priv/static/chunks/chunk-PXE4MUCM.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -7103,11 +7103,11 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_QCFVFTGB();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_PXE4MUCM();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -7426,7 +7426,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-V2LDXRRO.mjs
+  // ../priv/static/chunks/chunk-7LIL4AMN.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -7449,10 +7449,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_V2LDXRRO = __esm({
-    "../priv/static/chunks/chunk-V2LDXRRO.mjs"() {
+  var init_chunk_7LIL4AMN = __esm({
+    "../priv/static/chunks/chunk-7LIL4AMN.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7630,9 +7630,9 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_V2LDXRRO();
+      init_chunk_7LIL4AMN();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7944,9 +7944,9 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_SYRKLN4X();
-      init_chunk_4M2QDFLS();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -8313,7 +8313,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-3IY2CPWD.mjs
+  // ../priv/static/chunks/chunk-EI57MRQD.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
@@ -8328,10 +8328,10 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_3IY2CPWD = __esm({
-    "../priv/static/chunks/chunk-3IY2CPWD.mjs"() {
+  var init_chunk_EI57MRQD = __esm({
+    "../priv/static/chunks/chunk-EI57MRQD.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
     }
   });
 
@@ -8407,7 +8407,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-X7GOMWQ5.mjs
+  // ../priv/static/chunks/chunk-YFIE26CN.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9784,10 +9784,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_X7GOMWQ5 = __esm({
-    "../priv/static/chunks/chunk-X7GOMWQ5.mjs"() {
+  var init_chunk_YFIE26CN = __esm({
+    "../priv/static/chunks/chunk-YFIE26CN.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10497,7 +10497,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-F544AH56.mjs
+  // ../priv/static/chunks/chunk-YIIKBOMK.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10722,17 +10722,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_F544AH56 = __esm({
-    "../priv/static/chunks/chunk-F544AH56.mjs"() {
+  var init_chunk_YIIKBOMK = __esm({
+    "../priv/static/chunks/chunk-YIIKBOMK.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-CI7ZMY4G.mjs
+  // ../priv/static/chunks/chunk-W5DI6MB3.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10961,11 +10961,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents, layerObservers;
-  var init_chunk_CI7ZMY4G = __esm({
-    "../priv/static/chunks/chunk-CI7ZMY4G.mjs"() {
+  var init_chunk_W5DI6MB3 = __esm({
+    "../priv/static/chunks/chunk-W5DI6MB3.mjs"() {
       "use strict";
-      init_chunk_F544AH56();
-      init_chunk_6L36XW7I();
+      init_chunk_YIIKBOMK();
+      init_chunk_HMQI4LDM();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -11100,7 +11100,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-VOKBRZCH.mjs
+  // ../priv/static/chunks/chunk-WJVUOLS4.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -11145,14 +11145,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_VOKBRZCH = __esm({
-    "../priv/static/chunks/chunk-VOKBRZCH.mjs"() {
+  var init_chunk_WJVUOLS4 = __esm({
+    "../priv/static/chunks/chunk-WJVUOLS4.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
     }
   });
 
-  // ../priv/static/chunks/chunk-NU3NDRI3.mjs
+  // ../priv/static/chunks/chunk-FMAG5SZY.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -11552,10 +11552,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_NU3NDRI3 = __esm({
-    "../priv/static/chunks/chunk-NU3NDRI3.mjs"() {
+  var init_chunk_FMAG5SZY = __esm({
+    "../priv/static/chunks/chunk-FMAG5SZY.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12552,7 +12552,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4JICR5HJ.mjs
+  // ../priv/static/chunks/chunk-WRPL7YFW.mjs
   function stripLeadingC0AndSpace(destination) {
     let i2 = 0;
     while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
@@ -12598,8 +12598,7 @@ var Corex = (() => {
       window.open(destination, "_blank", "noopener,noreferrer");
       return true;
     }
-    const main = ctx.liveSocket.main;
-    const connected = !main.isDead && main.isConnected();
+    const connected = canPushEvent(ctx.liveSocket);
     if (!connected || !mode || mode === "href") {
       window.location.href = destination;
       return true;
@@ -12613,15 +12612,16 @@ var Corex = (() => {
     return true;
   }
   var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_4JICR5HJ = __esm({
-    "../priv/static/chunks/chunk-4JICR5HJ.mjs"() {
+  var init_chunk_WRPL7YFW = __esm({
+    "../priv/static/chunks/chunk-WRPL7YFW.mjs"() {
       "use strict";
+      init_chunk_HMQI4LDM();
       REDIRECT_MODES = ["href", "patch", "navigate"];
       SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
-  // ../priv/static/chunks/chunk-XGL2LWL4.mjs
+  // ../priv/static/chunks/chunk-ZTFT76Y7.mjs
   function connect8(service, normalize2) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -13087,13 +13087,13 @@ var Corex = (() => {
     return result;
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_XGL2LWL4 = __esm({
-    "../priv/static/chunks/chunk-XGL2LWL4.mjs"() {
+  var init_chunk_ZTFT76Y7 = __esm({
+    "../priv/static/chunks/chunk-ZTFT76Y7.mjs"() {
       "use strict";
-      init_chunk_NU3NDRI3();
-      init_chunk_4JICR5HJ();
-      init_chunk_QCFVFTGB();
-      init_chunk_6L36XW7I();
+      init_chunk_FMAG5SZY();
+      init_chunk_WRPL7YFW();
+      init_chunk_PXE4MUCM();
+      init_chunk_HMQI4LDM();
       anatomy8 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -14153,20 +14153,20 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_3IY2CPWD();
+      init_chunk_EI57MRQD();
       init_chunk_UFCM6256();
-      init_chunk_X7GOMWQ5();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_VOKBRZCH();
-      init_chunk_XGL2LWL4();
-      init_chunk_NU3NDRI3();
-      init_chunk_4JICR5HJ();
-      init_chunk_QCFVFTGB();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_YFIE26CN();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_WJVUOLS4();
+      init_chunk_ZTFT76Y7();
+      init_chunk_FMAG5SZY();
+      init_chunk_WRPL7YFW();
+      init_chunk_PXE4MUCM();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -16539,14 +16539,14 @@ var Corex = (() => {
     "../priv/static/color-picker.mjs"() {
       "use strict";
       init_chunk_SYRKLN4X();
-      init_chunk_X7GOMWQ5();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_VOKBRZCH();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_YFIE26CN();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_WJVUOLS4();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -18227,7 +18227,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-Z3EQ3GCO.mjs
+  // ../priv/static/chunks/chunk-GBPB5EHJ.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -18242,10 +18242,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_Z3EQ3GCO = __esm({
-    "../priv/static/chunks/chunk-Z3EQ3GCO.mjs"() {
+  var init_chunk_GBPB5EHJ = __esm({
+    "../priv/static/chunks/chunk-GBPB5EHJ.mjs"() {
       "use strict";
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
     }
   });
 
@@ -20628,17 +20628,17 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_Z3EQ3GCO();
+      init_chunk_GBPB5EHJ();
       init_chunk_SYRKLN4X();
       init_chunk_UFCM6256();
-      init_chunk_X7GOMWQ5();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_VOKBRZCH();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_YFIE26CN();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_WJVUOLS4();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -22932,7 +22932,7 @@ var Corex = (() => {
             onFocusChange: (details) => {
               var _a4;
               const eventName = getString(el, "onFocusChange");
-              if (eventName && liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   focused: (_a4 = details.focused) != null ? _a4 : false
@@ -22941,7 +22941,7 @@ var Corex = (() => {
             },
             onViewChange: (details) => {
               const eventName = getString(el, "onViewChange");
-              if (eventName && liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   view: details.view
@@ -22950,7 +22950,7 @@ var Corex = (() => {
             },
             onVisibleRangeChange: (details) => {
               const eventName = getString(el, "onVisibleRangeChange");
-              if (eventName && liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   start: details.start,
@@ -23348,12 +23348,12 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_PWP4CBA7();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_4M2QDFLS();
+      init_chunk_YKO7SKQD();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -24764,11 +24764,11 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_F544AH56();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_YIIKBOMK();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -25724,9 +25724,9 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_NUQOKDPA();
+      init_chunk_UHCKUOWC();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -27083,9 +27083,9 @@ ${err}`);
       "use strict";
       init_chunk_SBGJ6WBJ();
       init_chunk_SYRKLN4X();
-      init_chunk_VOKBRZCH();
+      init_chunk_WJVUOLS4();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -28118,13 +28118,13 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_XGL2LWL4();
-      init_chunk_NU3NDRI3();
-      init_chunk_4JICR5HJ();
-      init_chunk_QCFVFTGB();
-      init_chunk_4M2QDFLS();
+      init_chunk_ZTFT76Y7();
+      init_chunk_FMAG5SZY();
+      init_chunk_WRPL7YFW();
+      init_chunk_PXE4MUCM();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -28468,7 +28468,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -28935,7 +28935,7 @@ ${err}`);
           const zag = new Marquee(el, __spreadProps(__spreadValues({}, readMarqueeProps(el)), {
             onPauseChange: (details) => {
               const eventName = getString(el, "onPauseChange");
-              if (eventName && hook.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(hook.liveSocket)) {
                 pushEvent(eventName, { id: el.id, paused: details.paused });
               }
               const clientEventName = getString(el, "onPauseChangeClient");
@@ -28950,7 +28950,7 @@ ${err}`);
             },
             onLoopComplete: () => {
               const eventName = getString(el, "onLoopComplete");
-              if (eventName && hook.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(hook.liveSocket)) {
                 pushEvent(eventName, { id: el.id });
               }
               const clientEventName = getString(el, "onLoopCompleteClient");
@@ -28962,7 +28962,7 @@ ${err}`);
             },
             onComplete: () => {
               const eventName = getString(el, "onComplete");
-              if (eventName && hook.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(hook.liveSocket)) {
                 pushEvent(eventName, { id: el.id });
               }
               const clientEventName = getString(el, "onCompleteClient");
@@ -29624,16 +29624,16 @@ ${err}`);
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_SBGJ6WBJ();
-      init_chunk_X7GOMWQ5();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_VOKBRZCH();
-      init_chunk_XGL2LWL4();
-      init_chunk_NU3NDRI3();
-      init_chunk_4JICR5HJ();
-      init_chunk_QCFVFTGB();
+      init_chunk_YFIE26CN();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_WJVUOLS4();
+      init_chunk_ZTFT76Y7();
+      init_chunk_FMAG5SZY();
+      init_chunk_WRPL7YFW();
+      init_chunk_PXE4MUCM();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -31529,12 +31529,12 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_Z3EQ3GCO();
+      init_chunk_GBPB5EHJ();
       init_chunk_SYRKLN4X();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -32842,10 +32842,10 @@ ${err}`);
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_Z3EQ3GCO();
-      init_chunk_4JICR5HJ();
+      init_chunk_GBPB5EHJ();
+      init_chunk_WRPL7YFW();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy19 = createAnatomy("pagination").parts(
         "root",
         "item",
@@ -33330,7 +33330,7 @@ ${err}`);
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -33939,11 +33939,11 @@ ${err}`);
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_SYRKLN4X();
-      init_chunk_3IY2CPWD();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_EI57MRQD();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
@@ -34719,11 +34719,11 @@ ${err}`);
     "../priv/static/radio-group.mjs"() {
       "use strict";
       init_chunk_SYRKLN4X();
-      init_chunk_QCFVFTGB();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_PXE4MUCM();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -35715,18 +35715,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_X7GOMWQ5();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_VOKBRZCH();
-      init_chunk_XGL2LWL4();
-      init_chunk_NU3NDRI3();
-      init_chunk_4JICR5HJ();
-      init_chunk_QCFVFTGB();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_YFIE26CN();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_WJVUOLS4();
+      init_chunk_ZTFT76Y7();
+      init_chunk_FMAG5SZY();
+      init_chunk_WRPL7YFW();
+      init_chunk_PXE4MUCM();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -37125,11 +37125,11 @@ ${err}`);
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_3IY2CPWD();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_EI57MRQD();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -37450,7 +37450,7 @@ ${err}`);
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
                 const eventName = getString(el, "onDrawEnd");
-                if (eventName && hook.liveSocket.main.isConnected()) {
+                if (eventName && canPushEvent(hook.liveSocket)) {
                   pushEvent(eventName, {
                     id: el.id,
                     paths: details.paths,
@@ -38306,12 +38306,12 @@ ${err}`);
   var init_slider = __esm({
     "../priv/static/slider.mjs"() {
       "use strict";
-      init_chunk_Z3EQ3GCO();
+      init_chunk_GBPB5EHJ();
       init_chunk_SYRKLN4X();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy25 = createAnatomy("slider").parts(
         "root",
         "label",
@@ -39066,11 +39066,11 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_QCFVFTGB();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_PXE4MUCM();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy26 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts26 = anatomy26.build();
       getRootId21 = (ctx) => {
@@ -39846,11 +39846,11 @@ ${err}`);
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_UFCM6256();
-      init_chunk_F544AH56();
-      init_chunk_NUQOKDPA();
-      init_chunk_4M2QDFLS();
+      init_chunk_YIIKBOMK();
+      init_chunk_UHCKUOWC();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy27 = createAnatomy("tagsInput").parts(
         "root",
         "label",
@@ -41139,9 +41139,9 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_SYRKLN4X();
-      init_chunk_4M2QDFLS();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy28 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts28 = anatomy28.build();
       getRootId23 = (ctx) => {
@@ -41928,11 +41928,11 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_Z3EQ3GCO();
-      init_chunk_V2LDXRRO();
+      init_chunk_GBPB5EHJ();
+      init_chunk_7LIL4AMN();
       init_chunk_SYRKLN4X();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy29 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -42975,10 +42975,10 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_V2LDXRRO();
-      init_chunk_CI7ZMY4G();
-      init_chunk_F544AH56();
-      init_chunk_6L36XW7I();
+      init_chunk_7LIL4AMN();
+      init_chunk_W5DI6MB3();
+      init_chunk_YIIKBOMK();
+      init_chunk_HMQI4LDM();
       anatomy30 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -44175,11 +44175,11 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_X7GOMWQ5();
-      init_chunk_VOKBRZCH();
-      init_chunk_QCFVFTGB();
+      init_chunk_YFIE26CN();
+      init_chunk_WJVUOLS4();
+      init_chunk_PXE4MUCM();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy31 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts31 = anatomy31.build();
       getTriggerId11 = (scope, value) => {
@@ -44737,9 +44737,9 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_4M2QDFLS();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy32 = createAnatomy("toggle", ["root", "indicator"]);
       parts32 = anatomy32.build();
       machine32 = createMachine({
@@ -45020,9 +45020,9 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_4M2QDFLS();
+      init_chunk_WBNYDZIL();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy33 = createAnatomy("toggle-group").parts("root", "item");
       parts33 = anatomy33.build();
       getRootId26 = (ctx) => {
@@ -45924,11 +45924,11 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_PWP4CBA7();
-      init_chunk_NU3NDRI3();
-      init_chunk_4JICR5HJ();
+      init_chunk_YKO7SKQD();
+      init_chunk_FMAG5SZY();
+      init_chunk_WRPL7YFW();
       init_chunk_EAQ6WQNO();
-      init_chunk_6L36XW7I();
+      init_chunk_HMQI4LDM();
       anatomy34 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",

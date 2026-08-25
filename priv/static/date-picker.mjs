@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-Z3EQ3GCO.mjs";
+} from "./chunks/chunk-GBPB5EHJ.mjs";
 import {
   clampValue,
   isValueWithinRange
@@ -12,23 +12,23 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-X7GOMWQ5.mjs";
+} from "./chunks/chunk-YFIE26CN.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CI7ZMY4G.mjs";
-import "./chunks/chunk-F544AH56.mjs";
+} from "./chunks/chunk-W5DI6MB3.mjs";
+import "./chunks/chunk-YIIKBOMK.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-VOKBRZCH.mjs";
+} from "./chunks/chunk-WJVUOLS4.mjs";
 import {
   setArrayValues,
   setScalarValue
-} from "./chunks/chunk-NUQOKDPA.mjs";
+} from "./chunks/chunk-UHCKUOWC.mjs";
 import {
   mountStringListBinding,
   readDatasetStringList,
   readUpdatedServerStringList
-} from "./chunks/chunk-4M2QDFLS.mjs";
+} from "./chunks/chunk-WBNYDZIL.mjs";
 import {
   notifyChange
 } from "./chunks/chunk-EAQ6WQNO.mjs";
@@ -56,7 +56,7 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-HMQI4LDM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
@@ -4721,7 +4721,7 @@ var DatePickerHook = createZagLiveHook({
       },
       onFocusChange: (details) => {
         const eventName = getString(el, "onFocusChange");
-        if (eventName && liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             focused: details.focused ?? false
@@ -4730,7 +4730,7 @@ var DatePickerHook = createZagLiveHook({
       },
       onViewChange: (details) => {
         const eventName = getString(el, "onViewChange");
-        if (eventName && liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             view: details.view
@@ -4739,7 +4739,7 @@ var DatePickerHook = createZagLiveHook({
       },
       onVisibleRangeChange: (details) => {
         const eventName = getString(el, "onVisibleRangeChange");
-        if (eventName && liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             start: details.start,

@@ -6,7 +6,7 @@ import {
   getNumber,
   getString,
   getStringList
-} from "./chunk-6L36XW7I.mjs";
+} from "./chunk-HMQI4LDM.mjs";
 
 // lib/number-input-format.ts
 var MAX_FRACTION_DIGITS = 10;

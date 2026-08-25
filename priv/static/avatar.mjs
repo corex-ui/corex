@@ -15,7 +15,7 @@ import {
   getString,
   observeAttributes,
   observeChildren
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-HMQI4LDM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
