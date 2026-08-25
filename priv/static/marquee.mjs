@@ -5,6 +5,7 @@ import {
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createMachine,
   createZagLiveHook,
@@ -13,7 +14,7 @@ import {
   getDir,
   getNumber,
   getString
-} from "./chunks/chunk-6L36XW7I.mjs";
+} from "./chunks/chunk-HMQI4LDM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.42.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
@@ -676,7 +677,7 @@ var MarqueeHook = createZagLiveHook({
       ...readMarqueeProps(el),
       onPauseChange: (details) => {
         const eventName = getString(el, "onPauseChange");
-        if (eventName && hook.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(hook.liveSocket)) {
           pushEvent(eventName, { id: el.id, paused: details.paused });
         }
         const clientEventName = getString(el, "onPauseChangeClient");
@@ -691,7 +692,7 @@ var MarqueeHook = createZagLiveHook({
       },
       onLoopComplete: () => {
         const eventName = getString(el, "onLoopComplete");
-        if (eventName && hook.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(hook.liveSocket)) {
           pushEvent(eventName, { id: el.id });
         }
         const clientEventName = getString(el, "onLoopCompleteClient");
@@ -703,7 +704,7 @@ var MarqueeHook = createZagLiveHook({
       },
       onComplete: () => {
         const eventName = getString(el, "onComplete");
-        if (eventName && hook.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(hook.liveSocket)) {
           pushEvent(eventName, { id: el.id });
         }
         const clientEventName = getString(el, "onCompleteClient");

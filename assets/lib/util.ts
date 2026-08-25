@@ -150,10 +150,13 @@ export const generateId = (element?: HTMLElement, fallbackId: string = "element"
   return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
 };
 
-export function canPushEvent(liveSocket: {
-  main: { isDead: boolean; isConnected: () => boolean };
-}): boolean {
-  return !liveSocket.main.isDead && liveSocket.main.isConnected();
+/** Duck type for LiveView's public LiveSocket connection check. */
+export type LiveSocketPushable = {
+  getSocket: () => { isConnected: () => boolean };
+};
+
+export function canPushEvent(liveSocket: LiveSocketPushable): boolean {
+  return liveSocket.getSocket().isConnected();
 }
 
 export function associateInputWithFormIfOutside(input: HTMLElement, hookEl: HTMLElement): void {
