@@ -243,6 +243,7 @@ defmodule CorexAdmin.Live.Index do
             items={page_size_items(@page_size_options)}
             value={[to_string(@list_opts.page_size)]}
             on_value_change="page_size"
+            controlled
           >
             <:label>Per page</:label>
             <:trigger>

@@ -529,9 +529,11 @@ defmodule CorexAdmin.Live.Components do
       redirect
       on_select="row_menu"
     >
-      <:trigger class="button ui-size-sm ui-trigger--square">
-        <.heroicon name="hero-ellipsis-vertical" />
-        <span class="admin-visually-hidden">Actions</span>
+      <:trigger>
+        <span class="button ui-size-sm ui-trigger--square">
+          <.heroicon name="hero-ellipsis-vertical" />
+          <span class="admin-visually-hidden">Actions</span>
+        </span>
       </:trigger>
     </.menu>
     <.delete_dialog
@@ -597,6 +599,7 @@ defmodule CorexAdmin.Live.Components do
       items={@items}
       value={@selected}
       on_value_change="filter"
+      controlled
       translation={%Corex.Select.Translation{placeholder: "Any"}}
     >
       <:label>
@@ -638,6 +641,7 @@ defmodule CorexAdmin.Live.Components do
         deselectable
         value={@selected}
         on_value_change="filter"
+        controlled
       >
         <:item :for={opt <- @options} value={opt.value}>{opt.label}</:item>
       </.toggle_group>
