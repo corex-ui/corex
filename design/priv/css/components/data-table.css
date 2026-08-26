@@ -266,6 +266,11 @@
  .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"],
  .data-table [data-scope="data-table"][data-part="selection-header"] .checkbox [data-scope="checkbox"][data-part="control"] {
  color: var(--ctl-ink-text, var(--color-ink));
+ min-height: 0;
+ min-width: 0;
+ padding: 0;
+ height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
 
  .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"],

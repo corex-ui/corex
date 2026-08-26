@@ -139,7 +139,7 @@ defmodule CorexAdmin.Live.Index do
           selected={@selected}
           on_select={if(@spec.selectable, do: "select")}
           on_select_all={if(@spec.selectable, do: "select_all")}
-          checkbox_class="checkbox"
+          checkbox_class="checkbox ui-size-sm"
         >
           <:checkbox_indicator>
             <.heroicon name="hero-check" class="icon" />
