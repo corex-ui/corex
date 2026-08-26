@@ -105,7 +105,7 @@ defmodule CorexAdmin.Live.Form do
           phx-submit="save"
           class="flex flex-col gap-space-lg"
         >
-          <div class="grid grid-cols-1 gap-space md:grid-cols-2">
+          <div class="grid w-full grid-cols-1 gap-space md:grid-cols-2">
             <div
               :for={field <- @form_fields}
               class={if field.type in [:textarea, :embeds_many], do: "md:col-span-2"}

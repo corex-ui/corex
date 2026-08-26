@@ -90,7 +90,7 @@ defmodule CorexAdmin.Live.Show do
         </.layout_heading>
 
         <.data_list
-          class="data-list w-full"
+          class="data-list w-full max-w-none"
           items={
             Corex.Content.new(
               for field <- @show_fields, field.type != :embeds_many do

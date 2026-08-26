@@ -14,13 +14,23 @@ defmodule CorexAdmin.Live.Home do
 
   @impl true
   def render(assigns) do
-    assigns = assign(assigns, :grouped, Helpers.grouped_resources(assigns))
+    prefix = Helpers.home_path(assigns)
+
+    assigns =
+      assigns
+      |> assign(:grouped, Helpers.grouped_resources(assigns))
+      |> assign(:admins_path, String.replace_suffix(prefix, "/admin", "/admins"))
 
     ~H"""
     <Components.shell socket={assigns}>
       <.layout_heading class="layout-heading">
         <:title>Admin</:title>
-        <:subtitle>Choose a resource to manage.</:subtitle>
+        <:subtitle>
+          Isolated Corex Admin demo — your data is scoped to this browser session and resets periodically.
+          The unauthenticated
+          <.navigate to={@admins_path} class="link">/admins</.navigate>
+          CRUD is a counterexample — do not copy it.
+        </:subtitle>
       </.layout_heading>
       <div :if={@grouped == %{}} class="text-ink-muted">No resources available.</div>
       <section :for={{group, resources} <- @grouped} class="flex flex-col gap-space">
@@ -29,10 +39,10 @@ defmodule CorexAdmin.Live.Home do
           <li :for={resource <- resources}>
             <.navigate
               to={Helpers.resource_path(assigns, Helpers.spec(resource))}
-              class="link flex flex-col gap-space-xs rounded-md border border-border bg-surface p-space"
+              class="flex flex-col gap-space-xs rounded-md border border-border bg-surface p-space text-ink no-underline hover:bg-ui-hover"
             >
-              <span class="font-semibold text-ink">{Helpers.spec(resource).label}</span>
-              <span class="text-sm text-ink-muted">{Helpers.spec(resource).slug}</span>
+              <span class="text-lg font-semibold">{Helpers.spec(resource).label}</span>
+              <span class="text-sm text-ink-muted">Manage {Helpers.spec(resource).label}</span>
             </.navigate>
           </li>
         </ul>

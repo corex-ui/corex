@@ -16,43 +16,28 @@ defmodule CorexAdmin.Live.Components do
   slot(:inner_block, required: true)
 
   def shell(assigns) do
-    prefix = Helpers.home_path(assigns.socket)
-    grouped = Helpers.grouped_resources(assigns.socket)
-    mobile_resources = Enum.flat_map(grouped, fn {_group, resources} -> resources end)
-
-    assigns =
-      assigns
-      |> assign(:prefix, prefix)
-      |> assign(:mobile_resources, mobile_resources)
-
     ~H"""
     <div class="flex min-h-0 min-w-0 flex-1">
-      <aside class="sticky top-0 hidden h-dvh w-full max-w-2xs shrink-0 flex-col gap-space-lg overflow-y-auto border-r border-border bg-surface px-space py-space lg:flex">
-        <.navigate to={@prefix} class="link font-semibold text-ink no-underline">
-          Admin
-        </.navigate>
-        <.nav socket={@socket} current={@current} />
+      <aside
+        class="sticky top-[var(--spacing-size-lg)] hidden h-[calc(100dvh-var(--spacing-size-lg))] w-full max-w-xs shrink-0 flex-col gap-space overflow-y-auto border-r border-border bg-surface px-space py-space lg:flex"
+        aria-label="Admin"
+      >
+        <.nav_tree socket={@socket} current={@current} id="admin-nav-tree" />
       </aside>
       <div class="flex min-w-0 flex-1 flex-col">
         <nav
-          class="flex flex-wrap items-center gap-space border-b border-border px-space py-space-sm lg:hidden"
+          class="border-b border-border px-space py-space-sm lg:hidden"
           aria-label="Admin resources"
         >
-          <.navigate
-            to={@prefix}
-            class="link ui-nav ui-size-sm"
-            aria-current={if(is_nil(@current), do: "page")}
-          >
-            Admin
-          </.navigate>
-          <.navigate
-            :for={resource <- @mobile_resources}
-            to={Helpers.resource_path(@socket, Helpers.spec(resource))}
-            class="link ui-nav ui-size-sm"
-            aria-current={nav_current(@current, Helpers.spec(resource))}
-          >
-            {Helpers.spec(resource).label}
-          </.navigate>
+          <.collapsible id="admin-nav-mobile" class="collapsible w-full">
+            <:trigger>Resources</:trigger>
+            <:closed>
+              <.heroicon name="hero-chevron-right" />
+            </:closed>
+            <:content>
+              <.nav_tree socket={@socket} current={@current} id="admin-nav-tree-mobile" />
+            </:content>
+          </.collapsible>
         </nav>
         <div class="flex min-w-0 flex-1 flex-col gap-space px-space py-space lg:px-space">
           {render_slot(@inner_block)}
@@ -64,25 +49,37 @@ defmodule CorexAdmin.Live.Components do
 
   attr(:socket, :any, required: true)
   attr(:current, :any, default: nil)
+  attr(:id, :string, required: true)
 
-  def nav(assigns) do
+  def nav_tree(assigns) do
     grouped = Helpers.grouped_resources(assigns.socket)
-    assigns = assign(assigns, :grouped, grouped)
+    current_path = current_resource_path(assigns.socket, assigns.current)
+
+    assigns =
+      assigns
+      |> assign(:items, nav_tree_items(assigns.socket, grouped))
+      |> assign(:selected, if(current_path, do: [current_path], else: []))
+      |> assign(:expanded, Enum.map(grouped, fn {group, _} -> "group:#{group}" end))
 
     ~H"""
-    <nav class="flex flex-col gap-space-lg" aria-label="Admin">
-      <div :for={{group, resources} <- @grouped} class="flex flex-col gap-space-sm">
-        <p class="m-0 text-sm font-medium tracking-wide text-ink-muted uppercase">{group}</p>
-        <.navigate
-          :for={resource <- resources}
-          to={Helpers.resource_path(@socket, Helpers.spec(resource))}
-          class="link ui-nav"
-          aria-current={nav_current(@current, Helpers.spec(resource))}
-        >
-          {Helpers.spec(resource).label}
-        </.navigate>
-      </div>
-    </nav>
+    <.tree_view
+      id={@id}
+      class="tree-view w-full max-w-none"
+      redirect
+      value={@selected}
+      expanded_value={@expanded}
+      items={@items}
+    >
+      <:branch :let={branch}>
+        <span class="min-w-0 truncate">{branch.label}</span>
+      </:branch>
+      <:item :let={item}>
+        <span class="min-w-0 truncate">{item.label}</span>
+      </:item>
+      <:branch_indicator>
+        <.heroicon name="hero-chevron-right" class="icon" />
+      </:branch_indicator>
+    </.tree_view>
     """
   end
 
@@ -93,26 +90,45 @@ defmodule CorexAdmin.Live.Components do
 
   def breadcrumbs(assigns) do
     ~H"""
-    <nav aria-label="Breadcrumb" class="text-sm text-ink-muted">
-      <ol class="m-0 flex list-none flex-wrap items-center gap-space p-0">
+    <nav
+      :if={@live_action in [:show, :new, :edit]}
+      aria-label="Breadcrumb"
+      class="text-sm text-ink-muted"
+    >
+      <ol class="m-0 flex list-none flex-wrap items-center gap-space-sm p-0">
         <li>
-          <.navigate to={@prefix} class="link">Admin</.navigate>
+          <.navigate to={@prefix} class="text-ink-muted no-underline hover:text-ink">Admin</.navigate>
         </li>
-        <li :if={@spec} class="flex items-center gap-space">
-          <span aria-hidden="true">/</span>
-          <.navigate to={Path.join(@prefix, @spec.slug)} class="link">{@spec.label}</.navigate>
+        <li :if={@spec} class="flex items-center gap-space-sm">
+          <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
+          <.navigate
+            :if={@live_action != :index}
+            to={Path.join(@prefix, @spec.slug)}
+            class="text-ink-muted no-underline hover:text-ink"
+          >
+            {@spec.label}
+          </.navigate>
         </li>
-        <li :if={@live_action == :new} class="flex items-center gap-space">
-          <span aria-hidden="true">/</span>
-          <span>New</span>
+        <li :if={@live_action == :new} class="flex items-center gap-space-sm">
+          <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
+          <span class="text-ink-muted">New</span>
         </li>
-        <li :if={@live_action in [:show, :edit] and @record} class="flex items-center gap-space">
-          <span aria-hidden="true">/</span>
-          <span>{Helpers.record_title(@spec, @record)}</span>
+        <li :if={@live_action == :show and @record} class="flex items-center gap-space-sm">
+          <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
+          <span class="text-ink-muted">{Helpers.record_title(@spec, @record)}</span>
         </li>
-        <li :if={@live_action == :edit and @record} class="flex items-center gap-space">
-          <span aria-hidden="true">/</span>
-          <span>Edit</span>
+        <li :if={@live_action == :edit and @record} class="flex items-center gap-space-sm">
+          <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
+          <.navigate
+            to={Path.join([@prefix, @spec.slug, Helpers.record_id(@spec, @record)])}
+            class="text-ink-muted no-underline hover:text-ink"
+          >
+            {Helpers.record_title(@spec, @record)}
+          </.navigate>
+        </li>
+        <li :if={@live_action == :edit and @record} class="flex items-center gap-space-sm">
+          <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
+          <span class="text-ink-muted">Edit</span>
         </li>
       </ol>
     </nav>
@@ -140,21 +156,38 @@ defmodule CorexAdmin.Live.Components do
   attr(:form, :any, required: true)
 
   def field_input(%{field: %Field{type: :select}} = assigns) do
-    assigns = assign(assigns, :items, list_items(assigns.field.options))
+    assigns =
+      assigns
+      |> assign(:items, list_items(assigns.field.options))
+      |> assign(:tip_id, field_error_id(assigns.form, assigns.field))
 
     ~H"""
-    <.select field={@form[@field.name]} class="select" items={@items} auto_invalid>
+    <.select
+      field={@form[@field.name]}
+      class="select relative w-full max-w-none"
+      items={@items}
+      auto_invalid
+    >
       <:label>{@field.label}</:label>
       <:trigger>
         <.heroicon name="hero-chevron-down" />
       </:trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.select>
     """
   end
 
   def field_input(%{field: %Field{type: :date}} = assigns) do
+    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
+
     ~H"""
-    <.date_picker field={@form[@field.name]} class="date-picker" auto_invalid>
+    <.date_picker
+      field={@form[@field.name]}
+      class="date-picker relative w-full max-w-none"
+      auto_invalid
+    >
       <:label>{@field.label}</:label>
       <:trigger>
         <.heroicon name="hero-calendar" />
@@ -165,15 +198,20 @@ defmodule CorexAdmin.Live.Components do
       <:next_trigger>
         <.heroicon name="hero-chevron-right" />
       </:next_trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.date_picker>
     """
   end
 
   def field_input(%{field: %Field{type: :number}} = assigns) do
+    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
+
     ~H"""
     <.number_input
       field={@form[@field.name]}
-      class="number-input"
+      class="number-input relative w-full max-w-none"
       orientation="vertical"
       auto_invalid
     >
@@ -184,13 +222,16 @@ defmodule CorexAdmin.Live.Components do
       <:increment_trigger>
         <.heroicon name="hero-chevron-up" class="icon" />
       </:increment_trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.number_input>
     """
   end
 
   def field_input(%{field: %Field{type: :embeds_many}} = assigns) do
     ~H"""
-    <.nested_fields field={@form[@field.name]} class="nested-fields">
+    <.nested_fields field={@form[@field.name]} class="nested-fields relative w-full max-w-none">
       <:label>{@field.label}</:label>
       <:empty>No {@field.label} yet.</:empty>
       <:col :let={nested} :for={child <- @field.fields} label={child.label}>
@@ -205,38 +246,68 @@ defmodule CorexAdmin.Live.Components do
   end
 
   def field_input(%{field: %Field{type: :boolean}} = assigns) do
+    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
+
     ~H"""
-    <.switch field={@form[@field.name]} class="switch">
+    <.switch field={@form[@field.name]} class="switch relative w-full max-w-none" auto_invalid>
       <:label>{@field.label}</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.switch>
     """
   end
 
   def field_input(%{field: %Field{type: :password}} = assigns) do
+    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
+
     ~H"""
-    <.password_input field={@form[@field.name]} class="password-input" value="" auto_invalid>
+    <.password_input
+      field={@form[@field.name]}
+      class="password-input relative w-full max-w-none"
+      value=""
+      auto_invalid
+    >
       <:label>{@field.label}</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.password_input>
     """
   end
 
   def field_input(%{field: %Field{type: :datetime}} = assigns) do
+    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
+
     ~H"""
-    <.native_input type="datetime-local" field={@form[@field.name]} class="native-input" auto_invalid>
+    <.native_input
+      type="datetime-local"
+      field={@form[@field.name]}
+      class="native-input relative w-full max-w-none"
+      auto_invalid
+    >
       <:label>{@field.label}</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.native_input>
     """
   end
 
   def field_input(assigns) do
+    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
+
     ~H"""
     <.native_input
       type={native_type(@field.type)}
       field={@form[@field.name]}
-      class="native-input"
+      class="native-input relative w-full max-w-none"
       auto_invalid
     >
       <:label>{@field.label}</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.field_error_tip id={@tip_id} msg={msg} />
+      </:error>
     </.native_input>
     """
   end
@@ -447,25 +518,27 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :picked, date_picker_value(assigns.value))
 
     ~H"""
-    <.date_picker
-      id={@control_id}
-      class="date-picker ui-size-sm w-full"
-      name={@input_name}
-      selection_mode="range"
-      value={@picked}
-      on_value_change="filter"
-    >
-      <:label>{@filter.label}</:label>
-      <:trigger>
-        <.heroicon name="hero-calendar" />
-      </:trigger>
-      <:prev_trigger>
-        <.heroicon name="hero-chevron-left" />
-      </:prev_trigger>
-      <:next_trigger>
-        <.heroicon name="hero-chevron-right" />
-      </:next_trigger>
-    </.date_picker>
+    <div class="min-w-64">
+      <.date_picker
+        id={@control_id}
+        class="date-picker ui-size-sm"
+        name={@input_name}
+        selection_mode="range"
+        value={@picked}
+        on_value_change="filter"
+      >
+        <:label>{@filter.label}</:label>
+        <:trigger>
+          <.heroicon name="hero-calendar" />
+        </:trigger>
+        <:prev_trigger>
+          <.heroicon name="hero-chevron-left" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.heroicon name="hero-chevron-right" />
+        </:next_trigger>
+      </.date_picker>
+    </div>
     """
   end
 
@@ -515,7 +588,7 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <div class="flex flex-col gap-space-sm">
       <span class="text-sm">{@filter.label}</span>
-      <div class="flex flex-wrap items-end gap-space-sm">
+      <div class="flex flex-nowrap items-end gap-space-sm">
         <.number_input
           id={"#{@control_id}-min"}
           name={"#{@input_name}[min]"}
@@ -593,8 +666,62 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
-  defp nav_current(%Spec{slug: slug}, %Spec{slug: slug}), do: "page"
-  defp nav_current(_, _), do: nil
+  defp nav_tree_items(socket, grouped) do
+    Corex.Tree.new(
+      Enum.map(grouped, fn {group, resources} ->
+        %{
+          label: group,
+          value: "group:#{group}",
+          children:
+            Enum.map(resources, fn resource ->
+              spec = Helpers.spec(resource)
+              path = Helpers.resource_path(socket, spec)
+
+              %{
+                label: spec.label,
+                value: path,
+                to: path,
+                redirect: :navigate
+              }
+            end)
+        }
+      end)
+    )
+  end
+
+  defp current_resource_path(_socket, nil), do: nil
+
+  defp current_resource_path(socket, %Spec{} = spec),
+    do: Helpers.resource_path(socket, spec)
+
+  attr(:id, :string, required: true)
+  attr(:msg, :string, required: true)
+
+  defp field_error_tip(assigns) do
+    ~H"""
+    <.tooltip
+      id={@id}
+      class="tooltip ui-size-sm"
+      positioning={%Corex.Positioning{placement: "top-end"}}
+    >
+      <:trigger>
+        <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
+      </:trigger>
+      <:content>{@msg}</:content>
+    </.tooltip>
+    """
+  end
+
+  defp field_error_id(form, %Field{name: name}) do
+    base =
+      cond do
+        is_binary(form.id) and form.id != "" -> form.id
+        is_binary(form.name) and form.name != "" -> form.name
+        true -> "field"
+      end
+
+    "#{base}-#{name}-error-tip"
+  end
 
   defp native_type(:id), do: "text"
   defp native_type(:text), do: "text"

@@ -7,14 +7,31 @@ defmodule E2eWeb.AdminDemoLiveTest do
   test "home and tickets index", %{conn: conn} do
     {_view, html} = live_ok!(conn, ~p"/admin")
     assert html =~ "Tickets"
+    assert html =~ "Posts"
     assert html =~ "Isolated"
+    refute html =~ "Back to site"
+    refute html =~ "Choose a resource"
+    assert html =~ ~s(aria-current="page")
+    assert html =~ "Main navigation"
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets")
     assert html =~ "Welcome ticket"
     assert html =~ "page=2"
+    assert html =~ ~s(id="tickets-filters")
+    assert html =~ ~s(data-part="control-inputs")
+    assert html =~ ~s(data-range)
+    refute html =~ ~s(type="date")
+    refute html =~ ~s(aria-label="Breadcrumb")
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets?page=2")
     assert html =~ "Queue ticket"
+  end
+
+  test "posts index lists seeded rows", %{conn: conn} do
+    {_view, html} = live_ok!(conn, ~p"/admin/posts")
+    assert html =~ "Welcome post"
+    assert html =~ "Draft notes"
+    assert html =~ ~s(id="posts-filters")
   end
 
   test "search filters tickets", %{conn: conn} do
@@ -98,6 +115,22 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ "Welcome ticket"
   end
 
+  test "selecting a row shows the selected count", %{conn: conn} do
+    {view, html} = live_ok!(conn, ~p"/admin/tickets")
+
+    id =
+      html
+      |> then(&Regex.run(~r/tickets-table-select-(\d+)/, &1))
+      |> List.last()
+
+    html =
+      view
+      |> render_click("select", %{"id" => "tickets-table-select-#{id}", "checked" => true})
+
+    assert html =~ "1 selected"
+    assert html =~ ~s(id="tickets-bulk-delete")
+  end
+
   test "save and continue stays on the edit form", %{conn: conn} do
     conn = init_test_session(conn, %{"admin_demo_id" => "save-continue"})
     {view, _html} = live_ok!(conn, ~p"/admin/tickets/new")
@@ -154,6 +187,25 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Docs"
     assert html =~ "https://example.test/docs"
     refute html =~ "max-w-3xl"
+    assert html =~ "data-list w-full max-w-none"
+  end
+
+  test "invalid ticket create shows tooltip field errors", %{conn: conn} do
+    conn = init_test_session(conn, %{"admin_demo_id" => "tooltip-errors"})
+    {view, html} = live_ok!(conn, ~p"/admin/tickets/new")
+    assert html =~ "relative w-full max-w-none"
+
+    html =
+      view
+      |> form("#tickets-form", %{
+        "ticket" => %{"title" => "", "email" => "", "status" => "open", "priority" => "1"}
+      })
+      |> render_submit()
+
+    assert html =~ ~s(data-scope="tooltip")
+    assert html =~ "exclamation-circle"
+    assert html =~ "absolute top-0 end-0"
+    refute html =~ ~s(data-part="error">can't be blank)
   end
 
   test "sessions are isolated", %{conn: conn} do

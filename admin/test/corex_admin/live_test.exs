@@ -36,6 +36,25 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ "max-w-3xl"
     refute html =~ "rounded-md border border-border p-space"
     assert html =~ ~s(data-part="sort-icon")
+    refute html =~ ~s(aria-label="Breadcrumb")
+    refute html =~ "grid-cols-1 items-center"
+    assert html =~ ~s(id="tickets-filters")
+    assert html =~ "Filters"
+    assert html =~ ~s(data-part="control-inputs")
+    assert html =~ ~s(data-range)
+    refute html =~ ~s(type="date")
+    assert html =~ "flex-nowrap items-center justify-between"
+  end
+
+  test "selecting a row shows the selected count", %{conn: conn, ticket: ticket} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+
+    html =
+      view
+      |> render_click("select", %{"id" => "tickets-table-select-#{ticket.id}", "checked" => true})
+
+    assert html =~ "1 selected"
+    assert html =~ ~s(id="tickets-bulk-delete")
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do
@@ -120,10 +139,26 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "No Tickets yet."
   end
 
+  test "new form uses full-width hosts and tooltip field errors", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/admin/tickets/new")
+    assert html =~ "relative w-full max-w-none"
+    refute html =~ "max-w-3xl"
+
+    html =
+      view
+      |> form("#tickets-form", %{"ticket" => %{"title" => "", "email" => "", "status" => "open"}})
+      |> render_submit()
+
+    assert html =~ ~s(data-scope="tooltip")
+    assert html =~ "exclamation-circle"
+    assert html =~ "absolute top-0 end-0"
+  end
+
   test "show uses title field and hides redacted fields", %{conn: conn, ticket: ticket} do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     refute html =~ "Secret"
+    assert html =~ "data-list w-full max-w-none"
   end
 
   test "create via context form", %{conn: conn} do

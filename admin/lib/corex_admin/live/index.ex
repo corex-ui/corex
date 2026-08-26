@@ -54,7 +54,6 @@ defmodule CorexAdmin.Live.Index do
   def render(assigns) do
     ~H"""
     <Components.shell :if={assigns[:spec]} socket={assigns} current={@spec}>
-      <Components.breadcrumbs prefix={@corex_admin_prefix} spec={@spec} live_action={:index} />
       <.layout_heading class="layout-heading">
         <:title>{@spec.label}</:title>
         <:actions>
@@ -71,32 +70,45 @@ defmodule CorexAdmin.Live.Index do
       </.layout_heading>
 
       <div class="flex w-full flex-col gap-space">
-        <form
-          id={"#{@spec.slug}-search"}
-          phx-change="search"
-          class="grid w-full grid-cols-1 items-end gap-space sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6"
-        >
-          <.native_input
-            :if={@list_opts.search_fields != []}
-            id={"#{@spec.slug}-search-q"}
-            type="search"
-            name="q"
-            value={@list_opts.search}
-            class="native-input ui-size-sm sm:col-span-2"
-            phx-debounce="400"
-          >
-            <:label>Search</:label>
-            <:icon>
-              <.heroicon name="hero-magnifying-glass" />
-            </:icon>
-          </.native_input>
-          <div
-            :for={filter <- @spec.filters}
-            class={filter_col_class(filter)}
-          >
-            <Components.filter_control spec={@spec} filter={filter} list_opts={@list_opts} />
-          </div>
-        </form>
+        <.collapsible id={"#{@spec.slug}-filters"} class="collapsible" open={true}>
+          <:trigger>
+            Filters
+            <span :if={ListOpts.filtered?(@list_opts)} class="badge ui-size-sm">
+              {filter_badge_count(@list_opts)}
+            </span>
+          </:trigger>
+          <:closed>
+            <.heroicon name="hero-chevron-right" />
+          </:closed>
+          <:content>
+            <form
+              id={"#{@spec.slug}-search"}
+              phx-change="search"
+              class="flex w-full flex-wrap items-end gap-space"
+            >
+              <.native_input
+                :if={@list_opts.search_fields != []}
+                id={"#{@spec.slug}-search-q"}
+                type="search"
+                name="q"
+                value={@list_opts.search}
+                class="native-input ui-size-sm min-w-48 flex-1"
+                phx-debounce="400"
+              >
+                <:label>Search</:label>
+                <:icon>
+                  <.heroicon name="hero-magnifying-glass" />
+                </:icon>
+              </.native_input>
+              <div
+                :for={filter <- @spec.filters}
+                class={filter_item_class(filter)}
+              >
+                <Components.filter_control spec={@spec} filter={filter} list_opts={@list_opts} />
+              </div>
+            </form>
+          </:content>
+        </.collapsible>
         <Components.filter_chips spec={@spec} list_opts={@list_opts} />
       </div>
 
@@ -195,13 +207,13 @@ defmodule CorexAdmin.Live.Index do
         </.data_table>
       </div>
 
-      <div class="grid w-full grid-cols-1 items-center gap-space md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-        <p class="m-0 justify-self-start text-sm text-ink-muted">
+      <div class="flex w-full flex-nowrap items-center justify-between gap-space">
+        <p class="m-0 min-w-0 truncate text-sm text-ink-muted">
           Showing {elem(@window, 0)}–{elem(@window, 1)} of {elem(@window, 2)}
         </p>
         <.pagination
           id={"#{@spec.slug}-pagination"}
-          class="pagination justify-self-center"
+          class="pagination shrink-0"
           count={@page.total}
           page={@page.page}
           page_size={@page.page_size}
@@ -215,7 +227,7 @@ defmodule CorexAdmin.Live.Index do
           <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
           <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
         </.pagination>
-        <form id={"#{@spec.slug}-page-size"} phx-change="page_size" class="justify-self-end">
+        <form id={"#{@spec.slug}-page-size"} phx-change="page_size" class="hidden shrink-0 sm:block">
           <.native_input
             id={"#{@spec.slug}-page-size-input"}
             type="select"
@@ -519,8 +531,13 @@ defmodule CorexAdmin.Live.Index do
     end
   end
 
-  defp filter_col_class(%{type: type}) when type in [:date_range, :datetime_range, :number_range],
-    do: "xl:col-span-2"
+  defp filter_item_class(%{type: type}) when type in [:date_range, :datetime_range],
+    do: "min-w-64 basis-full"
 
-  defp filter_col_class(_), do: nil
+  defp filter_item_class(_), do: "shrink-0"
+
+  defp filter_badge_count(%ListOpts{} = opts) do
+    search = if opts.search not in [nil, ""], do: 1, else: 0
+    search + map_size(opts.filters)
+  end
 end
