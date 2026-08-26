@@ -4,6 +4,7 @@ import type { SelectionDetails, OpenChangeDetails, Props } from "@zag-js/menu";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { notifyChange, readPayloadId } from "../lib/respond-to";
 import { redirectCollectionItem } from "../lib/collection-hook";
+import type { RedirectContext } from "../lib/redirect";
 import { readPositioningOptions } from "../lib/positioning";
 import { createZagLiveHook } from "../lib/zag-live-hook";
 
@@ -67,6 +68,39 @@ export function menuSetOpenMatches(elId: string, payload: unknown): boolean {
   return elId === targetId || elId === `menu:${targetId}`;
 }
 
+/**
+ * Handle a Zag menu `onSelect`. Redirect items navigate away; pushing a LiveView
+ * event afterwards throws once the socket is gone. Skip notify when redirect
+ * succeeds so Show/Edit can `js().navigate()` while Delete still reaches the server.
+ */
+export function handleMenuSelect(
+  el: HTMLElement,
+  details: Pick<SelectionDetails, "value">,
+  liveSocket: RedirectContext["liveSocket"],
+  pushEvent: (name: string, payload: Record<string, unknown>) => void
+): boolean {
+  const redirected =
+    getBoolean(el, "redirect") && details.value
+      ? redirectCollectionItem(el, "menu", details.value, liveSocket)
+      : false;
+
+  if (redirected) return true;
+
+  notifyChange({
+    el,
+    canPushServer: canPushEvent(liveSocket),
+    pushEvent,
+    payload: {
+      id: el.id,
+      value: details.value ?? null,
+    },
+    serverEventName: getString(el, "onSelect"),
+    clientEventName: getString(el, "onSelectClient"),
+  });
+
+  return false;
+}
+
 const MenuHook = createZagLiveHook<MenuHookState, Menu>({
   key: "menu",
   mount(hook, { dom, server }) {
@@ -80,21 +114,7 @@ const MenuHook = createZagLiveHook<MenuHookState, Menu>({
     const liveSocket = hook.liveSocket;
 
     const buildOnSelect = () => (details: SelectionDetails) => {
-      if (getBoolean(el, "redirect") && details.value) {
-        redirectCollectionItem(el, "menu", details.value, liveSocket);
-      }
-
-      notifyChange({
-        el,
-        canPushServer: canPushEvent(liveSocket),
-        pushEvent,
-        payload: {
-          id: el.id,
-          value: details.value ?? null,
-        },
-        serverEventName: getString(el, "onSelect"),
-        clientEventName: getString(el, "onSelectClient"),
-      });
+      handleMenuSelect(el, details, liveSocket, pushEvent);
     };
 
     const menu = new Menu(el, {

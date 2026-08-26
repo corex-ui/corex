@@ -1831,6 +1831,22 @@ function menuSetOpenMatches(elId, payload) {
   if (!targetId) return false;
   return elId === targetId || elId === `menu:${targetId}`;
 }
+function handleMenuSelect(el, details, liveSocket, pushEvent) {
+  const redirected = getBoolean(el, "redirect") && details.value ? redirectCollectionItem(el, "menu", details.value, liveSocket) : false;
+  if (redirected) return true;
+  notifyChange({
+    el,
+    canPushServer: canPushEvent(liveSocket),
+    pushEvent,
+    payload: {
+      id: el.id,
+      value: details.value ?? null
+    },
+    serverEventName: getString(el, "onSelect"),
+    clientEventName: getString(el, "onSelectClient")
+  });
+  return false;
+}
 var MenuHook = createZagLiveHook({
   key: "menu",
   mount(hook, { dom, server }) {
@@ -1841,20 +1857,7 @@ var MenuHook = createZagLiveHook({
     const pushEvent = hook.pushEvent.bind(hook);
     const liveSocket = hook.liveSocket;
     const buildOnSelect = () => (details) => {
-      if (getBoolean(el, "redirect") && details.value) {
-        redirectCollectionItem(el, "menu", details.value, liveSocket);
-      }
-      notifyChange({
-        el,
-        canPushServer: canPushEvent(liveSocket),
-        pushEvent,
-        payload: {
-          id: el.id,
-          value: details.value ?? null
-        },
-        serverEventName: getString(el, "onSelect"),
-        clientEventName: getString(el, "onSelectClient")
-      });
+      handleMenuSelect(el, details, liveSocket, pushEvent);
     };
     const menu = new Menu(el, {
       id: el.id.replace(/^menu:/, ""),
@@ -1954,5 +1957,6 @@ var MenuHook = createZagLiveHook({
 export {
   MenuHook as Menu,
   findImmediateParentMenuHookEl,
+  handleMenuSelect,
   menuSetOpenMatches
 };

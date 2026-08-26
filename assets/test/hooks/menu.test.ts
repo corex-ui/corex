@@ -3,9 +3,11 @@ import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import * as hookModule from "../../hooks/menu";
 import {
   findImmediateParentMenuHookEl,
+  handleMenuSelect,
   menuSetOpenMatches,
   Menu as MenuHook,
 } from "../../hooks/menu";
+import { mockLiveSocket } from "../helpers/mock-live-socket";
 import { Menu as MenuComponent } from "../../components/menu";
 import { menuTree } from "../helpers/component-smoke";
 import { expectHookModule } from "../helpers/expect-hook";
@@ -34,6 +36,61 @@ describe("findImmediateParentMenuHookEl", () => {
   it("returns null when no parent menu hook", () => {
     const el = document.createElement("div");
     expect(findImmediateParentMenuHookEl(el)).toBeNull();
+  });
+});
+
+describe("handleMenuSelect", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+  });
+
+  function rowMenuHost() {
+    const el = document.createElement("div");
+    el.id = "menu:tickets-row-1";
+    el.setAttribute("data-redirect", "");
+    el.setAttribute("data-on-select", "row_menu");
+
+    const show = document.createElement("div");
+    show.dataset.scope = "menu";
+    show.dataset.part = "item";
+    show.dataset.value = "show:1";
+    show.setAttribute("data-to", "/en/admin/tickets/1");
+    show.setAttribute("data-redirect", "navigate");
+    el.appendChild(show);
+
+    const del = document.createElement("div");
+    del.dataset.scope = "menu";
+    del.dataset.part = "item";
+    del.dataset.value = "delete:1";
+    del.setAttribute("data-redirect", "false");
+    el.appendChild(del);
+
+    document.body.appendChild(el);
+    return el;
+  }
+
+  it("navigates a redirect item without pushing onSelect", () => {
+    const el = rowMenuHost();
+    const { ctx, navigate } = mockLiveSocket(true);
+    const pushEvent = vi.fn();
+
+    expect(handleMenuSelect(el, { value: "show:1" }, ctx.liveSocket, pushEvent)).toBe(true);
+    expect(navigate).toHaveBeenCalledWith("/en/admin/tickets/1");
+    expect(pushEvent).not.toHaveBeenCalled();
+  });
+
+  it("pushes onSelect when the item opts out of redirect", () => {
+    const el = rowMenuHost();
+    const { ctx, navigate } = mockLiveSocket(true);
+    const pushEvent = vi.fn();
+
+    expect(handleMenuSelect(el, { value: "delete:1" }, ctx.liveSocket, pushEvent)).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
+    expect(pushEvent).toHaveBeenCalledWith("row_menu", {
+      id: "menu:tickets-row-1",
+      value: "delete:1",
+    });
   });
 });
 
