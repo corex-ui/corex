@@ -1,9 +1,9 @@
 import {
   memo
-} from "./chunks/chunk-GBPB5EHJ.mjs";
+} from "./chunks/chunk-HWUNIC34.mjs";
 import {
   isAllowedRedirectDestination
-} from "./chunks/chunk-WRPL7YFW.mjs";
+} from "./chunks/chunk-IPIIGVFP.mjs";
 import {
   idMatches,
   notifyChange,
@@ -22,10 +22,11 @@ import {
   getDir,
   getNumber,
   getString,
-  isNumber
-} from "./chunks/chunk-HMQI4LDM.mjs";
+  isNumber,
+  mergeWithDefault
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.43.3/node_modules/@zag-js/pagination/dist/pagination.anatomy.mjs
 var anatomy = createAnatomy("pagination").parts(
   "root",
   "item",
@@ -37,7 +38,7 @@ var anatomy = createAnatomy("pagination").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.dom.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.43.3/node_modules/@zag-js/pagination/dist/pagination.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `pagination:${ctx.id}`;
 var getFirstTriggerId = (ctx) => ctx.ids?.firstTrigger ?? `pagination:${ctx.id}:first`;
 var getPrevTriggerId = (ctx) => ctx.ids?.prevTrigger ?? `pagination:${ctx.id}:prev`;
@@ -46,7 +47,7 @@ var getLastTriggerId = (ctx) => ctx.ids?.lastTrigger ?? `pagination:${ctx.id}:la
 var getEllipsisId = (ctx, index) => ctx.ids?.ellipsis?.(index) ?? `pagination:${ctx.id}:ellipsis:${index}`;
 var getItemId = (ctx, page) => ctx.ids?.item?.(page) ?? `pagination:${ctx.id}:item:${page}`;
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.utils.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.43.3/node_modules/@zag-js/pagination/dist/pagination.utils.mjs
 var range = (start, end) => {
   let length = end - start + 1;
   return Array.from({ length }, (_, idx) => idx + start);
@@ -106,13 +107,24 @@ var getRange = (ctx) => {
 };
 var getTransformedRange = (ctx) => transform(getRange(ctx));
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.connect.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.43.3/node_modules/@zag-js/pagination/dist/pagination.connect.mjs
+var defaultTranslations = {
+  rootLabel: "pagination",
+  firstTriggerLabel: "first page",
+  prevTriggerLabel: "previous page",
+  nextTriggerLabel: "next page",
+  lastTriggerLabel: "last page",
+  itemLabel({ page, totalPages }) {
+    const isLastPage = totalPages > 1 && page === totalPages;
+    return `${isLastPage ? "last page, " : ""}page ${page}`;
+  }
+};
 function connect(service, normalize) {
   const { send, scope, prop, computed, context } = service;
   const totalPages = computed("totalPages");
   const page = context.get("page");
   const pageSize = context.get("pageSize");
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   const count = prop("count");
   const getPageUrl = prop("getPageUrl");
   const type = prop("type");
@@ -259,7 +271,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+pagination@1.42.0/node_modules/@zag-js/pagination/dist/pagination.machine.mjs
+// ../node_modules/.pnpm/@zag-js+pagination@1.43.3/node_modules/@zag-js/pagination/dist/pagination.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -269,19 +281,7 @@ var machine = createMachine({
       defaultPage: 1,
       type: "button",
       count: 1,
-      ...props,
-      translations: {
-        rootLabel: "pagination",
-        firstTriggerLabel: "first page",
-        prevTriggerLabel: "previous page",
-        nextTriggerLabel: "next page",
-        lastTriggerLabel: "last page",
-        itemLabel({ page, totalPages }) {
-          const isLastPage = totalPages > 1 && page === totalPages;
-          return `${isLastPage ? "last page, " : ""}page ${page}`;
-        },
-        ...props.translations
-      }
+      ...props
     };
   },
   initialState() {

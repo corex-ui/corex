@@ -58,6 +58,42 @@ defmodule E2eWeb.DatePickerModel do
     )
   end
 
+  def close_date_picker_in_section(session, section_dom_id) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
+      raise ArgumentError, "invalid section dom id"
+    end
+
+    open_q =
+      css(
+        ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
+        visible: :any
+      )
+
+    session =
+      if has?(session, open_q) do
+        click(
+          session,
+          css(
+            ~s|section##{section_dom_id} [phx-hook="DatePicker"] [data-scope="date-picker"][data-part="trigger"]|,
+            visible: :any
+          )
+        )
+      else
+        session
+      end
+
+    wait_for_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
+        count: 0,
+        visible: :any
+      ),
+      timeout: 8_000
+    )
+  end
+
   def open_date_picker_by_host_id(session, host_dom_id) when is_binary(host_dom_id) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid date picker host dom id"

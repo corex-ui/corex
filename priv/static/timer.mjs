@@ -1,13 +1,13 @@
 import {
   memo
-} from "./chunks/chunk-GBPB5EHJ.mjs";
+} from "./chunks/chunk-HWUNIC34.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunks/chunk-7LIL4AMN.mjs";
+} from "./chunks/chunk-4Z6E5U4O.mjs";
 import {
   clampValue
-} from "./chunks/chunk-KHEHQE65.mjs";
+} from "./chunks/chunk-HVJNI7F3.mjs";
 import {
   emitResponse,
   idMatches,
@@ -26,10 +26,11 @@ import {
   getNumber,
   getString,
   getStringList,
-  match
-} from "./chunks/chunk-HMQI4LDM.mjs";
+  match,
+  mergeWithDefault
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.43.3/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
   "root",
   "area",
@@ -42,15 +43,18 @@ var anatomy = createAnatomy("timer").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.dom.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.43.3/node_modules/@zag-js/timer/dist/timer.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `timer:${ctx.id}:root`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `timer:${ctx.id}:area`;
 
-// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.connect.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.43.3/node_modules/@zag-js/timer/dist/timer.connect.mjs
+var defaultTranslations = {
+  areaLabel: (time, formattedTime) => `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
+};
 var validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
 function connect(service, normalize) {
   const { state, send, computed, scope, prop } = service;
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   const running = state.matches("running");
   const paused = state.matches("paused");
   const time = computed("time");
@@ -150,18 +154,14 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.machine.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.43.3/node_modules/@zag-js/timer/dist/timer.machine.mjs
 var machine = createMachine({
   props({ props }) {
     validateProps(props);
     return {
       interval: 1e3,
       startMs: 0,
-      ...props,
-      translations: {
-        areaLabel: (time, formattedTime) => `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
-        ...props.translations
-      }
+      ...props
     };
   },
   initialState({ prop }) {
