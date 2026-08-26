@@ -45,6 +45,11 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ ~s(type="date")
     assert html =~ "admin-footer"
     refute html =~ "flex-nowrap"
+    assert html =~ "Select all"
+    assert html =~ "0 selected"
+    assert html =~ ~s(id="tickets-bulk-delete")
+    assert html =~ ~s(class="admin-command-bar")
+    assert html =~ ~s(id="tickets-page-size")
   end
 
   test "selecting a row shows the selected count", %{conn: conn, ticket: ticket} do
@@ -80,9 +85,7 @@ defmodule CorexAdmin.LiveTest do
   test "page size select patches query string", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/admin/tickets")
 
-    view
-    |> element("#tickets-page-size")
-    |> render_change(%{"page_size" => "10"})
+    render_hook(view, "page_size", %{"id" => "tickets-page-size", "value" => ["10"]})
 
     assert_patch(view, "/admin/tickets?page_size=10")
   end
@@ -106,6 +109,7 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "Broken login"
     refute html =~ "Done ticket"
     assert html =~ "Status: open"
+    assert html =~ "ui-trigger--square"
 
     today = Date.utc_today() |> Date.to_iso8601()
 
@@ -157,12 +161,34 @@ defmodule CorexAdmin.LiveTest do
     assert_patch(view, "/admin/tickets?" <> qs)
   end
 
-  test "clear chips removes filters", %{conn: conn} do
+  test "reset all restores default filter params", %{conn: conn} do
     {:ok, view, html} = live(conn, "/admin/tickets?filters[status][]=open")
-    assert html =~ "Clear all"
+    assert html =~ "Reset all"
+    refute html =~ "Clear all"
 
     view
-    |> element("button", "Clear all")
+    |> element("button", "Reset all")
+    |> render_click()
+
+    assert_patch(view, "/admin/tickets")
+  end
+
+  test "reset filter restores one field", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/admin/tickets?filters[status][]=open")
+
+    view
+    |> element(~s(button[phx-click="reset_filter"][phx-value-field="status"]))
+    |> render_click()
+
+    assert_patch(view, "/admin/tickets")
+  end
+
+  test "chip X clears a filter to any", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/admin/tickets?filters[status][]=open")
+    assert html =~ "Status: open"
+
+    view
+    |> element(~s(button[aria-label="Clear Status"]))
     |> render_click()
 
     assert_patch(view, "/admin/tickets")

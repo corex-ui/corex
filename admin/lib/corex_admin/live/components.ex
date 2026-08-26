@@ -322,7 +322,7 @@ defmodule CorexAdmin.Live.Components do
       |> assign(:input_name, "filters[#{name}]")
 
     case assigns.filter.type do
-      type when type in [:select, :multi_select] ->
+      type when type in [:select, :multi_select, :boolean] ->
         filter_select(assigns)
 
       :date_range ->
@@ -333,9 +333,6 @@ defmodule CorexAdmin.Live.Components do
 
       :number_range ->
         filter_number_range(assigns)
-
-      :boolean ->
-        filter_boolean(assigns)
 
       _ ->
         filter_text(assigns)
@@ -350,22 +347,19 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :chips, chips)
 
     ~H"""
-    <div :if={@chips != []} class="admin-chips">
+    <div class="admin-chips">
       <span :for={chip <- @chips} class="badge ui-size-sm">
         {chip.label}: {chip.text}
         <.action
           type="button"
           phx-click="clear_filter"
           phx-value-field={chip.field}
-          class="button ui-size-sm ui-ghost"
+          class="button ui-size-sm ui-ghost ui-trigger--square"
           aria_label={"Clear #{chip.label}"}
         >
           <.heroicon name="hero-x-mark" />
         </.action>
       </span>
-      <.action type="button" phx-click="clear_filters" class="button ui-size-sm">
-        Clear all
-      </.action>
     </div>
     """
   end
@@ -373,7 +367,7 @@ defmodule CorexAdmin.Live.Components do
   attr(:id, :string, required: true)
   attr(:spec, Spec, required: true)
   attr(:record, :any, required: true)
-  attr(:trigger, :atom, default: :icon, values: [:icon, :labeled])
+  attr(:trigger, :atom, default: :icon, values: [:icon, :labeled, :hidden])
 
   def delete_dialog(assigns) do
     ~H"""
@@ -387,16 +381,12 @@ defmodule CorexAdmin.Live.Components do
       final_focus={"dialog:#{@id}:trigger"}
     >
       <:trigger
-        class={
-          if(@trigger == :labeled,
-            do: "button ui-alert",
-            else: "button ui-size-sm ui-alert ui-trigger--square"
-          )
-        }
+        class={delete_trigger_class(@trigger)}
         aria_label={"Delete #{@spec.label}"}
       >
-        <.heroicon name="hero-trash" />
+        <.heroicon :if={@trigger != :labeled} name="hero-trash" />
         <span :if={@trigger == :labeled}>Delete</span>
+        <span :if={@trigger == :hidden} class="admin-visually-hidden">Delete</span>
       </:trigger>
       <:title>Delete {@spec.label}?</:title>
       <:description>This action cannot be undone.</:description>
@@ -482,7 +472,116 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
+  attr(:socket, :any, required: true)
+  attr(:spec, Spec, required: true)
+  attr(:resource_mod, :atom, required: true)
+  attr(:record, :any, required: true)
+
+  def row_menu(assigns) do
+    record = assigns.record
+    spec = assigns.spec
+    id = Helpers.record_id(spec, record)
+
+    items = [
+      %{
+        label: "Show",
+        value: "show:#{id}",
+        to: Helpers.record_path(assigns.socket, spec, record),
+        redirect: :navigate
+      }
+    ]
+
+    items =
+      if Helpers.authorize(assigns.socket, :edit, assigns.resource_mod, record) == :ok do
+        items ++
+          [
+            %{
+              label: "Edit",
+              value: "edit:#{id}",
+              to: Helpers.edit_path(assigns.socket, spec, record),
+              redirect: :navigate
+            }
+          ]
+      else
+        items
+      end
+
+    can_delete? = Helpers.authorize(assigns.socket, :delete, assigns.resource_mod, record) == :ok
+
+    items =
+      if can_delete? do
+        items ++ [%{label: "Delete", value: "delete:#{id}", redirect: false}]
+      else
+        items
+      end
+
+    assigns =
+      assigns
+      |> assign(:items, Corex.Tree.new(items))
+      |> assign(:record_id, id)
+      |> assign(:can_delete?, can_delete?)
+
+    ~H"""
+    <.menu
+      id={"#{@spec.slug}-row-#{@record_id}"}
+      class="menu"
+      items={@items}
+      redirect
+      on_select="row_menu"
+    >
+      <:trigger class="button ui-size-sm ui-trigger--square">
+        <.heroicon name="hero-ellipsis-vertical" />
+        <span class="admin-visually-hidden">Actions</span>
+      </:trigger>
+    </.menu>
+    <.delete_dialog
+      :if={@can_delete?}
+      id={"delete-#{@record_id}"}
+      spec={@spec}
+      record={@record}
+      trigger={:hidden}
+    />
+    """
+  end
+
+  attr(:filter, Filter, required: true)
+
+  defp filter_legend(assigns) do
+    ~H"""
+    <span class="admin-filter-legend">
+      <span>{@filter.label}</span>
+      <.action
+        type="button"
+        phx-click="reset_filter"
+        phx-value-field={Atom.to_string(@filter.field)}
+        class="button ui-size-sm ui-ghost"
+        aria_label={"Reset #{@filter.label}"}
+      >
+        Reset
+      </.action>
+    </span>
+    """
+  end
+
   defp filter_select(assigns) do
+    option_count = length(List.wrap(assigns.filter.options))
+
+    cond do
+      assigns.filter.type == :boolean ->
+        filter_toggle(assigns)
+
+      assigns.filter.type in [:select, :multi_select] and option_count > 0 and option_count <= 4 ->
+        filter_toggle(assigns)
+
+      assigns.filter.type in [:select, :multi_select] and option_count > 12 ->
+        filter_combobox(assigns)
+
+      true ->
+        filter_select_dropdown(assigns)
+    end
+  end
+
+  defp filter_select_dropdown(assigns) do
     assigns =
       assigns
       |> assign(:items, list_items(assigns.filter.options))
@@ -500,11 +599,76 @@ defmodule CorexAdmin.Live.Components do
       on_value_change="filter"
       translation={%Corex.Select.Translation{placeholder: "Any"}}
     >
-      <:label>{@filter.label}</:label>
+      <:label>
+        <.filter_legend filter={@filter} />
+      </:label>
       <:trigger>
         <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
+    """
+  end
+
+  defp filter_toggle(assigns) do
+    {options, multiple} =
+      case assigns.filter.type do
+        :boolean ->
+          {[%{label: "Yes", value: "true"}, %{label: "No", value: "false"}], false}
+
+        :multi_select ->
+          {option_maps(assigns.filter.options), true}
+
+        _ ->
+          {option_maps(assigns.filter.options), false}
+      end
+
+    assigns =
+      assigns
+      |> assign(:options, options)
+      |> assign(:multiple, multiple)
+      |> assign(:selected, select_value(assigns.value))
+
+    ~H"""
+    <div class="admin-filter-stack">
+      <.filter_legend filter={@filter} />
+      <.toggle_group
+        id={@control_id}
+        class="toggle-group ui-size-sm"
+        multiple={@multiple}
+        deselectable
+        value={@selected}
+        on_value_change="filter"
+      >
+        <:item :for={opt <- @options} value={opt.value}>{opt.label}</:item>
+      </.toggle_group>
+    </div>
+    """
+  end
+
+  defp filter_combobox(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, list_items(assigns.filter.options))
+      |> assign(:selected, select_value(assigns.value))
+      |> assign(:multiple, assigns.filter.type == :multi_select)
+
+    ~H"""
+    <.combobox
+      id={@control_id}
+      class="combobox ui-size-sm"
+      name={@input_name}
+      multiple={@multiple}
+      items={@items}
+      value={@selected}
+      on_value_change="filter"
+    >
+      <:label>
+        <.filter_legend filter={@filter} />
+      </:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+    </.combobox>
     """
   end
 
@@ -521,7 +685,9 @@ defmodule CorexAdmin.Live.Components do
         value={@picked}
         on_value_change="filter"
       >
-        <:label>{@filter.label}</:label>
+        <:label>
+          <.filter_legend filter={@filter} />
+        </:label>
         <:trigger>
           <.heroicon name="hero-calendar" />
         </:trigger>
@@ -546,7 +712,7 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <div class="admin-filter-stack">
-      <span>{@filter.label}</span>
+      <.filter_legend filter={@filter} />
       <div class="admin-filter-row">
         <.native_input
           id={"#{@control_id}-from"}
@@ -583,7 +749,7 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <div class="admin-filter-stack">
-      <span>{@filter.label}</span>
+      <.filter_legend filter={@filter} />
       <div class="admin-filter-row admin-filter-row--nowrap">
         <.number_input
           id={"#{@control_id}-min"}
@@ -622,32 +788,6 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
-  defp filter_boolean(assigns) do
-    assigns = assign(assigns, :selected, select_value(assigns.value))
-
-    ~H"""
-    <.select
-      id={@control_id}
-      class="select ui-size-sm"
-      name={@input_name}
-      items={
-        Corex.List.new([
-          %{label: "Yes", value: "true"},
-          %{label: "No", value: "false"}
-        ])
-      }
-      value={@selected}
-      on_value_change="filter"
-      translation={%Corex.Select.Translation{placeholder: "Any"}}
-    >
-      <:label>{@filter.label}</:label>
-      <:trigger>
-        <.heroicon name="hero-chevron-down" />
-      </:trigger>
-    </.select>
-    """
-  end
-
   defp filter_text(assigns) do
     ~H"""
     <.native_input
@@ -659,7 +799,9 @@ defmodule CorexAdmin.Live.Components do
       phx-change="search"
       phx-debounce="400"
     >
-      <:label>{@filter.label}</:label>
+      <:label>
+        <.filter_legend filter={@filter} />
+      </:label>
     </.native_input>
     """
   end
@@ -739,6 +881,19 @@ defmodule CorexAdmin.Live.Components do
   end
 
   defp list_items(_), do: Corex.List.new([])
+
+  defp option_maps(options) when is_list(options) do
+    Enum.map(options, fn
+      {label, value} -> %{label: to_string(label), value: to_string(value)}
+      value -> %{label: to_string(value), value: to_string(value)}
+    end)
+  end
+
+  defp option_maps(_), do: []
+
+  defp delete_trigger_class(:labeled), do: "button ui-alert"
+  defp delete_trigger_class(:hidden), do: "admin-visually-hidden"
+  defp delete_trigger_class(_), do: "button ui-size-sm ui-alert ui-trigger--square"
 
   defp select_value(nil), do: []
   defp select_value(list) when is_list(list), do: Enum.map(list, &to_string/1)

@@ -17,7 +17,9 @@ defmodule CorexAdmin.Resource do
           page_size_options: [10, 25, 50, 100],
           default_sort: {:inserted_at, :desc},
           title_field: :email,
-          selectable: true
+          selectable: true,
+          filters_open: true,
+          default_filters: %{role: "admin"}
 
         scope :current_scope
 
@@ -79,7 +81,9 @@ defmodule CorexAdmin.Resource do
     page_size_options: [type: {:list, :pos_integer}],
     default_sort: [type: {:or, [nil, {:tuple, [:atom, {:in, [:asc, :desc]}]}]}],
     title_field: [type: :atom],
-    selectable: [type: :boolean, default: true]
+    selectable: [type: :boolean, default: true],
+    filters_open: [type: :boolean, default: true],
+    default_filters: [type: :map, default: %{}]
   ]
 
   defmacro __using__(opts) do
@@ -272,7 +276,7 @@ defmodule CorexAdmin.Resource do
     slug = opts[:slug] || schema_source(schema)
     label = opts[:label] || Phoenix.Naming.humanize(slug)
 
-    %Spec{
+    spec = %Spec{
       module: module,
       context: opts[:context],
       schema: schema,
@@ -286,10 +290,14 @@ defmodule CorexAdmin.Resource do
       default_sort: opts[:default_sort],
       title_field: opts[:title_field],
       selectable: opts[:selectable],
+      filters_open: opts[:filters_open],
+      default_filters: %{},
       actions: actions,
       fields: Enum.map(fields, &build_field(schema, &1)),
       filters: Enum.map(filters, &build_filter/1)
     }
+
+    %{spec | default_filters: normalize_default_filters(opts[:default_filters], spec.filters)}
   end
 
   @doc "Allowed field type atoms for `field/3`."
@@ -297,6 +305,29 @@ defmodule CorexAdmin.Resource do
 
   @doc "Allowed filter type atoms for `filter/3`."
   def filter_types, do: @filter_types
+
+  defp normalize_default_filters(map, filters) when is_map(map) do
+    allowed = Map.new(filters, fn filter -> {filter.name, filter.field} end)
+
+    Enum.reduce(map, %{}, fn {key, value}, acc ->
+      name = default_filter_name(key, Map.keys(allowed))
+
+      case name && Map.get(allowed, name) do
+        nil -> acc
+        field -> Map.put(acc, field, value)
+      end
+    end)
+  end
+
+  defp normalize_default_filters(_, _), do: %{}
+
+  defp default_filter_name(key, _names) when is_atom(key), do: key
+
+  defp default_filter_name(key, names) when is_binary(key) do
+    Enum.find(names, &(Atom.to_string(&1) == key))
+  end
+
+  defp default_filter_name(_, _), do: nil
 
   defp schema_source(schema) do
     if function_exported?(schema, :__schema__, 1) do

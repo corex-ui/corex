@@ -18,6 +18,8 @@ defmodule CorexAdmin.Resource.Spec do
     :default_sort,
     :title_field,
     selectable: true,
+    filters_open: true,
+    default_filters: %{},
     actions: %{},
     fields: [],
     filters: []
@@ -37,6 +39,8 @@ defmodule CorexAdmin.Resource.Spec do
           default_sort: {atom(), :asc | :desc} | nil,
           title_field: atom() | nil,
           selectable: boolean(),
+          filters_open: boolean(),
+          default_filters: map(),
           actions: %{atom() => atom()},
           fields: [Field.t()],
           filters: [Filter.t()]

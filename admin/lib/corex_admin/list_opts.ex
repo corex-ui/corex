@@ -20,7 +20,9 @@ defmodule CorexAdmin.ListOpts do
             sort_default: nil,
             search: nil,
             search_fields: [],
-            filters: %{}
+            filters: %{},
+            filter_defaults: %{},
+            filters_cleared: MapSet.new()
 
   @type filter_value ::
           String.t()
@@ -41,7 +43,9 @@ defmodule CorexAdmin.ListOpts do
           sort_default: {atom(), :asc | :desc} | nil,
           search: String.t() | nil,
           search_fields: [atom()],
-          filters: %{optional(atom()) => filter_value()}
+          filters: %{optional(atom()) => filter_value()},
+          filter_defaults: %{optional(atom()) => filter_value()},
+          filters_cleared: MapSet.t(atom())
         }
 
   @doc "Builds list opts from a params map using the resource allowlist."
@@ -50,6 +54,7 @@ defmodule CorexAdmin.ListOpts do
     params = stringify_keys(params)
     page_size_default = default_page_size(spec)
     options = CorexAdmin.page_size_options(spec)
+    {filters, cleared, defaults} = parse_filters(spec, params)
 
     %__MODULE__{
       page: parse_positive_int(params["page"], 1),
@@ -59,7 +64,9 @@ defmodule CorexAdmin.ListOpts do
       sort_default: spec.default_sort,
       search: parse_search(params["q"]),
       search_fields: searchable_names(spec),
-      filters: parse_filters(spec, params)
+      filters: filters,
+      filter_defaults: defaults,
+      filters_cleared: cleared
     }
   end
 
@@ -75,7 +82,7 @@ defmodule CorexAdmin.ListOpts do
     )
     |> put_sort(opts.sort, opts.sort_default)
     |> put_unless(blank?(opts.search), "q", opts.search)
-    |> put_filters(opts.filters)
+    |> put_filters(opts)
   end
 
   @doc "Whether search or any filter is active."
@@ -140,12 +147,39 @@ defmodule CorexAdmin.ListOpts do
   defp parse_dir("desc"), do: :desc
   defp parse_dir(_), do: :asc
 
-  defp parse_filters(%Spec{filters: filters}, params) do
+  defp parse_filters(%Spec{filters: filters} = spec, params) do
     raw = stringify_keys(params["filters"] || %{})
+    defaults = parsed_defaults(spec)
 
-    Enum.reduce(filters, %{}, fn %Filter{} = filter, acc ->
+    {acc, cleared} =
+      Enum.reduce(filters, {%{}, MapSet.new()}, fn %Filter{} = filter, {acc, cleared} ->
+        key = Atom.to_string(filter.name)
+
+        if Map.has_key?(raw, key) do
+          case parse_filter_value(filter, Map.get(raw, key)) do
+            nil -> {acc, MapSet.put(cleared, filter.field)}
+            parsed -> {Map.put(acc, filter.field, parsed), cleared}
+          end
+        else
+          case Map.get(defaults, filter.field) do
+            nil -> {acc, cleared}
+            parsed -> {Map.put(acc, filter.field, parsed), cleared}
+          end
+        end
+      end)
+
+    {acc, cleared, defaults}
+  end
+
+  defp parsed_defaults(%Spec{} = spec) do
+    raw = spec.default_filters || %{}
+
+    Enum.reduce(spec.filters, %{}, fn %Filter{} = filter, acc ->
       value =
-        Map.get(raw, Atom.to_string(filter.name)) || Map.get(params, "filter_#{filter.name}")
+        Map.get(raw, filter.field) ||
+          Map.get(raw, filter.name) ||
+          Map.get(raw, Atom.to_string(filter.field)) ||
+          Map.get(raw, Atom.to_string(filter.name))
 
       case parse_filter_value(filter, value) do
         nil -> acc
@@ -413,12 +447,29 @@ defmodule CorexAdmin.ListOpts do
     |> Map.put("dir", "desc")
   end
 
-  defp put_filters(map, filters) when filters == %{}, do: map
+  defp put_filters(map, %__MODULE__{} = opts) do
+    nested =
+      opts.filters
+      |> Enum.reject(fn {field, value} ->
+        values_equal?(value, Map.get(opts.filter_defaults, field))
+      end)
+      |> Map.new(fn {field, value} -> {Atom.to_string(field), encode_filter(value)} end)
 
-  defp put_filters(map, filters) do
-    nested = Map.new(filters, fn {key, value} -> {Atom.to_string(key), encode_filter(value)} end)
-    Map.put(map, "filters", nested)
+    nested =
+      Enum.reduce(opts.filters_cleared, nested, fn field, acc ->
+        if Map.has_key?(opts.filter_defaults, field) do
+          Map.put(acc, Atom.to_string(field), "")
+        else
+          acc
+        end
+      end)
+
+    if nested == %{}, do: map, else: Map.put(map, "filters", nested)
   end
+
+  defp values_equal?(left, right), do: normalize_eq(left) == normalize_eq(right)
+  defp normalize_eq(list) when is_list(list), do: Enum.sort(list)
+  defp normalize_eq(other), do: other
 
   defp encode_filter(value) when is_list(value), do: Enum.map(value, &to_string/1)
 

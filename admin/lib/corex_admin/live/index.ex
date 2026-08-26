@@ -69,11 +69,68 @@ defmodule CorexAdmin.Live.Index do
         </:actions>
       </.layout_heading>
 
-      <div class="admin-stack">
-        <.collapsible id={"#{@spec.slug}-filters"} class="collapsible" open={true}>
+      <div class="admin-command-bar">
+        <div class="admin-command-bar-start">
+          <.checkbox
+            :if={@spec.selectable}
+            id={"#{@spec.slug}-command-select-all"}
+            class="checkbox ui-size-sm"
+            checked={command_select_all_checked(@entries, @selected)}
+            on_checked_change="select_all"
+            controlled={true}
+            aria_label="Select all"
+          >
+            <:label>Select all</:label>
+            <:indicator>
+              <.heroicon name="hero-check" class="icon" />
+            </:indicator>
+            <:indeterminate>
+              <.heroicon name="hero-minus" class="icon" />
+            </:indeterminate>
+          </.checkbox>
+          <p :if={@spec.selectable} class="admin-muted">{length(@selected)} selected</p>
+          <div
+            :if={@spec.selectable and Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok}
+            class={if(@selected == [], do: "admin-is-disabled")}
+          >
+            <Components.bulk_delete_dialog
+              id={"#{@spec.slug}-bulk-delete"}
+              spec={@spec}
+              count={length(@selected)}
+            />
+          </div>
+        </div>
+        <form
+          :if={@list_opts.search_fields != []}
+          id={"#{@spec.slug}-search"}
+          phx-change="search"
+          class="admin-command-search"
+        >
+          <.native_input
+            id={"#{@spec.slug}-search-q"}
+            type="search"
+            name="q"
+            value={@list_opts.search}
+            class="native-input ui-size-sm admin-filter-search"
+            phx-debounce="400"
+          >
+            <:label>Search</:label>
+            <:icon>
+              <.heroicon name="hero-magnifying-glass" class="icon" />
+            </:icon>
+          </.native_input>
+        </form>
+        <.collapsible
+          id={"#{@spec.slug}-filters"}
+          class="collapsible admin-filters"
+          open={@spec.filters_open}
+        >
           <:trigger>
             Filters
-            <span :if={ListOpts.filtered?(@list_opts)} class="badge ui-size-sm">
+            <span
+              :if={filter_badge_count(@list_opts) > 0}
+              class="badge ui-size-sm ui-trigger--square"
+            >
               {filter_badge_count(@list_opts)}
             </span>
           </:trigger>
@@ -82,50 +139,27 @@ defmodule CorexAdmin.Live.Index do
           </:closed>
           <:content>
             <div class="admin-filter-form">
-              <form
-                id={"#{@spec.slug}-search"}
-                phx-change="search"
-                class="admin-filter-search-form"
-              >
-                <.native_input
-                  :if={@list_opts.search_fields != []}
-                  id={"#{@spec.slug}-search-q"}
-                  type="search"
-                  name="q"
-                  value={@list_opts.search}
-                  class="native-input ui-size-sm admin-filter-search"
-                  phx-debounce="400"
-                >
-                  <:label>Search</:label>
-                  <:icon>
-                    <.heroicon name="hero-magnifying-glass" class="icon" />
-                  </:icon>
-                </.native_input>
-              </form>
               <div
                 :for={filter <- @spec.filters}
                 class={filter_item_class(filter)}
               >
                 <Components.filter_control spec={@spec} filter={filter} list_opts={@list_opts} />
               </div>
+              <div class="admin-filter-actions">
+                <.action
+                  type="button"
+                  phx-click="reset_filters"
+                  class="button ui-size-sm"
+                >
+                  Reset all
+                </.action>
+              </div>
             </div>
           </:content>
         </.collapsible>
-        <Components.filter_chips spec={@spec} list_opts={@list_opts} />
       </div>
 
-      <div
-        :if={@spec.selectable and @selected != []}
-        class="admin-selection-bar"
-      >
-        <p class="admin-muted">{length(@selected)} selected</p>
-        <Components.bulk_delete_dialog
-          :if={Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok}
-          id={"#{@spec.slug}-bulk-delete"}
-          spec={@spec}
-          count={length(@selected)}
-        />
-      </div>
+      <Components.filter_chips spec={@spec} list_opts={@list_opts} />
 
       <div class="admin-table-wrap">
         <.data_table
@@ -171,38 +205,10 @@ defmodule CorexAdmin.Live.Index do
             <Components.field_value field={field} record={record} />
           </:col>
           <:action :let={record}>
-            <Components.icon_tooltip id={"show-#{Helpers.record_id(@spec, record)}"} label="Show">
-              <.navigate
-                to={Helpers.record_path(assigns, @spec, record)}
-                type="navigate"
-                class="button ui-size-sm ui-trigger--square"
-                aria_label="Show"
-              >
-                <.heroicon name="hero-eye" />
-              </.navigate>
-            </Components.icon_tooltip>
-          </:action>
-          <:action :let={record}>
-            <Components.icon_tooltip
-              :if={Helpers.authorize(assigns, :edit, @resource_mod, record) == :ok}
-              id={"edit-#{Helpers.record_id(@spec, record)}"}
-              label="Edit"
-            >
-              <.navigate
-                to={Helpers.edit_path(assigns, @spec, record)}
-                type="navigate"
-                class="button ui-size-sm ui-trigger--square"
-                aria_label="Edit"
-              >
-                <.heroicon name="hero-pencil-square" />
-              </.navigate>
-            </Components.icon_tooltip>
-          </:action>
-          <:action :let={record}>
-            <Components.delete_dialog
-              :if={Helpers.authorize(assigns, :delete, @resource_mod, record) == :ok}
-              id={"delete-#{Helpers.record_id(@spec, record)}"}
+            <Components.row_menu
+              socket={assigns}
               spec={@spec}
+              resource_mod={@resource_mod}
               record={record}
             />
           </:action>
@@ -229,18 +235,21 @@ defmodule CorexAdmin.Live.Index do
           <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
           <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
         </.pagination>
-        <form id={"#{@spec.slug}-page-size"} phx-change="page_size" class="admin-page-size">
-          <.native_input
-            id={"#{@spec.slug}-page-size-input"}
-            type="select"
+        <div class="admin-page-size">
+          <.select
+            id={"#{@spec.slug}-page-size"}
+            class="select ui-size-sm"
             name="page_size"
-            value={to_string(@list_opts.page_size)}
-            options={Enum.map(@page_size_options, &{to_string(&1), to_string(&1)})}
-            class="native-input ui-size-sm"
+            items={page_size_items(@page_size_options)}
+            value={[to_string(@list_opts.page_size)]}
+            on_value_change="page_size"
           >
             <:label>Per page</:label>
-          </.native_input>
-        </form>
+            <:trigger>
+              <.heroicon name="hero-chevron-down" />
+            </:trigger>
+          </.select>
+        </div>
       </div>
     </Components.shell>
     """
@@ -308,6 +317,18 @@ defmodule CorexAdmin.Live.Index do
 
   def handle_event("clear_filter", %{"field" => field}, socket) do
     params = ListOpts.to_params(socket.assigns.list_opts)
+    filters = params |> Map.get("filters", %{}) |> Map.put(field, "")
+
+    params =
+      params
+      |> Map.put("filters", filters)
+      |> Map.delete("page")
+
+    {:noreply, patch_index(socket, params)}
+  end
+
+  def handle_event("reset_filter", %{"field" => field}, socket) do
+    params = ListOpts.to_params(socket.assigns.list_opts)
     filters = params |> Map.get("filters", %{}) |> Map.delete(field)
 
     params =
@@ -320,7 +341,7 @@ defmodule CorexAdmin.Live.Index do
     {:noreply, patch_index(socket, params)}
   end
 
-  def handle_event("clear_filters", _params, socket) do
+  def handle_event("reset_filters", _params, socket) do
     params =
       socket.assigns.list_opts
       |> ListOpts.to_params()
@@ -329,13 +350,24 @@ defmodule CorexAdmin.Live.Index do
     {:noreply, patch_index(socket, params)}
   end
 
+  def handle_event("clear_filters", _params, socket) do
+    handle_event("reset_filters", %{}, socket)
+  end
+
   def handle_event("select", params, socket) do
-    {:noreply, Selection.handle_select(socket, params, :entries)}
+    {:noreply, socket |> Selection.handle_select(params, :entries) |> sync_command_select_all()}
   end
 
   def handle_event("select_all", params, socket) do
-    {:noreply, Selection.handle_select_all(socket, params, :entries)}
+    {:noreply,
+     socket |> Selection.handle_select_all(params, :entries) |> sync_command_select_all()}
   end
+
+  def handle_event("row_menu", %{"value" => "delete:" <> id}, socket) do
+    {:noreply, Corex.Dialog.set_open(socket, "delete-#{id}", true)}
+  end
+
+  def handle_event("row_menu", _params, socket), do: {:noreply, socket}
 
   def handle_event("delete", %{"id" => id}, socket) do
     spec = socket.assigns.spec
@@ -469,10 +501,13 @@ defmodule CorexAdmin.Live.Index do
               :ignore
 
             normalized ->
-              put_filters(current, put_or_delete(filters, name, normalized))
+              put_filters(current, put_or_delete_filter(spec, filters, name, normalized))
           end
         else
-          put_filters(current, put_or_delete(filters, name, normalize_filter_param(value)))
+          put_filters(
+            current,
+            put_or_delete_filter(spec, filters, name, normalize_filter_param(value))
+          )
         end
 
       {:range, name, bound} ->
@@ -481,7 +516,7 @@ defmodule CorexAdmin.Live.Index do
 
         put_filters(
           current,
-          put_or_delete(filters, name, if(nested == %{}, do: nil, else: nested))
+          put_or_delete_filter(spec, filters, name, if(nested == %{}, do: nil, else: nested))
         )
 
       :error ->
@@ -623,6 +658,26 @@ defmodule CorexAdmin.Live.Index do
   defp put_or_delete(map, key, nil), do: Map.delete(map, to_string(key))
   defp put_or_delete(map, key, value), do: Map.put(map, to_string(key), value)
 
+  defp put_or_delete_filter(spec, filters, name, nil) do
+    if filter_has_default?(spec, name) do
+      Map.put(filters, to_string(name), "")
+    else
+      Map.delete(filters, to_string(name))
+    end
+  end
+
+  defp put_or_delete_filter(_spec, filters, name, value) do
+    Map.put(filters, to_string(name), value)
+  end
+
+  defp filter_has_default?(spec, name) do
+    key = to_string(name)
+
+    spec.default_filters
+    |> Map.keys()
+    |> Enum.any?(&(Atom.to_string(&1) == key))
+  end
+
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn
       {key, value} when is_atom(key) -> {Atom.to_string(key), value}
@@ -661,13 +716,42 @@ defmodule CorexAdmin.Live.Index do
     end
   end
 
-  defp filter_item_class(%{type: type}) when type in [:date_range, :datetime_range],
-    do: "admin-filter-item admin-filter-item--range"
+  defp filter_item_class(%{type: type})
+       when type in [:date_range, :datetime_range, :number_range],
+       do: "admin-filter-item admin-filter-item--range"
 
   defp filter_item_class(_), do: "admin-filter-item"
 
   defp filter_badge_count(%ListOpts{} = opts) do
     search = if opts.search not in [nil, ""], do: 1, else: 0
     search + map_size(opts.filters)
+  end
+
+  defp page_size_items(options) do
+    Corex.List.new(Enum.map(options, &%{label: to_string(&1), value: to_string(&1)}))
+  end
+
+  defp command_select_all_checked(entries, selected)
+       when is_list(entries) and is_list(selected) do
+    total = length(entries)
+    count = length(selected)
+
+    cond do
+      total == 0 or count == 0 -> false
+      count == total -> true
+      true -> :indeterminate
+    end
+  end
+
+  defp sync_command_select_all(socket) do
+    spec = socket.assigns.spec
+
+    if spec.selectable do
+      all? = command_select_all_checked(socket.assigns.entries, socket.assigns.selected) == true
+
+      Corex.Checkbox.set_checked(socket, "#{spec.slug}-command-select-all", all?)
+    else
+      socket
+    end
   end
 end

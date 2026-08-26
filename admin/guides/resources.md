@@ -52,8 +52,10 @@ end
 | `page_size` | app `default_page_size` | Default per-page size |
 | `page_size_options` | app `[10, 25, 50, 100]` | Allowed `?page_size=` values (also capped by `max_page_size`) |
 | `default_sort` | none | `{field, :asc | :desc}` when the URL has no sort |
+| `default_filters` | `%{}` | Filter values applied when the matching query key is missing. An empty query value (`filters[status]=`) means “any” and will not re-apply the default. |
+| `filters_open` | `true` | Initial open state of the index filter panel |
 | `title_field` | primary key | Breadcrumbs, flash, show heading |
-| `selectable` | `true` | Index checkboxes and bulk delete |
+| `selectable` | `true` | Index checkboxes, command bar, and bulk delete |
 
 ## Context contract
 
@@ -130,12 +132,12 @@ and never atomized.
 
 | Type | Widget | Query |
 | ---- | ------ | ----- |
-| `:select` | `<.select>` | `==` |
-| `:multi_select` | `<.select multiple>` | `in` |
+| `:select` | `<.select>`, or `<.toggle_group>` when there are 2–4 options, or `<.combobox>` when there are more than 12 | `==` |
+| `:multi_select` | same widgets as `:select`, with `multiple` | `in` |
 | `:date_range` | `<.date_picker selection_mode="range">` | `>= from 00:00` and `< to+1 day` |
 | `:datetime_range` | two `<.native_input type="datetime-local">` | `>= from` and `<= to` |
 | `:number_range` | two `<.number_input>` | `>= min` and `<= max` |
-| `:boolean` | `<.select>` Any / Yes / No | `==` |
+| `:boolean` | `<.toggle_group>` Yes / No (deselect for Any) | `==` |
 
 Optional `field:` on a filter if the URL name should differ from the schema column.
 Do not put HTML in resource modules.

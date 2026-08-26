@@ -87,4 +87,21 @@ defmodule CorexAdmin.ListOptsTest do
     assert params["filters"]["inserted_at"]["from"] == "2026-08-01"
     assert params["filters"]["inserted_at"]["to"] == "2026-08-02"
   end
+
+  test "applies default_filters when the query key is missing" do
+    spec = %{spec() | default_filters: %{status: ["open"]}}
+    opts = ListOpts.from_params(spec, %{})
+
+    assert opts.filters[:status] == ["open"]
+    assert ListOpts.to_params(opts)["filters"] == nil
+  end
+
+  test "empty filter param clears a defaulted filter" do
+    spec = %{spec() | default_filters: %{status: ["open"]}}
+    opts = ListOpts.from_params(spec, %{"filters" => %{"status" => ""}})
+
+    refute Map.has_key?(opts.filters, :status)
+    assert MapSet.member?(opts.filters_cleared, :status)
+    assert ListOpts.to_params(opts)["filters"]["status"] == ""
+  end
 end

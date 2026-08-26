@@ -129,33 +129,46 @@
  }
 
  .admin-filter-form {
- display: flex;
+ display: grid;
  width: 100%;
- flex-wrap: wrap;
- align-items: flex-end;
+ grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+ align-items: start;
  gap: var(--spacing-space);
  }
 
- .admin-filter-search-form {
- display: contents;
- }
-
- .admin-filter-search {
- flex: 1 1 var(--container-4xs);
- min-width: min(100%, var(--container-4xs));
- }
-
  .admin-filter-item {
- flex-shrink: 0;
+ min-width: 0;
  }
 
  .admin-filter-item--range {
- min-width: var(--container-3xs);
- flex-basis: 100%;
+ grid-column: 1 / -1;
+ }
+
+ @media (min-width: theme("breakpoint.md")) {
+ .admin-filter-item--range {
+ grid-column: span 2;
+ }
+ }
+
+ .admin-filter-actions {
+ grid-column: 1 / -1;
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ justify-content: flex-end;
+ gap: var(--spacing-space-sm);
+ }
+
+ .admin-filter-legend {
+ display: flex;
+ width: 100%;
+ align-items: center;
+ justify-content: space-between;
+ gap: var(--spacing-space-sm);
  }
 
  .admin-filter-date {
- min-width: var(--container-3xs);
+ min-width: 0;
  }
 
  .admin-filter-stack {
@@ -182,7 +195,8 @@
 
  .admin-chips,
  .admin-selection-bar,
- .admin-actions {
+ .admin-actions,
+ .admin-command-bar-start {
  display: flex;
  flex-wrap: wrap;
  align-items: center;
@@ -190,7 +204,53 @@
  }
 
  .admin-chips {
+ min-height: var(--spacing-size);
  gap: var(--spacing-space-sm);
+ }
+
+ .admin-command-bar {
+ display: grid;
+ width: 100%;
+ grid-template-columns: minmax(0, 1fr) auto auto;
+ align-items: center;
+ column-gap: var(--spacing-space);
+ row-gap: var(--spacing-space);
+ min-height: var(--spacing-size);
+ }
+
+ @media (max-width: theme("breakpoint.sm")) {
+ .admin-command-bar {
+ grid-template-columns: minmax(0, 1fr);
+ }
+ }
+
+ .admin-command-bar-start {
+ grid-column: 1;
+ grid-row: 1;
+ min-height: var(--spacing-size);
+ }
+
+ .admin-command-search {
+ grid-column: 2;
+ grid-row: 1;
+ min-width: min(100%, var(--container-4xs));
+ }
+
+ .admin-is-disabled {
+ opacity: 0.5;
+ pointer-events: none;
+ }
+
+ .admin-visually-hidden {
+ position: absolute;
+ width: 1px;
+ height: 1px;
+ padding: 0;
+ margin: -1px;
+ overflow: hidden;
+ clip: rect(0, 0, 0, 0);
+ white-space: nowrap;
+ border: 0;
  }
 
  .admin-table-wrap {
@@ -409,7 +469,9 @@
  .admin .number-input,
  .admin .nested-fields,
  .admin .switch,
- .admin .password-input {
+ .admin .password-input,
+ .admin .toggle-group,
+ .admin .combobox {
  width: 100%;
  max-width: none;
  }
@@ -460,6 +522,65 @@
 
  .admin .native-input.admin-filter-search:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
  padding-inline-start: var(--ctl-size, var(--spacing-size));
+ }
+
+ .admin .admin-command-bar .collapsible,
+ .admin .admin-command-bar .collapsible [data-scope="collapsible"][data-part="root"] {
+ display: contents;
+ width: auto;
+ max-width: none;
+ }
+
+ .admin .admin-command-bar [data-scope="collapsible"][data-part="trigger"] {
+ grid-column: 3;
+ grid-row: 1;
+ width: auto;
+ max-width: none;
+ display: inline-flex;
+ align-items: center;
+ gap: var(--spacing-space-sm);
+ }
+
+ .admin .admin-command-bar [data-scope="collapsible"][data-part="content"] {
+ grid-column: 1 / -1;
+ grid-row: 2;
+ }
+
+ @media (max-width: theme("breakpoint.sm")) {
+ .admin-command-bar-start,
+ .admin-command-search,
+ .admin .admin-command-bar [data-scope="collapsible"][data-part="trigger"] {
+ grid-column: 1;
+ grid-row: auto;
+ }
+
+ .admin .admin-command-bar [data-scope="collapsible"][data-part="content"] {
+ grid-column: 1;
+ grid-row: auto;
+ }
+ }
+
+ .admin .admin-page-size .select {
+ flex-direction: row;
+ flex-wrap: nowrap;
+ align-items: center;
+ width: auto;
+ max-width: none;
+ min-width: 0;
+ gap: var(--spacing-space-sm);
+ }
+
+ .admin .admin-page-size .select [data-scope="select"][data-part="label"] {
+ margin: 0;
+ white-space: nowrap;
+ font-size: var(--ctl-text, var(--text-sm));
+ line-height: var(--ctl-leading, var(--text-sm--line-height));
+ color: var(--color-ink-muted);
+ }
+
+ .admin .admin-page-size .select [data-scope="select"][data-part="trigger"] {
+ width: auto;
+ min-width: var(--container-6xs);
  }
 
  .admin .admin-page-size .native-input {

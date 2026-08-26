@@ -18,6 +18,9 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Welcome ticket"
     assert html =~ "page=2"
     assert html =~ ~s(id="tickets-filters")
+    assert html =~ "Select all"
+    assert html =~ "0 selected"
+    assert html =~ ~s(class="admin-command-bar")
     assert html =~ ~s(data-part="control-inputs")
     assert html =~ ~s(data-range)
     refute html =~ ~s(type="date")
@@ -32,6 +35,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Welcome post"
     assert html =~ "Draft notes"
     assert html =~ ~s(id="posts-filters")
+    assert html =~ ~s(data-state="closed")
   end
 
   test "search filters tickets", %{conn: conn} do
@@ -49,9 +53,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
   test "page size select patches query string", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/admin/tickets")
 
-    view
-    |> element("#tickets-page-size")
-    |> render_change(%{"page_size" => "10"})
+    render_hook(view, "page_size", %{"id" => "tickets-page-size", "value" => ["10"]})
 
     assert_patch(view, ~p"/admin/tickets?page_size=10")
     html = render(view)
@@ -83,10 +85,11 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ "High priority"
 
     {view, html} = live_ok!(conn, "#{index}?#{qs}")
-    assert html =~ "Clear all"
+    assert html =~ "Reset all"
+    refute html =~ "Clear all"
 
     view
-    |> element("button", "Clear all")
+    |> element("button", "Reset all")
     |> render_click()
 
     assert_patch(view, index)
