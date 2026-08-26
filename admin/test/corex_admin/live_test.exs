@@ -118,6 +118,36 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ticket.title
   end
 
+  test "date range value_change waits for both dates", %{conn: conn, ticket: ticket} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+    today = Date.utc_today() |> Date.to_iso8601()
+
+    html =
+      render_hook(view, "filter", %{
+        "id" => "tickets-filter-inserted_at",
+        "value" => today
+      })
+
+    refute html =~ "Inserted at:"
+    refute_patched(view)
+
+    html =
+      render_hook(view, "filter", %{
+        "id" => "tickets-filter-inserted_at",
+        "value" => "#{today},#{today}"
+      })
+
+    assert html =~ ticket.title
+    assert html =~ "Inserted at:"
+
+    qs =
+      Plug.Conn.Query.encode(%{
+        "filters" => %{"inserted_at" => %{"from" => today, "to" => today}}
+      })
+
+    assert_patch(view, "/admin/tickets?" <> qs)
+  end
+
   test "clear chips removes filters", %{conn: conn} do
     {:ok, view, html} = live(conn, "/admin/tickets?filters[status][]=open")
     assert html =~ "Clear all"

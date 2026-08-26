@@ -250,7 +250,13 @@ defmodule CorexAdmin.Live.Index do
   end
 
   def handle_event("filter", params, socket) do
-    {:noreply, patch_index(socket, merge_filter_event(socket, params) |> Map.put("page", "1"))}
+    case merge_filter_event(socket, params) do
+      :ignore ->
+        {:noreply, socket}
+
+      params ->
+        {:noreply, patch_index(socket, Map.put(params, "page", "1"))}
+    end
   end
 
   def handle_event("page_size", params, socket) do
@@ -437,25 +443,69 @@ defmodule CorexAdmin.Live.Index do
     value = Map.get(params, "value")
     current = ListOpts.to_params(socket.assigns.list_opts)
     filters = Map.get(current, "filters", %{})
+    spec = socket.assigns.spec
 
-    filters =
-      case parse_filter_control_id(id) do
-        {:value, name} ->
-          put_or_delete(filters, name, normalize_filter_param(value))
+    case parse_filter_control_id(id) do
+      {:value, name} ->
+        if date_range_filter?(spec, name) do
+          case complete_date_range_value(value) do
+            :incomplete ->
+              :ignore
 
-        {:range, name, bound} ->
-          nested = stringify_keys(Map.get(filters, name, %{}))
-          nested = put_or_delete(nested, bound, normalize_filter_param(value))
+            normalized ->
+              put_filters(current, put_or_delete(filters, name, normalized))
+          end
+        else
+          put_filters(current, put_or_delete(filters, name, normalize_filter_param(value)))
+        end
+
+      {:range, name, bound} ->
+        nested = stringify_keys(Map.get(filters, name, %{}))
+        nested = put_or_delete(nested, bound, normalize_filter_param(value))
+
+        put_filters(
+          current,
           put_or_delete(filters, name, if(nested == %{}, do: nil, else: nested))
+        )
 
-        :error ->
-          filters
-      end
+      :error ->
+        :ignore
+    end
+  end
 
+  defp put_filters(current, filters) do
     if filters == %{} do
       Map.delete(current, "filters")
     else
       Map.put(current, "filters", filters)
+    end
+  end
+
+  defp date_range_filter?(%{filters: filters}, name) do
+    Enum.any?(filters, fn filter ->
+      to_string(filter.name) == name and filter.type == :date_range
+    end)
+  end
+
+  defp complete_date_range_value(value) do
+    case normalize_filter_param(value) do
+      nil ->
+        nil
+
+      str when is_binary(str) ->
+        case String.split(str, ",", trim: true) do
+          [_from, _to] -> str
+          _ -> :incomplete
+        end
+
+      list when is_list(list) ->
+        case Enum.reject(list, &(&1 in [nil, ""])) do
+          [from, to] -> Enum.join([from, to], ",")
+          _ -> :incomplete
+        end
+
+      other ->
+        other
     end
   end
 

@@ -137,8 +137,27 @@
  }
 
  .admin-filter-search {
- flex: 1 1 0%;
+ flex: 1 1 var(--container-4xs);
  min-width: var(--container-4xs);
+ max-width: var(--container-sm);
+ }
+
+ .admin-filter-search [data-scope="native-input"][data-part="control"] {
+ align-items: center;
+ min-height: var(--ctl-size, var(--spacing-size));
+ }
+
+ .admin-filter-search [data-scope="native-input"][data-part="icon"] {
+ inset-block: 0;
+ width: var(--ctl-size, var(--spacing-size));
+ height: 100%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
+
+ .admin-filter-search:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
+ padding-inline-start: var(--ctl-size, var(--spacing-size));
  }
 
  .admin-filter-item {

@@ -518,6 +518,7 @@ defmodule CorexAdmin.Live.Components do
         class="date-picker ui-size-sm"
         name={@input_name}
         selection_mode="range"
+        close_on_select={false}
         value={@picked}
         on_value_change="filter"
       >
