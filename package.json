@@ -172,9 +172,11 @@
     "prepack": "npm run build:types",
     "gen:components-dts": "node assets/scripts/gen-components-dts.mjs",
     "gen:components-dts:check": "node assets/scripts/gen-components-dts.mjs --check",
+    "check:zag": "node assets/scripts/zag-lockstep.mjs --check",
+    "update:zag": "node assets/scripts/zag-lockstep.mjs --update",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint:js": "npm run typecheck && npm run format:check && npm run lint && npm run gen:components-dts:check",
+    "lint:js": "npm run check:zag && npm run typecheck && npm run format:check && npm run lint && npm run gen:components-dts:check",
     "check": "npm run test && npm run lint:js && npm run build:types"
   },
   "devDependencies": {
