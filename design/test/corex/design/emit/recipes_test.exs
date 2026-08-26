@@ -59,6 +59,13 @@ defmodule Corex.Design.Emit.RecipesTest do
       assert css =~ ~s|.select :where([data-scope="select"][data-part="trigger"])|
     end
 
+    test "does not style slider track control as a checkbox" do
+      css = Recipes.generate(["slider", "checkbox"])
+
+      refute css =~ ~s|.slider :where([data-scope="slider"][data-part="control"])|
+      assert css =~ ~s|.checkbox :where([data-scope="checkbox"][data-part="control"])|
+    end
+
     test "emits open-state chrome only for hosts that have a trigger" do
       assert Recipes.generate(["select"]) =~ ~s|:is([data-state="open"]) {|
       refute Recipes.generate(["marquee"]) =~ ~s|:is([data-state="open"]) {|

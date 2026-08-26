@@ -20,20 +20,14 @@ defmodule E2eWeb.DatePickerTest do
     feature "each anatomy section mounts and exposes inputs", %{session: session} do
       session = ComponentBehaviorSpec.visit_ready(session, DatePicker, :date_picker, :anatomy)
 
-      Enum.each(DatePicker.anatomy_section_ids(), fn section_id ->
-        session =
-          session
+      _ =
+        Enum.reduce(DatePicker.anatomy_section_ids(), session, fn section_id, sess ->
+          sess
           |> DatePicker.wait_section_date_picker_ready(section_id)
           |> DatePicker.open_date_picker_in_section(section_id)
-
-        assert_has(
-          session,
-          css(
-            ~s|section##{section_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
-            visible: :any
-          )
-        )
-      end)
+          |> DatePicker.wait_content_open_in_section(section_id, timeout: 8_000)
+          |> DatePicker.close_date_picker_in_section(section_id, timeout: 8_000)
+        end)
     end
   end
 

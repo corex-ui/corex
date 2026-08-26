@@ -1,16 +1,16 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-EI57MRQD.mjs";
+} from "./chunks/chunk-56433QZX.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-UHCKUOWC.mjs";
+} from "./chunks/chunk-F6YUZM6O.mjs";
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-6RACHWND.mjs";
+} from "./chunks/chunk-I5HWU3ET.mjs";
 import {
   idMatches,
   readPayloadId
@@ -32,11 +32,12 @@ import {
   getString,
   isLeftClick,
   isModifierKey,
+  mergeWithDefault,
   query,
   trackPointerMove
-} from "./chunks/chunk-HMQI4LDM.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.43.3/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
   "root",
   "control",
@@ -48,7 +49,7 @@ var anatomy = createAnatomy("signature-pad").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.43.3/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
 var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
@@ -59,7 +60,11 @@ var getDataUrl2 = (ctx, options) => {
   return getDataUrl(getSegmentEl(ctx), options);
 };
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.43.3/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
+var defaultTranslations = {
+  control: "signature pad",
+  clearTrigger: "clear signature"
+};
 function connect(service, normalize) {
   const { state, send, prop, computed, context, scope } = service;
   const drawing = state.matches("drawing");
@@ -67,7 +72,7 @@ function connect(service, normalize) {
   const interactive = computed("isInteractive");
   const disabled = !!prop("disabled");
   const required = !!prop("required");
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   return {
     empty,
     drawing,
@@ -377,7 +382,7 @@ function R(e2, t2 = {}) {
 }
 var z = R;
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.43.3/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
 var average = (a2, b2) => (a2 + b2) / 2;
 function getSvgPathFromStroke(points, closed = true) {
   const len = points.length;
@@ -402,7 +407,7 @@ function getSvgPathFromStroke(points, closed = true) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.42.0/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.43.3/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -415,11 +420,6 @@ var machine = createMachine({
         smoothing: 0.4,
         streamline: 0.6,
         ...props.drawing
-      },
-      translations: {
-        control: "signature pad",
-        clearTrigger: "clear signature",
-        ...props.translations
       }
     };
   },
@@ -433,7 +433,7 @@ var machine = createMachine({
         value: prop("paths"),
         sync: true,
         onChange(value) {
-          prop("onDraw")?.({ paths: value });
+          prop("onDraw")?.({ paths: value, currentPath: null });
         }
       })),
       currentPoints: bindable(() => ({
@@ -517,7 +517,8 @@ var machine = createMachine({
       },
       invokeOnDraw({ context, prop }) {
         prop("onDraw")?.({
-          paths: [...context.get("paths"), context.get("currentPath")]
+          paths: context.get("paths"),
+          currentPath: context.get("currentPath")
         });
       },
       invokeOnDrawEnd({ context, prop, scope, computed }) {

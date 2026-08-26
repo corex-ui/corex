@@ -1,9 +1,11 @@
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/number.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/number.mjs
 var { floor, abs, round, min, max, pow, sign } = Math;
 var isNaN = (v) => Number.isNaN(v);
 var nan = (v) => isNaN(v) ? 0 : v;
 var mod = (v, m) => (v % m + m) % m;
 var wrap = (v, vmax) => (v % vmax + vmax) % vmax;
+var getMinValueAtIndex = (i, v, vmin) => i === 0 ? vmin : v[i - 1];
+var getMaxValueAtIndex = (i, v, vmax) => i === v.length - 1 ? vmax : v[i + 1];
 var isValueAtMax = (v, vmax) => nan(v) >= vmax;
 var isValueAtMin = (v, vmin) => nan(v) <= vmin;
 var isValueWithinRange = (v, vmin, vmax) => {
@@ -14,6 +16,7 @@ var isValueWithinRange = (v, vmin, vmax) => {
 };
 var roundValue = (v, vmin, step) => round((nan(v) - vmin) / step) * step + vmin;
 var clampValue = (v, vmin, vmax) => min(max(nan(v), vmin), vmax);
+var clampPercent = (v) => clampValue(v, 0, 1);
 var getValuePercent = (v, vmin, vmax) => (nan(v) - vmin) / (vmax - vmin);
 var getPercentValue = (p, vmin, vmax, step) => clampValue(roundValue(p * (vmax - vmin) + vmin, vmin, step), vmin, vmax);
 var roundToStepPrecision = (v, step) => {
@@ -46,6 +49,35 @@ var snapValueToStep = (v, vmin, vmax, step) => {
 var setValueAtIndex = (vs, i, v) => {
   if (vs[i] === v) return vs;
   return [...vs.slice(0, i), v, ...vs.slice(i + 1)];
+};
+function getValueSetterAtIndex(index, ctx) {
+  const minValueAtIndex = getMinValueAtIndex(index, ctx.values, ctx.min);
+  const maxValueAtIndex = getMaxValueAtIndex(index, ctx.values, ctx.max);
+  let nextValues = ctx.values.slice();
+  return function setValue(value) {
+    let nextValue = snapValueToStep(value, minValueAtIndex, maxValueAtIndex, ctx.step);
+    nextValues = setValueAtIndex(nextValues, index, value);
+    nextValues[index] = nextValue;
+    return nextValues;
+  };
+}
+function getNextStepValue(index, ctx) {
+  const nextValue = ctx.values[index] + ctx.step;
+  return getValueSetterAtIndex(index, ctx)(nextValue);
+}
+function getPreviousStepValue(index, ctx) {
+  const nextValue = ctx.values[index] - ctx.step;
+  return getValueSetterAtIndex(index, ctx)(nextValue);
+}
+var getValueRanges = (vs, vmin, vmax, gap) => vs.map((v, i) => ({
+  min: i === 0 ? vmin : vs[i - 1] + gap,
+  max: i === vs.length - 1 ? vmax : vs[i + 1] - gap,
+  value: v
+}));
+var getValueTransformer = (va, vb) => {
+  const [a, b] = va;
+  const [c, d] = vb;
+  return (v) => a === b || c === d ? c : c + (d - c) / (b - a) * (v - a);
 };
 var toFixedNumber = (v, d = 0, b = 10) => {
   const pow2 = Math.pow(b, d);
@@ -82,11 +114,16 @@ export {
   isValueAtMin,
   isValueWithinRange,
   clampValue,
+  clampPercent,
   getValuePercent,
   getPercentValue,
   roundToDpr,
   snapValueToStep,
   setValueAtIndex,
+  getNextStepValue,
+  getPreviousStepValue,
+  getValueRanges,
+  getValueTransformer,
   toFixedNumber,
   incrementValue,
   decrementValue,

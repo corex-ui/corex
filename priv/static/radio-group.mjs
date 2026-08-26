@@ -1,20 +1,20 @@
 import {
   toPx
-} from "./chunks/chunk-KHEHQE65.mjs";
+} from "./chunks/chunk-AJX2XHOK.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-PXE4MUCM.mjs";
+} from "./chunks/chunk-CPYFNSV2.mjs";
 import {
   dispatchFormInputEvents,
   hiddenInputPropsWithoutChecked,
   notifyPhoenixFormChange,
   reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-UHCKUOWC.mjs";
+} from "./chunks/chunk-F6YUZM6O.mjs";
 import {
   readStringControlledZagProps,
   readUpdatedServerString
-} from "./chunks/chunk-6RACHWND.mjs";
+} from "./chunks/chunk-I5HWU3ET.mjs";
 import {
   createValueEmitter,
   idMatches,
@@ -33,6 +33,7 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
+  getByOwnerId,
   getDir,
   getEventTarget,
   getString,
@@ -43,9 +44,9 @@ import {
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-HMQI4LDM.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.42.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.43.3/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
 var anatomy = createAnatomy("radio-group").parts(
   "root",
   "label",
@@ -56,7 +57,7 @@ var anatomy = createAnatomy("radio-group").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.42.0/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.43.3/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `radio-group:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `radio-group:${ctx.id}:label`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `radio-group:${ctx.id}:radio:${value}`;
@@ -70,8 +71,7 @@ var getIndicatorEl = (ctx) => ctx.getById(getIndicatorId(ctx));
 var getFirstEnabledInputEl = (ctx) => getRootEl(ctx)?.querySelector("input:not(:disabled)");
 var getFirstEnabledAndCheckedInputEl = (ctx) => getRootEl(ctx)?.querySelector("input:not(:disabled):checked");
 var getInputEls = (ctx) => {
-  const ownerId = CSS.escape(getRootId(ctx));
-  const selector = `input[type=radio][data-ownedby='${ownerId}']:not([disabled])`;
+  const selector = `input[type=radio]${getByOwnerId(getRootId(ctx))}:not([disabled])`;
   return queryAll(getRootEl(ctx), selector);
 };
 var getRadioEl = (ctx, value) => {
@@ -85,7 +85,7 @@ var getOffsetRect = (el) => ({
   height: el?.offsetHeight ?? 0
 });
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.42.0/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.43.3/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, computed, prop, scope } = service;
   const groupDisabled = computed("isDisabled");
@@ -296,7 +296,7 @@ function connect(service, normalize) {
 }
 var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.42.0/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.43.3/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {

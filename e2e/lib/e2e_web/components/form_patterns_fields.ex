@@ -196,6 +196,7 @@ defmodule E2eWeb.FormPatternsFields do
 
       <.angle_slider
         field={@form[:heading_angle]}
+        markers
         marker_values={[0, 90, 180, 270]}
         class="angle-slider relative"
         id={"#{@prefix}-heading-angle"}
@@ -478,6 +479,7 @@ defmodule E2eWeb.FormPatternsFields do
 
       <.angle_slider
         field={@form[:heading_angle]}
+        markers
         marker_values={[0, 90, 180, 270]}
         class="angle-slider"
         id={"#{@prefix}-heading-angle"}

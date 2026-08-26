@@ -116,6 +116,11 @@ defmodule Corex.DocParity.Markers do
       "basic" => ["minimal_code"],
       "with marks" => ["with_label_code"]
     },
+    "slider" => %{
+      "basic" => ["minimal_code"],
+      "range" => ["range_code"],
+      "with marks" => ["with_marks_code"]
+    },
     "combobox" => %{
       "extended" => ["extended_code"],
       "extended grouped" => ["extended_grouped_code"],

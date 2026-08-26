@@ -148,6 +148,9 @@ jobs:
       - name: Install JavaScript dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: TypeScript — Zag.js lockstep
+        run: pnpm run check:zag
+
       - name: TypeScript — typecheck
         run: pnpm run typecheck
 

@@ -170,8 +170,9 @@ function createLazyHook(importFn, exportName) {
             return;
           }
           if (state._pendingBeforeUpdate) {
-            state._pendingBeforeUpdate = false;
-            real.beforeUpdate?.call(this);
+            const toEl = state._pendingBeforeUpdate === true ? el : state._pendingBeforeUpdate;
+            state._pendingBeforeUpdate = void 0;
+            real.beforeUpdate?.call(this, toEl);
           }
           if (state._pendingUpdated) {
             state._pendingUpdated = false;
@@ -209,12 +210,12 @@ function createLazyHook(importFn, exportName) {
     reconnected() {
       this._realHook?.reconnected?.call(this);
     },
-    beforeUpdate() {
+    beforeUpdate(toEl) {
       const state = this;
       if (state._realHook?.beforeUpdate) {
-        state._realHook.beforeUpdate.call(this);
+        state._realHook.beforeUpdate.call(this, toEl);
       } else if (state._mountPromise) {
-        state._pendingBeforeUpdate = true;
+        state._pendingBeforeUpdate = toEl;
       }
     }
   };
@@ -246,6 +247,7 @@ var Hooks = {
   RadioGroup: createLazyHook(() => import("corex/radio-group"), "RadioGroup"),
   Select: createLazyHook(() => import("corex/select"), "Select"),
   SignaturePad: createLazyHook(() => import("corex/signature-pad"), "SignaturePad"),
+  Slider: createLazyHook(() => import("corex/slider"), "Slider"),
   Switch: createLazyHook(() => import("corex/switch"), "Switch"),
   TagsInput: createLazyHook(() => import("corex/tags-input"), "TagsInput"),
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),

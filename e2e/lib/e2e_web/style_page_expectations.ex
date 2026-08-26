@@ -35,6 +35,7 @@ defmodule E2eWeb.StylePageExpectations do
     {"radio_group_styling_page.html.heex", "radio-group"},
     {"select_styling_page.html.heex", "select"},
     {"signature_styling_page.html.heex", "signature-pad"},
+    {"slider_styling_page.html.heex", "slider"},
     {"switch_styling_page.html.heex", "switch"},
     {"tabs_styling_page.html.heex", "tabs"},
     {"tags_input_styling_page.html.heex", "tags-input"},

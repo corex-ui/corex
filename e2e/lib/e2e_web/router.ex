@@ -205,6 +205,12 @@ defmodule E2eWeb.Router do
       live("/signature-pad/events", SignatureEventsLive)
       live("/signature-pad/live-form", SignatureFormLive)
 
+      live("/slider/playground", SliderPlayLive)
+      live("/slider/api", SliderApiLive)
+      live("/slider/events", SliderEventsLive)
+      live("/slider/patterns", SliderPatternsLive)
+      live("/slider/live-form", SliderFormLive)
+
       live("/switch/playground", SwitchPlayLive)
       live("/switch/api", SwitchApiLive)
       live("/switch/events", SwitchEventsLive)
@@ -310,6 +316,10 @@ defmodule E2eWeb.Router do
     get("/signature-pad/anatomy", PageController, :signature_page)
     get("/signature-pad/form", PageController, :signature_form_page)
     post("/signature-pad/form", PageController, :signature_form_submit)
+    get("/slider/anatomy", PageController, :slider_page)
+    get("/slider/style", PageController, :slider_styling_page)
+    get("/slider/form", PageController, :slider_form_page)
+    post("/slider/form", PageController, :slider_form_submit)
 
     get("/menu/anatomy", PageController, :menu_page)
     get("/menu/style", PageController, :menu_styling_page)

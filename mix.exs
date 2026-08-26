@@ -167,7 +167,7 @@ defmodule Corex.MixProject do
         "cmd npm run check"
       ],
       "release.check": ["hex.audit", "lint", "test", "assets.build"],
-      # CVE/outdated Hex+npm PRs: .github/dependabot.yml (weekly)
+      # CVE/outdated Hex+npm PRs: .github/dependabot.yml (weekly; @zag-js/* grouped)
       "pre.publish": ["release.check"],
       "hex.build": ["hex.build"],
       tidewave:
@@ -343,6 +343,7 @@ defmodule Corex.MixProject do
         Corex.RadioGroup,
         Corex.Select,
         Corex.SignaturePad,
+        Corex.Slider,
         Corex.Switch,
         Corex.Tabs,
         Corex.Timer,
