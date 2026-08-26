@@ -194,7 +194,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     conn = init_test_session(conn, %{"admin_demo_id" => "tooltip-errors"})
     {view, html} = live_ok!(conn, ~p"/admin/tickets/new")
     assert html =~ "admin-form-grid"
-    refute html =~ "max-w-none"
+    refute html =~ "max-w-3xl"
 
     html =
       view
