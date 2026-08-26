@@ -97,7 +97,7 @@ defmodule CorexAdmin.Live.Index do
               >
                 <:label>Search</:label>
                 <:icon>
-                  <.heroicon name="hero-magnifying-glass" />
+                  <.heroicon name="hero-magnifying-glass" class="icon" />
                 </:icon>
               </.native_input>
               <div

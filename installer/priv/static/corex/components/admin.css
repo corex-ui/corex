@@ -138,26 +138,7 @@
 
  .admin-filter-search {
  flex: 1 1 var(--container-4xs);
- min-width: var(--container-4xs);
- max-width: var(--container-sm);
- }
-
- .admin-filter-search [data-scope="native-input"][data-part="control"] {
- align-items: center;
- min-height: var(--ctl-size, var(--spacing-size));
- }
-
- .admin-filter-search [data-scope="native-input"][data-part="icon"] {
- inset-block: 0;
- width: var(--ctl-size, var(--spacing-size));
- height: 100%;
- display: flex;
- align-items: center;
- justify-content: center;
- }
-
- .admin-filter-search:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
- padding-inline-start: var(--ctl-size, var(--spacing-size));
+ min-width: min(100%, var(--container-4xs));
  }
 
  .admin-filter-item {
@@ -439,7 +420,44 @@
  position: relative;
  }
 
- /* After `.admin .native-input { width: 100% }` so the footer control stays compact. */
+ /* After `.admin .native-input { width: 100%; max-width: none }` so these stay compact. */
+ .admin .native-input.admin-filter-search {
+ width: 100%;
+ max-width: min(100%, var(--container-sm));
+ }
+
+ .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="control"] {
+ align-items: center;
+ min-height: var(--ctl-size, var(--spacing-size));
+ }
+
+ .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] {
+ position: absolute;
+ inset-block: 0;
+ inset-inline-start: 0;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ width: var(--ctl-size, var(--spacing-size));
+ height: auto;
+ padding: 0;
+ line-height: 0;
+ }
+
+ .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] .icon,
+ .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] svg,
+ .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] [class^="hero-"] {
+ display: block;
+ width: 1em;
+ height: 1em;
+ margin: 0;
+ line-height: 1;
+ }
+
+ .admin .native-input.admin-filter-search:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
+ padding-inline-start: var(--ctl-size, var(--spacing-size));
+ }
+
  .admin .admin-page-size .native-input {
  flex-direction: row;
  flex-wrap: nowrap;
