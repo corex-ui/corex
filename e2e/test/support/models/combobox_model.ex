@@ -122,21 +122,24 @@ defmodule E2eWeb.ComboboxModel do
     open_q =
       css(
         ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
-        visible: :any
+        visible: :any,
+        timeout: 250
       )
 
-    session =
-      if has?(session, open_q) do
-        click(
+    if has?(session, open_q) do
+      _ =
+        execute_script(
           session,
-          css(
-            ~s|##{host_dom_id}[phx-hook="Combobox"] [data-scope="combobox"][data-part="trigger"]|,
-            visible: :any
-          )
+          """
+          const root = document.getElementById(arguments[0]);
+          const trigger = root?.querySelector(
+            '[data-scope="combobox"][data-part="trigger"]'
+          );
+          if (trigger) trigger.click();
+          """,
+          [host_dom_id]
         )
-      else
-        session
-      end
+    end
 
     wait_for_has(
       session,
@@ -327,45 +330,6 @@ defmodule E2eWeb.ComboboxModel do
 
     if has?(session, q) do
       click(session, q)
-    end
-
-    session
-  end
-
-  def close_combobox_by_host_id(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
-    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
-      raise ArgumentError, "invalid combobox host dom id"
-    end
-
-    open_q =
-      css(
-        ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
-        visible: :any,
-        timeout: 250
-      )
-
-    if has?(session, open_q) do
-      _ =
-        execute_script(
-          session,
-          """
-          const root = document.getElementById(arguments[0]);
-          const trigger = root?.querySelector(
-            '[data-scope="combobox"][data-part="trigger"]'
-          );
-          if (trigger) trigger.click();
-          """,
-          [host_dom_id]
-        )
-
-      wait_for_has(
-        session,
-        css(
-          ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"]:not([data-state="open"])|,
-          visible: :any
-        ),
-        opts
-      )
     end
 
     session
