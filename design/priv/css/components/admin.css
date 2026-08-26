@@ -136,6 +136,10 @@
  gap: var(--spacing-space);
  }
 
+ .admin-filter-search-form {
+ display: contents;
+ }
+
  .admin-filter-search {
  flex: 1 1 var(--container-4xs);
  min-width: min(100%, var(--container-4xs));

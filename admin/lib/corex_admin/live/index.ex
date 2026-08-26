@@ -81,32 +81,34 @@ defmodule CorexAdmin.Live.Index do
             <.heroicon name="hero-chevron-right" />
           </:closed>
           <:content>
-            <form
-              id={"#{@spec.slug}-search"}
-              phx-change="search"
-              class="admin-filter-form"
-            >
-              <.native_input
-                :if={@list_opts.search_fields != []}
-                id={"#{@spec.slug}-search-q"}
-                type="search"
-                name="q"
-                value={@list_opts.search}
-                class="native-input ui-size-sm admin-filter-search"
-                phx-debounce="400"
+            <div class="admin-filter-form">
+              <form
+                id={"#{@spec.slug}-search"}
+                phx-change="search"
+                class="admin-filter-search-form"
               >
-                <:label>Search</:label>
-                <:icon>
-                  <.heroicon name="hero-magnifying-glass" class="icon" />
-                </:icon>
-              </.native_input>
+                <.native_input
+                  :if={@list_opts.search_fields != []}
+                  id={"#{@spec.slug}-search-q"}
+                  type="search"
+                  name="q"
+                  value={@list_opts.search}
+                  class="native-input ui-size-sm admin-filter-search"
+                  phx-debounce="400"
+                >
+                  <:label>Search</:label>
+                  <:icon>
+                    <.heroicon name="hero-magnifying-glass" class="icon" />
+                  </:icon>
+                </.native_input>
+              </form>
               <div
                 :for={filter <- @spec.filters}
                 class={filter_item_class(filter)}
               >
                 <Components.filter_control spec={@spec} filter={filter} list_opts={@list_opts} />
               </div>
-            </form>
+            </div>
           </:content>
         </.collapsible>
         <Components.filter_chips spec={@spec} list_opts={@list_opts} />
@@ -246,17 +248,20 @@ defmodule CorexAdmin.Live.Index do
 
   @impl true
   def handle_event("search", params, socket) do
+    spec = socket.assigns.spec
     current = ListOpts.to_params(socket.assigns.list_opts)
 
     next =
       socket
       |> merge_params(params)
-      |> reject_incomplete_date_ranges(socket.assigns.spec)
+      |> reject_incomplete_date_ranges(spec)
 
-    if index_query_equivalent?(next, current) do
+    parsed = ListOpts.to_params(ListOpts.from_params(spec, next))
+
+    if index_query_equivalent?(parsed, current) do
       {:noreply, socket}
     else
-      {:noreply, patch_index(socket, Map.put(next, "page", "1"))}
+      {:noreply, patch_index(socket, Map.put(parsed, "page", "1"))}
     end
   end
 

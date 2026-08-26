@@ -554,6 +554,7 @@ defmodule CorexAdmin.Live.Components do
           name={"#{@input_name}[from]"}
           value={@from}
           class="native-input ui-size-sm"
+          phx-change="search"
         >
           <:label>From</:label>
         </.native_input>
@@ -563,6 +564,7 @@ defmodule CorexAdmin.Live.Components do
           name={"#{@input_name}[to]"}
           value={@to}
           class="native-input ui-size-sm"
+          phx-change="search"
         >
           <:label>To</:label>
         </.native_input>
@@ -654,6 +656,8 @@ defmodule CorexAdmin.Live.Components do
       name={@input_name}
       value={@value}
       class="native-input ui-size-sm"
+      phx-change="search"
+      phx-debounce="400"
     >
       <:label>{@filter.label}</:label>
     </.native_input>
