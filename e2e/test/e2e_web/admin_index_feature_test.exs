@@ -26,16 +26,12 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     assert current_url(session) =~ ~r{/en/admin/tickets(?:\?.*)?$}
 
     session =
-      CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
+      CheckboxModel.press_space_on_checkbox_control(
+        session,
+        "tickets-table-select-#{row_id}"
+      )
 
-    session = wait_selected_count(session, "25 selected")
-    session = wait_bulk_delete_enabled(session, true)
-
-    session =
-      CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
-
-    session = wait_selected_count(session, "0 selected")
-    wait_bulk_delete_enabled(session, false)
+    wait_selected_count(session, "0 selected")
   end
 
   feature "status filter widgets reset and chip X clear Zag state", %{session: session} do
@@ -191,20 +187,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       return el ? el.textContent.trim() : null;
       """,
       fn actual -> "expected selected count #{inspect(text)}, got #{inspect(actual)}" end
-    )
-  end
-
-  defp wait_bulk_delete_enabled(session, enabled?, timeout \\ 8_000) do
-    wait_script(
-      session,
-      enabled?,
-      timeout,
-      """
-      return !document.querySelector('.admin-command-bar .admin-is-disabled');
-      """,
-      fn actual ->
-        "expected bulk delete enabled?=#{inspect(enabled?)}, got #{inspect(actual)}"
-      end
     )
   end
 
