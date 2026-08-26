@@ -26,13 +26,101 @@ defmodule CorexAdmin.LiveTest do
     assert length(Regex.scan(~r/aria-label="Admin"/, html)) == 1
   end
 
-  test "index lists scoped tickets", %{conn: conn} do
+  test "index lists scoped tickets without textarea body", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/admin/tickets")
     assert html =~ "Broken login"
     refute html =~ "password"
+    assert html =~ "Per page"
+    assert html =~ "Showing 1–1 of 1"
+    refute html =~ "Synthetic"
+    refute html =~ "max-w-3xl"
+    refute html =~ "rounded-md border border-border p-space"
+    assert html =~ ~s(data-part="sort-icon")
   end
 
-  test "show hides redacted fields", %{conn: conn, ticket: ticket} do
+  test "search filters tickets", %{conn: conn, scope: scope} do
+    Tickets.create_ticket(scope, %{
+      "title" => "Other ticket",
+      "email" => "other@example.test",
+      "status" => "done",
+      "priority" => 1
+    })
+
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+
+    html =
+      view
+      |> element("#tickets-search")
+      |> render_change(%{"q" => "Broken"})
+
+    assert html =~ "Broken login"
+    refute html =~ "Other ticket"
+  end
+
+  test "page size select patches query string", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+
+    view
+    |> element("#tickets-page-size")
+    |> render_change(%{"page_size" => "10"})
+
+    assert_patch(view, "/admin/tickets?page_size=10")
+  end
+
+  test "out of range page clamps to last page", %{conn: conn} do
+    assert {:error, {kind, %{to: "/admin/tickets"}}} =
+             live(conn, "/admin/tickets?page=999")
+
+    assert kind in [:live_redirect, :live_patch]
+  end
+
+  test "status multi-select and date range via URL", %{conn: conn, scope: scope, ticket: ticket} do
+    Tickets.create_ticket(scope, %{
+      "title" => "Done ticket",
+      "email" => "done@example.test",
+      "status" => "done",
+      "priority" => 4
+    })
+
+    {:ok, _view, html} = live(conn, "/admin/tickets?filters[status][]=open")
+    assert html =~ "Broken login"
+    refute html =~ "Done ticket"
+    assert html =~ "Status: open"
+
+    today = Date.utc_today() |> Date.to_iso8601()
+
+    qs =
+      Plug.Conn.Query.encode(%{
+        "filters" => %{"inserted_at" => %{"from" => today, "to" => today}}
+      })
+
+    {:ok, _view, html} = live(conn, "/admin/tickets?" <> qs)
+    assert html =~ ticket.title
+  end
+
+  test "clear chips removes filters", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/admin/tickets?filters[status][]=open")
+    assert html =~ "Clear all"
+
+    view
+    |> element("button", "Clear all")
+    |> render_click()
+
+    assert_patch(view, "/admin/tickets")
+  end
+
+  test "bulk delete removes selected rows", %{conn: conn, ticket: ticket} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+
+    view
+    |> render_click("select", %{"id" => "tickets-table-select-#{ticket.id}", "checked" => true})
+
+    html = render_click(view, "bulk_delete")
+    refute html =~ "Broken login"
+    assert html =~ "No Tickets yet."
+  end
+
+  test "show uses title field and hides redacted fields", %{conn: conn, ticket: ticket} do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     refute html =~ "Secret"
@@ -54,6 +142,66 @@ defmodule CorexAdmin.LiveTest do
       |> follow_redirect(conn)
 
     assert html =~ "New ticket"
+  end
+
+  test "save and continue stays on edit", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/admin/tickets/new")
+
+    {:ok, _view, html} =
+      view
+      |> form("#tickets-form", %{
+        "ticket" => %{
+          "title" => "Keep editing",
+          "email" => "keep@example.test",
+          "status" => "open"
+        }
+      })
+      |> render_submit(%{"continue" => "true"})
+      |> follow_redirect(conn)
+
+    assert html =~ "Keep editing"
+    assert html =~ "Save and continue"
+  end
+
+  test "nested social links round-trip on create", %{conn: conn, scope: scope} do
+    {:ok, _view, html} = live(conn, "/admin/tickets/new")
+    assert html =~ "Social links"
+    assert html =~ ~s(data-scope="nested-fields")
+    assert html =~ "Add Social links"
+
+    {:ok, ticket} =
+      Tickets.create_ticket(scope, %{
+        "title" => "With links",
+        "email" => "links@example.test",
+        "status" => "open",
+        "social_links" => [
+          %{"label" => "Docs", "url" => "https://example.test/docs", "preferred" => true}
+        ]
+      })
+
+    {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
+    assert html =~ "With links"
+    assert html =~ "Docs"
+    assert html =~ "https://example.test/docs"
+    assert html =~ "Yes"
+
+    {:ok, view, html} = live(conn, "/admin/tickets/#{ticket.id}/edit")
+    assert html =~ ~s(name="ticket[social_links_sort][]")
+    assert html =~ "Docs"
+
+    html =
+      view
+      |> form("#tickets-form")
+      |> render_change(%{
+        "ticket" => %{
+          "title" => "With links",
+          "email" => "links@example.test",
+          "status" => "open",
+          "social_links_sort" => ["0", "new"]
+        }
+      })
+
+    assert html =~ ~s(name="ticket[social_links][1][label]")
   end
 
   test "denies viewers", %{conn: conn} do

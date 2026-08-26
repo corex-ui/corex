@@ -57,7 +57,7 @@ defmodule CorexAdmin.Live.Form do
 
             {:ok,
              socket
-             |> assign(:page_title, "Edit #{spec.label}")
+             |> assign(:page_title, "Edit #{Helpers.record_title(spec, record)}")
              |> assign(:resource_mod, resource_mod)
              |> assign(:spec, spec)
              |> assign(:record, record)
@@ -77,7 +77,7 @@ defmodule CorexAdmin.Live.Form do
   def render(assigns) do
     ~H"""
     <Components.shell :if={assigns[:form]} socket={assigns} current={@spec}>
-      <div class="flex w-full max-w-3xl flex-col gap-space-lg">
+      <div class="flex w-full flex-col gap-space-lg">
         <Components.breadcrumbs
           prefix={@corex_admin_prefix}
           spec={@spec}
@@ -105,12 +105,20 @@ defmodule CorexAdmin.Live.Form do
           phx-submit="save"
           class="flex flex-col gap-space-lg"
         >
-          <Components.field_input
-            :for={field <- @form_fields}
-            field={field}
-            form={@form}
-          />
-          <.action type="submit" class="button ui-accent self-start">Save</.action>
+          <div class="grid grid-cols-1 gap-space md:grid-cols-2">
+            <div
+              :for={field <- @form_fields}
+              class={if field.type in [:textarea, :embeds_many], do: "md:col-span-2"}
+            >
+              <Components.field_input field={field} form={@form} />
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-space">
+            <.action type="submit" class="button ui-accent">Save</.action>
+            <.action type="submit" name="continue" value="true" class="button">
+              Save and continue
+            </.action>
+          </div>
         </.form>
       </div>
     </Components.shell>
@@ -144,10 +152,11 @@ defmodule CorexAdmin.Live.Form do
     resource_mod = socket.assigns.resource_mod
     scope = Helpers.actor(socket)
     attrs = Attrs.take_writable(spec, form_params(params, spec))
+    continue? = continue?(params)
 
     case socket.assigns.live_action do
-      :new -> save_new(socket, spec, resource_mod, scope, attrs)
-      :edit -> save_edit(socket, spec, resource_mod, scope, attrs)
+      :new -> save_new(socket, spec, resource_mod, scope, attrs, continue?)
+      :edit -> save_edit(socket, spec, resource_mod, scope, attrs, continue?)
     end
   end
 
@@ -173,13 +182,18 @@ defmodule CorexAdmin.Live.Form do
     end
   end
 
-  defp save_new(socket, spec, resource_mod, scope, attrs) do
+  defp save_new(socket, spec, resource_mod, scope, attrs, continue?) do
     with :ok <- Helpers.authorize(socket, :create, resource_mod, nil),
          {:ok, record} <- Context.create(spec, scope, attrs) do
+      dest =
+        if continue?,
+          do: Helpers.edit_path(socket, spec, record),
+          else: Helpers.record_path(socket, spec, record)
+
       {:noreply,
        socket
        |> put_flash(:info, "Created.")
-       |> push_navigate(to: Helpers.record_path(socket, spec, record))}
+       |> push_navigate(to: dest)}
     else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, Map.put(changeset, :action, :insert))}
@@ -189,15 +203,26 @@ defmodule CorexAdmin.Live.Form do
     end
   end
 
-  defp save_edit(socket, spec, resource_mod, scope, attrs) do
+  defp save_edit(socket, spec, resource_mod, scope, attrs, continue?) do
     record = socket.assigns.record
 
     with :ok <- Helpers.authorize(socket, :update, resource_mod, record),
          {:ok, record} <- Context.update(spec, scope, record, attrs) do
-      {:noreply,
-       socket
-       |> put_flash(:info, "Updated.")
-       |> push_navigate(to: Helpers.record_path(socket, spec, record))}
+      if continue? do
+        changeset = Context.change_update(spec, scope, record, %{})
+
+        {:noreply,
+         socket
+         |> assign(:record, record)
+         |> assign(:page_title, "Edit #{Helpers.record_title(spec, record)}")
+         |> assign_form(changeset)
+         |> put_flash(:info, "Updated.")}
+      else
+        {:noreply,
+         socket
+         |> put_flash(:info, "Updated.")
+         |> push_navigate(to: Helpers.record_path(socket, spec, record))}
+      end
     else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, Map.put(changeset, :action, :update))}
@@ -205,6 +230,10 @@ defmodule CorexAdmin.Live.Form do
       {:error, _} ->
         {:noreply, Helpers.unauthorized(socket)}
     end
+  end
+
+  defp continue?(params) do
+    params["continue"] in ["true", "continue", true]
   end
 
   defp form_params(params, spec) do

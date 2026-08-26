@@ -44,6 +44,8 @@ The admin **never** calls `Repo.insert/update/delete/get`. Contexts do.
 ## Mass assignment and params
 
 - Only **writable** fields are copied into context attrs.
+- Nested `:embeds_many` payloads keep allowlisted child keys plus `{name}_sort`
+  / `{name}_drop`. Unknown nested keys are dropped and never atomized.
 - Sort/filter/search keys are **allowlisted**. Unknown query params are dropped.
 - User input is never turned into unbounded atoms.
 - `:password` fields are write-only and never rendered on index/show.
@@ -52,7 +54,9 @@ The admin **never** calls `Repo.insert/update/delete/get`. Contexts do.
 ## Other
 
 - No `Phoenix.HTML.raw` for user content.
-- Pagination `page_size` is capped (`config :corex_admin, :max_page_size`).
+- Pagination `page_size` must be in the resource (or app) `page_size_options` and
+  is capped (`config :corex_admin, :max_page_size`). Unknown sizes fall back to
+  the resource default.
 - Search uses parameterized `ilike`, not interpolated SQL.
 - Telemetry events include resource slug and action — never payloads.
 - Document CSP and `force_ssl` the same way you would for LiveDashboard.

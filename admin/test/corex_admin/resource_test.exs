@@ -33,6 +33,34 @@ defmodule CorexAdmin.ResourceTest do
 
   test "registers filters" do
     spec = TicketResource.__corex_admin_resource__()
-    assert [%{name: :status, type: :select}] = spec.filters
+    names = Enum.map(spec.filters, &{&1.name, &1.type})
+
+    assert {:status, :multi_select} in names
+    assert {:priority, :number_range} in names
+    assert {:inserted_at, :date_range} in names
+  end
+
+  test "applies index/show defaults and resource options" do
+    spec = TicketResource.__corex_admin_resource__()
+    fields = Map.new(spec.fields, &{&1.name, &1})
+
+    refute fields[:body].index
+    assert fields[:title].index
+    assert spec.default_sort == {:inserted_at, :desc}
+    assert spec.title_field == :title
+    assert spec.selectable
+    assert spec.page_size_options == [10, 25, 50, 100]
+  end
+
+  test "registers embeds_many child fields" do
+    spec = TicketResource.__corex_admin_resource__()
+    fields = Map.new(spec.fields, &{&1.name, &1})
+    embed = fields[:social_links]
+
+    assert embed.type == :embeds_many
+    refute embed.index
+    assert embed.writable
+    assert Enum.map(embed.fields, & &1.name) == [:label, :url, :preferred]
+    assert hd(embed.fields).type == :text
   end
 end

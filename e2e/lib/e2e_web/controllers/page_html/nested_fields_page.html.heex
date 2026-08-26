@@ -1,0 +1,30 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="nested-fields-anatomy-page"
+    title={~t"Nested Fields · Anatomy"}
+    subtitle={~t"Repeatable embed rows with add and remove."}
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="nested-fields-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.NestedFieldsDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.NestedFieldsDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="nested-fields-anatomy-empty"
+      title={~t"Empty"}
+      code={E2eWeb.Demos.NestedFieldsDemo.empty_code()}
+    >
+      <:preview><E2eWeb.Demos.NestedFieldsDemo.empty_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

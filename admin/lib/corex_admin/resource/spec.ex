@@ -14,6 +14,10 @@ defmodule CorexAdmin.Resource.Spec do
     :scope,
     :primary_key,
     :page_size,
+    :page_size_options,
+    :default_sort,
+    :title_field,
+    selectable: true,
     actions: %{},
     fields: [],
     filters: []
@@ -29,6 +33,10 @@ defmodule CorexAdmin.Resource.Spec do
           scope: atom() | nil,
           primary_key: atom(),
           page_size: pos_integer() | nil,
+          page_size_options: [pos_integer()] | nil,
+          default_sort: {atom(), :asc | :desc} | nil,
+          title_field: atom() | nil,
+          selectable: boolean(),
           actions: %{atom() => atom()},
           fields: [Field.t()],
           filters: [Filter.t()]

@@ -13,5 +13,6 @@ config :corex_admin, CorexAdmin.Test.Endpoint,
 
 config :corex_admin,
   default_page_size: 25,
+  page_size_options: [10, 25, 50, 100],
   max_page_size: 100,
   debug: false

@@ -386,6 +386,10 @@ defmodule Corex.DataTable do
 
   slot(:checkbox_indicator, doc: "the slot for showing the checkbox indicator icon")
 
+  slot(:checkbox_indeterminate,
+    doc: "the slot for the select-all checkbox when some (not all) rows are selected"
+  )
+
   slot(:empty, doc: "Optional slot shown when the table has no rows")
 
   def data_table(assigns) do
@@ -398,6 +402,9 @@ defmodule Corex.DataTable do
       |> resolve_row_id()
 
     assigns = assign(assigns, :selected_set, MapSet.new(List.wrap(assigns.selected)))
+
+    assigns =
+      assign(assigns, :select_all_checked, select_all_checked(assigns.rows, assigns.selected))
 
     ~H"""
     <div tabindex="0" dir={@dir} {@rest}>
@@ -413,7 +420,7 @@ defmodule Corex.DataTable do
               <Corex.Checkbox.checkbox
                 id={"#{@id}-select-all"}
                 class={@checkbox_class}
-                checked={is_list(@rows) && @selected != [] && length(@selected) == length(@rows)}
+                checked={@select_all_checked}
                 on_checked_change={@on_select_all}
                 controlled={true}
                 aria_label={@translation.select_all}
@@ -421,6 +428,9 @@ defmodule Corex.DataTable do
                 <:indicator :if={@checkbox_indicator != []}>
                   {render_slot(@checkbox_indicator)}
                 </:indicator>
+                <:indeterminate :if={@checkbox_indeterminate != []}>
+                  {render_slot(@checkbox_indeterminate)}
+                </:indeterminate>
               </Corex.Checkbox.checkbox>
             </th>
             <th :for={{col, index} <- Enum.with_index(@col)} data-scope="data-table" data-part={cell_data_part(index, length(@col))}>
@@ -539,4 +549,17 @@ defmodule Corex.DataTable do
 
   defp cell_data_part(index, count) when index == count - 1, do: "grow-cell"
   defp cell_data_part(_, _), do: "cell"
+
+  defp select_all_checked(rows, selected) when is_list(rows) do
+    total = length(rows)
+    count = length(List.wrap(selected))
+
+    cond do
+      total > 0 and count == total -> true
+      count > 0 and count < total -> :indeterminate
+      true -> false
+    end
+  end
+
+  defp select_all_checked(_, _), do: false
 end

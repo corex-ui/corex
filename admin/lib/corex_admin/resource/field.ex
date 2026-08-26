@@ -11,7 +11,11 @@ defmodule CorexAdmin.Resource.Field do
     sortable: false,
     filterable: false,
     redact: false,
-    options: nil
+    index: true,
+    show: true,
+    options: nil,
+    schema: nil,
+    fields: []
   ]
 
   @type t :: %__MODULE__{
@@ -24,6 +28,10 @@ defmodule CorexAdmin.Resource.Field do
           sortable: boolean(),
           filterable: boolean(),
           redact: boolean(),
-          options: [term()] | nil
+          index: boolean(),
+          show: boolean(),
+          options: [term()] | nil,
+          schema: module() | nil,
+          fields: [t()]
         }
 end

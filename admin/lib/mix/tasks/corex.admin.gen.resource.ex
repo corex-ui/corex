@@ -46,6 +46,8 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Resource do
     singular = Macro.underscore(schema_name)
     plural = singular <> "s"
 
+    fields = schema_fields(schema_module)
+
     binding = [
       resource_module: resource_module,
       context_module: context_module,
@@ -56,7 +58,10 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Resource do
       with_scope?: with_scope?,
       singular: singular,
       plural: plural,
-      fields: schema_fields(schema_module)
+      fields: fields,
+      default_sort: default_sort(fields),
+      title_field: title_field(fields),
+      filters: schema_filters(fields)
     ]
 
     target = Path.join([path, "admin", "#{singular}_resource.ex"])
@@ -129,8 +134,35 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Resource do
       type in [:email, :text] and name not in [:id],
       "searchable: true, sortable: true"
     )
+    |> maybe_put(type in [:number, :date, :datetime] and name not in [:id], "sortable: true")
     |> maybe_put(redact?, "redact: true")
     |> Enum.join(", ")
+  end
+
+  defp default_sort(fields) do
+    names = Enum.map(fields, &elem(&1, 0))
+
+    cond do
+      :inserted_at in names -> {:inserted_at, :desc}
+      :updated_at in names -> {:updated_at, :desc}
+      true -> nil
+    end
+  end
+
+  defp title_field(fields) do
+    names = Enum.map(fields, &elem(&1, 0))
+
+    Enum.find([:title, :name, :email], &(&1 in names))
+  end
+
+  defp schema_filters(fields) do
+    names = Enum.map(fields, &elem(&1, 0))
+
+    if :inserted_at in names do
+      [{:inserted_at, :date_range}]
+    else
+      []
+    end
   end
 
   defp maybe_put(list, true, opt), do: list ++ [opt]

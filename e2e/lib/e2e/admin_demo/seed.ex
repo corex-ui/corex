@@ -14,6 +14,8 @@ defmodule E2e.AdminDemo.Seed do
 
       extras =
         for n <- 1..29 do
+          at = DateTime.add(now, -n, :day)
+
           %{
             demo_id: demo_id,
             title: "Queue ticket #{String.pad_leading(Integer.to_string(n), 2, "0")}",
@@ -21,8 +23,8 @@ defmodule E2e.AdminDemo.Seed do
             status: if(rem(n, 2) == 0, do: "done", else: "open"),
             priority: rem(n, 5) + 1,
             body: "Synthetic row #{n} for search, sort, and pagination.",
-            inserted_at: now,
-            updated_at: now
+            inserted_at: at,
+            updated_at: at
           }
         end
 
@@ -44,8 +46,8 @@ defmodule E2e.AdminDemo.Seed do
           status: "done",
           priority: 1,
           body: "Use search and filters on this row.",
-          inserted_at: now,
-          updated_at: now
+          inserted_at: DateTime.add(now, -1, :day),
+          updated_at: DateTime.add(now, -1, :day)
         },
         %{
           demo_id: demo_id,
@@ -54,11 +56,24 @@ defmodule E2e.AdminDemo.Seed do
           status: "open",
           priority: 5,
           body: "Sort by priority to find this one.",
-          inserted_at: now,
-          updated_at: now
+          inserted_at: DateTime.add(now, -10, :day),
+          updated_at: DateTime.add(now, -10, :day)
         }
         | extras
       ])
+
+      welcome =
+        Repo.get_by!(Ticket, demo_id: demo_id, title: "Welcome ticket")
+
+      {:ok, _} =
+        welcome
+        |> Ticket.changeset(%{
+          "social_links" => [
+            %{"label" => "Docs", "url" => "https://example.test/docs", "preferred" => true},
+            %{"label" => "Status", "url" => "https://example.test/status", "preferred" => false}
+          ]
+        })
+        |> Repo.update()
     end
 
     :ok

@@ -107,12 +107,21 @@ defmodule CorexAdmin.Live.Helpers do
   def record_id(%Spec{primary_key: key}, record), do: record |> Map.fetch!(key) |> to_string()
   def record_id(_slug, record) when is_map(record), do: record |> Map.fetch!(:id) |> to_string()
 
+  def record_title(%Spec{title_field: field} = spec, record) when is_atom(field) do
+    case Map.get(record, field) do
+      value when value in [nil, ""] -> record_id(spec, record)
+      value -> to_string(value)
+    end
+  end
+
+  def record_title(spec, record), do: record_id(spec, record)
+
   def index_fields(%Spec{fields: fields}) do
-    Enum.filter(fields, &(&1.readable and not &1.redact))
+    Enum.filter(fields, & &1.index)
   end
 
   def show_fields(%Spec{fields: fields}) do
-    Enum.filter(fields, &(&1.readable and not &1.redact))
+    Enum.filter(fields, & &1.show)
   end
 
   def form_fields(%Spec{fields: fields}) do

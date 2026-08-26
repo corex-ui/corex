@@ -12,7 +12,12 @@ defmodule CorexAdmin.Resource do
           schema: MyApp.Accounts.User,
           slug: "users",
           group: "Accounts",
-          label: "Users"
+          label: "Users",
+          page_size: 25,
+          page_size_options: [10, 25, 50, 100],
+          default_sort: {:inserted_at, :desc},
+          title_field: :email,
+          selectable: true
 
         scope :current_scope
 
@@ -31,21 +36,24 @@ defmodule CorexAdmin.Resource do
           field :email, :email, searchable: true, sortable: true
           field :role, :select, options: ~w(admin editor viewer)
           field :password, :password
-          field :inserted_at, :datetime
+          field :inserted_at, :datetime, sortable: true
         end
 
         filters do
-          filter :role, :select
+          filter :role, :select, options: ~w(admin editor viewer)
+          filter :inserted_at, :date_range
         end
       end
 
+  Filters are per resource. The generic index LiveView only renders `filters do`.
   Context functions receive the Phoenix scope as the first argument when
   `scope/1` is declared. See the [resources](resources.html) guide.
   """
 
   alias CorexAdmin.Resource.{Field, Filter, Spec}
 
-  @field_types ~w(id text textarea email password number boolean select date datetime url)a
+  @field_types ~w(id text textarea email password number boolean select date datetime url embeds_many)a
+  @filter_types ~w(select multi_select date_range datetime_range number_range boolean)a
   @required_actions ~w(list get create update delete change_create change_update)a
 
   @field_schema [
@@ -55,6 +63,8 @@ defmodule CorexAdmin.Resource do
     sortable: [type: :boolean, default: false],
     filterable: [type: :boolean, default: false],
     redact: [type: :boolean],
+    index: [type: :boolean],
+    show: [type: :boolean],
     label: [type: :string],
     options: [type: {:list, :any}]
   ]
@@ -65,7 +75,11 @@ defmodule CorexAdmin.Resource do
     slug: [type: :string],
     group: [type: :string],
     label: [type: :string],
-    page_size: [type: :pos_integer]
+    page_size: [type: :pos_integer],
+    page_size_options: [type: {:list, :pos_integer}],
+    default_sort: [type: {:or, [nil, {:tuple, [:atom, {:in, [:asc, :desc]}]}]}],
+    title_field: [type: :atom],
+    selectable: [type: :boolean, default: true]
   ]
 
   defmacro __using__(opts) do
@@ -85,6 +99,7 @@ defmodule CorexAdmin.Resource do
           filters: 1,
           field: 2,
           field: 3,
+          field: 4,
           filter: 2,
           filter: 3,
           list: 1,
@@ -125,9 +140,76 @@ defmodule CorexAdmin.Resource do
   end
 
   defmacro field(name, type, opts \\ []) do
-    quote do
-      @corex_admin_fields {unquote(name), unquote(type), unquote(opts)}
+    {block, opts} = Keyword.pop(opts, :do)
+
+    if block do
+      quote do
+        nested =
+          CorexAdmin.Resource.__collect_nested__(__MODULE__, fn ->
+            unquote(block)
+          end)
+
+        CorexAdmin.Resource.__push_field__(
+          __MODULE__,
+          unquote(name),
+          unquote(type),
+          Keyword.put(unquote(opts), :fields, nested)
+        )
+      end
+    else
+      quote do
+        CorexAdmin.Resource.__push_field__(
+          __MODULE__,
+          unquote(name),
+          unquote(type),
+          unquote(opts)
+        )
+      end
     end
+  end
+
+  defmacro field(name, type, opts, do: block) do
+    quote do
+      nested =
+        CorexAdmin.Resource.__collect_nested__(__MODULE__, fn ->
+          unquote(block)
+        end)
+
+      CorexAdmin.Resource.__push_field__(
+        __MODULE__,
+        unquote(name),
+        unquote(type),
+        Keyword.put(unquote(opts), :fields, nested)
+      )
+    end
+  end
+
+  @doc false
+  def __push_field__(mod, name, type, opts) do
+    case Module.get_attribute(mod, :corex_admin_field_stack) do
+      [current | rest] ->
+        Module.put_attribute(mod, :corex_admin_field_stack, [
+          [{name, type, opts} | current] | rest
+        ])
+
+      _ ->
+        Module.put_attribute(mod, :corex_admin_fields, {name, type, opts})
+    end
+  end
+
+  @doc false
+  def __collect_nested__(mod, fun) do
+    stack = Module.get_attribute(mod, :corex_admin_field_stack) || []
+    Module.put_attribute(mod, :corex_admin_field_stack, [[] | stack])
+    fun.()
+    [current | rest] = Module.get_attribute(mod, :corex_admin_field_stack)
+
+    case rest do
+      [] -> Module.delete_attribute(mod, :corex_admin_field_stack)
+      _ -> Module.put_attribute(mod, :corex_admin_field_stack, rest)
+    end
+
+    Enum.reverse(current)
   end
 
   defmacro filter(name, type, opts \\ []) do
@@ -200,6 +282,10 @@ defmodule CorexAdmin.Resource do
       scope: scope,
       primary_key: primary_key(schema),
       page_size: opts[:page_size],
+      page_size_options: opts[:page_size_options],
+      default_sort: opts[:default_sort],
+      title_field: opts[:title_field],
+      selectable: opts[:selectable],
       actions: actions,
       fields: Enum.map(fields, &build_field(schema, &1)),
       filters: Enum.map(filters, &build_filter/1)
@@ -208,6 +294,9 @@ defmodule CorexAdmin.Resource do
 
   @doc "Allowed field type atoms for `field/3`."
   def field_types, do: @field_types
+
+  @doc "Allowed filter type atoms for `filter/3`."
+  def filter_types, do: @filter_types
 
   defp schema_source(schema) do
     if function_exported?(schema, :__schema__, 1) do
@@ -233,8 +322,11 @@ defmodule CorexAdmin.Resource do
   end
 
   defp build_field(schema, {name, type, opts}) when type in @field_types do
+    {children, opts} = Keyword.pop(opts, :fields, [])
+    {embed_schema, opts} = Keyword.pop(opts, :schema)
     opts = NimbleOptions.validate!(opts, @field_schema)
     redact_fields = redact_fields(schema)
+    embed_schema = embed_schema || embed_schema(schema, name)
 
     defaults = %{
       readable: default_readable(type),
@@ -242,17 +334,24 @@ defmodule CorexAdmin.Resource do
       redact: type == :password or name in redact_fields
     }
 
+    readable = Keyword.get(opts, :readable, defaults.readable)
+    redact = Keyword.get(opts, :redact, defaults.redact)
+
     %Field{
       name: name,
       type: type,
       label: opts[:label] || Phoenix.Naming.humanize(Atom.to_string(name)),
-      readable: Keyword.get(opts, :readable, defaults.readable),
+      readable: readable,
       writable: Keyword.get(opts, :writable, defaults.writable),
       searchable: opts[:searchable],
       sortable: opts[:sortable],
       filterable: opts[:filterable],
-      redact: Keyword.get(opts, :redact, defaults.redact),
-      options: opts[:options]
+      redact: redact,
+      index: Keyword.get(opts, :index, default_index(type, readable, redact)),
+      show: Keyword.get(opts, :show, readable and not redact),
+      options: opts[:options],
+      schema: embed_schema,
+      fields: Enum.map(List.wrap(children), &build_field(embed_schema || schema, &1))
     }
   end
 
@@ -261,15 +360,22 @@ defmodule CorexAdmin.Resource do
           "unknown field type #{inspect(type)}; expected one of #{inspect(@field_types)}"
   end
 
-  defp build_filter({name, type, opts}) do
-    opts = Keyword.validate!(opts, label: nil, options: nil)
+  defp build_filter({name, type, opts}) when type in @filter_types do
+    opts = Keyword.validate!(opts, label: nil, options: nil, field: nil)
+    field = opts[:field] || name
 
     %Filter{
       name: name,
       type: type,
       label: opts[:label] || Phoenix.Naming.humanize(Atom.to_string(name)),
-      options: opts[:options]
+      options: opts[:options],
+      field: field
     }
+  end
+
+  defp build_filter({_name, type, _opts}) do
+    raise ArgumentError,
+          "unknown filter type #{inspect(type)}; expected one of #{inspect(@filter_types)}"
   end
 
   defp default_readable(:password), do: false
@@ -280,11 +386,25 @@ defmodule CorexAdmin.Resource do
   defp default_writable(name, _type) when name in [:inserted_at, :updated_at, :id], do: false
   defp default_writable(_name, _type), do: true
 
+  defp default_index(:textarea, _readable, _redact), do: false
+  defp default_index(:password, _readable, _redact), do: false
+  defp default_index(:embeds_many, _readable, _redact), do: false
+  defp default_index(_type, readable, redact), do: readable and not redact
+
   defp redact_fields(schema) do
     if function_exported?(schema, :__schema__, 1) do
       schema.__schema__(:redact_fields)
     else
       []
+    end
+  end
+
+  defp embed_schema(schema, name) do
+    if function_exported?(schema, :__schema__, 2) do
+      case schema.__schema__(:embed, name) do
+        %{related: related} -> related
+        _ -> nil
+      end
     end
   end
 end

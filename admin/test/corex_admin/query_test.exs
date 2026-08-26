@@ -20,6 +20,40 @@ defmodule CorexAdmin.QueryTest do
     assert query.wheres != []
   end
 
+  test "applies equality, in, date range, and number range filters" do
+    opts = %ListOpts{
+      page: 1,
+      page_size: 10,
+      filters: %{
+        status: ["open", "done"],
+        inserted_at: %{from: ~D[2026-08-01], to: ~D[2026-08-25]},
+        priority: %{min: 1, max: 5}
+      }
+    }
+
+    query = Query.apply(from(t in Ticket), opts)
+    assert length(query.wheres) >= 3
+    inspect_wheres = inspect(query.wheres, limit: :infinity, pretty: false)
+    assert inspect_wheres =~ "in"
+    assert inspect_wheres =~ "inserted_at"
+    assert inspect_wheres =~ "priority"
+  end
+
+  test "match_filter? handles list and range values" do
+    ticket = %Ticket{
+      status: "open",
+      priority: 3,
+      inserted_at: ~U[2026-08-10 12:00:00Z]
+    }
+
+    assert Query.match_filter?(ticket, :status, ["open", "done"])
+    refute Query.match_filter?(ticket, :status, ["done"])
+    assert Query.match_filter?(ticket, :priority, %{min: 1, max: 5})
+    refute Query.match_filter?(ticket, :priority, %{min: 4, max: 5})
+    assert Query.match_filter?(ticket, :inserted_at, %{from: ~D[2026-08-01], to: ~D[2026-08-25]})
+    refute Query.match_filter?(ticket, :inserted_at, %{from: ~D[2026-08-11], to: ~D[2026-08-25]})
+  end
+
   test "paginates with limit and offset" do
     opts = %ListOpts{page: 3, page_size: 10}
     query = Query.paginate(from(t in Ticket), opts)

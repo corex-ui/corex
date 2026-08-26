@@ -41,6 +41,7 @@ defmodule CorexAdmin.Test.Store do
         body: attrs["body"],
         password: attrs["password"],
         secret: attrs["secret"],
+        social_links: parse_social_links(Map.get(attrs, "social_links")),
         inserted_at: now,
         updated_at: now
       }
@@ -81,6 +82,32 @@ defmodule CorexAdmin.Test.Store do
   end
 
   defp parse_int(_, default), do: default
+
+  defp parse_social_links(nil), do: []
+  defp parse_social_links(links) when is_list(links), do: Enum.map(links, &to_social_link/1)
+
+  defp parse_social_links(links) when is_map(links) do
+    links
+    |> Enum.sort_by(fn {key, _} -> to_string(key) end)
+    |> Enum.map(fn {_key, value} -> to_social_link(value) end)
+  end
+
+  defp parse_social_links(_), do: []
+
+  defp to_social_link(%CorexAdmin.Test.SocialLink{} = link), do: link
+
+  defp to_social_link(attrs) when is_map(attrs) do
+    attrs = stringify_keys(attrs)
+
+    %CorexAdmin.Test.SocialLink{
+      id: attrs["id"] || Ecto.UUID.generate(),
+      label: attrs["label"],
+      url: attrs["url"],
+      preferred: attrs["preferred"] in [true, "true"]
+    }
+  end
+
+  defp to_social_link(_), do: %CorexAdmin.Test.SocialLink{}
 
   defp stringify_keys(attrs) do
     Map.new(attrs, fn

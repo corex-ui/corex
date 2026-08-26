@@ -29,7 +29,7 @@ defmodule CorexAdmin.Live.Show do
             :ok ->
               {:noreply,
                socket
-               |> assign(:page_title, spec.label)
+               |> assign(:page_title, Helpers.record_title(spec, record))
                |> assign(:resource_mod, resource_mod)
                |> assign(:spec, spec)
                |> assign(:record, record)
@@ -52,55 +52,63 @@ defmodule CorexAdmin.Live.Show do
   def render(assigns) do
     ~H"""
     <Components.shell :if={assigns[:record]} socket={assigns} current={@spec}>
-      <Components.breadcrumbs
-        prefix={@corex_admin_prefix}
-        spec={@spec}
-        live_action={:show}
-        record={@record}
-      />
-      <.layout_heading class="layout-heading">
-        <:title>{@spec.label}</:title>
-        <:actions>
-          <.navigate
-            to={Helpers.resource_path(assigns, @spec)}
-            type="navigate"
-            class="button"
-            aria_label="Back"
-          >
-            <.heroicon name="hero-arrow-left" />
-          </.navigate>
-          <.navigate
-            :if={Helpers.authorize(assigns, :edit, @resource_mod, @record) == :ok}
-            to={Helpers.edit_path(assigns, @spec, @record)}
-            type="navigate"
-            class="button ui-accent"
-            aria_label="Edit"
-          >
-            <.heroicon name="hero-pencil-square" /> Edit
-          </.navigate>
-          <Components.delete_dialog
-            :if={Helpers.authorize(assigns, :delete, @resource_mod, @record) == :ok}
-            id={"delete-#{Helpers.record_id(@spec, @record)}"}
-            spec={@spec}
-            record={@record}
-          />
-        </:actions>
-      </.layout_heading>
+      <div class="flex w-full flex-col gap-space-lg">
+        <Components.breadcrumbs
+          prefix={@corex_admin_prefix}
+          spec={@spec}
+          live_action={:show}
+          record={@record}
+        />
+        <.layout_heading class="layout-heading">
+          <:title>{Helpers.record_title(@spec, @record)}</:title>
+          <:actions>
+            <.navigate
+              to={Helpers.resource_path(assigns, @spec)}
+              type="navigate"
+              class="button"
+              aria_label="Back"
+            >
+              <.heroicon name="hero-arrow-left" />
+            </.navigate>
+            <.navigate
+              :if={Helpers.authorize(assigns, :edit, @resource_mod, @record) == :ok}
+              to={Helpers.edit_path(assigns, @spec, @record)}
+              type="navigate"
+              class="button ui-accent"
+              aria_label="Edit"
+            >
+              <.heroicon name="hero-pencil-square" /> Edit
+            </.navigate>
+            <Components.delete_dialog
+              :if={Helpers.authorize(assigns, :delete, @resource_mod, @record) == :ok}
+              id={"delete-#{Helpers.record_id(@spec, @record)}"}
+              spec={@spec}
+              record={@record}
+              trigger={:labeled}
+            />
+          </:actions>
+        </.layout_heading>
 
-      <.data_list
-        class="data-list"
-        items={
-          Corex.Content.new(
-            for field <- @show_fields do
-              %{
-                value: Atom.to_string(field.name),
-                label: field.label,
-                content: Components.format_value(field, @record)
-              }
-            end
-          )
-        }
-      />
+        <.data_list
+          class="data-list w-full"
+          items={
+            Corex.Content.new(
+              for field <- @show_fields, field.type != :embeds_many do
+                %{
+                  value: Atom.to_string(field.name),
+                  label: field.label,
+                  content: Components.format_value(field, @record)
+                }
+              end
+            )
+          }
+        />
+        <Components.embed_show
+          :for={field <- Enum.filter(@show_fields, &(&1.type == :embeds_many))}
+          field={field}
+          record={@record}
+        />
+      </div>
     </Components.shell>
     """
   end

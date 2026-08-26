@@ -25,6 +25,7 @@
 @import "./components/marquee.css";
 @import "./components/menu.css";
 @import "./components/native-input.css";
+@import "./components/nested-fields.css";
 @import "./components/number-input.css";
 @import "./components/pagination.css";
 @import "./components/password-input.css";

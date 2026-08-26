@@ -26,6 +26,7 @@
   {"id": "marquee", "phx_hook": "Marquee", "connect_module": "Corex.Marquee.Connect"},
   {"id": "menu", "phx_hook": "Menu", "connect_module": "Corex.Menu.Connect"},
   {"id": "navigate", "phx_hook": null, "connect_module": null},
+  {"id": "nested_fields", "phx_hook": null, "connect_module": null},
   {"id": "number_input", "phx_hook": "NumberInput", "connect_module": "Corex.NumberInput.Connect"},
   {"id": "pagination", "phx_hook": "Pagination", "connect_module": "Corex.Pagination.Connect"},
   {"id": "password_input", "phx_hook": "PasswordInput", "connect_module": "Corex.PasswordInput.Connect"},

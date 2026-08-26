@@ -57,6 +57,14 @@
  position: relative;
  }
 
+ .date-picker:has([data-scope="date-picker"][data-part="control-inputs"][data-range])
+ [data-scope="date-picker"][data-part="root"],
+ .date-picker:has([data-scope="date-picker"][data-part="control-inputs"][data-range])
+ [data-scope="date-picker"][data-part="control"] {
+ width: 100%;
+ max-width: 100%;
+ }
+
  .date-picker [data-scope="date-picker"][data-part="label"] {
  &[data-invalid] {
  color: var(--color-alert);
@@ -120,11 +128,16 @@
  }
 
  
+ .date-picker:has([data-scope="date-picker"][data-part="control-inputs"][data-range]) {
+ width: 100%;
+ max-width: 100%;
+ }
+
  .date-picker [data-scope="date-picker"][data-part="input"] {
- width: calc(var(--spacing-size) * 3);
- max-width: calc(var(--spacing-size) * 3);
- min-width: 0;
- flex: 0 0 auto;
+ width: auto;
+ max-width: none;
+ min-width: 12ch;
+ flex: 1 1 12ch;
  }
 
  .date-picker
@@ -144,7 +157,7 @@
  .date-picker [data-scope="date-picker"][data-part="control-inputs"][data-range] {
  display: flex;
  flex: 1 1 0%;
- flex-flow: row wrap;
+ flex-flow: row nowrap;
  align-items: center;
  gap: var(--spacing-space);
  min-width: 0;
@@ -158,10 +171,10 @@
  }
 
  .date-picker [data-scope="date-picker"][data-part="control-inputs"][data-range] [data-part="input"] {
- flex: 0 0 auto;
- width: calc(var(--spacing-size) * 3);
- max-width: calc(var(--spacing-size) * 3);
- min-width: 0;
+ flex: 1 1 12ch;
+ width: auto;
+ max-width: none;
+ min-width: 12ch;
  }
 
  .date-picker [data-scope="date-picker"][data-part="positioner"] {

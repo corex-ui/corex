@@ -21,5 +21,14 @@ html}` escape hatch.
 ## Config (`config :corex_admin`)
 
 - `:debug` — log authorize results in development (never attrs)
-- `:default_page_size` / `:max_page_size`
+- `:default_page_size` / `:max_page_size` / `:page_size_options`
 - Gettext uses Phoenix's `gettext_backend` when set
+
+Hub config never lists filters. Each resource declares its own `filters do`.
+
+```elixir
+config :corex_admin,
+  default_page_size: 25,
+  page_size_options: [10, 25, 50, 100],
+  max_page_size: 100
+```

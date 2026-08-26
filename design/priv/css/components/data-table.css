@@ -266,6 +266,15 @@
  .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"],
  .data-table [data-scope="data-table"][data-part="selection-header"] .checkbox [data-scope="checkbox"][data-part="control"] {
  color: var(--ctl-ink-text, var(--color-ink));
+ height: calc(var(--ctl-size, var(--spacing-size)) * 0.75);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.75);
+ }
+
+ .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"],
+ .data-table [data-scope="data-table"][data-part="selection-header"] .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"],
+ .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+ .data-table [data-scope="data-table"][data-part="selection-header"] .checkbox [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+ color: var(--ctl-fill-ink, var(--color-root));
  }
 
  .data-table

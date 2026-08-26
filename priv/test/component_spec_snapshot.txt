@@ -25,6 +25,7 @@ marquee:marquee
 menu:menu
 native_input:native_input
 navigate:navigate
+nested_fields:nested_fields
 number_input:number_input
 pagination:pagination
 password_input:password_input

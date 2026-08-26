@@ -116,6 +116,26 @@ defmodule CorexAdmin do
     Application.get_env(:corex_admin, :max_page_size, 100)
   end
 
+  @doc "Default per-page choices (`config :corex_admin, :page_size_options`)."
+  @spec page_size_options() :: [pos_integer()]
+  def page_size_options do
+    Application.get_env(:corex_admin, :page_size_options, [10, 25, 50, 100])
+  end
+
+  @doc "Per-page choices for a resource, capped by `max_page_size/0`."
+  @spec page_size_options(CorexAdmin.Resource.Spec.t()) :: [pos_integer()]
+  def page_size_options(%CorexAdmin.Resource.Spec{} = spec) do
+    max = max_page_size()
+
+    options =
+      (spec.page_size_options || page_size_options())
+      |> Enum.filter(&(is_integer(&1) and &1 > 0 and &1 <= max))
+      |> Enum.uniq()
+      |> Enum.sort()
+
+    if options == [], do: [min(default_page_size(), max)], else: options
+  end
+
   @doc "Whether verbose authorize logging is enabled (`config :corex_admin, :debug`)."
   def debug? do
     Application.get_env(:corex_admin, :debug, false) == true
