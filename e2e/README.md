@@ -47,7 +47,7 @@ This will:
 - Run `mix corex.design.build` into `assets/corex/`
 - Build frontend assets
 
-`assets/corex/` is generated locally (gitignored). Edit `config :corex_design` in `config/config.exs` to customize tokens, then run `mix assets.build`.
+`assets/corex/` is generated locally (gitignored). Design CSS is an **asset** step (`mix corex.design.build` / `mix assets.build`), not `mix compile`. Edit `config :corex_design` in `config/config.exs` to customize tokens, then re-run `mix assets.build`.
 
 ## Run the server
 

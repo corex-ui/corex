@@ -22,7 +22,11 @@ defmodule E2e.MixProject do
     [
       corex_web: [
         include_executables_for: [:unix],
-        applications: [runtime_tools: :permanent],
+        applications: [
+          runtime_tools: :permanent,
+          # Accessibility plugs/layouts call Corex.Design.Accessibility at runtime.
+          corex_design: :load
+        ],
         strip_beams: true
       ]
     ]
@@ -84,7 +88,7 @@ defmodule E2e.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.11"},
       {:corex, path: ".."},
-      {:corex_design, path: "../design"},
+      {:corex_design, path: "../design", runtime: false},
       {:corex_mcp, path: "../mcp", only: [:dev, :test]},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
