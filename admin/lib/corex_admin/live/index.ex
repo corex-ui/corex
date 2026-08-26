@@ -246,7 +246,18 @@ defmodule CorexAdmin.Live.Index do
 
   @impl true
   def handle_event("search", params, socket) do
-    {:noreply, patch_index(socket, merge_params(socket, params) |> Map.put("page", "1"))}
+    current = ListOpts.to_params(socket.assigns.list_opts)
+
+    next =
+      socket
+      |> merge_params(params)
+      |> reject_incomplete_date_ranges(socket.assigns.spec)
+
+    if index_query_equivalent?(next, current) do
+      {:noreply, socket}
+    else
+      {:noreply, patch_index(socket, Map.put(next, "page", "1"))}
+    end
   end
 
   def handle_event("filter", params, socket) do
@@ -504,9 +515,73 @@ defmodule CorexAdmin.Live.Index do
           _ -> :incomplete
         end
 
+      %{} = map ->
+        map = stringify_keys(map)
+        from = Map.get(map, "from")
+        to = Map.get(map, "to")
+
+        if present_filter_value?(from) and present_filter_value?(to) do
+          map
+        else
+          :incomplete
+        end
+
       other ->
         other
     end
+  end
+
+  defp present_filter_value?(value), do: normalize_filter_param(value) != nil
+
+  defp reject_incomplete_date_ranges(params, spec) do
+    filters = Map.get(params, "filters", %{})
+
+    if not is_map(filters) do
+      params
+    else
+      reduced =
+        Enum.reduce(spec.filters, filters, fn filter, acc ->
+          name = to_string(filter.name)
+
+          if filter.type == :date_range do
+            case complete_date_range_value(Map.get(acc, name)) do
+              :incomplete -> Map.delete(acc, name)
+              nil -> Map.delete(acc, name)
+              normalized -> Map.put(acc, name, normalized)
+            end
+          else
+            acc
+          end
+        end)
+
+      put_filters(params, reduced)
+    end
+  end
+
+  defp index_query_equivalent?(left, right) do
+    normalize_index_query(left) == normalize_index_query(right)
+  end
+
+  defp normalize_index_query(params) when is_map(params) do
+    q =
+      case Map.get(params, "q") do
+        value when value in [nil, ""] -> nil
+        value -> value
+      end
+
+    filters =
+      case Map.get(params, "filters") do
+        value when value in [nil, %{}] -> nil
+        value -> value
+      end
+
+    %{
+      "q" => q,
+      "filters" => filters,
+      "sort" => Map.get(params, "sort"),
+      "dir" => Map.get(params, "dir"),
+      "page_size" => Map.get(params, "page_size")
+    }
   end
 
   defp parse_filter_control_id(id) do

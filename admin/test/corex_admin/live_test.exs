@@ -132,6 +132,15 @@ defmodule CorexAdmin.LiveTest do
     refute_patched(view)
 
     html =
+      render_change(view, "search", %{
+        "q" => "",
+        "filters" => %{"inserted_at" => [today]}
+      })
+
+    refute html =~ "Inserted at:"
+    refute_patched(view)
+
+    html =
       render_hook(view, "filter", %{
         "id" => "tickets-filter-inserted_at",
         "value" => "#{today},#{today}"
