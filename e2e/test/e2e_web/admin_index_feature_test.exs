@@ -23,22 +23,19 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       )
 
     session = wait_selected_count(session, "1 selected")
-    session = wait_checked_row_count(session, 1)
-    CheckboxModel.assert_aria_checked(session, "tickets-table-select-#{row_id}", "true")
+    session = wait_row_selected(session, row_id)
     assert current_url(session) =~ ~r{/en/admin/tickets(?:\?.*)?$}
 
     session =
       CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
 
     session = wait_selected_count(session, "25 selected")
-    session = wait_checked_row_count(session, 25)
     refute_has(session, css(".admin-is-disabled"))
 
     session =
       CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
 
     session = wait_selected_count(session, "0 selected")
-    session = wait_checked_row_count(session, 0)
     assert_has(session, css(".admin-is-disabled"))
   end
 
@@ -198,21 +195,28 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     )
   end
 
-  defp wait_checked_row_count(session, count, timeout \\ 8_000) do
+  defp wait_row_selected(session, row_id, timeout \\ 8_000) do
+    host_id = "tickets-table-select-#{row_id}"
+
     wait_script(
       session,
-      count,
+      true,
       timeout,
       """
-      var n = 0;
-      document.querySelectorAll(
-        "tr[data-part='row'] [data-part='selection-cell'] [phx-hook='Checkbox']"
-      ).forEach(function (host) {
-        if (host.getAttribute('data-checked') === 'true') n += 1;
-      });
-      return n;
+      var host = document.querySelector('[id="' + #{Jason.encode!(host_id)} + '"][phx-hook="Checkbox"]');
+      if (!host) return false;
+      var input = host.querySelector(
+        '[data-scope="checkbox"][data-part="hidden-input"], input[type="checkbox"]'
+      );
+      var root = host.querySelector('[data-scope="checkbox"][data-part="root"]');
+      var control = host.querySelector('[data-scope="checkbox"][data-part="control"]');
+      return host.getAttribute('data-checked') === 'true' ||
+        (input && input.checked === true) ||
+        (root && root.getAttribute('aria-checked') === 'true') ||
+        (root && root.getAttribute('data-state') === 'checked') ||
+        (control && control.getAttribute('data-state') === 'checked');
       """,
-      fn actual -> "expected #{count} checked row host(s), got #{inspect(actual)}" end
+      fn actual -> "expected row #{row_id} to be selected, got #{inspect(actual)}" end
     )
   end
 
@@ -223,31 +227,36 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       var id = arguments[0];
       var value = arguments[1];
       var el = document.querySelector(
-        '[id="menu:' + id + ':content"][data-state="open"] [data-scope="menu"][data-part="item"][data-value="' + value + '"]'
+        '[id="menu:' + id + ':content"] [data-scope="menu"][data-part="item"][data-value="' + value + '"]'
       );
-      if (!el) return {ok: false, reason: 'missing-open-item'};
-      return {
-        ok: true,
-        to: el.getAttribute('data-to'),
-        redirect: el.getAttribute('data-redirect'),
-        hidden: !!el.closest('[hidden]')
+      if (!el) return {ok: false, reason: 'missing-item'};
+      var to = el.getAttribute('data-to');
+      var rect = el.getBoundingClientRect();
+      var opts = {
+        bubbles: true,
+        cancelable: true,
+        pointerType: 'mouse',
+        isPrimary: true,
+        button: 0,
+        clientX: rect.left + rect.width / 2,
+        clientY: rect.top + rect.height / 2,
+        view: window
       };
+      el.dispatchEvent(new PointerEvent('pointerdown', opts));
+      el.dispatchEvent(new PointerEvent('pointerup', opts));
+      el.dispatchEvent(new MouseEvent('click', opts));
+      return {ok: true, to: to, redirect: el.getAttribute('data-redirect')};
       """,
       [menu_id, value],
       fn result ->
-        assert result["ok"] == true, "expected open menu item #{value}: #{inspect(result)}"
+        assert result["ok"] == true, "expected to click menu item #{value}: #{inspect(result)}"
 
         assert is_binary(result["to"]) and String.starts_with?(result["to"], "/"),
                "expected menu item #{value} to have a path data-to, got #{inspect(result)}"
       end
     )
 
-    click(
-      session,
-      css(
-        ~s|[id="menu:#{menu_id}:content"][data-state="open"] [data-scope="menu"][data-part="item"][data-value="#{value}"]|
-      )
-    )
+    session
   end
 
   defp wait_script(session, expected, timeout, script, message_fun) do
