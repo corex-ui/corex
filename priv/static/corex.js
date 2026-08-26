@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-5L577WPD.mjs
+  // ../priv/static/chunks/chunk-JPQZXVRQ.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -253,7 +253,7 @@ var Corex = (() => {
         this[config.key] = component;
         (_a4 = config.afterInit) == null ? void 0 : _a4.call(config, this, component);
       },
-      beforeUpdate() {
+      beforeUpdate(_toEl) {
         var _a4;
         if (config.controlledKeys) {
           this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
@@ -2049,8 +2049,8 @@ var Corex = (() => {
     return out;
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, REGISTRIES, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, BACKSLASH_RE, DOUBLE_QUOTE_RE, cssesc, getByOwnerId, isOwnedBy, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, IPHONE_REGEX, IPAD_REGEX, MAC_REGEX, APPLE_VENDOR_REGEX, FIREFOX_REGEX, ANDROID_REGEX, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, HEAVY_PROP_KEYS, objectRefIds, nextObjectRefId, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_5L577WPD = __esm({
-    "../priv/static/chunks/chunk-5L577WPD.mjs"() {
+  var init_chunk_JPQZXVRQ = __esm({
+    "../priv/static/chunks/chunk-JPQZXVRQ.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -3053,7 +3053,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YK3SXPYJ.mjs
+  // ../priv/static/chunks/chunk-BF7VYAZN.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -3375,15 +3375,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_YK3SXPYJ = __esm({
-    "../priv/static/chunks/chunk-YK3SXPYJ.mjs"() {
+  var init_chunk_BF7VYAZN = __esm({
+    "../priv/static/chunks/chunk-BF7VYAZN.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-XDPIWU5M.mjs
+  // ../priv/static/chunks/chunk-SFHJIQK5.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3623,10 +3623,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_XDPIWU5M = __esm({
-    "../priv/static/chunks/chunk-XDPIWU5M.mjs"() {
+  var init_chunk_SFHJIQK5 = __esm({
+    "../priv/static/chunks/chunk-SFHJIQK5.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
@@ -3930,10 +3930,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_YK3SXPYJ();
-      init_chunk_XDPIWU5M();
+      init_chunk_BF7VYAZN();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4440,7 +4440,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-46XN2SIW.mjs
+  // ../priv/static/chunks/chunk-F6YUZM6O.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -4647,10 +4647,10 @@ var Corex = (() => {
     syncLiveViewFormInput(input, getValue, onTouched);
   }
   var PHX_HAS_FOCUSED;
-  var init_chunk_46XN2SIW = __esm({
-    "../priv/static/chunks/chunk-46XN2SIW.mjs"() {
+  var init_chunk_F6YUZM6O = __esm({
+    "../priv/static/chunks/chunk-F6YUZM6O.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
@@ -4941,10 +4941,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_UZJUBX5G();
       init_chunk_HVJNI7F3();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -5386,7 +5386,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -6054,7 +6054,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_HVJNI7F3();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6796,7 +6796,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-HJMWAVV5.mjs
+  // ../priv/static/chunks/chunk-CPYFNSV2.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6933,10 +6933,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, interactiveContentSelector, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, pendingLabelControl, hasBlurredWindowRecently, lastPointerPosition, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_HJMWAVV5 = __esm({
-    "../priv/static/chunks/chunk-HJMWAVV5.mjs"() {
+  var init_chunk_CPYFNSV2 = __esm({
+    "../priv/static/chunks/chunk-CPYFNSV2.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       interactiveContentSelector = [
         "a[href]",
@@ -7122,11 +7122,11 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_HJMWAVV5();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_CPYFNSV2();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -7445,7 +7445,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-JANAZAUC.mjs
+  // ../priv/static/chunks/chunk-4Z6E5U4O.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -7468,10 +7468,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_JANAZAUC = __esm({
-    "../priv/static/chunks/chunk-JANAZAUC.mjs"() {
+  var init_chunk_4Z6E5U4O = __esm({
+    "../priv/static/chunks/chunk-4Z6E5U4O.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7649,9 +7649,9 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_JANAZAUC();
+      init_chunk_4Z6E5U4O();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7962,9 +7962,9 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_HVJNI7F3();
-      init_chunk_XDPIWU5M();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -8331,7 +8331,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-B4RGTWCP.mjs
+  // ../priv/static/chunks/chunk-56433QZX.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
@@ -8346,10 +8346,10 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_B4RGTWCP = __esm({
-    "../priv/static/chunks/chunk-B4RGTWCP.mjs"() {
+  var init_chunk_56433QZX = __esm({
+    "../priv/static/chunks/chunk-56433QZX.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
     }
   });
 
@@ -8425,7 +8425,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-Q2BKDNLZ.mjs
+  // ../priv/static/chunks/chunk-YKCP6S4O.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9803,10 +9803,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_Q2BKDNLZ = __esm({
-    "../priv/static/chunks/chunk-Q2BKDNLZ.mjs"() {
+  var init_chunk_YKCP6S4O = __esm({
+    "../priv/static/chunks/chunk-YKCP6S4O.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10517,7 +10517,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-DHINQKK3.mjs
+  // ../priv/static/chunks/chunk-KNSNFBRP.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10742,17 +10742,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_DHINQKK3 = __esm({
-    "../priv/static/chunks/chunk-DHINQKK3.mjs"() {
+  var init_chunk_KNSNFBRP = __esm({
+    "../priv/static/chunks/chunk-KNSNFBRP.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-IWZKGRXV.mjs
+  // ../priv/static/chunks/chunk-CKZ5NOMG.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10959,11 +10959,11 @@ var Corex = (() => {
     );
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents, layerObservers;
-  var init_chunk_IWZKGRXV = __esm({
-    "../priv/static/chunks/chunk-IWZKGRXV.mjs"() {
+  var init_chunk_CKZ5NOMG = __esm({
+    "../priv/static/chunks/chunk-CKZ5NOMG.mjs"() {
       "use strict";
-      init_chunk_DHINQKK3();
-      init_chunk_5L577WPD();
+      init_chunk_KNSNFBRP();
+      init_chunk_JPQZXVRQ();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -11098,7 +11098,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-BFKKRPPU.mjs
+  // ../priv/static/chunks/chunk-4JF6I36R.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -11143,14 +11143,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_BFKKRPPU = __esm({
-    "../priv/static/chunks/chunk-BFKKRPPU.mjs"() {
+  var init_chunk_4JF6I36R = __esm({
+    "../priv/static/chunks/chunk-4JF6I36R.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
     }
   });
 
-  // ../priv/static/chunks/chunk-CUTAIEPE.mjs
+  // ../priv/static/chunks/chunk-R3ADGBXU.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -11550,10 +11550,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_CUTAIEPE = __esm({
-    "../priv/static/chunks/chunk-CUTAIEPE.mjs"() {
+  var init_chunk_R3ADGBXU = __esm({
+    "../priv/static/chunks/chunk-R3ADGBXU.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12550,7 +12550,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-52M2556W.mjs
+  // ../priv/static/chunks/chunk-IPIIGVFP.mjs
   function stripLeadingC0AndSpace(destination) {
     let i2 = 0;
     while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
@@ -12610,16 +12610,16 @@ var Corex = (() => {
     return true;
   }
   var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_52M2556W = __esm({
-    "../priv/static/chunks/chunk-52M2556W.mjs"() {
+  var init_chunk_IPIIGVFP = __esm({
+    "../priv/static/chunks/chunk-IPIIGVFP.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       REDIRECT_MODES = ["href", "patch", "navigate"];
       SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
-  // ../priv/static/chunks/chunk-MTENNSNX.mjs
+  // ../priv/static/chunks/chunk-L27QKFAY.mjs
   function connect8(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -13086,13 +13086,13 @@ var Corex = (() => {
     return result;
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_MTENNSNX = __esm({
-    "../priv/static/chunks/chunk-MTENNSNX.mjs"() {
+  var init_chunk_L27QKFAY = __esm({
+    "../priv/static/chunks/chunk-L27QKFAY.mjs"() {
       "use strict";
-      init_chunk_CUTAIEPE();
-      init_chunk_52M2556W();
-      init_chunk_HJMWAVV5();
-      init_chunk_5L577WPD();
+      init_chunk_R3ADGBXU();
+      init_chunk_IPIIGVFP();
+      init_chunk_CPYFNSV2();
+      init_chunk_JPQZXVRQ();
       anatomy8 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -14151,20 +14151,20 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_B4RGTWCP();
+      init_chunk_56433QZX();
       init_chunk_NUOTFVKH();
-      init_chunk_Q2BKDNLZ();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_BFKKRPPU();
-      init_chunk_MTENNSNX();
-      init_chunk_CUTAIEPE();
-      init_chunk_52M2556W();
-      init_chunk_HJMWAVV5();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_YKCP6S4O();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_4JF6I36R();
+      init_chunk_L27QKFAY();
+      init_chunk_R3ADGBXU();
+      init_chunk_IPIIGVFP();
+      init_chunk_CPYFNSV2();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -16538,14 +16538,14 @@ var Corex = (() => {
     "../priv/static/color-picker.mjs"() {
       "use strict";
       init_chunk_HVJNI7F3();
-      init_chunk_Q2BKDNLZ();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_BFKKRPPU();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_YKCP6S4O();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_4JF6I36R();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -18226,7 +18226,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4PVAKIVR.mjs
+  // ../priv/static/chunks/chunk-HWUNIC34.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -18241,10 +18241,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_4PVAKIVR = __esm({
-    "../priv/static/chunks/chunk-4PVAKIVR.mjs"() {
+  var init_chunk_HWUNIC34 = __esm({
+    "../priv/static/chunks/chunk-HWUNIC34.mjs"() {
       "use strict";
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
     }
   });
 
@@ -20638,17 +20638,17 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_4PVAKIVR();
+      init_chunk_HWUNIC34();
       init_chunk_HVJNI7F3();
       init_chunk_NUOTFVKH();
-      init_chunk_Q2BKDNLZ();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_BFKKRPPU();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_YKCP6S4O();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_4JF6I36R();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -23369,12 +23369,12 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_YK3SXPYJ();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_XDPIWU5M();
+      init_chunk_BF7VYAZN();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -24827,11 +24827,11 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_DHINQKK3();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_KNSNFBRP();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -25787,9 +25787,9 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_46XN2SIW();
+      init_chunk_F6YUZM6O();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -27198,9 +27198,9 @@ ${err}`);
       init_chunk_QSONVEW6();
       init_chunk_UZJUBX5G();
       init_chunk_HVJNI7F3();
-      init_chunk_BFKKRPPU();
+      init_chunk_4JF6I36R();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -28241,13 +28241,13 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_MTENNSNX();
-      init_chunk_CUTAIEPE();
-      init_chunk_52M2556W();
-      init_chunk_HJMWAVV5();
-      init_chunk_XDPIWU5M();
+      init_chunk_L27QKFAY();
+      init_chunk_R3ADGBXU();
+      init_chunk_IPIIGVFP();
+      init_chunk_CPYFNSV2();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -28592,7 +28592,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -29751,16 +29751,16 @@ ${err}`);
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_UZJUBX5G();
-      init_chunk_Q2BKDNLZ();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_BFKKRPPU();
-      init_chunk_MTENNSNX();
-      init_chunk_CUTAIEPE();
-      init_chunk_52M2556W();
-      init_chunk_HJMWAVV5();
+      init_chunk_YKCP6S4O();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_4JF6I36R();
+      init_chunk_L27QKFAY();
+      init_chunk_R3ADGBXU();
+      init_chunk_IPIIGVFP();
+      init_chunk_CPYFNSV2();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -31660,12 +31660,12 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_4PVAKIVR();
+      init_chunk_HWUNIC34();
       init_chunk_HVJNI7F3();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -32974,10 +32974,10 @@ ${err}`);
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_4PVAKIVR();
-      init_chunk_52M2556W();
+      init_chunk_HWUNIC34();
+      init_chunk_IPIIGVFP();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy19 = createAnatomy("pagination").parts(
         "root",
         "item",
@@ -33461,7 +33461,7 @@ ${err}`);
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -34067,11 +34067,11 @@ ${err}`);
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_HVJNI7F3();
-      init_chunk_B4RGTWCP();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_56433QZX();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
@@ -34845,11 +34845,11 @@ ${err}`);
     "../priv/static/radio-group.mjs"() {
       "use strict";
       init_chunk_HVJNI7F3();
-      init_chunk_HJMWAVV5();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_CPYFNSV2();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -35839,18 +35839,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_Q2BKDNLZ();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_BFKKRPPU();
-      init_chunk_MTENNSNX();
-      init_chunk_CUTAIEPE();
-      init_chunk_52M2556W();
-      init_chunk_HJMWAVV5();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_YKCP6S4O();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_4JF6I36R();
+      init_chunk_L27QKFAY();
+      init_chunk_R3ADGBXU();
+      init_chunk_IPIIGVFP();
+      init_chunk_CPYFNSV2();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -37249,11 +37249,11 @@ ${err}`);
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_B4RGTWCP();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_56433QZX();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -37779,11 +37779,11 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_HJMWAVV5();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_CPYFNSV2();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -38557,11 +38557,11 @@ ${err}`);
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_NUOTFVKH();
-      init_chunk_DHINQKK3();
-      init_chunk_46XN2SIW();
-      init_chunk_XDPIWU5M();
+      init_chunk_KNSNFBRP();
+      init_chunk_F6YUZM6O();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy26 = createAnatomy("tagsInput").parts(
         "root",
         "label",
@@ -39854,9 +39854,9 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_HVJNI7F3();
-      init_chunk_XDPIWU5M();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -40642,11 +40642,11 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_4PVAKIVR();
-      init_chunk_JANAZAUC();
+      init_chunk_HWUNIC34();
+      init_chunk_4Z6E5U4O();
       init_chunk_HVJNI7F3();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy28 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -41688,10 +41688,10 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_JANAZAUC();
-      init_chunk_IWZKGRXV();
-      init_chunk_DHINQKK3();
-      init_chunk_5L577WPD();
+      init_chunk_4Z6E5U4O();
+      init_chunk_CKZ5NOMG();
+      init_chunk_KNSNFBRP();
+      init_chunk_JPQZXVRQ();
       anatomy29 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -42848,11 +42848,11 @@ ${err}`);
     "../priv/static/tooltip.mjs"() {
       "use strict";
       init_chunk_QSONVEW6();
-      init_chunk_Q2BKDNLZ();
-      init_chunk_BFKKRPPU();
-      init_chunk_HJMWAVV5();
+      init_chunk_YKCP6S4O();
+      init_chunk_4JF6I36R();
+      init_chunk_CPYFNSV2();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy30 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts30 = anatomy30.build();
       getTriggerId11 = (scope, value) => {
@@ -43410,9 +43410,9 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_XDPIWU5M();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
       parts31 = anatomy31.build();
       machine31 = createMachine({
@@ -43693,9 +43693,9 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_XDPIWU5M();
+      init_chunk_SFHJIQK5();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy32 = createAnatomy("toggle-group").parts("root", "item");
       parts32 = anatomy32.build();
       getRootId25 = (ctx) => {
@@ -44596,11 +44596,11 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_YK3SXPYJ();
-      init_chunk_CUTAIEPE();
-      init_chunk_52M2556W();
+      init_chunk_BF7VYAZN();
+      init_chunk_R3ADGBXU();
+      init_chunk_IPIIGVFP();
       init_chunk_EAQ6WQNO();
-      init_chunk_5L577WPD();
+      init_chunk_JPQZXVRQ();
       anatomy33 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
@@ -45746,8 +45746,9 @@ ${err}`);
                 return;
               }
               if (state2._pendingBeforeUpdate) {
-                state2._pendingBeforeUpdate = false;
-                (_c = real.beforeUpdate) == null ? void 0 : _c.call(this);
+                const toEl = state2._pendingBeforeUpdate === true ? el : state2._pendingBeforeUpdate;
+                state2._pendingBeforeUpdate = void 0;
+                (_c = real.beforeUpdate) == null ? void 0 : _c.call(this, toEl);
               }
               if (state2._pendingUpdated) {
                 state2._pendingUpdated = false;
@@ -45790,13 +45791,13 @@ ${err}`);
         var _a5, _b;
         (_b = (_a5 = this._realHook) == null ? void 0 : _a5.reconnected) == null ? void 0 : _b.call(this);
       },
-      beforeUpdate() {
+      beforeUpdate(toEl) {
         var _a5;
         const state2 = this;
         if ((_a5 = state2._realHook) == null ? void 0 : _a5.beforeUpdate) {
-          state2._realHook.beforeUpdate.call(this);
+          state2._realHook.beforeUpdate.call(this, toEl);
         } else if (state2._mountPromise) {
-          state2._pendingBeforeUpdate = true;
+          state2._pendingBeforeUpdate = toEl;
         }
       }
     };

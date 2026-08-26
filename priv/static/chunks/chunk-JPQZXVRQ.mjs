@@ -188,7 +188,7 @@ function createZagLiveHook(config) {
       this[config.key] = component;
       config.afterInit?.(this, component);
     },
-    beforeUpdate() {
+    beforeUpdate(_toEl) {
       if (config.controlledKeys) {
         this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
       }

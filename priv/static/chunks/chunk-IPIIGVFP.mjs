@@ -1,6 +1,6 @@
 import {
   canPushEvent
-} from "./chunk-5L577WPD.mjs";
+} from "./chunk-JPQZXVRQ.mjs";
 
 // lib/redirect.ts
 var REDIRECT_MODES = ["href", "patch", "navigate"];

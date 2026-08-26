@@ -90,7 +90,7 @@ export function createZagLiveHook<
       config.afterInit?.(this, component);
     },
 
-    beforeUpdate(this: Context) {
+    beforeUpdate(this: Context, _toEl: HTMLElement) {
       if (config.controlledKeys) {
         this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
       }

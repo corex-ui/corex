@@ -7,13 +7,13 @@ import {
   prepareJsHeightInitialState,
   runHeightOpenTransition,
   stripHiddenFromProps
-} from "./chunks/chunk-YK3SXPYJ.mjs";
+} from "./chunks/chunk-BF7VYAZN.mjs";
 import {
   parseDatasetValueList,
   readControlledOrDefaultStringList,
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-XDPIWU5M.mjs";
+} from "./chunks/chunk-SFHJIQK5.mjs";
 import {
   createValueEmitter,
   emitResponse,
@@ -45,7 +45,7 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunks/chunk-5L577WPD.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.43.3/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");

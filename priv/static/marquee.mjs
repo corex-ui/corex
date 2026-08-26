@@ -15,7 +15,7 @@ import {
   getNumber,
   getString,
   mergeWithDefault
-} from "./chunks/chunk-5L577WPD.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.43.3/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");

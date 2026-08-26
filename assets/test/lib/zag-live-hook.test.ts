@@ -110,7 +110,7 @@ describe("createZagLiveHook", () => {
     });
 
     hook.mounted?.call(context as never);
-    hook.beforeUpdate?.call(context as never);
+    hook.beforeUpdate?.call(context as never, el);
     el.dataset.value = "two";
     hook.updated?.call(context as never);
 
@@ -131,7 +131,7 @@ describe("createZagLiveHook", () => {
     });
 
     hook.mounted?.call(context as never);
-    hook.beforeUpdate?.call(context as never);
+    hook.beforeUpdate?.call(context as never, (context as { el: HTMLElement }).el);
 
     expect(() => hook.updated?.call(context as never)).toThrow("boom");
     expect((context as { beforeAttrs?: unknown }).beforeAttrs).toBeUndefined();
@@ -148,7 +148,7 @@ describe("createZagLiveHook", () => {
     });
 
     hook.mounted?.call(context as never);
-    hook.beforeUpdate?.call(context as never);
+    hook.beforeUpdate?.call(context as never, (context as { el: HTMLElement }).el);
 
     expect(beforeUpdate).toHaveBeenCalledOnce();
   });

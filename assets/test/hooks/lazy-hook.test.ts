@@ -107,7 +107,7 @@ describe("createLazyHook", () => {
     const ctx = { el } as object & HookInterface<HTMLElement>;
 
     const mountedPromise = hook.mounted!.call(ctx);
-    hook.beforeUpdate!.call(ctx);
+    hook.beforeUpdate!.call(ctx, el);
     hook.updated!.call(ctx);
     expect(beforeUpdate).not.toHaveBeenCalled();
     expect(updated).not.toHaveBeenCalled();
