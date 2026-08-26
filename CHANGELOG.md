@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Design CSS pipeline
+
+- Design CSS is an **asset build step** only (`mix corex.design.build` on `assets.build` / `assets.deploy`). The optional `Mix.Tasks.Compile.CorexDesign` compiler is removed; do not add `:corex_design` to `compilers`.
+- `mix corex.new` / `mix corex.tableau.new` add `{:corex_design, "~> 0.2", runtime: false}` in every Mix env (no `only: :dev`) so `MIX_ENV=prod mix assets.deploy` can run the Mix task.
+- After changing `config :corex_design`, re-run `mix corex.design.build` (or `mix assets.build`). `mix compile` does not regenerate Design CSS.
+
 ## 0.2.1 - 2026-08-08
 
 ### Bug fixes

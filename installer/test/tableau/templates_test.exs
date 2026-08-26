@@ -60,7 +60,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     )a,
     corex_js_import: "corex",
     corex_dep_source: "\"~> 0.2.0\"",
-    corex_design_dep_source: "\"~> 0.2\", runtime: false, only: :dev",
+    corex_design_dep_source: "\"~> 0.2\", runtime: false",
     corex_mcp_dep_source: "\"~> 0.2.0\", only: [:dev, :test]"
   ]
 
@@ -389,9 +389,11 @@ defmodule Corex.New.Tableau.TemplatesTest do
       refute out =~ "json_polyfill"
     end
 
-    test "includes corex_design compiler when design is on" do
+    test "does not add a corex_design compiler when design is on" do
       out = Templates.mix_exs(@base_assigns)
-      assert out =~ "compilers: Mix.compilers() ++ [:corex_design]"
+      refute out =~ "[:corex_design"
+      refute out =~ "++ [:corex_design]"
+      assert out =~ "corex_design"
     end
 
     test "omits corex_design compiler when design is off" do

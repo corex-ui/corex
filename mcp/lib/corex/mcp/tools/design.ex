@@ -235,7 +235,7 @@ defmodule Corex.MCP.Tools.Design do
     |> build_modifier_vocabulary([], [], [], [], [])
     |> Map.put(
       :note,
-      "Step ladders come from corex_design. Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs to get the real vocabulary."
+      "Step ladders come from corex_design. Add {:corex_design, \"~> 0.2\", runtime: false} to mix.exs to get the real vocabulary."
     )
   end
 
@@ -399,7 +399,7 @@ defmodule Corex.MCP.Tools.Design do
     %{
       intent: "Wire Corex Design CSS into a Phoenix or Tableau app.",
       steps: [
-        "Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs (drop only: :dev when using --a11y / accessibility: true)",
+        "Add {:corex_design, \"~> 0.2\", runtime: false} to mix.exs",
         "Configure config :corex_design (output, default_theme, default_mode, components, optional accessibility)",
         "Add corex.design.build to assets.build / assets.deploy",
         "Import in assets/css/app.css (Phoenix) or assets/css/site.css (Tableau): @import \"../corex/corex.css\"; and @source \"../corex\";",
@@ -410,7 +410,7 @@ defmodule Corex.MCP.Tools.Design do
       @source \"../corex\";
       """,
       note:
-        "With accessibility preference CSS (--a11y), corex_design must be a runtime dependency so plugs/hooks can call Corex.Design.Accessibility."
+        "With accessibility preference CSS (--a11y), plugs/hooks call Corex.Design.Accessibility; keep corex_design without only: :dev so those modules load in every Mix env."
     }
   end
 
@@ -447,7 +447,7 @@ defmodule Corex.MCP.Tools.Design do
       config: "config :corex_design, accessibility: true",
       flags: "--a11y on mix corex.new / mix corex.tableau.new",
       tip:
-        "accessibility: true enables all six axes; pass an axis list to emit a subset. Requires runtime corex_design.",
+        "accessibility: true enables all six axes; pass an axis list to emit a subset. Keep corex_design without only: :dev so plugs/hooks can call Corex.Design.Accessibility.",
       guide: "https://hexdocs.pm/corex/accessibility.html"
     }
   end

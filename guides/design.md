@@ -16,7 +16,7 @@ Corex components work without any bundled CSS. You style them with your own rule
 | List valid config values (`components`, `semantics`, themes, …) | `mix corex.design.options` |
 | Build app assets (includes design) | `mix assets.build` |
 
-`mix corex.new` adds `{:corex_design, ...}`, `config :corex_design` in `config/config.exs`, patches `assets.build` / `assets.deploy` to run `corex.design.build`, and adds `/assets/corex/` to `.gitignore`. Output lands in `assets/corex/` (generated; do not commit it).
+`mix corex.new` adds `{:corex_design, ..., runtime: false}`, `config :corex_design` in `config/config.exs`, patches `assets.build` / `assets.deploy` to run `corex.design.build`, and adds `/assets/corex/` to `.gitignore`. Output lands in `assets/corex/` (generated; do not commit it). After changing `config :corex_design`, re-run `mix corex.design.build` (or `mix assets.build`). Design CSS is an asset build step, not part of `mix compile`.
 
 Related installer flags (all imply design): `--mode` (light/dark), `--theme` (neo, uno, duo, leo). See [Dark mode](dark_mode.html) and [Theming](theming.html).
 

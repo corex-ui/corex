@@ -156,13 +156,13 @@ defmodule Corex.MCP.Tools.Installation do
       mcp_mount_optional_dev: mcp_mount_snippet(),
       design_assets: %{
         steps: [
-          "Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs",
+          "Add {:corex_design, \"~> 0.2\", runtime: false} to mix.exs",
           "Add config :corex_design to config/config.exs (see manual_installation guide)",
           "Add corex.design.build to assets.build and assets.deploy aliases",
           "Run mix corex.design.build"
         ],
         note:
-          "Drop only: :dev when enabling accessibility (config accessibility: true / --a11y) so Corex.Design.Accessibility is available at runtime. Generated apps from mix corex.new include these steps by default when --design is on."
+          "Do not use only: :dev on corex_design — MIX_ENV=prod mix assets.deploy must be able to run the Mix task. Generated apps from mix corex.new include these steps by default when --design is on."
       }
     }
   end

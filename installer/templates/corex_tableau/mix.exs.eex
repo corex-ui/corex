@@ -7,8 +7,7 @@ defmodule <%= @app_module %>.MixProject do
       version: "0.1.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
-<%= if @design do %>      compilers: Mix.compilers() ++ [:corex_design],
-<% end %>      aliases: aliases(),
+      aliases: aliases(),
       deps: deps()<%= if @usage_rules do %>,
       usage_rules: usage_rules()<% end %>
     ]

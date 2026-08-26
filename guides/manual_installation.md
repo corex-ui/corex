@@ -224,18 +224,12 @@ mix assets.build
 Add the `corex_design` dependency to `mix.exs`:
 
 ```elixir
-{:corex_design, "~> 0.2", runtime: false, only: :dev},
+{:corex_design, "~> 0.2", runtime: false},
 ```
 
-Optionally rebuild Design CSS on every compile (most apps call the build from `assets.build` / `assets.deploy` instead):
+Keep `runtime: false` so the Mix task is available in every Mix env (including `MIX_ENV=prod mix assets.deploy`) without starting Design as an OTP app. Do not use `only: :dev`.
 
-```elixir
-def project do
-  [
-    compilers: Mix.compilers() ++ [:corex_design]
-  ]
-end
-```
+Add `"corex.design.build"` to your `assets.build` and `assets.deploy` aliases in `mix.exs` (same layer as Tailwind and esbuild). Design CSS is an asset build step, not part of `mix compile`.
 
 Add to `config/config.exs` (build-time CSS only; see [Configuration](configuration.html)):
 
@@ -250,9 +244,7 @@ config :corex_design,
   semantics: nil
 ```
 
-`default_theme` / `default_mode` / `themes` control which theme CSS the design build emits. They are not the runtime picker allowlist (`config :my_app, :themes`). `components:` lists the component recipes to emit. Omit the key or set `nil` for the full catalog. `semantics:` trims unused palette roles and `ui-{role}` utilities when you need a smaller bundle. List allowed keys with `mix corex.design.options`.
-
-Add `"corex.design.build"` to your `assets.build` and `assets.deploy` aliases in `mix.exs`.
+`default_theme` / `default_mode` / `themes` control which theme CSS the design build emits. They are not the runtime picker allowlist (`config :my_app, :themes`). `components:` lists the component recipes to emit. Omit the key or set `nil` for the full catalog. `semantics:` trims unused palette roles and `ui-{role}` utilities when you need a smaller bundle. List allowed keys with `mix corex.design.options`. After changing this config, re-run `mix corex.design.build` (or `mix assets.build`).
 
 Ignore the generated output in git (rebuild with `mix corex.design.build`):
 

@@ -71,20 +71,12 @@ defmodule Corex.New.Shared do
   end
 
   def corex_design_dep_source(opts) do
-    a11y = Keyword.get(opts, :a11y, false)
-
-    case {dev_path(opts), a11y} do
-      {nil, true} ->
+    case dev_path(opts) do
+      nil ->
         ~s("#{@minor_constraint}", runtime: false)
 
-      {nil, false} ->
-        ~s("#{@minor_constraint}", runtime: false, only: :dev)
-
-      {path, true} ->
+      path ->
         "[path: #{inspect(Path.join(path, "design"))}, runtime: false]"
-
-      {path, false} ->
-        "[path: #{inspect(Path.join(path, "design"))}, runtime: false, only: :dev]"
     end
   end
 

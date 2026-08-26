@@ -422,7 +422,14 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_dir(design_dir)
 
     refute_file(Path.join(base, "assets/corex_design.exs"))
-    assert_file(Path.join(base, "mix.exs"), ~r/\{:corex_design,/)
+
+    assert_file(Path.join(base, "mix.exs"), fn mix ->
+      assert mix =~ ~r/\{:corex_design,/
+      refute mix =~ "[:corex_design"
+      refute mix =~ "++ [:corex_design]"
+      refute mix =~ ~r/\{:corex_design,[^}]*only:\s*:dev\}/
+    end)
+
     assert_file(Path.join(base, "mix.exs"), ~r/\{:corex_mcp,/)
     assert_file(Path.join(base, "mix.exs"), "corex.design.build")
     assert_file(Path.join(base, "config/config.exs"), "config :corex_design")

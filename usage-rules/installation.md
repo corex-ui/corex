@@ -96,7 +96,7 @@ mix compile && mix assets.build
 
 ## Design assets
 
-Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}`, configure `config :corex_design`, add `/assets/corex/` to `.gitignore`, then:
+Add `{:corex_design, "~> 0.2", runtime: false}`, configure `config :corex_design`, add `/assets/corex/` to `.gitignore`, then:
 
 ```sh
 mix corex.design.build

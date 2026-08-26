@@ -103,7 +103,8 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.read!("mix.exs") =~ ~s({:makeup, "~> 1.2"})
       assert File.read!("mix.exs") =~ "corex_mcp"
       assert File.read!("mix.exs") =~ "usage_rules"
-      assert File.read!("mix.exs") =~ "compilers: Mix.compilers() ++ [:corex_design]"
+      refute File.read!("mix.exs") =~ "[:corex_design"
+      refute File.read!("mix.exs") =~ "++ [:corex_design]"
       assert File.read!("config/config.exs") =~ "config :corex_design"
       assert File.read!("config/config.exs") =~ "header_id_prefix"
       assert File.read!("config/config.exs") =~ "Tableau.TagExtension"

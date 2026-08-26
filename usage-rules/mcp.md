@@ -11,7 +11,7 @@ Self-hosted read-only MCP via the **`corex_mcp`** Hex package. **Dev and test on
 {:corex_mcp, "~> 0.2", only: [:dev, :test]}
 ```
 
-Optional: `{:corex_design, "~> 0.2", runtime: false, only: :dev}` for design tools and richer `get_component` fields.
+Optional: `{:corex_design, "~> 0.2", runtime: false}` for design tools and richer `get_component` fields.
 ## Phoenix mount
 
 After `Plug.Static`, before code reloader in `endpoint.ex`:

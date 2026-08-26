@@ -11,7 +11,7 @@ You build and run a Phoenix app with Corex in production. Corex ships as plain H
 | `SECRET_KEY_BASE` | `mix phx.gen.secret` |
 | Database URL | Production or local stand-in |
 | ESM Esbuild | `--format=esm --splitting` from [Manual installation](manual_installation.html) |
-| Design (if used) | `corex.design.build` runs before Tailwind/Esbuild in `assets.deploy` |
+| Design (if used) | `corex.design.build` runs before Tailwind/Esbuild in `assets.deploy`. Keep `{:corex_design, ..., runtime: false}` (no `only: :dev`) so the Mix task is available under `MIX_ENV=prod`. |
 | MCP | Mount only in `:dev` / `:test`; never enable in `:prod` |
 
 ## How it works

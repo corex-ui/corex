@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+Design CSS is generated only by `mix corex.design.build` (Phoenix `assets.build` /
+`assets.deploy`). The `Mix.Tasks.Compile.CorexDesign` compiler is removed.
+
+See the monorepo
+[CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+
 ## 0.2.1 - 2026-08-08
 
 Patch release aligned with Corex 0.2.1. No Design API changes.
