@@ -4,7 +4,7 @@ import type { SelectionDetails, OpenChangeDetails, Props } from "@zag-js/menu";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { notifyChange, readPayloadId } from "../lib/respond-to";
 import { redirectCollectionItem } from "../lib/collection-hook";
-import type { RedirectContext } from "../lib/redirect";
+import { performRedirect, readDomItemRedirect, type RedirectContext } from "../lib/redirect";
 import { readPositioningOptions } from "../lib/positioning";
 import { createZagLiveHook } from "../lib/zag-live-hook";
 
@@ -81,7 +81,7 @@ export function handleMenuSelect(
 ): boolean {
   const redirected =
     getBoolean(el, "redirect") && details.value
-      ? redirectCollectionItem(el, "menu", details.value, liveSocket)
+      ? redirectMenuItem(el, details.value, liveSocket)
       : false;
 
   if (redirected) return true;
@@ -99,6 +99,19 @@ export function handleMenuSelect(
   });
 
   return false;
+}
+
+function redirectMenuItem(
+  el: HTMLElement,
+  value: string,
+  liveSocket: RedirectContext["liveSocket"]
+): boolean {
+  if (redirectCollectionItem(el, "menu", value, liveSocket)) return true;
+
+  const itemEl = document.querySelector<HTMLElement>(
+    `[id="${CSS.escape(el.id)}:content"] [data-scope="menu"][data-part="item"][data-value="${CSS.escape(value)}"]`
+  );
+  return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
 }
 
 const MenuHook = createZagLiveHook<MenuHookState, Menu>({

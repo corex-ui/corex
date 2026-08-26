@@ -18,7 +18,10 @@ import {
   redirectCollectionItem
 } from "./chunks/chunk-L27QKFAY.mjs";
 import "./chunks/chunk-R3ADGBXU.mjs";
-import "./chunks/chunk-IPIIGVFP.mjs";
+import {
+  performRedirect,
+  readDomItemRedirect
+} from "./chunks/chunk-IPIIGVFP.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
@@ -1832,7 +1835,7 @@ function menuSetOpenMatches(elId, payload) {
   return elId === targetId || elId === `menu:${targetId}`;
 }
 function handleMenuSelect(el, details, liveSocket, pushEvent) {
-  const redirected = getBoolean(el, "redirect") && details.value ? redirectCollectionItem(el, "menu", details.value, liveSocket) : false;
+  const redirected = getBoolean(el, "redirect") && details.value ? redirectMenuItem(el, details.value, liveSocket) : false;
   if (redirected) return true;
   notifyChange({
     el,
@@ -1846,6 +1849,13 @@ function handleMenuSelect(el, details, liveSocket, pushEvent) {
     clientEventName: getString(el, "onSelectClient")
   });
   return false;
+}
+function redirectMenuItem(el, value, liveSocket) {
+  if (redirectCollectionItem(el, "menu", value, liveSocket)) return true;
+  const itemEl = document.querySelector(
+    `[id="${CSS.escape(el.id)}:content"] [data-scope="menu"][data-part="item"][data-value="${CSS.escape(value)}"]`
+  );
+  return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
 }
 var MenuHook = createZagLiveHook({
   key: "menu",

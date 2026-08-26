@@ -80,6 +80,32 @@ describe("handleMenuSelect", () => {
     expect(pushEvent).not.toHaveBeenCalled();
   });
 
+  it("finds a portaled content item by host content id", () => {
+    const el = document.createElement("div");
+    el.id = "menu:tickets-row-1";
+    el.setAttribute("data-redirect", "");
+    el.setAttribute("data-on-select", "row_menu");
+    document.body.appendChild(el);
+
+    const content = document.createElement("div");
+    content.id = "menu:tickets-row-1:content";
+    const show = document.createElement("div");
+    show.dataset.scope = "menu";
+    show.dataset.part = "item";
+    show.dataset.value = "show:1";
+    show.setAttribute("data-to", "/en/admin/tickets/1");
+    show.setAttribute("data-redirect", "navigate");
+    content.appendChild(show);
+    document.body.appendChild(content);
+
+    const { ctx, navigate } = mockLiveSocket(true);
+    const pushEvent = vi.fn();
+
+    expect(handleMenuSelect(el, { value: "show:1" }, ctx.liveSocket, pushEvent)).toBe(true);
+    expect(navigate).toHaveBeenCalledWith("/en/admin/tickets/1");
+    expect(pushEvent).not.toHaveBeenCalled();
+  });
+
   it("pushes onSelect when the item opts out of redirect", () => {
     const el = rowMenuHost();
     const { ctx, navigate } = mockLiveSocket(true);
