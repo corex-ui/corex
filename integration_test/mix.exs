@@ -41,7 +41,7 @@ defmodule Corex.Integration.MixProject do
       {:phoenix_ecto, "~> 4.5"},
       {:esbuild, "~> 0.10", runtime: false},
       {:ecto_sql, "~> 3.13"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, "~> 0.22.4"},
       {:ecto_sqlite3, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_view, "~> 1.1"},
