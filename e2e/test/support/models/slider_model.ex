@@ -472,7 +472,9 @@ defmodule E2eWeb.SliderModel do
   end
 
   def slider_events_client_dispatch_value(session, host_id, value)
-      when is_binary(host_id) and is_number(value) do
+      when is_binary(host_id) do
+    encoded = Jason.encode!(normalize_dispatch_value(value))
+
     if not (String.match?(host_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_id) > 0) do
       raise ArgumentError, "invalid slider host id"
     end
@@ -489,7 +491,7 @@ defmodule E2eWeb.SliderModel do
       const el = document.getElementById(#{Jason.encode!(host_id)});
       if (el) {
         el.dispatchEvent(new CustomEvent('corex:slider:set-value', {
-          detail: { value: #{Jason.encode!(value * 1.0)} },
+          detail: { value: #{encoded} },
           bubbles: false
         }));
       }

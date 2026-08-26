@@ -666,10 +666,10 @@ defmodule E2eWeb.PageController do
     changeset = changeset_fun.(struct(schema), ecto_params)
 
     if changeset.valid? do
-      volume = ecto_params["volume"]
+      data = Ecto.Changeset.apply_changes(changeset)
 
       conn
-      |> put_flash(:info, "Submitted: volume=#{inspect(volume)}")
+      |> put_flash(:info, "Submitted: volume=#{inspect(data.volume)}")
       |> redirect(to: ~p"/slider/form##{form_id}")
     else
       invalid_form =
