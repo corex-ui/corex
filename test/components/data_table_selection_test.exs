@@ -38,6 +38,18 @@ defmodule Corex.DataTable.SelectionTest do
       assert socket.assigns.selected == []
     end
 
+    test "pushes checkbox_set_checked for the clicked row and select-all" do
+      socket = base_socket()
+
+      socket =
+        Selection.handle_select(socket, %{"id" => "tbl-select-1", "checked" => true}, :users)
+
+      events = get_in(socket.private, [:live_temp, :push_events]) || []
+
+      assert ["checkbox_set_checked", %{"id" => "tbl-select-1", "checked" => true}] in events
+      assert ["checkbox_set_checked", %{"id" => "tbl-select-all", "checked" => false}] in events
+    end
+
     test "treats string checked values like booleans" do
       socket = base_socket()
 
@@ -80,6 +92,13 @@ defmodule Corex.DataTable.SelectionTest do
         Selection.handle_select(socket, %{"id" => "tbl-select-forged", "checked" => true}, :users)
 
       assert socket.assigns.selected == []
+
+      events = get_in(socket.private, [:live_temp, :push_events]) || []
+
+      refute Enum.any?(
+               events,
+               &match?(["checkbox_set_checked", %{"id" => "tbl-select-forged"}], &1)
+             )
     end
 
     test "drops stale selected ids not in current rows" do

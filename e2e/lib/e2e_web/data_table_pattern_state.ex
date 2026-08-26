@@ -56,6 +56,7 @@ defmodule E2eWeb.DataTablePatternState do
 
     socket
     |> assign(selected_k, selected)
+    |> Corex.Checkbox.set_checked(checkbox_id, checked_on?(checked))
     |> Corex.Checkbox.set_checked("#{table_id}-select-all", all?)
   end
 

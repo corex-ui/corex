@@ -107,12 +107,20 @@ defmodule Corex.DataTable.Selection do
     selected = Enum.filter(selected, &MapSet.member?(valid_ids, &1))
 
     all_selected =
-      MapSet.subset?(MapSet.new(selected), valid_ids) and
+      MapSet.size(valid_ids) > 0 and
+        MapSet.subset?(MapSet.new(selected), valid_ids) and
         length(selected) == MapSet.size(valid_ids)
 
-    socket
-    |> assign(:selected, selected)
-    |> Checkbox.set_checked("#{table_id}-select-all", all_selected)
+    socket = assign(socket, :selected, selected)
+
+    socket =
+      if MapSet.member?(valid_ids, row_id) do
+        Checkbox.set_checked(socket, checkbox_id, checked)
+      else
+        socket
+      end
+
+    Checkbox.set_checked(socket, "#{table_id}-select-all", all_selected)
   end
 
   @doc """
