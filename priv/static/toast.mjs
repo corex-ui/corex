@@ -1,10 +1,10 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-7LIL4AMN.mjs";
+} from "./chunks/chunk-JANAZAUC.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-W5DI6MB3.mjs";
-import "./chunks/chunk-YIIKBOMK.mjs";
+} from "./chunks/chunk-IWZKGRXV.mjs";
+import "./chunks/chunk-DHINQKK3.mjs";
 import {
   AnimationFrame,
   Component,
@@ -25,14 +25,15 @@ import {
   getDir,
   getNumber,
   getString,
+  mergeWithDefault,
   raf,
   runIfFn,
   setup,
   uuid,
   warn
-} from "./chunks/chunk-HMQI4LDM.mjs";
+} from "./chunks/chunk-5L577WPD.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
   "group",
   "root",
@@ -43,7 +44,7 @@ var anatomy = createAnatomy("toast").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.dom.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast.dom.mjs
 var getRegionId = (placement) => `toast-group:${placement}`;
 var getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
 var getRootId = (ctx) => `toast:${ctx.id}`;
@@ -52,7 +53,7 @@ var getTitleId = (ctx) => `toast:${ctx.id}:title`;
 var getDescriptionId = (ctx) => `toast:${ctx.id}:description`;
 var getCloseTriggerId = (ctx) => `toast${ctx.id}:close`;
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.utils.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast.utils.mjs
 var defaultTimeouts = {
   info: 5e3,
   error: 5e3,
@@ -224,7 +225,7 @@ function getGhostAfterStyle() {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast-group.connect.mjs
 function groupConnect(service, normalize) {
   const { context, prop, send, refs, computed } = service;
   return {
@@ -283,7 +284,7 @@ function groupConnect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast-group.machine.mjs
 var { guards, createMachine: createMachine2 } = setup();
 var { and } = guards;
 var groupMachine = createMachine2({
@@ -533,10 +534,13 @@ var groupMachine = createMachine2({
   }
 });
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast.connect.mjs
+var defaultTranslations = {
+  closeTriggerLabel: "Dismiss notification"
+};
 function connect(service, normalize) {
   const { state, send, prop, scope, context, computed } = service;
-  const translations = prop("translations");
+  const translations = mergeWithDefault(defaultTranslations, prop("translations"));
   const visible = state.hasTag("visible");
   const paused = state.hasTag("paused");
   const mounted = context.get("mounted");
@@ -648,7 +652,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -656,10 +660,6 @@ var machine = createMachine({
     return {
       closable: true,
       ...props,
-      translations: {
-        closeTriggerLabel: "Dismiss notification",
-        ...props.translations
-      },
       duration: getToastDuration(props.duration, props.type)
     };
   },
@@ -902,7 +902,7 @@ function setHeight(parent, item) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.store.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/toast.store.mjs
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
 };
@@ -1145,7 +1145,7 @@ var isHttpResponse = (data) => {
   return data && typeof data === "object" && "ok" in data && typeof data.ok === "boolean" && "status" in data && typeof data.status === "number";
 };
 
-// ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.43.3/node_modules/@zag-js/toast/dist/index.mjs
 var group = {
   connect: groupConnect,
   machine: groupMachine

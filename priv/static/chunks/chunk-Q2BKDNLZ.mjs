@@ -6,9 +6,9 @@ import {
   isNull,
   noop,
   raf
-} from "./chunk-HMQI4LDM.mjs";
+} from "./chunk-5L577WPD.mjs";
 
-// ../node_modules/.pnpm/@zag-js+popper@1.42.0/node_modules/@zag-js/popper/dist/placement.mjs
+// ../node_modules/.pnpm/@zag-js+popper@1.43.3/node_modules/@zag-js/popper/dist/placement.mjs
 function getPlacementDetails(placement) {
   const [side, align] = placement.split("-");
   return { side, align, hasAlign: align != null };
@@ -1634,7 +1634,7 @@ var computePosition2 = (reference, floating, options) => {
   });
 };
 
-// ../node_modules/.pnpm/@zag-js+popper@1.42.0/node_modules/@zag-js/popper/dist/get-anchor.mjs
+// ../node_modules/.pnpm/@zag-js+popper@1.43.3/node_modules/@zag-js/popper/dist/get-anchor.mjs
 function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
     return new DOMRect(x, y, width, height);
@@ -1670,7 +1670,7 @@ function getAnchorElement(anchorElement, getAnchorRect) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+popper@1.42.0/node_modules/@zag-js/popper/dist/middleware.mjs
+// ../node_modules/.pnpm/@zag-js+popper@1.43.3/node_modules/@zag-js/popper/dist/middleware.mjs
 var toVar = (value) => ({ variable: value, reference: `var(${value})` });
 var cssVars = {
   arrowSize: toVar("--arrow-size"),
@@ -1745,12 +1745,13 @@ var shiftArrowMiddleware = (arrowEl) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+popper@1.42.0/node_modules/@zag-js/popper/dist/get-placement.mjs
+// ../node_modules/.pnpm/@zag-js+popper@1.43.3/node_modules/@zag-js/popper/dist/get-placement.mjs
 var defaultOptions = {
   strategy: "absolute",
   placement: "bottom",
   listeners: true,
   restoreStyles: false,
+  applyStyles: true,
   gutter: 8,
   flip: true,
   slide: true,
@@ -1981,10 +1982,11 @@ function getPlacementImpl(referenceOrVirtual, floatingOrVirtual, opts = {}) {
       middleware,
       strategy
     });
-    onComplete?.(pos);
     const win = getWindow(floating);
     const x = roundByDpr(win, pos.x);
     const y = roundByDpr(win, pos.y);
+    onComplete?.({ ...pos, x, y });
+    if (options.applyStyles === false) return;
     if (!isApproximatelyEqual(lastX, x)) {
       floating.style.setProperty("--x", `${x}px`);
       lastX = x;
@@ -2041,7 +2043,7 @@ function getPlacement(referenceOrFn, floatingOrFn, opts = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+popper@1.42.0/node_modules/@zag-js/popper/dist/get-styles.mjs
+// ../node_modules/.pnpm/@zag-js+popper@1.43.3/node_modules/@zag-js/popper/dist/get-styles.mjs
 var ARROW_FLOATING_STYLE = {
   bottom: "rotate(45deg)",
   left: "rotate(135deg)",
