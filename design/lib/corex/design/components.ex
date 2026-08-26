@@ -21,6 +21,7 @@ defmodule Corex.Design.Components do
           | :host_badge
 
   @components %{
+    "admin" => %{family: :static},
     "accordion" => %{family: :action},
     "angle-slider" => %{family: :selection},
     "avatar" => %{family: :action},
@@ -236,7 +237,7 @@ defmodule Corex.Design.Components do
     "link" => "navigate"
   }
 
-  @css_only_ids ~w(badge scrollbar typo)
+  @css_only_ids ~w(admin badge scrollbar typo)
 
   @unknown_part_hosts for {host, _part, _role} <- @parts,
                           not Map.has_key?(@components, host),

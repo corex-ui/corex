@@ -32,17 +32,17 @@ defmodule CorexAdmin.Live.Home do
           CRUD is a counterexample — do not copy it.
         </:subtitle>
       </.layout_heading>
-      <div :if={@grouped == %{}} class="text-ink-muted">No resources available.</div>
-      <section :for={{group, resources} <- @grouped} class="flex flex-col gap-space">
-        <h2 class="m-0 text-lg font-semibold">{group}</h2>
-        <ul class="m-0 grid list-none grid-cols-1 gap-space p-0 sm:grid-cols-2">
+      <div :if={@grouped == %{}} class="admin-muted">No resources available.</div>
+      <section :for={{group, resources} <- @grouped} class="admin-home-group">
+        <h2 class="admin-home-title">{group}</h2>
+        <ul class="admin-home-list">
           <li :for={resource <- resources}>
             <.navigate
               to={Helpers.resource_path(assigns, Helpers.spec(resource))}
-              class="flex flex-col gap-space-xs rounded-md border border-border bg-surface p-space text-ink no-underline hover:bg-ui-hover"
+              class="admin-home-card"
             >
-              <span class="text-lg font-semibold">{Helpers.spec(resource).label}</span>
-              <span class="text-sm text-ink-muted">Manage {Helpers.spec(resource).label}</span>
+              <span class="admin-home-card-title">{Helpers.spec(resource).label}</span>
+              <span class="admin-home-card-copy">Manage {Helpers.spec(resource).label}</span>
             </.navigate>
           </li>
         </ul>

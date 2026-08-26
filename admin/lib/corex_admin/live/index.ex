@@ -69,7 +69,7 @@ defmodule CorexAdmin.Live.Index do
         </:actions>
       </.layout_heading>
 
-      <div class="flex w-full flex-col gap-space">
+      <div class="admin-stack">
         <.collapsible id={"#{@spec.slug}-filters"} class="collapsible" open={true}>
           <:trigger>
             Filters
@@ -84,7 +84,7 @@ defmodule CorexAdmin.Live.Index do
             <form
               id={"#{@spec.slug}-search"}
               phx-change="search"
-              class="flex w-full flex-wrap items-end gap-space"
+              class="admin-filter-form"
             >
               <.native_input
                 :if={@list_opts.search_fields != []}
@@ -92,7 +92,7 @@ defmodule CorexAdmin.Live.Index do
                 type="search"
                 name="q"
                 value={@list_opts.search}
-                class="native-input ui-size-sm min-w-48 flex-1"
+                class="native-input ui-size-sm admin-filter-search"
                 phx-debounce="400"
               >
                 <:label>Search</:label>
@@ -114,9 +114,9 @@ defmodule CorexAdmin.Live.Index do
 
       <div
         :if={@spec.selectable and @selected != []}
-        class="flex flex-wrap items-center gap-space"
+        class="admin-selection-bar"
       >
-        <p class="m-0 text-sm text-ink-muted">{length(@selected)} selected</p>
+        <p class="admin-muted">{length(@selected)} selected</p>
         <Components.bulk_delete_dialog
           :if={Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok}
           id={"#{@spec.slug}-bulk-delete"}
@@ -125,10 +125,10 @@ defmodule CorexAdmin.Live.Index do
         />
       </div>
 
-      <div class="overflow-x-auto">
+      <div class="admin-table-wrap">
         <.data_table
           id={"#{@spec.slug}-table"}
-          class="data-table ui-size-sm max-w-none"
+          class="data-table ui-size-sm"
           rows={@entries}
           sort_by={sort_by(@list_opts)}
           sort_order={sort_order(@list_opts)}
@@ -207,13 +207,13 @@ defmodule CorexAdmin.Live.Index do
         </.data_table>
       </div>
 
-      <div class="flex w-full flex-nowrap items-center justify-between gap-space">
-        <p class="m-0 min-w-0 truncate text-sm text-ink-muted">
+      <div class="admin-footer">
+        <p class="admin-footer-meta">
           Showing {elem(@window, 0)}–{elem(@window, 1)} of {elem(@window, 2)}
         </p>
         <.pagination
           id={"#{@spec.slug}-pagination"}
-          class="pagination shrink-0"
+          class="pagination"
           count={@page.total}
           page={@page.page}
           page_size={@page.page_size}
@@ -227,7 +227,7 @@ defmodule CorexAdmin.Live.Index do
           <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
           <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
         </.pagination>
-        <form id={"#{@spec.slug}-page-size"} phx-change="page_size" class="hidden shrink-0 sm:block">
+        <form id={"#{@spec.slug}-page-size"} phx-change="page_size" class="admin-page-size">
           <.native_input
             id={"#{@spec.slug}-page-size-input"}
             type="select"
@@ -532,9 +532,9 @@ defmodule CorexAdmin.Live.Index do
   end
 
   defp filter_item_class(%{type: type}) when type in [:date_range, :datetime_range],
-    do: "min-w-64 basis-full"
+    do: "admin-filter-item admin-filter-item--range"
 
-  defp filter_item_class(_), do: "shrink-0"
+  defp filter_item_class(_), do: "admin-filter-item"
 
   defp filter_badge_count(%ListOpts{} = opts) do
     search = if opts.search not in [nil, ""], do: 1, else: 0

@@ -52,7 +52,7 @@ defmodule CorexAdmin.Live.Show do
   def render(assigns) do
     ~H"""
     <Components.shell :if={assigns[:record]} socket={assigns} current={@spec}>
-      <div class="flex w-full flex-col gap-space-lg">
+      <div class="admin-stack admin-stack--lg">
         <Components.breadcrumbs
           prefix={@corex_admin_prefix}
           spec={@spec}
@@ -90,7 +90,7 @@ defmodule CorexAdmin.Live.Show do
         </.layout_heading>
 
         <.data_list
-          class="data-list w-full max-w-none"
+          class="data-list"
           items={
             Corex.Content.new(
               for field <- @show_fields, field.type != :embeds_many do

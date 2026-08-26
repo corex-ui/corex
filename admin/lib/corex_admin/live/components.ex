@@ -17,19 +17,13 @@ defmodule CorexAdmin.Live.Components do
 
   def shell(assigns) do
     ~H"""
-    <div class="flex min-h-0 min-w-0 flex-1">
-      <aside
-        class="sticky top-[var(--spacing-size-lg)] hidden h-[calc(100dvh-var(--spacing-size-lg))] w-full max-w-xs shrink-0 flex-col gap-space overflow-y-auto border-r border-border bg-surface px-space py-space lg:flex"
-        aria-label="Admin"
-      >
+    <div class="admin">
+      <aside class="admin-sidebar" aria-label="Admin">
         <.nav_tree socket={@socket} current={@current} id="admin-nav-tree" />
       </aside>
-      <div class="flex min-w-0 flex-1 flex-col">
-        <nav
-          class="border-b border-border px-space py-space-sm lg:hidden"
-          aria-label="Admin resources"
-        >
-          <.collapsible id="admin-nav-mobile" class="collapsible w-full">
+      <div class="admin-body">
+        <nav class="admin-mobile-nav" aria-label="Admin resources">
+          <.collapsible id="admin-nav-mobile" class="collapsible">
             <:trigger>Resources</:trigger>
             <:closed>
               <.heroicon name="hero-chevron-right" />
@@ -39,7 +33,7 @@ defmodule CorexAdmin.Live.Components do
             </:content>
           </.collapsible>
         </nav>
-        <div class="flex min-w-0 flex-1 flex-col gap-space px-space py-space lg:px-space">
+        <div class="admin-content">
           {render_slot(@inner_block)}
         </div>
       </div>
@@ -64,17 +58,17 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <.tree_view
       id={@id}
-      class="tree-view w-full max-w-none"
+      class="tree-view"
       redirect
       value={@selected}
       expanded_value={@expanded}
       items={@items}
     >
       <:branch :let={branch}>
-        <span class="min-w-0 truncate">{branch.label}</span>
+        <span class="admin-truncate">{branch.label}</span>
       </:branch>
       <:item :let={item}>
-        <span class="min-w-0 truncate">{item.label}</span>
+        <span class="admin-truncate">{item.label}</span>
       </:item>
       <:branch_indicator>
         <.heroicon name="hero-chevron-right" class="icon" />
@@ -93,42 +87,42 @@ defmodule CorexAdmin.Live.Components do
     <nav
       :if={@live_action in [:show, :new, :edit]}
       aria-label="Breadcrumb"
-      class="text-sm text-ink-muted"
+      class="admin-crumbs"
     >
-      <ol class="m-0 flex list-none flex-wrap items-center gap-space-sm p-0">
+      <ol class="admin-crumbs-list">
         <li>
-          <.navigate to={@prefix} class="text-ink-muted no-underline hover:text-ink">Admin</.navigate>
+          <.navigate to={@prefix} class="admin-crumb-link">Admin</.navigate>
         </li>
-        <li :if={@spec} class="flex items-center gap-space-sm">
+        <li :if={@spec} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
           <.navigate
             :if={@live_action != :index}
             to={Path.join(@prefix, @spec.slug)}
-            class="text-ink-muted no-underline hover:text-ink"
+            class="admin-crumb-link"
           >
             {@spec.label}
           </.navigate>
         </li>
-        <li :if={@live_action == :new} class="flex items-center gap-space-sm">
+        <li :if={@live_action == :new} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
-          <span class="text-ink-muted">New</span>
+          <span class="admin-crumb-current">New</span>
         </li>
-        <li :if={@live_action == :show and @record} class="flex items-center gap-space-sm">
+        <li :if={@live_action == :show and @record} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
-          <span class="text-ink-muted">{Helpers.record_title(@spec, @record)}</span>
+          <span class="admin-crumb-current">{Helpers.record_title(@spec, @record)}</span>
         </li>
-        <li :if={@live_action == :edit and @record} class="flex items-center gap-space-sm">
+        <li :if={@live_action == :edit and @record} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
           <.navigate
             to={Path.join([@prefix, @spec.slug, Helpers.record_id(@spec, @record)])}
-            class="text-ink-muted no-underline hover:text-ink"
+            class="admin-crumb-link"
           >
             {Helpers.record_title(@spec, @record)}
           </.navigate>
         </li>
-        <li :if={@live_action == :edit and @record} class="flex items-center gap-space-sm">
+        <li :if={@live_action == :edit and @record} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
-          <span class="text-ink-muted">Edit</span>
+          <span class="admin-crumb-current">Edit</span>
         </li>
       </ol>
     </nav>
@@ -148,7 +142,7 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <span :if={@badge} class={@badge}>{@formatted}</span>
-    <span :if={!@badge} class="block max-w-48 truncate" title={@formatted}>{@formatted}</span>
+    <span :if={!@badge} class="admin-cell" title={@formatted}>{@formatted}</span>
     """
   end
 
@@ -164,7 +158,7 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <.select
       field={@form[@field.name]}
-      class="select relative w-full max-w-none"
+      class="select"
       items={@items}
       auto_invalid
     >
@@ -172,7 +166,7 @@ defmodule CorexAdmin.Live.Components do
       <:trigger>
         <.heroicon name="hero-chevron-down" />
       </:trigger>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.select>
@@ -185,7 +179,7 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <.date_picker
       field={@form[@field.name]}
-      class="date-picker relative w-full max-w-none"
+      class="date-picker"
       auto_invalid
     >
       <:label>{@field.label}</:label>
@@ -198,7 +192,7 @@ defmodule CorexAdmin.Live.Components do
       <:next_trigger>
         <.heroicon name="hero-chevron-right" />
       </:next_trigger>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.date_picker>
@@ -211,7 +205,7 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <.number_input
       field={@form[@field.name]}
-      class="number-input relative w-full max-w-none"
+      class="number-input"
       orientation="vertical"
       auto_invalid
     >
@@ -222,7 +216,7 @@ defmodule CorexAdmin.Live.Components do
       <:increment_trigger>
         <.heroicon name="hero-chevron-up" class="icon" />
       </:increment_trigger>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.number_input>
@@ -231,7 +225,7 @@ defmodule CorexAdmin.Live.Components do
 
   def field_input(%{field: %Field{type: :embeds_many}} = assigns) do
     ~H"""
-    <.nested_fields field={@form[@field.name]} class="nested-fields relative w-full max-w-none">
+    <.nested_fields field={@form[@field.name]} class="nested-fields">
       <:label>{@field.label}</:label>
       <:empty>No {@field.label} yet.</:empty>
       <:col :let={nested} :for={child <- @field.fields} label={child.label}>
@@ -249,9 +243,9 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
 
     ~H"""
-    <.switch field={@form[@field.name]} class="switch relative w-full max-w-none" auto_invalid>
+    <.switch field={@form[@field.name]} class="switch" auto_invalid>
       <:label>{@field.label}</:label>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.switch>
@@ -264,12 +258,12 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <.password_input
       field={@form[@field.name]}
-      class="password-input relative w-full max-w-none"
+      class="password-input"
       value=""
       auto_invalid
     >
       <:label>{@field.label}</:label>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.password_input>
@@ -283,11 +277,11 @@ defmodule CorexAdmin.Live.Components do
     <.native_input
       type="datetime-local"
       field={@form[@field.name]}
-      class="native-input relative w-full max-w-none"
+      class="native-input"
       auto_invalid
     >
       <:label>{@field.label}</:label>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.native_input>
@@ -301,11 +295,11 @@ defmodule CorexAdmin.Live.Components do
     <.native_input
       type={native_type(@field.type)}
       field={@form[@field.name]}
-      class="native-input relative w-full max-w-none"
+      class="native-input"
       auto_invalid
     >
       <:label>{@field.label}</:label>
-      <:error :let={msg} class="absolute top-0 end-0">
+      <:error :let={msg} class="admin-field-error">
         <.field_error_tip id={@tip_id} msg={msg} />
       </:error>
     </.native_input>
@@ -356,7 +350,7 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :chips, chips)
 
     ~H"""
-    <div :if={@chips != []} class="flex flex-wrap items-center gap-space-sm">
+    <div :if={@chips != []} class="admin-chips">
       <span :for={chip <- @chips} class="badge ui-size-sm">
         {chip.label}: {chip.text}
         <.action
@@ -407,7 +401,7 @@ defmodule CorexAdmin.Live.Components do
       <:title>Delete {@spec.label}?</:title>
       <:description>This action cannot be undone.</:description>
       <:content>
-        <div class="mt-space-lg flex flex-wrap justify-end gap-space-sm">
+        <div class="admin-dialog-actions">
           <.action
             id={"#{@id}-cancel"}
             phx-click={Corex.Dialog.set_open(@id, false)}
@@ -452,7 +446,7 @@ defmodule CorexAdmin.Live.Components do
       <:title>Delete {@count} {@spec.label}?</:title>
       <:description>This action cannot be undone. Each record is authorized separately.</:description>
       <:content>
-        <div class="mt-space-lg flex flex-wrap justify-end gap-space-sm">
+        <div class="admin-dialog-actions">
           <.action
             id={"#{@id}-cancel"}
             phx-click={Corex.Dialog.set_open(@id, false)}
@@ -518,7 +512,7 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :picked, date_picker_value(assigns.value))
 
     ~H"""
-    <div class="min-w-64">
+    <div class="admin-filter-date">
       <.date_picker
         id={@control_id}
         class="date-picker ui-size-sm"
@@ -551,9 +545,9 @@ defmodule CorexAdmin.Live.Components do
       |> assign(:to, datetime_local(Map.get(range, :to)))
 
     ~H"""
-    <div class="flex flex-col gap-space-sm">
-      <span class="text-sm">{@filter.label}</span>
-      <div class="flex flex-wrap items-end gap-space-sm">
+    <div class="admin-filter-stack">
+      <span>{@filter.label}</span>
+      <div class="admin-filter-row">
         <.native_input
           id={"#{@control_id}-from"}
           type="datetime-local"
@@ -586,9 +580,9 @@ defmodule CorexAdmin.Live.Components do
       |> assign(:max, Map.get(range, :max))
 
     ~H"""
-    <div class="flex flex-col gap-space-sm">
-      <span class="text-sm">{@filter.label}</span>
-      <div class="flex flex-nowrap items-end gap-space-sm">
+    <div class="admin-filter-stack">
+      <span>{@filter.label}</span>
+      <div class="admin-filter-row admin-filter-row--nowrap">
         <.number_input
           id={"#{@control_id}-min"}
           name={"#{@input_name}[min]"}
@@ -705,7 +699,7 @@ defmodule CorexAdmin.Live.Components do
       positioning={%Corex.Positioning{placement: "top-end"}}
     >
       <:trigger>
-        <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
       </:trigger>
       <:content>{@msg}</:content>
     </.tooltip>
@@ -851,14 +845,14 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :rows, rows)
 
     ~H"""
-    <section class="flex w-full flex-col gap-space">
-      <h2 class="m-0 text-base font-medium">{@field.label}</h2>
-      <p :if={@rows == []} class="m-0 text-sm text-ink-muted">None</p>
-      <div :if={@rows != []} class="flex w-full flex-col gap-space-sm">
-        <div :for={row <- @rows} class="grid w-full grid-cols-1 gap-space-sm md:grid-cols-3">
-          <div :for={child <- @field.fields} class="flex min-w-0 flex-col gap-space-sm">
-            <span class="text-sm text-ink-muted">{child.label}</span>
-            <span class="text-sm">{format_value(child, row)}</span>
+    <section class="admin-embed">
+      <h2 class="admin-embed-title">{@field.label}</h2>
+      <p :if={@rows == []} class="admin-embed-empty">None</p>
+      <div :if={@rows != []} class="admin-embed-rows">
+        <div :for={row <- @rows} class="admin-embed-row">
+          <div :for={child <- @field.fields} class="admin-embed-field">
+            <span class="admin-embed-label">{child.label}</span>
+            <span class="admin-embed-value">{format_value(child, row)}</span>
           </div>
         </div>
       </div>

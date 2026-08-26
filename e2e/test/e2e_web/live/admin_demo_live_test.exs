@@ -187,13 +187,14 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Docs"
     assert html =~ "https://example.test/docs"
     refute html =~ "max-w-3xl"
-    assert html =~ "data-list w-full max-w-none"
+    assert html =~ ~s(class="data-list")
   end
 
   test "invalid ticket create shows tooltip field errors", %{conn: conn} do
     conn = init_test_session(conn, %{"admin_demo_id" => "tooltip-errors"})
     {view, html} = live_ok!(conn, ~p"/admin/tickets/new")
-    assert html =~ "relative w-full max-w-none"
+    assert html =~ "admin-form-grid"
+    refute html =~ "max-w-none"
 
     html =
       view
@@ -204,7 +205,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     assert html =~ ~s(data-scope="tooltip")
     assert html =~ "exclamation-circle"
-    assert html =~ "absolute top-0 end-0"
+    assert html =~ "admin-field-error"
     refute html =~ ~s(data-part="error">can't be blank)
   end
 

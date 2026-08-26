@@ -43,7 +43,8 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(data-part="control-inputs")
     assert html =~ ~s(data-range)
     refute html =~ ~s(type="date")
-    assert html =~ "flex-nowrap items-center justify-between"
+    assert html =~ "admin-footer"
+    refute html =~ "flex-nowrap"
   end
 
   test "selecting a row shows the selected count", %{conn: conn, ticket: ticket} do
@@ -141,7 +142,8 @@ defmodule CorexAdmin.LiveTest do
 
   test "new form uses full-width hosts and tooltip field errors", %{conn: conn} do
     {:ok, view, html} = live(conn, "/admin/tickets/new")
-    assert html =~ "relative w-full max-w-none"
+    assert html =~ "admin-form-grid"
+    refute html =~ "max-w-none"
     refute html =~ "max-w-3xl"
 
     html =
@@ -151,14 +153,14 @@ defmodule CorexAdmin.LiveTest do
 
     assert html =~ ~s(data-scope="tooltip")
     assert html =~ "exclamation-circle"
-    assert html =~ "absolute top-0 end-0"
+    assert html =~ "admin-field-error"
   end
 
   test "show uses title field and hides redacted fields", %{conn: conn, ticket: ticket} do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     refute html =~ "Secret"
-    assert html =~ "data-list w-full max-w-none"
+    assert html =~ ~s(class="data-list")
   end
 
   test "create via context form", %{conn: conn} do

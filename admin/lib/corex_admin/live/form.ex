@@ -77,7 +77,7 @@ defmodule CorexAdmin.Live.Form do
   def render(assigns) do
     ~H"""
     <Components.shell :if={assigns[:form]} socket={assigns} current={@spec}>
-      <div class="flex w-full flex-col gap-space-lg">
+      <div class="admin-stack admin-stack--lg">
         <Components.breadcrumbs
           prefix={@corex_admin_prefix}
           spec={@spec}
@@ -103,17 +103,17 @@ defmodule CorexAdmin.Live.Form do
           id={@form.id}
           phx-change="validate"
           phx-submit="save"
-          class="flex flex-col gap-space-lg"
+          class="admin-form"
         >
-          <div class="grid w-full grid-cols-1 gap-space md:grid-cols-2">
+          <div class="admin-form-grid">
             <div
               :for={field <- @form_fields}
-              class={if field.type in [:textarea, :embeds_many], do: "md:col-span-2"}
+              class={if field.type in [:textarea, :embeds_many], do: "admin-form-span"}
             >
               <Components.field_input field={field} form={@form} />
             </div>
           </div>
-          <div class="flex flex-wrap gap-space">
+          <div class="admin-actions">
             <.action type="submit" class="button ui-accent">Save</.action>
             <.action type="submit" name="continue" value="true" class="button">
               Save and continue

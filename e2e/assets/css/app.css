@@ -7,7 +7,6 @@
 
 @source "../js";
 @source "../../lib/e2e_web";
-@source "../../../admin/lib";
 
 @import "../corex/corex.css";
 
