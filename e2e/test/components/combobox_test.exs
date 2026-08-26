@@ -109,6 +109,7 @@ defmodule E2eWeb.ComboboxTest do
       |> Combobox.disable_playground_close_on_select()
       |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
       |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.close_combobox_by_host_id(host, timeout: 8_000)
       |> Combobox.disable_playground_item("bel")
       |> Combobox.wait_root_combobox_ready(host)
       |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)

@@ -114,6 +114,41 @@ defmodule E2eWeb.ComboboxModel do
     end
   end
 
+  def close_combobox_by_host_id(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
+      raise ArgumentError, "invalid combobox host dom id"
+    end
+
+    open_q =
+      css(
+        ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
+        visible: :any
+      )
+
+    session =
+      if has?(session, open_q) do
+        click(
+          session,
+          css(
+            ~s|##{host_dom_id}[phx-hook="Combobox"] [data-scope="combobox"][data-part="trigger"]|,
+            visible: :any
+          )
+        )
+      else
+        session
+      end
+
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
+        count: 0,
+        visible: :any
+      ),
+      opts
+    )
+  end
+
   def click_item_in_anatomy_section(session, section_dom_id, value, opts \\ [])
       when is_binary(value) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
@@ -307,17 +342,32 @@ defmodule E2eWeb.ComboboxModel do
         visible: :any
       )
     )
-    |> assert_has(
+    |> wait_for_has(
       css(
         ~S|#combobox-playground-disabled-items [data-scope="select"][data-part="content"][data-state="open"]|,
         visible: :any
-      )
+      ),
+      timeout: 8_000
     )
     |> click(
       css(
         ~s|#combobox-playground-disabled-items [data-scope="select"][data-part="item"][data-value="#{value}"]|,
         visible: :any
       )
+    )
+    |> click(
+      css(
+        ~S|#combobox-playground-disabled-items [data-scope="select"][data-part="trigger"]|,
+        visible: :any
+      )
+    )
+    |> wait_for_has(
+      css(
+        ~S|#combobox-playground-disabled-items [data-scope="select"][data-part="content"][data-state="open"]|,
+        count: 0,
+        visible: :any
+      ),
+      timeout: 8_000
     )
   end
 
