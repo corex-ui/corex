@@ -30,3 +30,15 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Zag.js ships every machine from one monorepo tag. Mixed versions install
+      # two copies of @zag-js/core and break VanillaMachine typing, so bump them
+      # in a single PR (also: pnpm run update:zag).
+      zag-js:
+        patterns:
+          - "@zag-js/*"
+        applies-to: version-updates
+      zag-js-security:
+        patterns:
+          - "@zag-js/*"
+        applies-to: security-updates

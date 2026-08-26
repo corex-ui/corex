@@ -5,7 +5,7 @@ export type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
 type LazyHookState = {
   _realHook?: Hook<object, HTMLElement>;
   _pendingUpdated?: boolean;
-  _pendingBeforeUpdate?: boolean;
+  _pendingBeforeUpdate?: HTMLElement | true;
   _destroyedBeforeMount?: boolean;
   _mountPromise?: Promise<void>;
 };
@@ -43,8 +43,9 @@ export function createLazyHook(importFn: () => Promise<HookModule>, exportName: 
           }
 
           if (state._pendingBeforeUpdate) {
-            state._pendingBeforeUpdate = false;
-            real.beforeUpdate?.call(this);
+            const toEl = state._pendingBeforeUpdate === true ? el : state._pendingBeforeUpdate;
+            state._pendingBeforeUpdate = undefined;
+            real.beforeUpdate?.call(this, toEl);
           }
 
           if (state._pendingUpdated) {
@@ -84,12 +85,12 @@ export function createLazyHook(importFn: () => Promise<HookModule>, exportName: 
     reconnected() {
       (this as LazyHookState)._realHook?.reconnected?.call(this);
     },
-    beforeUpdate() {
+    beforeUpdate(toEl: HTMLElement) {
       const state = this as LazyHookState;
       if (state._realHook?.beforeUpdate) {
-        state._realHook.beforeUpdate.call(this);
+        state._realHook.beforeUpdate.call(this, toEl);
       } else if (state._mountPromise) {
-        state._pendingBeforeUpdate = true;
+        state._pendingBeforeUpdate = toEl;
       }
     },
   };

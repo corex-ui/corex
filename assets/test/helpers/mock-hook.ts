@@ -70,27 +70,33 @@ export function mockHookContext<
 }
 
 type HookLifecycle = "mounted" | "destroyed" | "updated" | "beforeUpdate";
+type HookLifecycleMethods = {
+  mounted?: (this: never) => void;
+  destroyed?: (this: never) => void;
+  updated?: (this: never) => void;
+  beforeUpdate?: (this: never, toEl: HTMLElement) => void;
+};
 
 export function callHookLifecycle(
-  hookModule: Partial<Record<HookLifecycle, (this: never) => void>>,
+  hookModule: HookLifecycleMethods,
   hook: object,
-  lifecycle: HookLifecycle
+  lifecycle: HookLifecycle,
+  ...args: unknown[]
 ): void {
-  const fn = hookModule[lifecycle];
+  const fn = hookModule[lifecycle] as ((this: object, ...args: unknown[]) => void) | undefined;
   expect(fn).toBeDefined();
-  fn!.call(hook as never);
+  if (lifecycle === "beforeUpdate" && args.length === 0) {
+    const el = (hook as { el?: HTMLElement }).el ?? document.createElement("div");
+    fn!.call(hook, el);
+    return;
+  }
+  fn!.call(hook, ...args);
 }
 
-export function callHookMounted(
-  hookModule: Partial<Record<"mounted", (this: never) => void>>,
-  hook: object
-): void {
+export function callHookMounted(hookModule: HookLifecycleMethods, hook: object): void {
   callHookLifecycle(hookModule, hook, "mounted");
 }
 
-export function callHookDestroyed(
-  hookModule: Partial<Record<"destroyed", (this: never) => void>>,
-  hook: object
-): void {
+export function callHookDestroyed(hookModule: HookLifecycleMethods, hook: object): void {
   callHookLifecycle(hookModule, hook, "destroyed");
 }

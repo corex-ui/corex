@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-GBPB5EHJ.mjs";
+} from "./chunks/chunk-HWUNIC34.mjs";
 import {
   clampPercent,
   clampValue,
@@ -14,15 +14,15 @@ import {
   setValueAtIndex,
   snapValueToStep,
   toPx
-} from "./chunks/chunk-SYRKLN4X.mjs";
+} from "./chunks/chunk-AJX2XHOK.mjs";
 import {
   notifyPhoenixFormChange,
   syncHiddenInputValue
-} from "./chunks/chunk-UHCKUOWC.mjs";
+} from "./chunks/chunk-F6YUZM6O.mjs";
 import {
   mountNumberListBinding,
   readUpdatedServerNumberList
-} from "./chunks/chunk-WBNYDZIL.mjs";
+} from "./chunks/chunk-I5HWU3ET.mjs";
 import {
   emitResponse,
   idMatches,
@@ -60,9 +60,9 @@ import {
   setElementValue,
   trackFormControl,
   trackPointerMove
-} from "./chunks/chunk-HMQI4LDM.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.43.3/node_modules/@zag-js/slider/dist/slider.anatomy.mjs
 var anatomy = createAnatomy("slider").parts(
   "root",
   "label",
@@ -77,7 +77,7 @@ var anatomy = createAnatomy("slider").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.dom.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.43.3/node_modules/@zag-js/slider/dist/slider.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `slider:${ctx.id}`;
 var getThumbId = (ctx, index) => ctx.ids?.thumb?.(index) ?? `slider:${ctx.id}:thumb:${index}`;
 var getHiddenInputId = (ctx, index) => ctx.ids?.hiddenInput?.(index) ?? `slider:${ctx.id}:input:${index}`;
@@ -155,7 +155,7 @@ var getOffsetRect = (el) => ({
   height: el?.offsetHeight ?? 0
 });
 
-// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.style.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.43.3/node_modules/@zag-js/slider/dist/slider.style.mjs
 function getBounds(value) {
   const firstValue = value[0];
   const lastThumb = value[value.length - 1];
@@ -294,7 +294,7 @@ function getMarkerGroupStyle() {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.utils.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.43.3/node_modules/@zag-js/slider/dist/slider.utils.mjs
 function getThumbBounds(ctx) {
   const { index, values, min, max, gap } = ctx;
   const prevThumb = values[index - 1];
@@ -441,7 +441,7 @@ function selectMovableThumb(params, index) {
   return index;
 }
 
-// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.connect.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.43.3/node_modules/@zag-js/slider/dist/slider.connect.mjs
 function connect(service, normalize2) {
   const { state, send, context, prop, computed, scope } = service;
   const ariaLabel = prop("aria-label");
@@ -752,7 +752,7 @@ function connect(service, normalize2) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+slider@1.42.0/node_modules/@zag-js/slider/dist/slider.machine.mjs
+// ../node_modules/.pnpm/@zag-js+slider@1.43.3/node_modules/@zag-js/slider/dist/slider.machine.mjs
 var isEqualSize = (a, b) => {
   return a?.width === b?.width && a?.height === b?.height;
 };

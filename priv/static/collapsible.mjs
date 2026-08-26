@@ -1,10 +1,10 @@
 import {
   toPx
-} from "./chunks/chunk-SYRKLN4X.mjs";
+} from "./chunks/chunk-AJX2XHOK.mjs";
 import {
   readBooleanControlledZagProps,
   readBooleanControlledZagUpdate
-} from "./chunks/chunk-WBNYDZIL.mjs";
+} from "./chunks/chunk-I5HWU3ET.mjs";
 import {
   createValueEmitter,
   idMatches,
@@ -31,19 +31,19 @@ import {
   raf,
   setAttribute,
   setStyle
-} from "./chunks/chunk-HMQI4LDM.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.43.3/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.43.3/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `collapsible:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `collapsible:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `collapsible:${ctx.id}:trigger`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.43.3/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, scope, prop } = service;
   const visible = state.matches("open") || state.matches("closing");
@@ -133,7 +133,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.43.3/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
 var machine = createMachine({
   initialState({ prop }) {
     const open = prop("open") || prop("defaultOpen");

@@ -82,6 +82,8 @@ defmodule E2eWeb.DatePickerModel do
       raise ArgumentError, "invalid section dom id"
     end
 
+    timeout = Keyword.get(opts, :timeout, 8_000)
+
     open_q =
       css(
         ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
@@ -102,18 +104,17 @@ defmodule E2eWeb.DatePickerModel do
           """,
           [section_dom_id]
         )
-
-      wait_for_has(
-        session,
-        css(
-          ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"]:not([data-state="open"])|,
-          visible: :any
-        ),
-        opts
-      )
     end
 
-    session
+    wait_for_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="date-picker"][data-part="content"][data-state="open"]|,
+        count: 0,
+        visible: :any
+      ),
+      timeout: timeout
+    )
   end
 
   def open_date_picker_by_host_id(session, host_dom_id) when is_binary(host_dom_id) do

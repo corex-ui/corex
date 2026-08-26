@@ -188,7 +188,7 @@ function createZagLiveHook(config) {
       this[config.key] = component;
       config.afterInit?.(this, component);
     },
-    beforeUpdate() {
+    beforeUpdate(_toEl) {
       if (config.controlledKeys) {
         this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
       }
@@ -222,12 +222,12 @@ function createZagLiveHook(config) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/chunk-QZ7TP4HQ.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/chunk-MXGZDBDQ.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/chunk-MXGZDBDQ.mjs
 var __defProp2 = Object.defineProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
@@ -238,7 +238,7 @@ var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot
 var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/array.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/array.mjs
 function toArray(v) {
   if (v == null) return [];
   return Array.isArray(v) ? v : [v];
@@ -301,7 +301,7 @@ function partition(arr, fn) {
   );
 }
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/equal.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/equal.mjs
 var isArrayLike = (value) => value?.constructor.name === "Array";
 var isArrayEqual = (a, b) => {
   if (a.length !== b.length) return false;
@@ -336,7 +336,7 @@ var isEqual = (a, b) => {
   return true;
 };
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/guard.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/guard.mjs
 var isArray = (v) => Array.isArray(v);
 var isBoolean = (v) => v === true || v === false;
 var isObjectLike = (v) => v != null && typeof v === "object";
@@ -360,7 +360,7 @@ var isReactElement = (x) => typeof x === "object" && x !== null && "$$typeof" in
 var isVueElement = (x) => typeof x === "object" && x !== null && "__v_isVNode" in x;
 var isFrameworkElement = (x) => isReactElement(x) || isVueElement(x);
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/functions.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/functions.mjs
 var runIfFn = (v, ...a) => {
   const res = typeof v === "function" ? v(...a) : v;
   return res ?? void 0;
@@ -436,7 +436,7 @@ function toPhash(h, x) {
 }
 var hash = (value) => toName(toPhash(5381, value) >>> 0);
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/object.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/object.mjs
 function compact(obj) {
   if (!isPlainObject(obj) || obj === void 0) return obj;
   const keys2 = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
@@ -459,8 +459,18 @@ function pick(obj, keys2) {
   }
   return filtered;
 }
+function mergeWithDefault(defaults, overrides) {
+  if (!overrides) return defaults;
+  const result = { ...defaults };
+  const source = overrides;
+  for (const key in source) {
+    const value = source[key];
+    if (value !== void 0) result[key] = value;
+  }
+  return result;
+}
 
-// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/warning.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.43.3/node_modules/@zag-js/utils/dist/warning.mjs
 function warn(...a) {
   const m = a.length === 1 ? a[0] : a[1];
   const c = a.length === 2 ? a[0] : true;
@@ -487,7 +497,7 @@ function ensureProps(props, keys, scope) {
     throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
 }
 
-// ../node_modules/.pnpm/@zag-js+core@1.42.0/node_modules/@zag-js/core/dist/state.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.43.3/node_modules/@zag-js/core/dist/state.mjs
 var STATE_DELIMITER = ".";
 var ABSOLUTE_PREFIX = "#";
 var stateIndexCache = /* @__PURE__ */ new WeakMap();
@@ -640,7 +650,7 @@ function getExitEnterStates(machine, prevState, nextState, reenter) {
   }
   let exiting = prevChain.slice(commonIndex).reverse();
   let entering = nextChain.slice(commonIndex);
-  const sameLeaf = prevChain.at(-1)?.path === nextChain.at(-1)?.path;
+  const sameLeaf = prevChain[prevChain.length - 1]?.path === nextChain[nextChain.length - 1]?.path;
   if (reenter && sameLeaf) {
     exiting = prevChain.slice().reverse();
     entering = nextChain;
@@ -655,7 +665,7 @@ function hasTag(machine, state2, tag) {
   return getStateChain(machine, state2).some((item) => item.state.tags?.includes(tag));
 }
 
-// ../node_modules/.pnpm/@zag-js+core@1.42.0/node_modules/@zag-js/core/dist/create-machine.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.43.3/node_modules/@zag-js/core/dist/create-machine.mjs
 function createGuards() {
   return {
     and: (...guards) => {
@@ -693,7 +703,7 @@ function setup() {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+core@1.42.0/node_modules/@zag-js/core/dist/types.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.43.3/node_modules/@zag-js/core/dist/types.mjs
 var MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
   MachineStatus2["NotStarted"] = "Not Started";
   MachineStatus2["Started"] = "Started";
@@ -702,12 +712,12 @@ var MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
 })(MachineStatus || {});
 var INIT_STATE = "__init__";
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/chunk-QZ7TP4HQ.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/chunk-QZ7TP4HQ.mjs
 var __defProp3 = Object.defineProperty;
 var __defNormalProp3 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField3 = (obj, key, value) => __defNormalProp3(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/caret.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/caret.mjs
 function isCaretAtStart(input) {
   if (!input) return false;
   try {
@@ -726,7 +736,7 @@ function setCaretToEnd(input) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/shared.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/shared.mjs
 var clamp = (value) => Math.max(0, Math.min(1, value));
 var wrap = (v, idx) => {
   return v.map((_, index) => v[(Math.max(idx, 0) + index) % v.length]);
@@ -737,8 +747,13 @@ var isObject2 = (v) => typeof v === "object" && v !== null;
 var MAX_Z_INDEX = 2147483647;
 var dataAttr = (guard) => guard ? "" : void 0;
 var ariaAttr = (guard) => guard ? "true" : void 0;
+var BACKSLASH_RE = /\\/g;
+var DOUBLE_QUOTE_RE = /"/g;
+var cssesc = (value) => globalThis.CSS?.escape?.(value) ?? value.replace(BACKSLASH_RE, "\\\\").replace(DOUBLE_QUOTE_RE, '\\"');
+var getByOwnerId = (id) => `[data-ownedby~="${cssesc(String(id))}"]`;
+var isOwnedBy = (el, id) => !!el?.matches(getByOwnerId(id));
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/node.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/node.mjs
 var ELEMENT_NODE = 1;
 var DOCUMENT_NODE = 9;
 var DOCUMENT_FRAGMENT_NODE = 11;
@@ -827,7 +842,7 @@ function getRootNode(node) {
   return node.ownerDocument ?? document;
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/computed-style.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/computed-style.mjs
 var styleCache = /* @__PURE__ */ new WeakMap();
 function getComputedStyle(el) {
   if (!styleCache.has(el)) {
@@ -836,7 +851,7 @@ function getComputedStyle(el) {
   return styleCache.get(el);
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/controller.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/controller.mjs
 var INTERACTIVE_CONTAINER_ROLE = /* @__PURE__ */ new Set(["menu", "listbox", "dialog", "grid", "tree", "region", "application"]);
 var isInteractiveContainerRole = (role) => INTERACTIVE_CONTAINER_ROLE.has(role);
 var getAriaControls = (element) => element.getAttribute("aria-controls")?.split(" ") || [];
@@ -924,13 +939,13 @@ function isControlledByExpandedController(element) {
   return Boolean(controller && isInteractiveContainerElement(element));
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/data-url.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/data-url.mjs
 function getDataUrl(svg, opts) {
-  const { type, quality = 0.92, background } = opts;
+  const { type, quality = 0.92, background, size } = opts;
   if (!svg) throw new Error("[zag-js > getDataUrl]: Could not find the svg element");
   const win = getWindow(svg);
   const doc = win.document;
-  const svgBounds = svg.getBoundingClientRect();
+  const svgBounds = size ?? svg.getBoundingClientRect();
   const svgClone = svg.cloneNode(true);
   if (!svgClone.hasAttribute("viewBox")) {
     svgClone.setAttribute("viewBox", `0 0 ${svgBounds.width} ${svgBounds.height}`);
@@ -964,7 +979,7 @@ function getDataUrl(svg, opts) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/platform.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/platform.mjs
 var isDom = () => typeof document !== "undefined";
 function getPlatform() {
   const agent = navigator.userAgentData;
@@ -980,17 +995,23 @@ function getUserAgent() {
 var pt = (v) => isDom() && v.test(getPlatform());
 var ua = (v) => isDom() && v.test(getUserAgent());
 var vn = (v) => isDom() && v.test(navigator.vendor);
+var IPHONE_REGEX = /^iPhone/i;
+var IPAD_REGEX = /^iPad/i;
+var MAC_REGEX = /^Mac/i;
+var APPLE_VENDOR_REGEX = /apple/i;
+var FIREFOX_REGEX = /Firefox/i;
+var ANDROID_REGEX = /Android/i;
 var isTouchDevice = () => isDom() && !!navigator.maxTouchPoints;
-var isIPhone = () => pt(/^iPhone/i);
-var isIPad = () => pt(/^iPad/i) || isMac() && navigator.maxTouchPoints > 1;
+var isIPhone = () => pt(IPHONE_REGEX);
+var isIPad = () => pt(IPAD_REGEX) || isMac() && navigator.maxTouchPoints > 1;
 var isIos = () => isIPhone() || isIPad();
 var isApple = () => isMac() || isIos();
-var isMac = () => pt(/^Mac/i);
-var isSafari = () => isApple() && vn(/apple/i);
-var isFirefox = () => ua(/Firefox/i);
-var isAndroid = () => ua(/Android/i);
+var isMac = () => pt(MAC_REGEX);
+var isSafari = () => isApple() && vn(APPLE_VENDOR_REGEX);
+var isFirefox = () => ua(FIREFOX_REGEX);
+var isAndroid = () => ua(ANDROID_REGEX);
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/event.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/event.mjs
 function getBeforeInputValue(event) {
   const { selectionStart, selectionEnd, value } = event.currentTarget;
   const data = event.data;
@@ -1097,7 +1118,7 @@ var addDomEvent = (target, eventName, handler, options) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/form.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/form.mjs
 function getDescriptor(el, options) {
   const { type = "HTMLInputElement", property = "value" } = options;
   const proto = getWindow(el)[type].prototype;
@@ -1183,7 +1204,7 @@ function markAsInternalChangeEvent(event) {
   return event;
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/tabbable.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/tabbable.mjs
 var isFrame = (el) => isHTMLElement(el) && el.tagName === "IFRAME";
 var NATURALLY_TABBABLE_REGEX = /^(audio|video|details)$/;
 function parseTabIndex(el) {
@@ -1329,16 +1350,15 @@ function getTabIndex(node) {
   return node.tabIndex;
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/initial-focus.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/initial-focus.mjs
 function getInitialFocus(options) {
   const { root, getInitialEl, filter, enabled = true } = options;
   if (!enabled) return;
-  let node = null;
-  node || (node = typeof getInitialEl === "function" ? getInitialEl() : getInitialEl);
+  let node = typeof getInitialEl === "function" ? getInitialEl() : getInitialEl;
   node || (node = root?.querySelector("[data-autofocus],[autofocus]"));
   if (!node) {
-    const tabbables = getTabbables(root);
-    node = filter ? tabbables.filter(filter)[0] : tabbables[0];
+    const tabbables = getTabbables(root).filter((el) => filter ? filter(el) : true);
+    node = tabbables.find((el) => !el.hasAttribute("data-no-autofocus"));
   }
   return node || root || void 0;
 }
@@ -1352,7 +1372,7 @@ function isValidTabEvent(event) {
   return true;
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/raf.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/raf.mjs
 var AnimationFrame = class _AnimationFrame {
   constructor() {
     __publicField3(this, "id", null);
@@ -1412,7 +1432,7 @@ function queueBeforeEvent(el, type, cb) {
   return cancelTimer;
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/mutation-observer.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/mutation-observer.mjs
 function observeAttributesImpl(node, options) {
   if (!node) return;
   const { attributes, callback: fn } = options;
@@ -1464,7 +1484,7 @@ function observeChildren(nodeOrFn, options) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/navigate.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/navigate.mjs
 function clickIfLink(el) {
   const click = () => {
     const win = getWindow(el);
@@ -1477,7 +1497,7 @@ function clickIfLink(el) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/overflow.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/overflow.mjs
 function getNearestOverflowAncestor(el) {
   const parentNode = getParentNode(el);
   if (isRootElement(parentNode)) return getDocument(parentNode).body;
@@ -1501,7 +1521,7 @@ function isOverflowElement(el) {
   return OVERFLOW_RE.test(overflow + overflowY + overflowX) && !nonOverflowValues.has(display);
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/point.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/point.mjs
 function getRelativePoint(point, element) {
   const { left, top, width, height } = element.getBoundingClientRect();
   const offset = { x: point.x - left, y: point.y - top };
@@ -1518,7 +1538,7 @@ function getRelativePoint(point, element) {
   return { offset, percent, getPercentValue };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/pointer-lock.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/pointer-lock.mjs
 function requestPointerLock(doc, fn) {
   const body = doc.body;
   const supported = "pointerLockElement" in doc || "mozPointerLockElement" in doc;
@@ -1546,7 +1566,7 @@ function requestPointerLock(doc, fn) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/text-selection.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/text-selection.mjs
 var state = "default";
 var userSelect = "";
 var elementMap = /* @__PURE__ */ new WeakMap();
@@ -1612,7 +1632,7 @@ function disableTextSelection(options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/pointer-move.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/pointer-move.mjs
 function trackPointerMove(doc, handlers) {
   const { onPointerMove, onPointerUp } = handlers;
   const handleMove = (event) => {
@@ -1642,7 +1662,7 @@ function trackPointerMove(doc, handlers) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/press.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/press.mjs
 function trackPress(options) {
   const {
     pointerNode,
@@ -1721,7 +1741,7 @@ function trackPress(options) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/query.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/query.mjs
 function queryAll(root, selector) {
   return Array.from(root?.querySelectorAll(selector) ?? []);
 }
@@ -1748,7 +1768,7 @@ function prevById(v, id, loop = true) {
   return v[idx];
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/resize-observer.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/resize-observer.mjs
 function createSharedResizeObserver(options) {
   const listeners = /* @__PURE__ */ new WeakMap();
   let observer;
@@ -1797,7 +1817,7 @@ var resizeObserverBorderBox = /* @__PURE__ */ createSharedResizeObserver({
   box: "border-box"
 });
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/scale.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/scale.mjs
 function getScale(element) {
   const rect = element.getBoundingClientRect();
   const offsetWidth = element.offsetWidth;
@@ -1810,7 +1830,7 @@ function getScale(element) {
   return { x, y };
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/scroll.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/scroll.mjs
 function isScrollable(el) {
   return el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
 }
@@ -1821,7 +1841,7 @@ function scrollIntoView(el, options) {
   el.scrollIntoView(scrollOptions);
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/searchable.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/searchable.mjs
 var sanitize = (str) => str.split("").map((char) => {
   const code = char.charCodeAt(0);
   if (code > 0 && code < 128) return char;
@@ -1844,7 +1864,7 @@ function getByText(v, text, currentId, itemToId = defaultItemToId) {
   return items.find((item) => match2(getValueText(item), text));
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/set.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/set.mjs
 function setAttribute(el, attr, v) {
   const prev2 = el.getAttribute(attr);
   const exists = prev2 != null;
@@ -1889,7 +1909,7 @@ function isEqual2(a, b) {
   return Object.keys(a).every((key) => a[key] === b[key]);
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/typeahead.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/typeahead.mjs
 function getByTypeaheadImpl(baseItems, options) {
   const { state: state2, activeId, key, timeout = 350, itemToId } = options;
   const search = state2.keysSoFar + key;
@@ -1922,7 +1942,7 @@ function isValidTypeaheadEvent(event) {
   return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
 }
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/visually-hidden.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/visually-hidden.mjs
 var visuallyHiddenStyle = {
   border: "0",
   clip: "rect(0 0 0 0)",
@@ -1936,7 +1956,7 @@ var visuallyHiddenStyle = {
   wordWrap: "normal"
 };
 
-// ../node_modules/.pnpm/@zag-js+dom-query@1.42.0/node_modules/@zag-js/dom-query/dist/wait-for.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/wait-for.mjs
 function waitForPromise(promise, controller, timeout) {
   const { signal } = controller;
   const wrappedPromise = new Promise((resolve, reject) => {
@@ -1991,7 +2011,44 @@ function waitForElement(target, options) {
   );
 }
 
-// ../node_modules/.pnpm/@zag-js+core@1.42.0/node_modules/@zag-js/core/dist/scope.mjs
+// ../node_modules/.pnpm/@zag-js+dom-query@1.43.3/node_modules/@zag-js/dom-query/dist/when-node.mjs
+function whenNode(nodeOrFn, fn, options = {}) {
+  const { defer, onMissing } = options;
+  const getNode = () => typeof nodeOrFn === "function" ? nodeOrFn() : nodeOrFn;
+  const cleanups = [];
+  const setup2 = (node2) => {
+    if (!node2) return onMissing?.();
+    cleanups.push(fn(node2));
+  };
+  const node = getNode();
+  if (!defer || node) {
+    setup2(node);
+  } else {
+    let cancelled = false;
+    cleanups.push(() => {
+      cancelled = true;
+    });
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const committed = getNode();
+      if (committed) {
+        setup2(committed);
+        return;
+      }
+      cleanups.push(
+        raf(() => {
+          if (cancelled) return;
+          setup2(getNode());
+        })
+      );
+    });
+  }
+  return () => {
+    cleanups.forEach((fn2) => fn2?.());
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+core@1.43.3/node_modules/@zag-js/core/dist/scope.mjs
 function createScope(props) {
   const getRootNode2 = () => props.getRootNode?.() ?? document;
   const getDoc = () => getDocument(getRootNode2());
@@ -2009,7 +2066,7 @@ function createScope(props) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+store@1.42.0/node_modules/@zag-js/store/dist/global.mjs
+// ../node_modules/.pnpm/@zag-js+store@1.43.3/node_modules/@zag-js/store/dist/global.mjs
 function glob() {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -2024,7 +2081,7 @@ function globalRef(key, value) {
 }
 var refSet = globalRef("__zag__refSet", () => /* @__PURE__ */ new WeakSet());
 
-// ../node_modules/.pnpm/@zag-js+store@1.42.0/node_modules/@zag-js/store/dist/utils.mjs
+// ../node_modules/.pnpm/@zag-js+store@1.43.3/node_modules/@zag-js/store/dist/utils.mjs
 var isReactElement2 = (x) => typeof x === "object" && x !== null && "$$typeof" in x && "props" in x;
 var isVueElement2 = (x) => typeof x === "object" && x !== null && "__v_isVNode" in x;
 var isDOMElement = (x) => typeof x === "object" && x !== null && "nodeType" in x && typeof x.nodeName === "string";
@@ -2049,7 +2106,7 @@ var markToTrack = (obj, mark = true) => {
   objectsToTrack.set(obj, mark);
 };
 
-// ../node_modules/.pnpm/@zag-js+store@1.42.0/node_modules/@zag-js/store/dist/proxy.mjs
+// ../node_modules/.pnpm/@zag-js+store@1.43.3/node_modules/@zag-js/store/dist/proxy.mjs
 var proxyStateMap = globalRef("__zag__proxyStateMap", () => /* @__PURE__ */ new WeakMap());
 var buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => new Proxy(target, handler), snapCache = /* @__PURE__ */ new WeakMap(), createSnapshot = (target, version) => {
   const cache = snapCache.get(target);
@@ -2257,7 +2314,7 @@ function snapshot(proxyObject) {
   return createSnapshot(target, ensureVersion());
 }
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/bindable.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/bindable.mjs
 function bindable(props) {
   const initial = props().value ?? props().defaultValue;
   if (props().debug) {
@@ -2303,7 +2360,7 @@ bindable.ref = (defaultValue) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/refs.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/refs.mjs
 function createRefs(refs) {
   const ref2 = { current: refs };
   return {
@@ -2316,7 +2373,7 @@ function createRefs(refs) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/merge-machine-props.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/merge-machine-props.mjs
 function mergeMachineProps(prev2, next2) {
   if (!isPlainObject(prev2) || !isPlainObject(next2)) {
     return next2 === void 0 ? prev2 : next2;
@@ -2337,7 +2394,7 @@ function mergeMachineProps(prev2, next2) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/machine.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/machine.mjs
 var VanillaMachine = class {
   constructor(machine, userProps = {}) {
     __publicField(this, "machine", machine);
@@ -2619,7 +2676,7 @@ var VanillaMachine = class {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+types@1.42.0/node_modules/@zag-js/types/dist/prop-types.mjs
+// ../node_modules/.pnpm/@zag-js+types@1.43.3/node_modules/@zag-js/types/dist/prop-types.mjs
 function createNormalizer(fn) {
   return new Proxy({}, {
     get(_target, key) {
@@ -2632,7 +2689,7 @@ function createNormalizer(fn) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/normalize-props.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/normalize-props.mjs
 var propMap = {
   onFocus: "onFocusin",
   onBlur: "onFocusout",
@@ -2670,7 +2727,7 @@ var normalizeProps = createNormalizer((props) => {
   }, {});
 });
 
-// ../node_modules/.pnpm/@zag-js+vanilla@1.42.0/node_modules/@zag-js/vanilla/dist/spread-props.mjs
+// ../node_modules/.pnpm/@zag-js+vanilla@1.43.3/node_modules/@zag-js/vanilla/dist/spread-props.mjs
 var prevAttrsMap = /* @__PURE__ */ new WeakMap();
 var assignableProps = /* @__PURE__ */ new Set(["value", "checked", "selected"]);
 var caseSensitiveSvgAttrs2 = /* @__PURE__ */ new Set([
@@ -2893,7 +2950,7 @@ var Component = class {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+anatomy@1.42.0/node_modules/@zag-js/anatomy/dist/create-anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+anatomy@1.43.3/node_modules/@zag-js/anatomy/dist/create-anatomy.mjs
 var createAnatomy = (name, parts = []) => ({
   parts: (...values) => {
     if (isEmpty(parts)) {
@@ -2928,6 +2985,8 @@ export {
   MAX_Z_INDEX,
   dataAttr,
   ariaAttr,
+  getByOwnerId,
+  isOwnedBy,
   isHTMLElement,
   isDocument,
   isShadowRoot,
@@ -2988,6 +3047,7 @@ export {
   clickIfLink,
   getNearestOverflowAncestor,
   getOverflowAncestors,
+  isOverflowElement,
   getRelativePoint,
   requestPointerLock,
   restoreTextSelection,
@@ -3009,6 +3069,7 @@ export {
   getByTypeahead,
   visuallyHiddenStyle,
   waitForElement,
+  whenNode,
   __publicField2 as __publicField,
   __privateGet,
   __privateAdd,
@@ -3048,6 +3109,7 @@ export {
   hash,
   compact,
   pick,
+  mergeWithDefault,
   warn,
   invariant,
   ensure,
@@ -3055,8 +3117,6 @@ export {
   createGuards,
   createMachine,
   setup,
-  proxy,
-  subscribe,
   VanillaMachine,
   Component,
   getDir,

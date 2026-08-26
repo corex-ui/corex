@@ -5,13 +5,27 @@ import {
   getWindow,
   isMac,
   isVirtualClick
-} from "./chunk-HMQI4LDM.mjs";
+} from "./chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+focus-visible@1.42.0/node_modules/@zag-js/focus-visible/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+focus-visible@1.43.3/node_modules/@zag-js/focus-visible/dist/index.mjs
 function isValidKey(e) {
   return !(e.metaKey || !isMac() && e.altKey || e.ctrlKey || e.key === "Control" || e.key === "Shift" || e.key === "Meta");
 }
 var nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
+var interactiveContentSelector = [
+  "a[href]",
+  "audio[controls]",
+  "button",
+  "details",
+  "embed",
+  "iframe",
+  "img[controls]",
+  "img[usemap]",
+  "input",
+  "select",
+  "textarea",
+  "video[controls]"
+].join(",");
 function isKeyboardFocusEvent(isTextInput, modality, e) {
   const eventTarget = e ? getEventTarget(e) : null;
   const doc = getDocument(eventTarget);
@@ -24,7 +38,9 @@ var currentModality = null;
 var changeHandlers = /* @__PURE__ */ new Set();
 var listenerMap = /* @__PURE__ */ new Map();
 var hasEventBeforeFocus = false;
+var pendingLabelControl = null;
 var hasBlurredWindowRecently = false;
+var lastPointerPosition = null;
 var ignoreFocusEvent = false;
 var FOCUS_VISIBLE_INPUT_KEYS = {
   Tab: true,
@@ -36,6 +52,7 @@ function triggerChangeHandlers(modality, e) {
   }
 }
 function handleKeyboardEvent(e) {
+  pendingLabelControl = null;
   hasEventBeforeFocus = true;
   if (isValidKey(e)) {
     currentModality = "keyboard";
@@ -43,33 +60,50 @@ function handleKeyboardEvent(e) {
   }
 }
 function handlePointerEvent(e) {
+  const isMove = e.type === "pointermove" || e.type === "mousemove";
+  if (isMove && lastPointerPosition?.x === e.clientX && lastPointerPosition?.y === e.clientY) return;
+  lastPointerPosition = { x: e.clientX, y: e.clientY };
   currentModality = "pointer";
   if (e.type === "mousedown" || e.type === "pointerdown") {
+    pendingLabelControl = null;
     hasEventBeforeFocus = true;
     triggerChangeHandlers("pointer", e);
   }
 }
 function handleClickEvent(e) {
   if (isVirtualClick(e)) {
+    pendingLabelControl = null;
     hasEventBeforeFocus = true;
     currentModality = "virtual";
+    return;
   }
+  pendingLabelControl = null;
+  const target = getEventTarget(e);
+  const label = target?.closest("label");
+  const control = label?.control;
+  if (!label || !control || control.matches(":disabled")) return;
+  const interactive = target?.closest(interactiveContentSelector);
+  if (interactive && label.contains(interactive) && interactive !== control) return;
+  if (control !== getActiveElement(label.ownerDocument)) pendingLabelControl = control;
 }
 function handleFocusEvent(e) {
   const target = getEventTarget(e);
+  const isLabelActivationFocus = target === pendingLabelControl;
   if (target === getWindow(target) || target === getDocument(target) || ignoreFocusEvent || !e.isTrusted) {
     return;
   }
-  if (!hasEventBeforeFocus && !hasBlurredWindowRecently) {
+  if (!hasEventBeforeFocus && !isLabelActivationFocus && !hasBlurredWindowRecently) {
     currentModality = "virtual";
     triggerChangeHandlers("virtual", e);
   }
   hasEventBeforeFocus = false;
+  pendingLabelControl = null;
   hasBlurredWindowRecently = false;
 }
 function handleWindowBlur() {
   if (ignoreFocusEvent) return;
   hasEventBeforeFocus = false;
+  pendingLabelControl = null;
   hasBlurredWindowRecently = true;
 }
 function setupGlobalFocusEvents(root) {

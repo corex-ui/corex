@@ -1,29 +1,29 @@
 import {
   createRect,
   getRectCorners
-} from "./chunks/chunk-SBGJ6WBJ.mjs";
+} from "./chunks/chunk-UZJUBX5G.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-YFIE26CN.mjs";
+} from "./chunks/chunk-YKCP6S4O.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-W5DI6MB3.mjs";
-import "./chunks/chunk-YIIKBOMK.mjs";
+} from "./chunks/chunk-CKZ5NOMG.mjs";
+import "./chunks/chunk-KNSNFBRP.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-WJVUOLS4.mjs";
+} from "./chunks/chunk-4JF6I36R.mjs";
 import {
   redirectCollectionItem
-} from "./chunks/chunk-ZTFT76Y7.mjs";
-import "./chunks/chunk-FMAG5SZY.mjs";
-import "./chunks/chunk-WRPL7YFW.mjs";
+} from "./chunks/chunk-L27QKFAY.mjs";
+import "./chunks/chunk-R3ADGBXU.mjs";
+import "./chunks/chunk-IPIIGVFP.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-PXE4MUCM.mjs";
+} from "./chunks/chunk-CPYFNSV2.mjs";
 import {
   notifyChange,
   readPayloadId
@@ -45,6 +45,7 @@ import {
   dataAttr,
   first,
   getBoolean,
+  getByOwnerId,
   getByTypeahead,
   getDir,
   getEventKey,
@@ -73,9 +74,9 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-HMQI4LDM.mjs";
+} from "./chunks/chunk-JPQZXVRQ.mjs";
 
-// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.43.3/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
   "arrow",
   "arrowTip",
@@ -94,8 +95,13 @@ var anatomy = createAnatomy("menu").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+core@1.42.0/node_modules/@zag-js/core/dist/merge-props.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.43.3/node_modules/@zag-js/core/dist/merge-props.mjs
 var clsx = (...args) => args.map((str) => str?.trim?.()).filter(Boolean).join(" ");
+var ownedBy = (...args) => Array.from(
+  new Set(
+    clsx(...args).split(/\s+/).filter(Boolean)
+  )
+).join(" ");
 var CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
 var serialize = (style) => {
   const res = {};
@@ -131,6 +137,10 @@ function mergeProps(...args) {
         result[key] = css(result[key], props[key]);
         continue;
       }
+      if (key === "data-ownedby") {
+        result[key] = ownedBy(result[key], props[key]);
+        continue;
+      }
       result[key] = props[key] !== void 0 ? props[key] : result[key];
     }
     for (let key in props) {
@@ -146,7 +156,7 @@ function mergeProps(...args) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.dom.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.43.3/node_modules/@zag-js/menu/dist/menu.dom.mjs
 var getTriggerId = (ctx, value) => {
   const customId = ctx.ids?.trigger;
   if (customId != null) return isFunction(customId) ? customId(value) : customId;
@@ -169,8 +179,8 @@ var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
 var getItemEl = (ctx, value) => value ? ctx.getById(getItemId(ctx, value)) : null;
 var getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
-var getTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
-var getContextTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
+var getTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
+var getContextTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="context-trigger"]${getByOwnerId(ctx.id)}`);
 var getActiveTriggerEl = (ctx, value) => {
   if (value == null) {
     return getTriggerEl(ctx) ?? getTriggerEls(ctx)[0];
@@ -178,8 +188,7 @@ var getActiveTriggerEl = (ctx, value) => {
   return ctx.getById(getTriggerId(ctx, value));
 };
 var getElements = (ctx) => {
-  const ownerId = CSS.escape(getContentId(ctx));
-  const selector = `[role^="menuitem"][data-ownedby=${ownerId}]:not([data-disabled])`;
+  const selector = `[role^="menuitem"]${getByOwnerId(getContentId(ctx))}:not([data-disabled])`;
   return queryAll(getContentEl(ctx), selector);
 };
 var getFirstEl = (ctx) => first(getElements(ctx));
@@ -232,7 +241,7 @@ function isTargetWithinMenuTree(target, children) {
   return false;
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/polygon.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.43.3/node_modules/@zag-js/rect-utils/dist/polygon.mjs
 function getElementPolygon(rectValue, placement) {
   const rect = createRect(rectValue);
   const { top, right, left, bottom } = getRectCorners(rect);
@@ -259,7 +268,7 @@ function isPointInPolygon(polygon, point) {
   return c;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.utils.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.43.3/node_modules/@zag-js/menu/dist/menu.utils.mjs
 function closeRootMenu(ctx) {
   let parent = ctx.parent;
   while (parent && parent.context.get("isSubmenu")) {
@@ -315,7 +324,7 @@ function unlockParentOnSubmenuClose(parent) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.connect.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.43.3/node_modules/@zag-js/menu/dist/menu.connect.mjs
 function connect(service, normalize) {
   const { context, send, state, computed, prop, scope } = service;
   const open = state.hasTag("open");
@@ -370,6 +379,7 @@ function connect(service, normalize) {
       onPointerMove(event) {
         if (itemState.disabled) return;
         if (event.pointerType !== "mouse") return;
+        if (getInteractionModality() !== "pointer") return;
         const target = event.currentTarget;
         if (itemState.highlighted) return;
         const point = getEventPoint(event);
@@ -378,8 +388,7 @@ function connect(service, normalize) {
       onPointerLeave(event) {
         if (itemState.disabled) return;
         if (event.pointerType !== "mouse") return;
-        const pointerMoved = service.event.previous()?.type.includes("POINTER");
-        if (!pointerMoved) return;
+        if (getInteractionModality() !== "pointer") return;
         const target = event.currentTarget;
         send({ type: "ITEM_POINTERLEAVE", id, target, closeOnSelect });
       },
@@ -754,7 +763,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.machine.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.43.3/node_modules/@zag-js/menu/dist/menu.machine.mjs
 var { not, and, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
