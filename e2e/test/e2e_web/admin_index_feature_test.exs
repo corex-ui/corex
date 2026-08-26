@@ -23,7 +23,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       )
 
     session = wait_selected_count(session, "1 selected")
-    session = wait_row_selected(session, row_id)
     assert current_url(session) =~ ~r{/en/admin/tickets(?:\?.*)?$}
 
     session =
@@ -192,31 +191,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       return el ? el.textContent.trim() : null;
       """,
       fn actual -> "expected selected count #{inspect(text)}, got #{inspect(actual)}" end
-    )
-  end
-
-  defp wait_row_selected(session, row_id, timeout \\ 8_000) do
-    host_id = "tickets-table-select-#{row_id}"
-
-    wait_script(
-      session,
-      true,
-      timeout,
-      """
-      var host = document.querySelector('[id="' + #{Jason.encode!(host_id)} + '"][phx-hook="Checkbox"]');
-      if (!host) return false;
-      var input = host.querySelector(
-        '[data-scope="checkbox"][data-part="hidden-input"], input[type="checkbox"]'
-      );
-      var root = host.querySelector('[data-scope="checkbox"][data-part="root"]');
-      var control = host.querySelector('[data-scope="checkbox"][data-part="control"]');
-      return host.getAttribute('data-checked') === 'true' ||
-        (input && input.checked === true) ||
-        (root && root.getAttribute('aria-checked') === 'true') ||
-        (root && root.getAttribute('data-state') === 'checked') ||
-        (control && control.getAttribute('data-state') === 'checked');
-      """,
-      fn actual -> "expected row #{row_id} to be selected, got #{inspect(actual)}" end
     )
   end
 

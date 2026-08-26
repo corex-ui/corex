@@ -132,6 +132,9 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     assert html =~ "1 selected"
     assert html =~ ~s(id="tickets-bulk-delete")
+
+    assert html =~
+             ~r/id="tickets-table-select-#{Regex.escape(id)}"[^>]*data-checked="true"/
   end
 
   test "save and continue stays on the edit form", %{conn: conn} do
