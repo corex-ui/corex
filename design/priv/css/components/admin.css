@@ -245,16 +245,47 @@
  position: absolute;
  width: 1px;
  height: 1px;
+ min-width: 0;
+ min-height: 0;
+ max-width: 1px;
+ max-height: 1px;
  padding: 0;
  margin: -1px;
  overflow: hidden;
  clip: rect(0, 0, 0, 0);
  white-space: nowrap;
  border: 0;
+ pointer-events: none;
  }
 
  .admin-table-wrap {
  overflow-x: auto;
+ }
+
+ .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] {
+ width: auto;
+ max-width: none;
+ }
+
+ .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] > [data-scope="menu"][data-part="trigger"] {
+ width: auto;
+ min-width: var(--spacing-size-sm);
+ min-height: var(--spacing-size-sm);
+ max-width: none;
+ margin-inline-end: 0;
+ padding: 0;
+ aspect-ratio: 1 / 1;
+ justify-content: center;
+ }
+
+ .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] > [data-scope="menu"][data-part="trigger"] > [data-part="item-text"] {
+ flex: none;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ overflow: visible;
+ width: auto;
+ max-width: none;
  }
 
  .admin-footer {

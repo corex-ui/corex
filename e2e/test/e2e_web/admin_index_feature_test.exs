@@ -84,9 +84,11 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     row_id = first_row_id(session)
     menu_id = "tickets-row-#{row_id}"
 
+    session = MenuModel.wait_root_menu_ready(session, menu_id)
+    assert_row_menu_is_topmost(session, menu_id)
+
     session =
       session
-      |> MenuModel.wait_root_menu_ready(menu_id)
       |> MenuModel.open_menu_by_host_id(menu_id)
       |> click_open_menu_item(menu_id, "show:#{row_id}")
       |> wait_path("/en/admin/tickets/#{row_id}")
@@ -169,6 +171,44 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       ),
       timeout: 8_000
     )
+  end
+
+  defp assert_row_menu_is_topmost(session, menu_id) do
+    execute_script(
+      session,
+      """
+      var id = arguments[0];
+      var trigger = document.querySelector(
+        '[id="menu:' + id + '"] [data-scope="menu"][data-part="trigger"]'
+      );
+      if (!trigger) return {ok: false, reason: 'missing-trigger'};
+      trigger.scrollIntoView({block: 'center', inline: 'nearest'});
+      var rect = trigger.getBoundingClientRect();
+      var hit = document.elementFromPoint(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2
+      );
+      var host = trigger.closest('[phx-hook="Menu"]');
+      return {
+        ok: !!(host && hit && host.contains(hit)),
+        hitId: hit && hit.id,
+        hitPart: hit && hit.getAttribute('data-part'),
+        hitScope: hit && hit.getAttribute('data-scope'),
+        width: rect.width,
+        height: rect.height
+      };
+      """,
+      [menu_id],
+      fn result ->
+        assert result["ok"] == true,
+               "expected the row menu trigger to be the topmost hit target, got #{inspect(result)}"
+
+        assert is_number(result["width"]) and result["width"] > 0
+        assert is_number(result["height"]) and result["height"] > 0
+      end
+    )
+
+    session
   end
 
   defp first_row_id(session) do
