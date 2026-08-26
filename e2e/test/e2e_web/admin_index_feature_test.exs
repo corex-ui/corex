@@ -23,7 +23,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       )
 
     session = wait_selected_count(session, "1 selected")
-    wait_checked_row_count(session, 1)
+    session = wait_checked_row_count(session, 1)
     CheckboxModel.assert_aria_checked(session, "tickets-table-select-#{row_id}", "true")
     assert current_url(session) =~ ~r{/en/admin/tickets(?:\?.*)?$}
 
@@ -31,14 +31,14 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
 
     session = wait_selected_count(session, "25 selected")
-    wait_checked_row_count(session, 25)
+    session = wait_checked_row_count(session, 25)
     refute_has(session, css(".admin-is-disabled"))
 
     session =
       CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
 
     session = wait_selected_count(session, "0 selected")
-    wait_checked_row_count(session, 0)
+    session = wait_checked_row_count(session, 0)
     assert_has(session, css(".admin-is-disabled"))
   end
 
@@ -96,7 +96,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       session
       |> MenuModel.wait_root_menu_ready(menu_id)
       |> MenuModel.open_menu_by_host_id(menu_id)
-      |> MenuModel.click_item_by_host_id(menu_id, "show:#{row_id}")
+      |> click_open_menu_item(menu_id, "show:#{row_id}")
       |> wait_path("/en/admin/tickets/#{row_id}")
 
     assert current_url(session) =~ "/en/admin/tickets/#{row_id}"
@@ -204,12 +204,49 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       count,
       timeout,
       """
-      return document.querySelectorAll(
-        "tr[data-part='row'] [data-part='selection-cell'] " +
-          "[data-scope='checkbox'][data-part='control'][data-state='checked']"
-      ).length;
+      var n = 0;
+      document.querySelectorAll(
+        "tr[data-part='row'] [data-part='selection-cell'] [phx-hook='Checkbox']"
+      ).forEach(function (host) {
+        if (host.getAttribute('data-checked') === 'true') n += 1;
+      });
+      return n;
       """,
-      fn actual -> "expected #{count} checked row(s), got #{inspect(actual)}" end
+      fn actual -> "expected #{count} checked row host(s), got #{inspect(actual)}" end
+    )
+  end
+
+  defp click_open_menu_item(session, menu_id, value) do
+    execute_script(
+      session,
+      """
+      var id = arguments[0];
+      var value = arguments[1];
+      var el = document.querySelector(
+        '[id="menu:' + id + ':content"][data-state="open"] [data-scope="menu"][data-part="item"][data-value="' + value + '"]'
+      );
+      if (!el) return {ok: false, reason: 'missing-open-item'};
+      return {
+        ok: true,
+        to: el.getAttribute('data-to'),
+        redirect: el.getAttribute('data-redirect'),
+        hidden: !!el.closest('[hidden]')
+      };
+      """,
+      [menu_id, value],
+      fn result ->
+        assert result["ok"] == true, "expected open menu item #{value}: #{inspect(result)}"
+
+        assert is_binary(result["to"]) and String.starts_with?(result["to"], "/"),
+               "expected menu item #{value} to have a path data-to, got #{inspect(result)}"
+      end
+    )
+
+    click(
+      session,
+      css(
+        ~s|[id="menu:#{menu_id}:content"][data-state="open"] [data-scope="menu"][data-part="item"][data-value="#{value}"]|
+      )
     )
   end
 
@@ -227,7 +264,11 @@ defmodule E2eWeb.AdminIndexFeatureTest do
 
     actual =
       receive do
-        {^ref, value} -> value
+        {^ref, value} ->
+          cond do
+            is_float(value) and value == trunc(value) -> trunc(value)
+            true -> value
+          end
       after
         2_000 -> nil
       end
