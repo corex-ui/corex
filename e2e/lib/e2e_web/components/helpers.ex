@@ -572,6 +572,21 @@ defmodule E2eWeb.Helpers do
           ]
         },
         %{
+          label: ~t"Slider",
+          id: "slider",
+          anatomy_to: ~p"/slider/anatomy",
+          style: true,
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/slider/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/slider/live-form")
+          ],
+          playground_to: ~p"/slider/playground",
+          api_to: ~p"/slider/api",
+          events_to: ~p"/slider/events",
+          patterns_to: ~p"/slider/patterns",
+          style_to: ~p"/slider/style"
+        },
+        %{
           label: ~t"Switch",
           id: "switch",
           anatomy_to: ~p"/switch/anatomy",

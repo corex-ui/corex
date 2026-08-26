@@ -266,7 +266,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         </:error>
       </.color_picker>
 
-      <.angle_slider field={@form[:heading_angle]} marker_values={[0, 90, 180, 270]} class="angle-slider">
+      <.angle_slider field={@form[:heading_angle]} markers marker_values={[0, 90, 180, 270]} class="angle-slider">
         <:label>Heading angle</:label>
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip id="heading-angle-tip" class="tooltip ui-size-sm" positioning={%Corex.Positioning{placement: "top-end"}}>
@@ -446,7 +446,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg}><.heroicon name="hero-exclamation-circle" class="icon" />{msg}</:error>
       </.color_picker>
 
-      <.angle_slider field={@form[:heading_angle]} marker_values={[0, 90, 180, 270]} class="angle-slider" auto_invalid>
+      <.angle_slider field={@form[:heading_angle]} markers marker_values={[0, 90, 180, 270]} class="angle-slider" auto_invalid>
         <:label>Heading angle</:label>
         <:error :let={msg}><.heroicon name="hero-exclamation-circle" class="icon" />{msg}</:error>
       </.angle_slider>

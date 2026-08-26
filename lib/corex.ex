@@ -74,6 +74,23 @@ defmodule Corex do
     radio_group: {Corex.RadioGroup, [radio_group: 1]},
     select: {Corex.Select, [select: 1]},
     signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
+    slider:
+      {Corex.Slider,
+       [
+         slider: 1,
+         slider_root: 1,
+         slider_label: 1,
+         slider_control: 1,
+         slider_track: 1,
+         slider_range: 1,
+         slider_thumb: 1,
+         slider_value_text: 1,
+         slider_value: 1,
+         slider_marker_group: 1,
+         slider_marker: 1,
+         slider_hidden_input: 1,
+         slider_skeleton: 1
+       ]},
     switch: {Corex.Switch, [switch: 1]},
     tabs:
       {Corex.Tabs,

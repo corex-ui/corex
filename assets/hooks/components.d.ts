@@ -75,6 +75,9 @@ declare module "corex/select" {
 declare module "corex/signature-pad" {
   export const SignaturePad: CorexHook;
 }
+declare module "corex/slider" {
+  export const Slider: CorexHook;
+}
 declare module "corex/switch" {
   export const Switch: CorexHook;
 }

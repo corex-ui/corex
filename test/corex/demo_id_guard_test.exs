@@ -6,7 +6,7 @@ defmodule Corex.DemoIdGuardTest do
   @form_components ~W(
     angle_slider checkbox color_picker combobox date_picker editable
     file_upload file_upload_live native_input number_input password_input
-    pin_input radio_group select signature_pad switch tags_input
+    pin_input radio_group select signature_pad slider switch tags_input
   )
 
   test "form *_example openings include id or field" do

@@ -28,6 +28,7 @@
   {"lib/components/radio_group.ex", :contract_with_opaque},
   {"lib/components/select.ex", :contract_with_opaque},
   {"lib/components/signature_pad.ex", :contract_with_opaque},
+  {"lib/components/slider.ex", :contract_with_opaque},
   {"lib/components/switch.ex", :contract_with_opaque},
   {"lib/components/tabs.ex", :contract_with_opaque},
   {"lib/components/tags_input.ex", :contract_with_opaque},
