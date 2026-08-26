@@ -266,8 +266,6 @@
  .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"],
  .data-table [data-scope="data-table"][data-part="selection-header"] .checkbox [data-scope="checkbox"][data-part="control"] {
  color: var(--ctl-ink-text, var(--color-ink));
- height: var(--ctl-size, var(--spacing-size));
- width: var(--ctl-size, var(--spacing-size));
  }
 
  .data-table [data-scope="data-table"][data-part="selection-cell"] .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"],

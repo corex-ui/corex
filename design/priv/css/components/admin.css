@@ -220,12 +220,43 @@
  .admin-page-size {
  display: none;
  flex-shrink: 0;
+ margin: 0;
+ padding: 0;
+ border: 0;
  }
 
  @media (min-width: theme("breakpoint.sm")) {
  .admin-page-size {
- display: block;
+ display: flex;
+ align-items: center;
  }
+ }
+
+ .admin-page-size .native-input {
+ flex-direction: row;
+ flex-wrap: nowrap;
+ align-items: center;
+ width: auto;
+ max-width: none;
+ min-width: 0;
+ gap: var(--spacing-space-sm);
+ }
+
+ .admin-page-size .native-input [data-scope="native-input"][data-part="label"] {
+ margin: 0;
+ white-space: nowrap;
+ font-size: var(--ctl-text, var(--text-sm));
+ line-height: var(--ctl-leading, var(--text-sm--line-height));
+ color: var(--color-ink-muted);
+ }
+
+ .admin-page-size .native-input [data-scope="native-input"][data-part="control"] {
+ width: auto;
+ min-width: var(--container-6xs);
+ }
+
+ .admin-page-size .native-input select[data-scope="native-input"][data-part="input"] {
+ width: auto;
  }
 
  .admin-form {
