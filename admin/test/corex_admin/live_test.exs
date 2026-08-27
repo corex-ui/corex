@@ -52,7 +52,14 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(id="tickets-page-size")
   end
 
-  test "selecting a row shows the selected count", %{conn: conn, ticket: ticket} do
+  test "selecting a row shows the selected count", %{conn: conn, ticket: ticket, scope: scope} do
+    Tickets.create_ticket(scope, %{
+      "title" => "Other ticket",
+      "email" => "other@example.test",
+      "status" => "done",
+      "priority" => 1
+    })
+
     {:ok, view, _html} = live(conn, "/admin/tickets")
 
     html =
