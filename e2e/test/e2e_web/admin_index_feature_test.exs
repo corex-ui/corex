@@ -123,7 +123,10 @@ defmodule E2eWeb.AdminIndexFeatureTest do
 
     assert_has(
       session,
-      css(~s([id="menu:#{menu_id}"] .button.ui-trigger--square), visible: :any)
+      css(
+        ~s([id="menu:#{menu_id}"] [data-scope="menu"][data-part="trigger"].button.ui-trigger--square),
+        visible: :any
+      )
     )
 
     assert_row_menu_is_topmost(session, menu_id)

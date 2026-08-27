@@ -38,6 +38,23 @@ defmodule Corex.MenuTest do
       assert html =~ ~r/phx-mounted/
     end
 
+    test "applies trigger slot class to the trigger button" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu id="menu-class" items={Corex.Tree.new([%{label: "A", value: "a"}])}>
+              <:trigger class="button ui-size-sm ui-trigger--square">Go</:trigger>
+            </Menu.menu>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~
+               ~r/id="menu:menu-class:trigger"[^>]*class="button ui-size-sm ui-trigger--square"/
+    end
+
     test "renders deep nested menu with grouped grandchildren" do
       items =
         Corex.Tree.new([
