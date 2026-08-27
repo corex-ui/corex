@@ -99,7 +99,7 @@ defmodule CorexAdmin.Components.Index do
           <p class="admin-muted admin-table-bar-count">
             {Gettext.t("%{count} selected", count: length(@selected))}
           </p>
-          <div class={if(@selected == [], do: "admin-is-disabled")}>
+          <div class={["admin-command-actions", @selected == [] && "admin-is-disabled"]}>
             <Components.bulk_delete_dialog
               :if={
                 Action.registered?(@spec, :bulk, CorexAdmin.Action.BulkDelete) and

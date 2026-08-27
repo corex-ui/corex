@@ -137,32 +137,30 @@ defmodule E2eWeb.Layouts do
           class={Shell.aside_tree()}
         />
       </aside>
-      <main id="main-content" class={Shell.main()}>
-        <div class={Shell.docs_body()}>
-          <nav class="admin-mobile-nav" aria-label="Admin resources">
-            <AdminComponents.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
-          </nav>
-          <div class={Shell.admin_content()}>
-            {@inner_content}
-          </div>
-          <.toast_group
-            id="layout-toast"
-            class="toast"
-            phx-update="ignore"
-            flash={@flash}
-          >
-            <:loading>
-              <.heroicon name="hero-arrow-path" class="icon" />
-            </:loading>
-          </.toast_group>
-          <.toast_client_error
-            toast_group_id="layout-toast"
-            title={~t"We lost the connection"}
-            description={~t"We're trying to reconnect you..."}
-            type={:error}
-            duration={:infinity}
-          />
+      <main id="main-content" class={"admin-main " <> Shell.main()}>
+        <nav class="admin-mobile-nav" aria-label="Admin resources">
+          <AdminComponents.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
+        </nav>
+        <div class={Shell.admin_content()}>
+          {@inner_content}
         </div>
+        <.toast_group
+          id="layout-toast"
+          class="toast"
+          phx-update="ignore"
+          flash={@flash}
+        >
+          <:loading>
+            <.heroicon name="hero-arrow-path" class="icon" />
+          </:loading>
+        </.toast_group>
+        <.toast_client_error
+          toast_group_id="layout-toast"
+          title={~t"We lost the connection"}
+          description={~t"We're trying to reconnect you..."}
+          type={:error}
+          duration={:infinity}
+        />
         <.footer path={@path} />
       </main>
     </div>

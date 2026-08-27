@@ -42,9 +42,18 @@
  flex-direction: column;
  }
 
+ .admin-main {
+ display: flex;
+ min-width: 0;
+ flex: 1 1 0%;
+ flex-direction: column;
+ padding-inline: var(--spacing-space-lg);
+ padding-block: var(--spacing-space-lg);
+ }
+
  .admin-mobile-nav {
  border-bottom: 1px solid var(--color-border);
- padding-inline: var(--spacing-space-xl);
+ padding-inline: 0;
  padding-block: var(--spacing-space-sm);
  }
 
@@ -60,8 +69,6 @@
  flex: 1 1 0%;
  flex-direction: column;
  gap: var(--spacing-size);
- padding-inline: var(--spacing-space-xl);
- padding-block: var(--spacing-size);
  }
 
  .admin-stack {
@@ -222,7 +229,7 @@
  display: flex;
  position: relative;
  width: 100%;
- flex-wrap: wrap;
+ flex-wrap: nowrap;
  align-items: center;
  gap: var(--spacing-space);
  min-height: var(--spacing-size);
@@ -230,22 +237,66 @@
  }
 
  .admin-command-search-form {
- display: contents;
+ display: flex;
+ flex-direction: row;
+ flex: 1 1 var(--container-4xs);
+ align-items: center;
+ align-self: center;
+ min-width: 0;
+ width: auto;
+ max-width: var(--container-sm);
+ height: auto;
+ margin: 0;
+ padding: 0;
+ gap: 0;
+ background: transparent;
+ border: 0;
+ border-radius: 0;
+ box-shadow: none;
  }
 
  .admin .admin-command-bar .admin-command-search {
- flex: 1 1 var(--container-4xs);
- min-width: min(100%, var(--container-4xs));
- max-width: var(--container-sm);
- width: auto;
+ display: flex;
+ flex-direction: row;
+ flex: 1 1 auto;
+ align-items: center;
+ align-self: center;
+ min-width: 0;
+ min-height: 0;
+ width: 100%;
+ max-width: none;
+ height: auto;
+ gap: 0;
+ }
+
+ .admin-command-selection,
+ .admin-command-actions {
+ display: flex;
+ flex-wrap: nowrap;
+ align-items: center;
+ gap: var(--spacing-space);
  }
 
  .admin-command-selection {
- display: flex;
- flex-wrap: wrap;
- align-items: center;
- gap: var(--spacing-space);
  margin-inline-start: auto;
+ flex: 0 0 auto;
+ }
+
+ .admin-command-actions {
+ gap: var(--spacing-space-sm);
+ }
+
+ .admin-command-actions .dialog {
+ display: inline-flex;
+ flex: 0 0 auto;
+ width: auto;
+ max-width: none;
+ }
+
+ @media (max-width: theme("breakpoint.sm")) {
+ .admin-command-bar {
+ flex-wrap: wrap;
+ }
  }
 
  .admin-table-bar-count {
@@ -493,7 +544,7 @@
  line-height: var(--text-sm--line-height);
  }
 
- .admin .collapsible,
+ .admin .collapsible:not(.admin-filters),
  .admin .data-list,
  .admin .data-table,
  .admin .tree-view,
@@ -505,9 +556,16 @@
  .admin .switch,
  .admin .password-input,
  .admin .toggle-group,
- .admin .combobox {
+ .admin .combobox,
+ .admin .tabs,
+ .admin .pagination,
+ .admin .file-upload {
  width: 100%;
  max-width: none;
+ }
+
+ .admin .data-table {
+ max-height: calc(100dvh - 12rem);
  }
 
  .admin .native-input,
@@ -523,6 +581,8 @@
  .admin .admin-command-bar .collapsible,
  .admin .admin-command-bar .collapsible [data-scope="collapsible"][data-part="root"] {
  position: relative;
+ flex: 0 0 auto;
+ align-self: center;
  width: auto;
  max-width: none;
  }
@@ -540,12 +600,30 @@
  inset-inline-end: 0;
  top: calc(100% + var(--spacing-space-sm));
  z-index: 20;
- width: min(36rem, calc(100vw - 2 * var(--spacing-space-xl)));
+ width: min(36rem, calc(100vw - 2 * var(--spacing-space-lg)));
  padding: var(--spacing-space);
  background-color: var(--color-surface);
  border: 1px solid var(--color-border);
  border-radius: var(--radius-md);
  box-shadow: none;
+ }
+
+ .admin .admin-command-bar [data-scope="collapsible"][data-part="content"][data-state="closed"] {
+ display: none;
+ animation: none;
+ }
+
+ .admin .admin-command-bar .admin-command-search [data-scope="native-input"][data-part="root"] {
+ display: flex;
+ flex-direction: row;
+ align-items: center;
+ width: 100%;
+ min-height: 0;
+ gap: 0;
+ }
+
+ .admin .admin-command-bar .admin-command-search [data-scope="native-input"][data-part="control"] {
+ width: 100%;
  }
 
  .admin .admin-page-size .select {
@@ -733,4 +811,41 @@
  background: transparent !important;
  background-color: transparent !important;
  box-shadow: none !important;
+}
+
+/* Unlayered so this beats `.typo form` card styles in `@layer components`. */
+.typo form.admin-command-search-form,
+.admin form.admin-command-search-form {
+ display: flex;
+ flex-direction: row;
+ flex: 1 1 var(--container-4xs);
+ align-items: center;
+ align-self: center;
+ min-width: 0;
+ width: auto;
+ max-width: var(--container-sm);
+ height: auto;
+ margin: 0;
+ padding: 0;
+ gap: 0;
+ background: transparent;
+ border: 0;
+ border-radius: 0;
+ box-shadow: none;
+ color: inherit;
+}
+
+.typo form.admin-form,
+.admin form.admin-form {
+ display: flex;
+ flex-direction: column;
+ gap: var(--spacing-space-lg);
+ width: 100%;
+ max-width: none;
+ margin: 0;
+ padding: 0;
+ background: transparent;
+ border: 0;
+ border-radius: 0;
+ box-shadow: none;
 }

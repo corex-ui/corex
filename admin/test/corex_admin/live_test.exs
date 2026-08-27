@@ -55,6 +55,7 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(id="tickets-bulk-delete")
     assert html =~ ~s(class="admin-command-bar")
     assert html =~ ~s(class="admin-command-selection")
+    assert html =~ "admin-command-actions"
     assert html =~ ~s(class="admin-muted admin-table-bar-count")
     refute html =~ ~s(class="admin-table-bar")
     assert html =~ ~s(class="admin-command-search-form")

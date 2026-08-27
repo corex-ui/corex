@@ -24,6 +24,8 @@ defmodule Mix.Tasks.Corex.Admin.InstallTest do
 
     assert hub =~ "layout: {<%= inspect web_module %>.AdminLayout, :admin}"
     refute hub =~ "Layouts, :app"
+    assert layout =~ "admin-main"
+    assert layout =~ "admin-content"
     assert layout =~ "{@inner_content}"
     assert layout =~ "Components.nav_tree"
     refute layout =~ "render_slot(@inner_block)"

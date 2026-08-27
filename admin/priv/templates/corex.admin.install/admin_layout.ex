@@ -21,11 +21,14 @@ defmodule <%= inspect web_module %>.AdminLayout do
         >
           <Components.nav_tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />
         </aside>
-        <main id="main-content" class="relative mx-auto flex min-w-0 w-full flex-1 flex-col">
+        <main
+          id="main-content"
+          class="admin-main relative mx-auto flex min-w-0 w-full flex-1 flex-col"
+        >
           <nav class="admin-mobile-nav" aria-label="Admin resources">
             <Components.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
           </nav>
-          <div class="mx-auto flex min-w-0 w-full flex-1 flex-col gap-size px-space-xl py-size">
+          <div class="admin-content">
             {@inner_content}
           </div>
           <.toast_group id="layout-toast" class="toast" phx-update="ignore" flash={@flash}>

@@ -16,6 +16,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets")
     assert html =~ "Welcome ticket"
+    assert html =~ "admin-main"
+    assert html =~ "admin-content"
     assert html =~ "page=2"
     assert html =~ ~S(id="tickets-filters")
     assert html =~ "Select all"
@@ -31,6 +33,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ "admin-filter-search"
     assert html =~ ~S(class="admin-command-bar")
     assert html =~ ~S(class="admin-command-selection")
+    assert html =~ "admin-command-actions"
     refute html =~ ~S(class="admin-table-bar")
     refute html =~ ~S(class="admin-table-toolbar")
     assert html =~ ~S(id="tickets-page-size")
@@ -203,11 +206,11 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     html = render_click(view, "select_all", %{"checked" => true})
     assert html =~ "25 selected"
-    refute html =~ ~S(class="admin-is-disabled")
+    refute html =~ "admin-is-disabled"
 
     html = render_click(view, "select_all", %{"checked" => false})
     assert html =~ "0 selected"
-    assert html =~ ~S(class="admin-is-disabled")
+    assert html =~ "admin-is-disabled"
   end
 
   test "save and continue stays on the edit form", %{conn: conn} do
