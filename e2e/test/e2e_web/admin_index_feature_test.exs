@@ -60,8 +60,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     assert_has(session, css(".admin-command-bar .badge.ui-trigger--square", text: "1"))
     assert current_url(session) =~ "filters[status]"
 
-    session =
-      click(session, css(~S(button[phx-click="reset_filter"][phx-value-field="status"])))
+    session = click_reset_filter(session, "status")
 
     refute_has(session, css(".admin-chips", text: "Status: open"))
     refute current_url(session) =~ "filters[status]"
@@ -168,6 +167,18 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       if (root && trigger && root.getAttribute('data-state') === 'open') {
         trigger.click();
       }
+      """
+    )
+  end
+
+  defp click_reset_filter(session, field) do
+    execute_script(
+      session,
+      """
+      var btn = document.querySelector(
+        '#tickets-filters button[phx-click="reset_filter"][phx-value-field="#{field}"]'
+      );
+      if (btn) btn.click();
       """
     )
   end

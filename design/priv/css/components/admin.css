@@ -608,11 +608,6 @@
  box-shadow: none;
  }
 
- .admin .admin-command-bar [data-scope="collapsible"][data-part="content"][data-state="closed"] {
- display: none;
- animation: none;
- }
-
  .admin .admin-command-bar .admin-command-search [data-scope="native-input"][data-part="root"] {
  display: flex;
  flex-direction: row;
