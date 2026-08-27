@@ -580,16 +580,12 @@ defmodule Corex.Menu do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
-        <button
-          phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})}
-          {Connect.trigger(%Trigger{
-            id: @id,
-            disabled: @disabled,
-            dir: @dir,
-            orientation: @orientation
-          })}
-          class={Map.get(List.first(@trigger), :class, nil)}
-        >
+        <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.trigger(%Trigger{
+          id: @id,
+          disabled: @disabled,
+          dir: @dir,
+          orientation: @orientation
+        })}>
           <span data-scope="menu" data-part="item-text">
             {render_slot(@trigger)}
           </span>

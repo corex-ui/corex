@@ -50,6 +50,9 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(id="tickets-bulk-delete")
     assert html =~ ~s(class="admin-command-bar")
     assert html =~ ~s(id="tickets-page-size")
+    assert html =~ ~s(aria-label="Show")
+    assert html =~ ~s(aria-label="Edit")
+    refute html =~ "admin-row-menu"
   end
 
   test "selecting a row shows the selected count", %{conn: conn, ticket: ticket, scope: scope} do

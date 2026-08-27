@@ -8,7 +8,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
 
   alias E2eWeb.CheckboxModel
   alias E2eWeb.FormHelpers
-  alias E2eWeb.MenuModel
   alias E2eWeb.SelectModel
   alias E2eWeb.ToggleGroupModel
 
@@ -99,7 +98,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     refute_has(session, css(".admin-chips", text: "Status: done"))
   end
 
-  feature "per page select and row kebab menu", %{session: session} do
+  feature "per page select and row show action", %{session: session} do
     session = wait_tickets_index(session)
 
     session =
@@ -117,24 +116,10 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session = wait_live_connected(session)
 
     row_id = first_row_id(session)
-    menu_id = "tickets-row-#{row_id}"
-
-    session = MenuModel.wait_root_menu_ready(session, menu_id)
-
-    assert_has(
-      session,
-      css(
-        ~s([id="menu:#{menu_id}"] [data-scope="menu"][data-part="trigger"].button.ui-trigger--square),
-        visible: :any
-      )
-    )
-
-    assert_row_menu_is_topmost(session, menu_id)
 
     session =
       session
-      |> MenuModel.open_menu_by_host_id(menu_id)
-      |> click_open_menu_item(menu_id, "show:#{row_id}")
+      |> click(css(~s(tr[id="#{row_id}"] a[aria-label="Show"])))
       |> wait_path("/en/admin/tickets/#{row_id}")
 
     assert current_url(session) =~ "/en/admin/tickets/#{row_id}"
@@ -220,44 +205,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     )
   end
 
-  defp assert_row_menu_is_topmost(session, menu_id) do
-    execute_script(
-      session,
-      """
-      var id = arguments[0];
-      var trigger = document.querySelector(
-        '[id="menu:' + id + '"] [data-scope="menu"][data-part="trigger"]'
-      );
-      if (!trigger) return {ok: false, reason: 'missing-trigger'};
-      trigger.scrollIntoView({block: 'center', inline: 'nearest'});
-      var rect = trigger.getBoundingClientRect();
-      var hit = document.elementFromPoint(
-        rect.left + rect.width / 2,
-        rect.top + rect.height / 2
-      );
-      var host = trigger.closest('[phx-hook="Menu"]');
-      return {
-        ok: !!(host && hit && host.contains(hit)),
-        hitId: hit && hit.id,
-        hitPart: hit && hit.getAttribute('data-part'),
-        hitScope: hit && hit.getAttribute('data-scope'),
-        width: rect.width,
-        height: rect.height
-      };
-      """,
-      [menu_id],
-      fn result ->
-        assert result["ok"] == true,
-               "expected the row menu trigger to be the topmost hit target, got #{inspect(result)}"
-
-        assert is_number(result["width"]) and result["width"] > 0
-        assert is_number(result["height"]) and result["height"] > 0
-      end
-    )
-
-    session
-  end
-
   defp first_row_id(session) do
     session
     |> find(css("tr[data-scope='data-table'][data-part='row']", at: 0))
@@ -275,45 +222,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       """,
       fn actual -> "expected selected count #{inspect(text)}, got #{inspect(actual)}" end
     )
-  end
-
-  defp click_open_menu_item(session, menu_id, value) do
-    execute_script(
-      session,
-      """
-      var id = arguments[0];
-      var value = arguments[1];
-      var el = document.querySelector(
-        '[id="menu:' + id + ':content"] [data-scope="menu"][data-part="item"][data-value="' + value + '"]'
-      );
-      if (!el) return {ok: false, reason: 'missing-item'};
-      var to = el.getAttribute('data-to');
-      var rect = el.getBoundingClientRect();
-      var opts = {
-        bubbles: true,
-        cancelable: true,
-        pointerType: 'mouse',
-        isPrimary: true,
-        button: 0,
-        clientX: rect.left + rect.width / 2,
-        clientY: rect.top + rect.height / 2,
-        view: window
-      };
-      el.dispatchEvent(new PointerEvent('pointerdown', opts));
-      el.dispatchEvent(new PointerEvent('pointerup', opts));
-      el.dispatchEvent(new MouseEvent('click', opts));
-      return {ok: true, to: to, redirect: el.getAttribute('data-redirect')};
-      """,
-      [menu_id, value],
-      fn result ->
-        assert result["ok"] == true, "expected to click menu item #{value}: #{inspect(result)}"
-
-        assert is_binary(result["to"]) and String.starts_with?(result["to"], "/"),
-               "expected menu item #{value} to have a path data-to, got #{inspect(result)}"
-      end
-    )
-
-    session
   end
 
   defp wait_script(session, expected, timeout, script, message_fun) do

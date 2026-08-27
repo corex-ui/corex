@@ -262,29 +262,6 @@
  overflow-x: auto;
  }
 
- .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] {
- width: auto;
- max-width: none;
- }
-
- .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] > [data-scope="menu"][data-part="trigger"] {
- width: auto;
- min-width: 0;
- max-width: none;
- margin-inline-end: 0;
- }
-
- .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] > [data-scope="menu"][data-part="trigger"] > [data-part="item-text"] {
- flex: none;
- display: flex;
- align-items: center;
- justify-content: center;
- overflow: visible;
- width: auto;
- max-width: none;
- white-space: normal;
- }
-
  .admin-footer {
  display: flex;
  width: 100%;

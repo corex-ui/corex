@@ -205,10 +205,27 @@ defmodule CorexAdmin.Live.Index do
             <Components.field_value field={field} record={record} />
           </:col>
           <:action :let={record}>
-            <Components.row_menu
-              socket={assigns}
+            <.navigate
+              to={Helpers.record_path(assigns, @spec, record)}
+              type="navigate"
+              class="button ui-size-sm ui-trigger--square"
+              aria_label="Show"
+            >
+              <.heroicon name="hero-eye" />
+            </.navigate>
+            <.navigate
+              :if={Helpers.authorize(assigns, :edit, @resource_mod, record) == :ok}
+              to={Helpers.edit_path(assigns, @spec, record)}
+              type="navigate"
+              class="button ui-size-sm ui-trigger--square"
+              aria_label="Edit"
+            >
+              <.heroicon name="hero-pencil-square" />
+            </.navigate>
+            <Components.delete_dialog
+              :if={Helpers.authorize(assigns, :delete, @resource_mod, record) == :ok}
+              id={"delete-#{Helpers.record_id(@spec, record)}"}
               spec={@spec}
-              resource_mod={@resource_mod}
               record={record}
             />
           </:action>
@@ -362,12 +379,6 @@ defmodule CorexAdmin.Live.Index do
   def handle_event("select_all", params, socket) do
     {:noreply, apply_select_all(socket, params)}
   end
-
-  def handle_event("row_menu", %{"value" => "delete:" <> id}, socket) do
-    {:noreply, Corex.Dialog.set_open(socket, "delete-#{id}", true)}
-  end
-
-  def handle_event("row_menu", _params, socket), do: {:noreply, socket}
 
   def handle_event("delete", %{"id" => id}, socket) do
     spec = socket.assigns.spec
