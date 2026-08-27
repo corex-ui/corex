@@ -90,10 +90,12 @@ defmodule CorexAdmin.Live.Form do
             <.navigate
               to={Helpers.resource_path(assigns, @spec)}
               type="navigate"
-              class="button"
+              class="button ui-trigger--square"
               aria_label="Cancel"
+              title="Cancel"
             >
               <.heroicon name="hero-arrow-left" />
+              <span class="sr-only">Back to {@spec.label}</span>
             </.navigate>
           </:actions>
         </.layout_heading>

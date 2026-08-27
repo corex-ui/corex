@@ -47,12 +47,12 @@ defmodule CorexAdmin.Live.Components do
 
   def nav_tree(assigns) do
     grouped = Helpers.grouped_resources(assigns.socket)
-    current_path = current_resource_path(assigns.socket, assigns.current)
+    current_slug = current_resource_slug(assigns.current)
 
     assigns =
       assigns
       |> assign(:items, nav_tree_items(assigns.socket, grouped))
-      |> assign(:selected, if(current_path, do: [current_path], else: []))
+      |> assign(:selected, if(current_slug, do: [current_slug], else: []))
       |> assign(:expanded, Enum.map(grouped, fn {group, _} -> "group:#{group}" end))
 
     ~H"""
@@ -60,10 +60,12 @@ defmodule CorexAdmin.Live.Components do
       id={@id}
       class="tree-view"
       redirect
+      on_selection_change="nav"
       value={@selected}
       expanded_value={@expanded}
       items={@items}
     >
+      <:label class="sr-only">Admin</:label>
       <:branch :let={branch}>
         <span class="admin-truncate">{branch.label}</span>
       </:branch>
@@ -525,7 +527,6 @@ defmodule CorexAdmin.Live.Components do
       items={@items}
       value={@selected}
       on_value_change="filter"
-      controlled
       translation={%Corex.Select.Translation{placeholder: "Any"}}
     >
       <:label>
@@ -567,7 +568,6 @@ defmodule CorexAdmin.Live.Components do
         deselectable
         value={@selected}
         on_value_change="filter"
-        controlled
       >
         <:item :for={opt <- @options} value={opt.value}>{opt.label}</:item>
       </.toggle_group>
@@ -745,12 +745,11 @@ defmodule CorexAdmin.Live.Components do
           children:
             Enum.map(resources, fn resource ->
               spec = Helpers.spec(resource)
-              path = Helpers.resource_path(socket, spec)
 
               %{
                 label: spec.label,
-                value: path,
-                to: path,
+                value: spec.slug,
+                to: Helpers.resource_path(socket, spec),
                 redirect: :navigate
               }
             end)
@@ -759,10 +758,8 @@ defmodule CorexAdmin.Live.Components do
     )
   end
 
-  defp current_resource_path(_socket, nil), do: nil
-
-  defp current_resource_path(socket, %Spec{} = spec),
-    do: Helpers.resource_path(socket, spec)
+  defp current_resource_slug(nil), do: nil
+  defp current_resource_slug(%Spec{slug: slug}), do: slug
 
   attr(:id, :string, required: true)
   attr(:msg, :string, required: true)

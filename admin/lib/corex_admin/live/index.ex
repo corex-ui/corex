@@ -61,34 +61,21 @@ defmodule CorexAdmin.Live.Index do
             :if={Helpers.authorize(assigns, :new, @resource_mod, nil) == :ok}
             to={Helpers.new_path(assigns, @spec)}
             type="navigate"
-            class="button ui-accent"
+            class="button ui-accent ui-trigger--square"
             aria_label={"New #{@spec.label}"}
+            title={"New #{@spec.label}"}
           >
-            <.heroicon name="hero-plus" /> New
+            <.heroicon name="hero-plus" />
+            <span class="sr-only">New {@spec.label}</span>
           </.navigate>
         </:actions>
       </.layout_heading>
 
       <div class="admin-command-bar">
         <div class="admin-command-bar-start">
-          <.checkbox
-            :if={@spec.selectable}
-            id={"#{@spec.slug}-command-select-all"}
-            class="checkbox ui-size-sm"
-            checked={command_select_all_checked(@entries, @selected)}
-            on_checked_change="select_all"
-            controlled={true}
-            aria_label="Select all"
-          >
-            <:label>Select all</:label>
-            <:indicator>
-              <.heroicon name="hero-check" class="icon" />
-            </:indicator>
-            <:indeterminate>
-              <.heroicon name="hero-minus" class="icon" />
-            </:indeterminate>
-          </.checkbox>
-          <p :if={@spec.selectable} class="admin-muted">{length(@selected)} selected</p>
+          <p :if={@spec.selectable} class="admin-muted admin-command-bar-count">
+            {length(@selected)} selected
+          </p>
           <div
             :if={@spec.selectable and Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok}
             class={if(@selected == [], do: "admin-is-disabled")}
@@ -112,9 +99,10 @@ defmodule CorexAdmin.Live.Index do
             name="q"
             value={@list_opts.search}
             class="native-input ui-size-sm admin-filter-search"
+            placeholder={"Search #{@spec.label}"}
             phx-debounce="400"
           >
-            <:label>Search</:label>
+            <:label class="sr-only">Search {@spec.label}</:label>
             <:icon>
               <.heroicon name="hero-magnifying-glass" class="icon" />
             </:icon>
@@ -164,7 +152,7 @@ defmodule CorexAdmin.Live.Index do
       <div class="admin-table-wrap">
         <.data_table
           id={"#{@spec.slug}-table"}
-          class="data-table ui-size-sm"
+          class="data-table max-w-none ui-size-sm"
           rows={@entries}
           sort_by={sort_by(@list_opts)}
           sort_order={sort_order(@list_opts)}
@@ -205,14 +193,15 @@ defmodule CorexAdmin.Live.Index do
             <Components.field_value field={field} record={record} />
           </:col>
           <:action :let={record}>
-            <.navigate
-              to={Helpers.record_path(assigns, @spec, record)}
-              type="navigate"
-              class="button ui-size-sm ui-trigger--square"
-              aria_label="Show"
-            >
-              <.heroicon name="hero-eye" />
-            </.navigate>
+            <div class="sr-only">
+              <.navigate
+                to={Helpers.record_path(assigns, @spec, record)}
+                type="navigate"
+                class="link"
+              >
+                Show
+              </.navigate>
+            </div>
             <.navigate
               :if={Helpers.authorize(assigns, :edit, @resource_mod, record) == :ok}
               to={Helpers.edit_path(assigns, @spec, record)}
@@ -222,6 +211,8 @@ defmodule CorexAdmin.Live.Index do
             >
               <.heroicon name="hero-pencil-square" />
             </.navigate>
+          </:action>
+          <:action :let={record}>
             <Components.delete_dialog
               :if={Helpers.authorize(assigns, :delete, @resource_mod, record) == :ok}
               id={"delete-#{Helpers.record_id(@spec, record)}"}
@@ -260,9 +251,8 @@ defmodule CorexAdmin.Live.Index do
             items={page_size_items(@page_size_options)}
             value={[to_string(@list_opts.page_size)]}
             on_value_change="page_size"
-            controlled
           >
-            <:label>Per page</:label>
+            <:label class="sr-only">Per page</:label>
             <:trigger>
               <.heroicon name="hero-chevron-down" />
             </:trigger>
@@ -342,7 +332,7 @@ defmodule CorexAdmin.Live.Index do
       |> Map.put("filters", filters)
       |> Map.delete("page")
 
-    {:noreply, patch_index(socket, params)}
+    {:noreply, patch_index_and_sync_filters(socket, params, field)}
   end
 
   def handle_event("reset_filter", %{"field" => field}, socket) do
@@ -356,7 +346,7 @@ defmodule CorexAdmin.Live.Index do
       end)
       |> Map.delete("page")
 
-    {:noreply, patch_index(socket, params)}
+    {:noreply, patch_index_and_sync_filters(socket, params, field)}
   end
 
   def handle_event("reset_filters", _params, socket) do
@@ -365,7 +355,7 @@ defmodule CorexAdmin.Live.Index do
       |> ListOpts.to_params()
       |> Map.drop(["q", "filters", "page"])
 
-    {:noreply, patch_index(socket, params)}
+    {:noreply, patch_index_and_sync_filters(socket, params, :all)}
   end
 
   def handle_event("clear_filters", _params, socket) do
@@ -483,6 +473,44 @@ defmodule CorexAdmin.Live.Index do
   end
 
   defp maybe_patch_page(socket, _spec, _list_opts, false), do: socket
+
+  defp patch_index_and_sync_filters(socket, params, fields) do
+    socket
+    |> clear_filter_widgets(fields)
+    |> patch_index(params)
+  end
+
+  defp clear_filter_widgets(socket, :all) do
+    Enum.reduce(socket.assigns.spec.filters, socket, &clear_filter_widget(&2, &1))
+  end
+
+  defp clear_filter_widgets(socket, field) when is_binary(field) do
+    case Enum.find(socket.assigns.spec.filters, fn filter ->
+           to_string(filter.field) == field or to_string(filter.name) == field
+         end) do
+      nil -> socket
+      filter -> clear_filter_widget(socket, filter)
+    end
+  end
+
+  defp clear_filter_widget(socket, filter) do
+    id = "#{socket.assigns.spec.slug}-filter-#{filter.name}"
+    option_count = length(List.wrap(filter.options))
+
+    cond do
+      filter.type in [:select, :multi_select, :boolean] and option_count > 0 and option_count <= 4 ->
+        Corex.ToggleGroup.set_value(socket, id, [])
+
+      filter.type in [:select, :multi_select] and option_count > 12 ->
+        Corex.Combobox.set_value(socket, id, [])
+
+      filter.type in [:select, :multi_select, :boolean] ->
+        Corex.Select.set_value(socket, id, [])
+
+      true ->
+        socket
+    end
+  end
 
   defp patch_index(socket, params) when is_map(params) do
     spec = socket.assigns.spec
@@ -742,9 +770,8 @@ defmodule CorexAdmin.Live.Index do
     Corex.List.new(Enum.map(options, &%{label: to_string(&1), value: to_string(&1)}))
   end
 
-  # Zag fires onCheckedChange when a controlled checkbox is patched to
-  # :indeterminate, and handle_select set_checked(false) on the table header
-  # after a partial select. Those echoes must not clear the current selection.
+  # Table header checkboxes are library-controlled. Zag can echo onCheckedChange
+  # when the header is patched to indeterminate or false after a partial select.
   defp apply_select_all(socket, params) do
     case select_all_checked_param(params) do
       :indeterminate ->
@@ -773,18 +800,6 @@ defmodule CorexAdmin.Live.Index do
       :indeterminate -> :indeterminate
       "indeterminate" -> :indeterminate
       _ -> false
-    end
-  end
-
-  defp command_select_all_checked(entries, selected)
-       when is_list(entries) and is_list(selected) do
-    total = length(entries)
-    count = length(selected)
-
-    cond do
-      total == 0 or count == 0 -> false
-      count == total -> true
-      true -> :indeterminate
     end
   end
 end

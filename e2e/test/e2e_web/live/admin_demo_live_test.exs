@@ -20,6 +20,10 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ ~s(id="tickets-filters")
     assert html =~ "Select all"
     assert html =~ "0 selected"
+    refute html =~ "tickets-command-select-all"
+    assert html =~ ~s(data-value="tickets")
+    assert html =~ ~s(data-to="/en/admin/tickets")
+    assert html =~ ~s(placeholder="Search Tickets")
     assert html =~ ~s(class="admin-command-bar")
     assert html =~ ~s(data-part="control-inputs")
     assert html =~ ~s(data-range)
@@ -28,6 +32,21 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets?page=2")
     assert html =~ "Queue ticket"
+  end
+
+  test "sidebar nav live-redirects from tickets to posts", %{conn: conn} do
+    {view, html} = live_ok!(conn, ~p"/admin/tickets")
+    assert html =~ ~s(data-value="posts")
+    assert html =~ ~s(data-to="/en/admin/posts")
+
+    {view, html} =
+      view
+      |> render_click("nav", %{"selectedValue" => ["posts"], "isItem" => true})
+      |> follow_redirect(conn)
+      |> unwrap_live_redirect!()
+
+    assert html =~ "Welcome post"
+    assert has_element?(view, "#posts-filters")
   end
 
   test "posts index lists seeded rows", %{conn: conn} do
@@ -136,28 +155,29 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~
              ~r/id="tickets-table-select-#{Regex.escape(id)}"[^>]*data-checked="true"/
 
-    assert html =~
-             ~r/id="tickets-command-select-all"[^>]*data-checked="indeterminate"/
+    html =
+      render_click(view, "select_all", %{
+        "checked" => false,
+        "id" => "tickets-table-select-all"
+      })
 
-    html = render_click(view, "select_all", %{"checked" => false, "id" => "tickets-command-select-all"})
     assert html =~ "1 selected"
 
-    html = render_click(view, "select_all", %{"checked" => "indeterminate", "id" => "tickets-table-select-all"})
+    html =
+      render_click(view, "select_all", %{
+        "checked" => "indeterminate",
+        "id" => "tickets-table-select-all"
+      })
+
     assert html =~ "1 selected"
 
     html = render_click(view, "select_all", %{"checked" => true})
     assert html =~ "25 selected"
     refute html =~ ~s(class="admin-is-disabled")
 
-    assert html =~
-             ~r/id="tickets-command-select-all"[^>]*data-checked="true"/
-
     html = render_click(view, "select_all", %{"checked" => false})
     assert html =~ "0 selected"
     assert html =~ ~s(class="admin-is-disabled")
-
-    assert html =~
-             ~r/id="tickets-command-select-all"[^>]*data-checked="false"/
   end
 
   test "save and continue stays on the edit form", %{conn: conn} do

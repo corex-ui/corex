@@ -26,7 +26,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
 
     Process.sleep(1_000)
     session = wait_selected_count(session, "1 selected")
-    CheckboxModel.assert_aria_checked(session, "tickets-command-select-all", "mixed")
 
     session =
       CheckboxModel.press_space_on_checkbox_control(
@@ -37,7 +36,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     wait_selected_count(session, "0 selected")
   end
 
-  feature "table and command select-all do not loop", %{session: session} do
+  feature "table select-all does not loop", %{session: session} do
     session = wait_tickets_index(session)
 
     session =
@@ -46,24 +45,10 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session = wait_selected_count(session, "25 selected")
     Process.sleep(1_000)
     session = wait_selected_count(session, "25 selected")
-    CheckboxModel.assert_aria_checked(session, "tickets-command-select-all", "true")
     CheckboxModel.assert_aria_checked(session, "tickets-table-select-all", "true")
 
     session =
       CheckboxModel.press_space_on_checkbox_control(session, "tickets-table-select-all")
-
-    session = wait_selected_count(session, "0 selected")
-
-    session =
-      CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
-
-    session = wait_selected_count(session, "25 selected")
-    Process.sleep(1_000)
-    session = wait_selected_count(session, "25 selected")
-    CheckboxModel.assert_aria_checked(session, "tickets-table-select-all", "true")
-
-    session =
-      CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
 
     wait_selected_count(session, "0 selected")
   end
@@ -119,7 +104,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
 
     session =
       session
-      |> click(css(~s(tr[id="#{row_id}"] a[aria-label="Show"])))
+      |> click(css(~s(tr[id="#{row_id}"] td[data-part="cell"]), at: 0))
       |> wait_path("/en/admin/tickets/#{row_id}")
 
     assert current_url(session) =~ "/en/admin/tickets/#{row_id}"
@@ -129,9 +114,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session
     |> FormHelpers.visit_path("/en/admin/tickets")
     |> wait_selected_count("0 selected")
-    |> assert_has(
-      css("#tickets-command-select-all[phx-hook='Checkbox']:not([data-loading])", visible: :any)
-    )
     |> assert_has(
       css("#tickets-table-select-all[phx-hook='Checkbox']:not([data-loading])", visible: :any)
     )

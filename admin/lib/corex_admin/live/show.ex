@@ -65,10 +65,12 @@ defmodule CorexAdmin.Live.Show do
             <.navigate
               to={Helpers.resource_path(assigns, @spec)}
               type="navigate"
-              class="button"
+              class="button ui-trigger--square"
               aria_label="Back"
+              title="Back"
             >
               <.heroicon name="hero-arrow-left" />
+              <span class="sr-only">Back to {@spec.label}</span>
             </.navigate>
             <.navigate
               :if={Helpers.authorize(assigns, :edit, @resource_mod, @record) == :ok}
