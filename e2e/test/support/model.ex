@@ -278,7 +278,10 @@ defmodule E2eWeb.Model do
 
         for q <- [
               css(~s|#{id_selector}[data-loading]|, count: 0, visible: :any),
-              css(~s|#{id_selector} [phx-hook][data-loading]|, count: 0, visible: :any)
+              # Skeletons (no phx-hook) and hooks both use data-loading. Waiting
+              # only for [phx-hook][data-loading] returns immediately on async
+              # pattern pages while <.slider_skeleton> is still on screen.
+              css(~s|#{id_selector} [data-loading]|, count: 0, visible: :any)
             ] do
           case timeout do
             nil ->

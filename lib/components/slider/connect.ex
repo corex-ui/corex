@@ -366,6 +366,10 @@ defmodule Corex.Slider.Connect do
     index = Map.get(assigns, :index, 0)
     orient = orientation(assigns)
 
+    min = Map.get(assigns, :min, 0)
+    max = Map.get(assigns, :max, 100)
+    value = Map.get(assigns, :value, 0)
+
     %{
       "data-scope" => "slider",
       "data-part" => "thumb",
@@ -374,6 +378,9 @@ defmodule Corex.Slider.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orient,
       "role" => "slider",
+      "aria-valuemin" => format_number(min),
+      "aria-valuemax" => format_number(max),
+      "aria-valuenow" => format_number(value),
       "style" => thumb_style(index, orient),
       "data-disabled" => presence_attr(assigns.disabled),
       "data-invalid" => presence_attr(assigns.invalid),
