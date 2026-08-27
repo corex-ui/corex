@@ -96,13 +96,15 @@ mix compile && mix assets.build
 
 ## Design assets
 
-Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}`, configure `config :corex_design`, add `/assets/corex/` to `.gitignore`, then:
+Add `{:corex_design, "~> 0.2", runtime: false}`, configure `config :corex_design`, add `/assets/corex/` to `.gitignore`, then:
 
 ```sh
 mix corex.design.build
 ```
 
 Do not commit `assets/corex/`. If already tracked: `git rm -r --cached assets/corex` after adding the ignore rule.
+
+`runtime: false` means Design is not started as an OTP app; it is not a per-request CSS rebuild. `--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`). For `mix release`, add `corex_design: :load` so Mix.Release keeps those BEAMs.
 
 When using mode/theme/lang pickers, include `toggle` and `select` in `components:` in `config :corex_design` so they appear in the generated `components.css` entry.
 

@@ -6,6 +6,10 @@ defmodule Mix.Tasks.Corex.Design.Build do
   @moduledoc """
   Generates the Corex design bundle from Elixir theme config and shipped anatomy CSS.
 
+  This is a Phoenix **asset** step, not part of `mix compile`. Wire it into
+  `assets.build` and `assets.deploy` (before Tailwind). After changing
+  `config :corex_design`, re-run this task (or `mix assets.build`).
+
   ## Options
 
     * `--output` — destination directory (default from `config :corex_design` or `assets/corex`)

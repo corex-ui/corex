@@ -4,9 +4,11 @@ Package: [corex_design](https://hexdocs.pm/corex_design). Full guide on **corex*
 
 ## Introduction
 
-Corex Design can emit optional preference CSS driven by orthogonal `data-*` attributes on `<html>` (text zoom, contrast, motion, cursor, focus, links). Visitors change those axes from a small panel in your app; the choice persists in `localStorage` and a cookie, the same way theme and mode do.
+Corex Design can emit optional preference CSS driven by orthogonal `data-*` attributes on `<html>` (text zoom, contrast, motion, cursor, focus, links). That CSS is generated **once** by `mix corex.design.build` (same as theme CSS). Request handling never rebuilds it. Visitors switch already-emitted rules by setting those attributes, the same way theme and mode work; the choice persists in `localStorage` and a cookie.
 
-The panel UI is app-owned. Design only builds the CSS and exposes `Corex.Design.Accessibility` helpers for allowlists, defaults, and sanitize/parse. Off by default: set `config :corex_design, accessibility:` and rebuild.
+The panel UI is app-owned. Design exposes `Corex.Design.Accessibility` helpers for allowlists, defaults, and sanitize/parse (cookie → `data-*`). Those helpers do **not** emit CSS. Off by default: set `config :corex_design, accessibility:` and rebuild.
+
+`{:corex_design, ..., runtime: false}` means Design is not started as an OTP app. It is not “rebuild CSS while serving traffic.” The Mix task still runs from `assets.build` / `assets.deploy`.
 
 New apps: `mix corex.new my_app --a11y` or `mix corex.tableau.new my_site --a11y` (default off).
 
@@ -336,11 +338,33 @@ Include `dialog` and `toggle_group` in `config :corex_design, components:` when 
 | CSS has no effect | `accessibility:` is on; rebuilt with `mix corex.design.build`; `data-*` on `<html>` |
 | Flash of wrong prefs | Bridge `<script>` is in `<head>`; root attrs match the plug assign |
 | Reset does nothing | Listener for `phx:set-a11y-reset` is present and syncs toggle groups |
+| `mix release`: `Corex.Design.Accessibility` undefined | Add `corex_design: :load` (see [Mix release](#mix-release)) |
+
+## Mix release
+
+`mix phx.server` keeps `runtime: false` modules on the `_build` code path, so `--a11y` plugs work without extra config.
+
+`mix release` **omits** `runtime: false` apps unless you list them. Add `corex_design: :load` so Accessibility helpers stay in the slug. `:load` puts BEAMs on the code path; it does **not** start Design as an OTP app or run the CSS generator.
+
+```elixir
+releases: [
+  my_app: [
+    include_executables_for: [:unix],
+    applications: [
+      runtime_tools: :permanent,
+      corex_design: :load
+    ]
+  ]
+]
+```
+
+Generated `mix corex.new --a11y` apps do not get this stanza automatically. Add it when you introduce `mix release`.
 
 ## Related
 
 - [Design](design.html): `config :corex_design` and preference CSS emit
-- [Configuration](configuration.html): build vs runtime knobs
+- [Configuration](configuration.html): build-time CSS vs request-time `data-*` pickers
 - [Theming](theming.html): `data-theme`; combine bridges in one `<script>` IIFE
 - [Dark mode](dark_mode.html): `data-mode`; same bridge pattern
+- [Production](production.html): `mix release` and `corex_design: :load`
 - [Manual installation](manual_installation.html): hooks, Design, theme/mode plugs
