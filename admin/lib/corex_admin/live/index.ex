@@ -356,12 +356,11 @@ defmodule CorexAdmin.Live.Index do
   end
 
   def handle_event("select", params, socket) do
-    {:noreply, socket |> Selection.handle_select(params, :entries) |> sync_command_select_all()}
+    {:noreply, Selection.handle_select(socket, params, :entries)}
   end
 
   def handle_event("select_all", params, socket) do
-    {:noreply,
-     socket |> Selection.handle_select_all(params, :entries) |> sync_command_select_all()}
+    {:noreply, Selection.handle_select_all(socket, params, :entries)}
   end
 
   def handle_event("row_menu", %{"value" => "delete:" <> id}, socket) do
@@ -741,18 +740,6 @@ defmodule CorexAdmin.Live.Index do
       total == 0 or count == 0 -> false
       count == total -> true
       true -> :indeterminate
-    end
-  end
-
-  defp sync_command_select_all(socket) do
-    spec = socket.assigns.spec
-
-    if spec.selectable do
-      all? = command_select_all_checked(socket.assigns.entries, socket.assigns.selected) == true
-
-      Corex.Checkbox.set_checked(socket, "#{spec.slug}-command-select-all", all?)
-    else
-      socket
     end
   end
 end

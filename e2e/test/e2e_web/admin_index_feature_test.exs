@@ -25,11 +25,46 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session = wait_selected_count(session, "1 selected")
     assert current_url(session) =~ ~r{/en/admin/tickets(?:\?.*)?$}
 
+    Process.sleep(1_000)
+    session = wait_selected_count(session, "1 selected")
+    CheckboxModel.assert_aria_checked(session, "tickets-command-select-all", "mixed")
+
     session =
       CheckboxModel.press_space_on_checkbox_control(
         session,
         "tickets-table-select-#{row_id}"
       )
+
+    wait_selected_count(session, "0 selected")
+  end
+
+  feature "table and command select-all do not loop", %{session: session} do
+    session = wait_tickets_index(session)
+
+    session =
+      CheckboxModel.press_space_on_checkbox_control(session, "tickets-table-select-all")
+
+    session = wait_selected_count(session, "25 selected")
+    Process.sleep(1_000)
+    session = wait_selected_count(session, "25 selected")
+    CheckboxModel.assert_aria_checked(session, "tickets-command-select-all", "true")
+    CheckboxModel.assert_aria_checked(session, "tickets-table-select-all", "true")
+
+    session =
+      CheckboxModel.press_space_on_checkbox_control(session, "tickets-table-select-all")
+
+    session = wait_selected_count(session, "0 selected")
+
+    session =
+      CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
+
+    session = wait_selected_count(session, "25 selected")
+    Process.sleep(1_000)
+    session = wait_selected_count(session, "25 selected")
+    CheckboxModel.assert_aria_checked(session, "tickets-table-select-all", "true")
+
+    session =
+      CheckboxModel.press_space_on_checkbox_control(session, "tickets-command-select-all")
 
     wait_selected_count(session, "0 selected")
   end
@@ -85,6 +120,12 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     menu_id = "tickets-row-#{row_id}"
 
     session = MenuModel.wait_root_menu_ready(session, menu_id)
+
+    assert_has(
+      session,
+      css(~s([id="menu:#{menu_id}"] .button.ui-trigger--square), visible: :any)
+    )
+
     assert_row_menu_is_topmost(session, menu_id)
 
     session =
@@ -102,6 +143,9 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     |> wait_selected_count("0 selected")
     |> assert_has(
       css("#tickets-command-select-all[phx-hook='Checkbox']:not([data-loading])", visible: :any)
+    )
+    |> assert_has(
+      css("#tickets-table-select-all[phx-hook='Checkbox']:not([data-loading])", visible: :any)
     )
     |> assert_has(
       css("#tickets-filter-status[phx-hook='ToggleGroup']:not([data-loading])", visible: :any)

@@ -61,6 +61,9 @@ defmodule CorexAdmin.LiveTest do
 
     assert html =~ "1 selected"
     assert html =~ ~s(id="tickets-bulk-delete")
+
+    assert html =~
+             ~r/id="tickets-command-select-all"[^>]*data-checked="indeterminate"/
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do

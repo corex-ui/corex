@@ -136,13 +136,22 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~
              ~r/id="tickets-table-select-#{Regex.escape(id)}"[^>]*data-checked="true"/
 
+    assert html =~
+             ~r/id="tickets-command-select-all"[^>]*data-checked="indeterminate"/
+
     html = render_click(view, "select_all", %{"checked" => true})
     assert html =~ "25 selected"
     refute html =~ ~s(class="admin-is-disabled")
 
+    assert html =~
+             ~r/id="tickets-command-select-all"[^>]*data-checked="true"/
+
     html = render_click(view, "select_all", %{"checked" => false})
     assert html =~ "0 selected"
     assert html =~ ~s(class="admin-is-disabled")
+
+    assert html =~
+             ~r/id="tickets-command-select-all"[^>]*data-checked="false"/
   end
 
   test "save and continue stays on the edit form", %{conn: conn} do
