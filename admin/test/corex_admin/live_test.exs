@@ -31,6 +31,7 @@ defmodule CorexAdmin.LiveTest do
   test "index lists scoped tickets without textarea body", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/admin/tickets")
     assert html =~ "Broken login"
+    assert html =~ "Open only"
     refute html =~ "password"
     assert html =~ "Per page"
     assert html =~ "Showing 1–1 of 1"
@@ -157,6 +158,24 @@ defmodule CorexAdmin.LiveTest do
     render_hook(view, "page_size", %{"id" => "tickets-page-size", "value" => ["10"]})
 
     assert_patch(view, "/admin/tickets?page_size=10")
+  end
+
+  test "canned filter patches list params", %{conn: conn, scope: scope} do
+    Tickets.create_ticket(scope, %{
+      "title" => "Done ticket",
+      "email" => "done@example.test",
+      "status" => "done",
+      "priority" => 4
+    })
+
+    {:ok, view, html} = live(conn, "/admin/tickets")
+    assert html =~ "Open only"
+    assert html =~ "Done ticket"
+
+    html = render_click(view, "canned_filter", %{"index" => "0"})
+    assert html =~ "Broken login"
+    refute html =~ "Done ticket"
+    assert html =~ "Status: open"
   end
 
   test "out of range page clamps to last page", %{conn: conn} do
@@ -403,7 +422,58 @@ defmodule CorexAdmin.LiveTest do
     {:error, {:live_redirect, %{to: "/admin"}}} = live(conn, "/admin/tickets")
   end
 
-  test "unknown resource redirects", %{conn: conn} do
-    {:error, {:live_redirect, %{to: "/admin"}}} = live(conn, "/admin/not-a-resource")
+  test "unknown resource is not routed", %{conn: conn} do
+    conn = get(conn, "/admin/not-a-resource")
+    assert conn.status == 404
+  end
+
+  test "show history tab reads the adapter", %{conn: conn, ticket: ticket} do
+    {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
+    assert html =~ "History"
+    assert html =~ "ops@example.test"
+    assert html =~ "Broken login"
+  end
+
+  test "index offers export picker", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+    assert html =~ "Export"
+    assert html =~ ~s(id="tickets-export")
+    assert html =~ "CSV"
+  end
+
+  test "export controller streams csv", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+    [_, token] = Regex.run(~r/name="token"[^>]*value="([^"]+)"/, html)
+
+    conn =
+      conn
+      |> Plug.Conn.put_private(:plug_skip_csrf_protection, true)
+      |> post("/admin/tickets/export", %{
+        "token" => token,
+        "format" => "csv",
+        "fields" => ["title", "email"]
+      })
+
+    assert conn.status == 200
+    assert conn.resp_body =~ "Title"
+    assert conn.resp_body =~ "Broken login"
+  end
+
+  test "export controller streams json", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+    [_, token] = Regex.run(~r/name="token"[^>]*value="([^"]+)"/, html)
+
+    conn =
+      conn
+      |> Plug.Conn.put_private(:plug_skip_csrf_protection, true)
+      |> post("/admin/tickets/export", %{
+        "token" => token,
+        "format" => "json",
+        "fields" => ["title"]
+      })
+
+    assert conn.status == 200
+    assert conn.resp_body =~ "Broken login"
+    assert Jason.decode!(conn.resp_body)
   end
 end

@@ -51,6 +51,8 @@ defmodule CorexAdmin.MixProject do
       {:corex, path: ".."},
       {:plug, "~> 1.14"},
       {:jason, "~> 1.2"},
+      {:nimble_csv, "~> 1.2"},
+      {:carbonite, "~> 0.15", optional: true},
       {:bandit, "~> 1.0", only: :test},
       {:floki, "~> 0.38.0", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
@@ -68,7 +70,7 @@ defmodule CorexAdmin.MixProject do
     [
       plt_local_path: "_build/plts",
       plt_core_path: "_build/plts",
-      plt_add_apps: [:mix, :ex_unit, :phoenix, :phoenix_live_view, :ecto],
+      plt_add_apps: [:mix, :ex_unit, :phoenix, :phoenix_live_view, :ecto, :nimble_csv],
       flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
     ]
   end
@@ -150,7 +152,14 @@ defmodule CorexAdmin.MixProject do
         CorexAdmin.Query,
         CorexAdmin.Router,
         Mix.Tasks.Corex.Admin.Install,
-        Mix.Tasks.Corex.Admin.Gen.Resource
+        Mix.Tasks.Corex.Admin.Gen.Resource,
+        Mix.Tasks.Corex.Admin.Gen.Live,
+        CorexAdmin.Live,
+        CorexAdmin.Field,
+        CorexAdmin.Action,
+        CorexAdmin.History,
+        CorexAdmin.History.Carbonite,
+        CorexAdmin.History.Threadline
       ])
 
     if MapSet.member?(allowed, mod) do

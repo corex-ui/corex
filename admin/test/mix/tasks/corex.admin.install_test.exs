@@ -39,4 +39,23 @@ defmodule Mix.Tasks.Corex.Admin.InstallTest do
     assert contents =~ "context:"
     refute contents =~ "Repo."
   end
+
+  test "gen.live templates are thin CorexAdmin.Live wrappers" do
+    index =
+      File.read!(
+        Application.app_dir(:corex_admin, "priv/templates/corex.admin.gen.live/index.ex")
+      )
+
+    show =
+      File.read!(Application.app_dir(:corex_admin, "priv/templates/corex.admin.gen.live/show.ex"))
+
+    form =
+      File.read!(Application.app_dir(:corex_admin, "priv/templates/corex.admin.gen.live/form.ex"))
+
+    assert index =~ "use CorexAdmin.Live, :index"
+    assert show =~ "use CorexAdmin.Live, :show"
+    assert form =~ "use CorexAdmin.Live, :form"
+    refute index =~ "handle_params"
+    refute show =~ "CorexAdmin.Live.Show.Controller"
+  end
 end

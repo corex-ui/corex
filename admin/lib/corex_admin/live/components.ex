@@ -4,6 +4,7 @@ defmodule CorexAdmin.Live.Components do
   use Phoenix.Component
   use Corex
 
+  alias CorexAdmin.Gettext
   alias CorexAdmin.ListOpts
   alias CorexAdmin.Live.Helpers
   alias CorexAdmin.Resource.Field
@@ -28,7 +29,7 @@ defmodule CorexAdmin.Live.Components do
     <.collapsible id="admin-nav-mobile" class="collapsible admin-mobile-menu">
       <:trigger>
         <.heroicon name="hero-bars-3" />
-        <span class="sr-only">Open admin navigation</span>
+        <span class="sr-only">{Gettext.t("Open admin navigation")}</span>
       </:trigger>
       <:content>
         <.nav_tree socket={@socket} id="admin-nav-tree-mobile" />
@@ -95,7 +96,7 @@ defmodule CorexAdmin.Live.Components do
     ~H"""
     <nav
       :if={@live_action in [:show, :new, :edit]}
-      aria-label="Breadcrumb"
+      aria-label={Gettext.t("Breadcrumb")}
       class="admin-crumbs"
     >
       <ol class="admin-crumbs-list">
@@ -114,7 +115,7 @@ defmodule CorexAdmin.Live.Components do
         </li>
         <li :if={@live_action == :new} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
-          <span class="admin-crumb-current">New</span>
+          <span class="admin-crumb-current">{Gettext.t("New")}</span>
         </li>
         <li :if={@live_action == :show and @record} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
@@ -131,7 +132,7 @@ defmodule CorexAdmin.Live.Components do
         </li>
         <li :if={@live_action == :edit and @record} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
-          <span class="admin-crumb-current">Edit</span>
+          <span class="admin-crumb-current">{Gettext.t("Edit")}</span>
         </li>
       </ol>
     </nav>
@@ -142,178 +143,16 @@ defmodule CorexAdmin.Live.Components do
   attr(:record, :any, required: true)
 
   def field_value(assigns) do
-    formatted = format_value(assigns.field, assigns.record)
-
-    assigns =
-      assigns
-      |> assign(:formatted, formatted)
-      |> assign(:badge, select_badge_class(assigns.field, assigns.record))
-
-    ~H"""
-    <span :if={@badge} class={@badge}>{@formatted}</span>
-    <span :if={!@badge} class="admin-cell" title={@formatted}>{@formatted}</span>
-    """
-  end
-
-  attr(:field, Field, required: true)
-  attr(:form, :any, required: true)
-
-  def field_input(%{field: %Field{type: :select}} = assigns) do
-    assigns =
-      assigns
-      |> assign(:items, list_items(assigns.field.options))
-      |> assign(:tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.select
-      field={@form[@field.name]}
-      class="select"
-      items={@items}
-      auto_invalid
-    >
-      <:label>{@field.label}</:label>
-      <:trigger>
-        <.heroicon name="hero-chevron-down" />
-      </:trigger>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.select>
-    """
-  end
-
-  def field_input(%{field: %Field{type: :date}} = assigns) do
-    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.date_picker
-      field={@form[@field.name]}
-      class="date-picker"
-      auto_invalid
-    >
-      <:label>{@field.label}</:label>
-      <:trigger>
-        <.heroicon name="hero-calendar" />
-      </:trigger>
-      <:prev_trigger>
-        <.heroicon name="hero-chevron-left" />
-      </:prev_trigger>
-      <:next_trigger>
-        <.heroicon name="hero-chevron-right" />
-      </:next_trigger>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.date_picker>
-    """
-  end
-
-  def field_input(%{field: %Field{type: :number}} = assigns) do
-    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.number_input
-      field={@form[@field.name]}
-      class="number-input"
-      orientation="vertical"
-      auto_invalid
-    >
-      <:label>{@field.label}</:label>
-      <:decrement_trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
-      </:decrement_trigger>
-      <:increment_trigger>
-        <.heroicon name="hero-chevron-up" class="icon" />
-      </:increment_trigger>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.number_input>
-    """
-  end
-
-  def field_input(%{field: %Field{type: :embeds_many}} = assigns) do
-    ~H"""
-    <.nested_fields field={@form[@field.name]} class="nested-fields">
-      <:label>{@field.label}</:label>
-      <:empty>No {@field.label} yet.</:empty>
-      <:col :let={nested} :for={child <- @field.fields} label={child.label}>
-        <.field_input field={child} form={nested} />
-      </:col>
-      <:add_trigger>Add {@field.label}</:add_trigger>
-      <:remove_trigger>
-        <.heroicon name="hero-trash" class="icon" />
-      </:remove_trigger>
-    </.nested_fields>
-    """
-  end
-
-  def field_input(%{field: %Field{type: :boolean}} = assigns) do
-    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.switch field={@form[@field.name]} class="switch" auto_invalid>
-      <:label>{@field.label}</:label>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.switch>
-    """
-  end
-
-  def field_input(%{field: %Field{type: :password}} = assigns) do
-    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.password_input
-      field={@form[@field.name]}
-      class="password-input"
-      value=""
-      auto_invalid
-    >
-      <:label>{@field.label}</:label>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.password_input>
-    """
-  end
-
-  def field_input(%{field: %Field{type: :datetime}} = assigns) do
-    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.native_input
-      type="datetime-local"
-      field={@form[@field.name]}
-      class="native-input"
-      auto_invalid
-    >
-      <:label>{@field.label}</:label>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.native_input>
-    """
+    CorexAdmin.Field.display(assigns)
   end
 
   def field_input(assigns) do
-    assigns = assign(assigns, :tip_id, field_error_id(assigns.form, assigns.field))
-
-    ~H"""
-    <.native_input
-      type={native_type(@field.type)}
-      field={@form[@field.name]}
-      class="native-input"
-      auto_invalid
-    >
-      <:label>{@field.label}</:label>
-      <:error :let={msg} class="admin-field-error">
-        <.field_error_tip id={@tip_id} msg={msg} />
-      </:error>
-    </.native_input>
-    """
+    CorexAdmin.Field.input(assigns)
   end
+
+  def format_value(field, record), do: CorexAdmin.Field.format(field, record)
+
+  def embed_show(assigns), do: CorexAdmin.Field.Renderer.embed_show(assigns)
 
   attr(:spec, Spec, required: true)
   attr(:filter, Filter, required: true)
@@ -364,7 +203,7 @@ defmodule CorexAdmin.Live.Components do
           phx-click="clear_filter"
           phx-value-field={chip.field}
           class="button ui-size-sm ui-ghost ui-trigger--square"
-          aria_label={"Clear #{chip.label}"}
+          aria_label={Gettext.t("Clear %{label}", label: chip.label)}
         >
           <.heroicon name="hero-x-mark" />
         </.action>
@@ -391,14 +230,14 @@ defmodule CorexAdmin.Live.Components do
     >
       <:trigger
         class={delete_trigger_class(@trigger)}
-        aria_label={"Delete #{@spec.label}"}
+        aria_label={Gettext.t("Delete %{label}", label: @spec.label)}
       >
         <.heroicon :if={@trigger != :labeled} name="hero-trash" />
-        <span :if={@trigger == :labeled}>Delete</span>
-        <span :if={@trigger == :hidden} class="admin-visually-hidden">Delete</span>
+        <span :if={@trigger == :labeled}>{Gettext.t("Delete")}</span>
+        <span :if={@trigger == :hidden} class="admin-visually-hidden">{Gettext.t("Delete")}</span>
       </:trigger>
-      <:title>Delete {@spec.label}?</:title>
-      <:description>This action cannot be undone.</:description>
+      <:title>{Gettext.t("Delete %{label}?", label: @spec.label)}</:title>
+      <:description>{Gettext.t("This action cannot be undone.")}</:description>
       <:content>
         <div class="admin-dialog-actions">
           <.action
@@ -406,7 +245,7 @@ defmodule CorexAdmin.Live.Components do
             phx-click={Corex.Dialog.set_open(@id, false)}
             class="button ui-size-sm"
           >
-            Cancel
+            {Gettext.t("Cancel")}
           </.action>
           <.action
             id={"#{@id}-confirm"}
@@ -416,7 +255,7 @@ defmodule CorexAdmin.Live.Components do
             }
             class="button ui-size-sm ui-solid ui-alert"
           >
-            Delete
+            {Gettext.t("Delete")}
           </.action>
         </div>
       </:content>
@@ -441,12 +280,14 @@ defmodule CorexAdmin.Live.Components do
     >
       <:trigger
         class="button ui-size-sm ui-solid ui-alert"
-        aria_label={"Delete selected #{@spec.label}"}
+        aria_label={Gettext.t("Delete selected %{label}", label: @spec.label)}
       >
-        <.heroicon name="hero-trash" /> Delete selected
+        <.heroicon name="hero-trash" /> {Gettext.t("Delete selected")}
       </:trigger>
-      <:title>Delete {@count} {@spec.label}?</:title>
-      <:description>This action cannot be undone. Each record is authorized separately.</:description>
+      <:title>{Gettext.t("Delete %{count} %{label}?", count: @count, label: @spec.label)}</:title>
+      <:description>
+        {Gettext.t("This action cannot be undone. Each record is authorized separately.")}
+      </:description>
       <:content>
         <div class="admin-dialog-actions">
           <.action
@@ -454,14 +295,14 @@ defmodule CorexAdmin.Live.Components do
             phx-click={Corex.Dialog.set_open(@id, false)}
             class="button ui-size-sm"
           >
-            Cancel
+            {Gettext.t("Cancel")}
           </.action>
           <.action
             id={"#{@id}-confirm"}
             phx-click={Corex.Dialog.set_open(@id, false) |> JS.push("bulk_delete")}
             class="button ui-size-sm ui-solid ui-alert"
           >
-            Delete selected
+            {Gettext.t("Delete selected")}
           </.action>
         </div>
       </:content>
@@ -469,9 +310,69 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
-  attr(:id, :string, required: true)
-  attr(:label, :string, required: true)
-  slot(:inner_block, required: true)
+  attr(:spec, Spec, required: true)
+  attr(:token, :string, default: nil)
+  attr(:fields, :list, required: true)
+  attr(:action, :string, required: true)
+
+  def export_dialog(assigns) do
+    assigns = assign(assigns, :csrf, Plug.CSRFProtection.get_csrf_token())
+
+    ~H"""
+    <.dialog id={"#{@spec.slug}-export"} class="dialog" modal>
+      <:trigger class="admin-visually-hidden">{Gettext.t("Export")}</:trigger>
+      <:title>{Gettext.t("Export %{label}", label: @spec.label)}</:title>
+      <:description>{Gettext.t("Download the current list as CSV or JSON.")}</:description>
+      <:content>
+        <form
+          id={"#{@spec.slug}-export-form"}
+          action={@action}
+          method="post"
+          class="admin-form"
+        >
+          <input type="hidden" name="_csrf_token" value={@csrf} />
+          <input type="hidden" name="token" value={@token} />
+          <.native_input
+            id={"#{@spec.slug}-export-format"}
+            type="select"
+            name="format"
+            value="csv"
+            options={[{Gettext.t("CSV"), "csv"}, {Gettext.t("JSON"), "json"}]}
+            class="native-input"
+          >
+            <:label>{Gettext.t("Format")}</:label>
+          </.native_input>
+          <fieldset class="admin-export-fields">
+            <legend>{Gettext.t("Fields")}</legend>
+            <.native_input
+              :for={field <- @fields}
+              id={"#{@spec.slug}-export-field-#{field.name}"}
+              type="checkbox"
+              name="fields[]"
+              value={Atom.to_string(field.name)}
+              checked
+              class="native-input"
+            >
+              <:label>{field.label}</:label>
+            </.native_input>
+          </fieldset>
+          <div class="admin-dialog-actions">
+            <.action
+              type="button"
+              phx-click={Corex.Dialog.set_open("#{@spec.slug}-export", false)}
+              class="button ui-size-sm"
+            >
+              {Gettext.t("Cancel")}
+            </.action>
+            <.action type="submit" class="button ui-size-sm ui-solid ui-brand">
+              {Gettext.t("Download")}
+            </.action>
+          </div>
+        </form>
+      </:content>
+    </.dialog>
+    """
+  end
 
   def icon_tooltip(assigns) do
     ~H"""
@@ -495,9 +396,9 @@ defmodule CorexAdmin.Live.Components do
         phx-click="reset_filter"
         phx-value-field={Atom.to_string(@filter.field)}
         class="button ui-size-sm ui-ghost ui-alert"
-        aria_label={"Reset #{@filter.label}"}
+        aria_label={Gettext.t("Reset %{label}", label: @filter.label)}
       >
-        Reset
+        {Gettext.t("Reset")}
       </.action>
     </span>
     """
@@ -534,7 +435,7 @@ defmodule CorexAdmin.Live.Components do
       items={@items}
       value={@selected}
       on_value_change="filter"
-      translation={%Corex.Select.Translation{placeholder: "Any"}}
+      translation={%Corex.Select.Translation{placeholder: Gettext.t("Any")}}
     >
       <:label>
         <.filter_legend filter={@filter} />
@@ -550,7 +451,8 @@ defmodule CorexAdmin.Live.Components do
     {options, multiple} =
       case assigns.filter.type do
         :boolean ->
-          {[%{label: "Yes", value: "true"}, %{label: "No", value: "false"}], false}
+          {[%{label: Gettext.t("Yes"), value: "true"}, %{label: Gettext.t("No"), value: "false"}],
+           false}
 
         :multi_select ->
           {option_maps(assigns.filter.options), true}
@@ -638,7 +540,7 @@ defmodule CorexAdmin.Live.Components do
         value={@picked}
         on_value_change="filter"
       >
-        <:label>Custom</:label>
+        <:label>{Gettext.t("Custom")}</:label>
         <:trigger>
           <.heroicon name="hero-calendar" />
         </:trigger>
@@ -673,7 +575,7 @@ defmodule CorexAdmin.Live.Components do
           class="native-input ui-size-sm"
           phx-change="search"
         >
-          <:label>From</:label>
+          <:label>{Gettext.t("From")}</:label>
         </.native_input>
         <.native_input
           id={"#{@control_id}-to"}
@@ -683,7 +585,7 @@ defmodule CorexAdmin.Live.Components do
           class="native-input ui-size-sm"
           phx-change="search"
         >
-          <:label>To</:label>
+          <:label>{Gettext.t("To")}</:label>
         </.native_input>
       </div>
     </div>
@@ -710,7 +612,7 @@ defmodule CorexAdmin.Live.Components do
           orientation="vertical"
           on_value_change="filter"
         >
-          <:label>Min</:label>
+          <:label>{Gettext.t("Min")}</:label>
           <:decrement_trigger>
             <.heroicon name="hero-chevron-down" class="icon" />
           </:decrement_trigger>
@@ -726,7 +628,7 @@ defmodule CorexAdmin.Live.Components do
           orientation="vertical"
           on_value_change="filter"
         >
-          <:label>Max</:label>
+          <:label>{Gettext.t("Max")}</:label>
           <:decrement_trigger>
             <.heroicon name="hero-chevron-down" class="icon" />
           </:decrement_trigger>
@@ -818,50 +720,13 @@ defmodule CorexAdmin.Live.Components do
 
   defp date_presets do
     [
-      %{id: "today", label: "Today"},
-      %{id: "last_7", label: "Last 7 days"},
-      %{id: "last_30", label: "Last 30 days"},
-      %{id: "this_month", label: "This month"},
-      %{id: "ytd", label: "YTD"}
+      %{id: "today", label: Gettext.t("Today")},
+      %{id: "last_7", label: Gettext.t("Last 7 days")},
+      %{id: "last_30", label: Gettext.t("Last 30 days")},
+      %{id: "this_month", label: Gettext.t("This month")},
+      %{id: "ytd", label: Gettext.t("YTD")}
     ]
   end
-
-  attr(:id, :string, required: true)
-  attr(:msg, :string, required: true)
-
-  defp field_error_tip(assigns) do
-    ~H"""
-    <.tooltip
-      id={@id}
-      class="tooltip ui-size-sm"
-      positioning={%Corex.Positioning{placement: "top-end"}}
-    >
-      <:trigger>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-      </:trigger>
-      <:content>{@msg}</:content>
-    </.tooltip>
-    """
-  end
-
-  defp field_error_id(form, %Field{name: name}) do
-    base =
-      cond do
-        is_binary(form.id) and form.id != "" -> form.id
-        is_binary(form.name) and form.name != "" -> form.name
-        true -> "field"
-      end
-
-    "#{base}-#{name}-error-tip"
-  end
-
-  defp native_type(:id), do: "text"
-  defp native_type(:text), do: "text"
-  defp native_type(:textarea), do: "textarea"
-  defp native_type(:email), do: "email"
-  defp native_type(:password), do: "password"
-  defp native_type(:url), do: "url"
-  defp native_type(_), do: "text"
 
   defp list_items(options) when is_list(options) do
     Corex.List.new(
@@ -915,21 +780,10 @@ defmodule CorexAdmin.Live.Components do
   defp iso(%NaiveDateTime{} = dt), do: NaiveDateTime.to_iso8601(dt)
   defp iso(other), do: to_string(other)
 
-  defp select_badge_class(%Field{type: :select, name: name}, record) do
-    case Map.get(record, name) do
-      "done" -> "badge ui-success ui-size-sm"
-      "open" -> "badge ui-info ui-size-sm"
-      value when value not in [nil, ""] -> "badge ui-size-sm"
-      _ -> nil
-    end
-  end
-
-  defp select_badge_class(_, _), do: nil
-
   defp active_chips(%Spec{} = spec, %ListOpts{} = opts) do
     search_chip =
       if opts.search not in [nil, ""] do
-        [%{field: "q", label: "Search", text: opts.search}]
+        [%{field: "q", label: Gettext.t("Search"), text: opts.search}]
       else
         []
       end
@@ -949,8 +803,8 @@ defmodule CorexAdmin.Live.Components do
   end
 
   defp chip_text(value) when is_list(value), do: Enum.join(value, ", ")
-  defp chip_text(true), do: "Yes"
-  defp chip_text(false), do: "No"
+  defp chip_text(true), do: Gettext.t("Yes")
+  defp chip_text(false), do: Gettext.t("No")
 
   defp chip_text(%{from: from, to: to}), do: "#{iso(from)} – #{iso(to)}"
   defp chip_text(%{from: from}), do: "from #{iso(from)}"
@@ -959,62 +813,4 @@ defmodule CorexAdmin.Live.Components do
   defp chip_text(%{min: min}), do: "≥ #{min}"
   defp chip_text(%{max: max}), do: "≤ #{max}"
   defp chip_text(value), do: to_string(value)
-
-  def format_value(%Field{redact: true}, _record), do: "••••"
-
-  def format_value(%Field{type: :embeds_many, name: name, fields: children}, record) do
-    case Map.get(record, name) do
-      list when is_list(list) and list != [] ->
-        Enum.map_join(list, "; ", &embed_row_text(&1, children))
-
-      _ ->
-        "—"
-    end
-  end
-
-  def format_value(%Field{name: name, type: type}, record) do
-    case Map.get(record, name) do
-      nil -> "—"
-      true -> "Yes"
-      false -> "No"
-      %Date{} = date -> Date.to_iso8601(date)
-      %DateTime{} = dt -> Calendar.strftime(dt, "%Y-%m-%d %H:%M")
-      %NaiveDateTime{} = dt -> NaiveDateTime.to_iso8601(dt)
-      _value when type == :password -> "••••"
-      value when is_binary(value) -> value
-      value when is_integer(value) or is_float(value) -> to_string(value)
-      value when is_atom(value) -> Atom.to_string(value)
-      value -> inspect(value)
-    end
-  end
-
-  attr(:field, Field, required: true)
-  attr(:record, :any, required: true)
-
-  def embed_show(%{field: %Field{type: :embeds_many}} = assigns) do
-    rows = List.wrap(Map.get(assigns.record, assigns.field.name))
-    assigns = assign(assigns, :rows, rows)
-
-    ~H"""
-    <section class="admin-embed">
-      <h2 class="admin-embed-title">{@field.label}</h2>
-      <p :if={@rows == []} class="admin-embed-empty">None</p>
-      <div :if={@rows != []} class="admin-embed-rows">
-        <div :for={row <- @rows} class="admin-embed-row">
-          <div :for={child <- @field.fields} class="admin-embed-field">
-            <span class="admin-embed-label">{child.label}</span>
-            <span class="admin-embed-value">{format_value(child, row)}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-    """
-  end
-
-  defp embed_row_text(row, children) do
-    children
-    |> Enum.map(&format_value(&1, row))
-    |> Enum.reject(&(&1 in [nil, "", "—"]))
-    |> Enum.join(" · ")
-  end
 end

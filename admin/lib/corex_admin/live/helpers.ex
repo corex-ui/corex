@@ -5,8 +5,10 @@ defmodule CorexAdmin.Live.Helpers do
 
   require Logger
 
+  alias CorexAdmin.Gettext
   alias CorexAdmin.ListOpts
   alias CorexAdmin.Policy
+  alias CorexAdmin.Resource.Field
   alias CorexAdmin.Resource.Spec
 
   def spec(resource_mod), do: resource_mod.__corex_admin_resource__()
@@ -27,13 +29,41 @@ defmodule CorexAdmin.Live.Helpers do
 
   def fetch_resource(_socket_or_assigns, _slug), do: {:error, :not_found}
 
+  @doc "Resource slug from params or the mounted path (explicit per-resource routes)."
+  def resource_slug(socket_or_assigns, params) when is_map(params) do
+    case params["resource"] do
+      slug when is_binary(slug) and slug != "" ->
+        slug
+
+      _ ->
+        assigns = view_assigns(socket_or_assigns)
+        slug_from_path(assigns[:corex_admin_prefix], assigns[:corex_admin_path])
+    end
+  end
+
+  defp slug_from_path(prefix, path) when is_binary(prefix) and is_binary(path) do
+    relative =
+      path
+      |> String.split("?", parts: 2)
+      |> hd()
+      |> String.replace_prefix(prefix, "")
+      |> String.trim("/")
+
+    case String.split(relative, "/", trim: true) do
+      [slug | _] -> slug
+      _ -> nil
+    end
+  end
+
+  defp slug_from_path(_, _), do: nil
+
   def unauthorized(socket, reason \\ :unauthorized) do
     message =
       case reason do
-        :unauthorized -> "You are not authorized to perform this action."
-        :not_found -> "Unknown resource."
+        :unauthorized -> Gettext.t("You are not authorized to perform this action.")
+        :not_found -> Gettext.t("Unknown resource.")
         other when is_binary(other) -> other
-        _ -> "You are not authorized to perform this action."
+        _ -> Gettext.t("You are not authorized to perform this action.")
       end
 
     socket
@@ -55,9 +85,15 @@ defmodule CorexAdmin.Live.Helpers do
     result
   end
 
+  def authorize_field(socket_or_assigns, action, resource_mod, record, field_name) do
+    assigns = view_assigns(socket_or_assigns)
+    policy = config(assigns).policy
+    Policy.authorize_field(policy, actor(assigns), action, resource_mod, record, field_name)
+  end
+
   def not_found(socket) do
     socket
-    |> put_flash(:error, "Record not found.")
+    |> put_flash(:error, Gettext.t("Record not found."))
     |> push_navigate(to: home_path(socket))
   end
 
@@ -95,6 +131,10 @@ defmodule CorexAdmin.Live.Helpers do
     Path.join(record_path(socket_or_assigns, spec_or_slug, record), "edit")
   end
 
+  def export_path(socket_or_assigns, spec_or_slug) do
+    Path.join(resource_path(socket_or_assigns, spec_or_slug), "export")
+  end
+
   def index_path(socket_or_assigns, spec_or_slug, %ListOpts{} = opts) do
     path = resource_path(socket_or_assigns, spec_or_slug)
     params = ListOpts.to_params(opts)
@@ -120,25 +160,72 @@ defmodule CorexAdmin.Live.Helpers do
   def record_id(%Spec{primary_key: key}, record), do: record |> Map.fetch!(key) |> to_string()
   def record_id(_slug, record) when is_map(record), do: record |> Map.fetch!(:id) |> to_string()
 
-  def record_title(%Spec{title_field: field} = spec, record) when is_atom(field) do
-    case Map.get(record, field) do
-      value when value in [nil, ""] -> record_id(spec, record)
-      value -> to_string(value)
+  def record_title(%Spec{} = spec, record) do
+    if function_exported?(spec.module, :title, 1) do
+      case spec.module.title(record) do
+        value when value in [nil, ""] -> record_id(spec, record)
+        value -> to_string(value)
+      end
+    else
+      CorexAdmin.Resource.default_title(spec, record)
     end
   end
 
-  def record_title(spec, record), do: record_id(spec, record)
+  def index_fields(%Spec{} = spec), do: Enum.filter(spec.fields, & &1.index)
 
-  def index_fields(%Spec{fields: fields}) do
-    Enum.filter(fields, & &1.index)
+  def index_fields(%Spec{} = spec, socket_or_assigns) do
+    filter_authorized_fields(index_fields(spec), socket_or_assigns, :index, spec.module, nil)
   end
 
-  def show_fields(%Spec{fields: fields}) do
-    Enum.filter(fields, & &1.show)
+  def show_fields(%Spec{} = spec), do: Enum.filter(spec.fields, & &1.show)
+
+  def show_fields(%Spec{} = spec, socket_or_assigns, record) do
+    filter_authorized_fields(show_fields(spec), socket_or_assigns, :show, spec.module, record)
   end
 
-  def form_fields(%Spec{fields: fields}) do
-    Enum.filter(fields, & &1.writable)
+  def form_fields(%Spec{} = spec), do: Enum.filter(spec.fields, & &1.writable)
+
+  def form_fields(%Spec{} = spec, socket_or_assigns, record) do
+    action = if is_nil(record), do: :new, else: :edit
+    filter_authorized_fields(form_fields(spec), socket_or_assigns, action, spec.module, record)
+  end
+
+  def export_fields(%Spec{} = spec, socket_or_assigns) do
+    spec.fields
+    |> Enum.filter(&(&1.readable and not &1.redact and &1.type != :password))
+    |> filter_authorized_fields(socket_or_assigns, :export, spec.module, nil)
+  end
+
+  def section_fields(%Spec{} = spec, :form, socket_or_assigns, record) do
+    resolve_sections(spec.form_sections, form_fields(spec, socket_or_assigns, record))
+  end
+
+  def section_fields(%Spec{} = spec, :show, socket_or_assigns, record) do
+    resolve_sections(spec.show_sections, show_fields(spec, socket_or_assigns, record))
+  end
+
+  defp resolve_sections([], fields), do: [%{name: :default, label: nil, fields: fields}]
+
+  defp resolve_sections(sections, fields) do
+    by_name = Map.new(fields, &{&1.name, &1})
+
+    resolved =
+      Enum.map(sections, fn section ->
+        %{
+          name: section.name,
+          label: section.label,
+          fields: Enum.flat_map(section.fields, fn name -> List.wrap(Map.get(by_name, name)) end)
+        }
+      end)
+      |> Enum.reject(&(&1.fields == []))
+
+    if resolved == [], do: [%{name: :default, label: nil, fields: fields}], else: resolved
+  end
+
+  defp filter_authorized_fields(fields, socket_or_assigns, action, resource_mod, record) do
+    Enum.filter(fields, fn %Field{name: name} ->
+      authorize_field(socket_or_assigns, action, resource_mod, record, name) == :ok
+    end)
   end
 
   def grouped_resources(socket_or_assigns) do

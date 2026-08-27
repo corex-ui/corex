@@ -314,4 +314,20 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Corex Admin"
     assert html =~ "Open admin demo"
   end
+
+  test "index offers export on tickets and posts", %{conn: conn} do
+    {_view, html} = live_ok!(conn, ~p"/admin/tickets")
+    assert html =~ "Export"
+    assert html =~ ~S(id="tickets-export")
+
+    {_view, html} = live_ok!(conn, ~p"/admin/posts")
+    assert html =~ "Export"
+    assert html =~ ~S(id="posts-export")
+  end
+
+  test "Arabic locale translates admin chrome", %{conn: conn} do
+    {_view, html} = live_ok!(conn, "/ar/admin/tickets")
+    assert html =~ "عوامل التصفية"
+    refute html =~ ">Filters<"
+  end
 end

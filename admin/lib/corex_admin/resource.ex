@@ -51,7 +51,7 @@ defmodule CorexAdmin.Resource do
   `scope/1` is declared. See the [resources](resources.html) guide.
   """
 
-  alias CorexAdmin.Resource.{Field, Filter, Spec}
+  alias CorexAdmin.Resource.{Field, Filter, Section, Spec}
 
   @field_types ~w(id text textarea email password number boolean select date datetime url embeds_many)a
   @filter_types ~w(select multi_select date_range datetime_range number_range boolean)a
@@ -82,7 +82,22 @@ defmodule CorexAdmin.Resource do
     title_field: [type: :atom],
     selectable: [type: :boolean, default: true],
     filters_open: [type: :boolean, default: false],
-    default_filters: [type: :map, default: %{}]
+    default_filters: [type: :map, default: %{}],
+    singular: [type: :string],
+    live: [
+      type: :keyword_list,
+      keys: [
+        index: [type: :atom],
+        show: [type: :atom],
+        form: [type: :atom]
+      ],
+      default: []
+    ],
+    history: [type: {:or, [:atom, nil]}, default: nil],
+    history_opts: [type: :keyword_list, default: []],
+    collection_actions: [type: {:or, [{:list, :atom}, nil]}],
+    bulk_actions: [type: {:or, [{:list, :atom}, nil]}],
+    record_actions: [type: {:or, [{:list, :atom}, nil]}]
   ]
 
   defmacro __using__(opts) do
@@ -90,8 +105,18 @@ defmodule CorexAdmin.Resource do
       Module.register_attribute(__MODULE__, :corex_admin_fields, accumulate: true)
       Module.register_attribute(__MODULE__, :corex_admin_filters, accumulate: true)
       Module.register_attribute(__MODULE__, :corex_admin_actions, accumulate: true)
+      Module.register_attribute(__MODULE__, :corex_admin_collection_actions, accumulate: true)
+      Module.register_attribute(__MODULE__, :corex_admin_bulk_actions, accumulate: true)
+      Module.register_attribute(__MODULE__, :corex_admin_record_actions, accumulate: true)
+      Module.register_attribute(__MODULE__, :corex_admin_form_sections, accumulate: true)
+      Module.register_attribute(__MODULE__, :corex_admin_show_sections, accumulate: true)
 
       @corex_admin_scope nil
+      @corex_admin_action_target nil
+      @corex_admin_section_target nil
+      @corex_admin_collection_defined false
+      @corex_admin_bulk_defined false
+      @corex_admin_record_defined false
       @corex_admin_resource_opts unquote(opts)
 
       import CorexAdmin.Resource,
@@ -100,6 +125,13 @@ defmodule CorexAdmin.Resource do
           actions: 1,
           fields: 1,
           filters: 1,
+          form: 1,
+          show: 1,
+          section: 2,
+          collection_actions: 1,
+          bulk_actions: 1,
+          record_actions: 1,
+          action: 1,
           field: 2,
           field: 3,
           field: 4,
@@ -139,6 +171,90 @@ defmodule CorexAdmin.Resource do
   defmacro filters(do: block) do
     quote do
       unquote(block)
+    end
+  end
+
+  defmacro form(do: block) do
+    quote do
+      @corex_admin_section_target :form
+      unquote(block)
+      @corex_admin_section_target nil
+    end
+  end
+
+  defmacro show(do: block) do
+    quote do
+      @corex_admin_section_target :show
+      unquote(block)
+      @corex_admin_section_target nil
+    end
+  end
+
+  defmacro section(label, fields) when is_list(fields) do
+    quote do
+      CorexAdmin.Resource.__push_section__(__MODULE__, unquote(label), unquote(fields))
+    end
+  end
+
+  defmacro collection_actions(do: block) do
+    quote do
+      @corex_admin_collection_defined true
+      @corex_admin_action_target :collection
+      unquote(block)
+      @corex_admin_action_target nil
+    end
+  end
+
+  defmacro bulk_actions(do: block) do
+    quote do
+      @corex_admin_bulk_defined true
+      @corex_admin_action_target :bulk
+      unquote(block)
+      @corex_admin_action_target nil
+    end
+  end
+
+  defmacro record_actions(do: block) do
+    quote do
+      @corex_admin_record_defined true
+      @corex_admin_action_target :record
+      unquote(block)
+      @corex_admin_action_target nil
+    end
+  end
+
+  defmacro action(mod) do
+    quote do
+      CorexAdmin.Resource.__push_ui_action__(__MODULE__, unquote(mod))
+    end
+  end
+
+  @doc "Records a form/show section while compiling a resource module."
+  def __push_section__(mod, label, fields) do
+    section = {label, List.wrap(fields)}
+
+    case Module.get_attribute(mod, :corex_admin_section_target) do
+      :form -> Module.put_attribute(mod, :corex_admin_form_sections, section)
+      :show -> Module.put_attribute(mod, :corex_admin_show_sections, section)
+      _ -> raise ArgumentError, "section/2 must be inside form do or show do"
+    end
+  end
+
+  @doc "Records a collection/bulk/record action module while compiling a resource."
+  def __push_ui_action__(mod, action_mod) do
+    case Module.get_attribute(mod, :corex_admin_action_target) do
+      :collection ->
+        Module.put_attribute(mod, :corex_admin_collection_actions, action_mod)
+
+      :bulk ->
+        Module.put_attribute(mod, :corex_admin_bulk_actions, action_mod)
+
+      :record ->
+        Module.put_attribute(mod, :corex_admin_record_actions, action_mod)
+
+      _ ->
+        raise ArgumentError,
+              "action/1 must be inside collection_actions, bulk_actions, or record_actions"
     end
   end
 
@@ -245,7 +361,64 @@ defmodule CorexAdmin.Resource do
 
     scope = Module.get_attribute(env.module, :corex_admin_scope)
 
+    ui_actions = %{
+      collection_defined: Module.get_attribute(env.module, :corex_admin_collection_defined),
+      bulk_defined: Module.get_attribute(env.module, :corex_admin_bulk_defined),
+      record_defined: Module.get_attribute(env.module, :corex_admin_record_defined),
+      collection:
+        Module.get_attribute(env.module, :corex_admin_collection_actions)
+        |> List.wrap()
+        |> Enum.reverse(),
+      bulk:
+        Module.get_attribute(env.module, :corex_admin_bulk_actions)
+        |> List.wrap()
+        |> Enum.reverse(),
+      record:
+        Module.get_attribute(env.module, :corex_admin_record_actions)
+        |> List.wrap()
+        |> Enum.reverse()
+    }
+
+    form_sections =
+      Module.get_attribute(env.module, :corex_admin_form_sections)
+      |> List.wrap()
+      |> Enum.reverse()
+
+    show_sections =
+      Module.get_attribute(env.module, :corex_admin_show_sections)
+      |> List.wrap()
+      |> Enum.reverse()
+
+    title_def =
+      unless Module.defines?(env.module, {:title, 1}, :def) do
+        quote do
+          def title(record) do
+            CorexAdmin.Resource.default_title(__corex_admin_resource__(), record)
+          end
+        end
+      end
+
+    query_def =
+      unless Module.defines?(env.module, {:query, 2}, :def) do
+        quote do
+          def query(scope, list_opts) do
+            CorexAdmin.Context.list(__corex_admin_resource__(), scope, list_opts)
+          end
+        end
+      end
+
+    canned_def =
+      unless Module.defines?(env.module, {:canned_filters, 0}, :def) do
+        quote do
+          def canned_filters, do: []
+        end
+      end
+
     quote do
+      unquote(title_def)
+      unquote(query_def)
+      unquote(canned_def)
+
       def __corex_admin_resource__ do
         CorexAdmin.Resource.build_spec(
           __MODULE__,
@@ -253,14 +426,26 @@ defmodule CorexAdmin.Resource do
           unquote(Macro.escape(fields)),
           unquote(Macro.escape(filters)),
           unquote(Macro.escape(actions)),
-          unquote(scope)
+          unquote(scope),
+          %{
+            ui_actions: unquote(Macro.escape(ui_actions)),
+            form_sections: unquote(Macro.escape(form_sections)),
+            show_sections: unquote(Macro.escape(show_sections))
+          }
         )
       end
     end
   end
 
   @doc "Builds a resource spec from compiled field, filter, and action attributes."
-  def build_spec(module, opts, fields, filters, actions, scope) do
+  def build_spec(module, opts, fields, filters, actions, scope, extra \\ %{}) do
+    extra =
+      Map.merge(%{ui_actions: %{}, form_sections: [], show_sections: []}, extra)
+
+    ui_actions = extra.ui_actions
+    form_sections = extra.form_sections
+    show_sections = extra.show_sections
+
     opts = NimbleOptions.validate!(opts, @resource_schema)
     schema = opts[:schema]
     actions = Map.new(actions)
@@ -274,6 +459,8 @@ defmodule CorexAdmin.Resource do
 
     slug = opts[:slug] || schema_source(schema)
     label = opts[:label] || Phoenix.Naming.humanize(slug)
+    singular = opts[:singular] || schema_singular(schema)
+    built_fields = Enum.map(fields, &build_field(schema, &1))
 
     spec = %Spec{
       module: module,
@@ -282,6 +469,7 @@ defmodule CorexAdmin.Resource do
       slug: slug,
       group: opts[:group],
       label: label,
+      singular: singular,
       scope: scope,
       primary_key: primary_key(schema),
       page_size: opts[:page_size],
@@ -291,12 +479,42 @@ defmodule CorexAdmin.Resource do
       selectable: opts[:selectable],
       filters_open: opts[:filters_open],
       default_filters: %{},
+      live: Map.new(opts[:live] || []),
+      history: opts[:history],
+      history_opts: opts[:history_opts] || [],
       actions: actions,
-      fields: Enum.map(fields, &build_field(schema, &1)),
-      filters: Enum.map(filters, &build_filter/1)
+      collection_actions:
+        ui_action_list(ui_actions, :collection, opts[:collection_actions], [
+          CorexAdmin.Action.Export
+        ]),
+      bulk_actions:
+        ui_action_list(ui_actions, :bulk, opts[:bulk_actions], [
+          CorexAdmin.Action.BulkDelete,
+          CorexAdmin.Action.Export
+        ]),
+      record_actions:
+        ui_action_list(ui_actions, :record, opts[:record_actions], [CorexAdmin.Action.Delete]),
+      fields: built_fields,
+      filters: Enum.map(filters, &build_filter/1),
+      form_sections: build_sections(form_sections, built_fields),
+      show_sections: build_sections(show_sections, built_fields)
     }
 
     %{spec | default_filters: normalize_default_filters(opts[:default_filters], spec.filters)}
+  end
+
+  @doc "Default `title/1` from `title_field` or the primary key."
+  def default_title(%Spec{title_field: field} = spec, record) when is_atom(field) do
+    case Map.get(record, field) do
+      value when value in [nil, ""] -> default_title_id(spec, record)
+      value -> to_string(value)
+    end
+  end
+
+  def default_title(%Spec{} = spec, record), do: default_title_id(spec, record)
+
+  defp default_title_id(%Spec{primary_key: key}, record) do
+    record |> Map.fetch!(key) |> to_string()
   end
 
   @doc "Allowed field type atoms for `field/3`."
@@ -351,7 +569,8 @@ defmodule CorexAdmin.Resource do
     end
   end
 
-  defp build_field(schema, {name, type, opts}) when type in @field_types do
+  defp build_field(schema, {name, type, opts}) do
+    {mod, type_atom} = resolve_field_type(type)
     {children, opts} = Keyword.pop(opts, :fields, [])
     {embed_schema, opts} = Keyword.pop(opts, :schema)
     opts = NimbleOptions.validate!(opts, @field_schema)
@@ -359,9 +578,9 @@ defmodule CorexAdmin.Resource do
     embed_schema = embed_schema || embed_schema(schema, name)
 
     defaults = %{
-      readable: default_readable(type),
-      writable: default_writable(name, type),
-      redact: type == :password or name in redact_fields
+      readable: default_readable(type_atom),
+      writable: default_writable(name, type_atom),
+      redact: type_atom == :password or name in redact_fields
     }
 
     readable = Keyword.get(opts, :readable, defaults.readable)
@@ -369,7 +588,8 @@ defmodule CorexAdmin.Resource do
 
     %Field{
       name: name,
-      type: type,
+      type: type_atom,
+      mod: mod,
       label: opts[:label] || Phoenix.Naming.humanize(Atom.to_string(name)),
       readable: readable,
       writable: Keyword.get(opts, :writable, defaults.writable),
@@ -377,7 +597,7 @@ defmodule CorexAdmin.Resource do
       sortable: opts[:sortable],
       filterable: opts[:filterable],
       redact: redact,
-      index: Keyword.get(opts, :index, default_index(type, readable, redact)),
+      index: Keyword.get(opts, :index, default_index(type_atom, readable, redact)),
       show: Keyword.get(opts, :show, readable and not redact),
       options: opts[:options],
       schema: embed_schema,
@@ -385,9 +605,59 @@ defmodule CorexAdmin.Resource do
     }
   end
 
-  defp build_field(_schema, {_name, type, _opts}) do
+  defp resolve_field_type(type) when type in @field_types do
+    {Map.fetch!(CorexAdmin.Field.builtins(), type), type}
+  end
+
+  defp resolve_field_type(type) when is_atom(type) do
+    {type, :custom}
+  end
+
+  defp resolve_field_type(type) do
     raise ArgumentError,
-          "unknown field type #{inspect(type)}; expected one of #{inspect(@field_types)}"
+          "unknown field type #{inspect(type)}; expected one of #{inspect(@field_types)} or a field module"
+  end
+
+  defp schema_singular(schema) do
+    schema
+    |> Module.split()
+    |> List.last()
+    |> Phoenix.Naming.humanize()
+  end
+
+  defp ui_action_list(ui_actions, kind, opt_list, default) do
+    defined_key =
+      case kind do
+        :collection -> :collection_defined
+        :bulk -> :bulk_defined
+        :record -> :record_defined
+      end
+
+    list_key = kind
+
+    cond do
+      ui_actions[defined_key] -> Enum.reject(List.wrap(ui_actions[list_key]), &is_nil/1)
+      is_list(opt_list) -> opt_list
+      true -> default
+    end
+  end
+
+  defp build_sections([], _fields), do: []
+
+  defp build_sections(sections, fields) do
+    allowed = MapSet.new(Enum.map(fields, & &1.name))
+
+    sections
+    |> Enum.with_index()
+    |> Enum.map(fn {{label, names}, index} ->
+      kept = Enum.filter(names, &MapSet.member?(allowed, &1))
+
+      %Section{
+        name: Integer.to_string(index),
+        label: label,
+        fields: kept
+      }
+    end)
   end
 
   defp build_filter({name, type, opts}) when type in @filter_types do

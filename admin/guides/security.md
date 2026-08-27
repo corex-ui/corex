@@ -27,8 +27,9 @@ The installer generates:
 def authorize(_actor, _action, _resource, _record), do: {:error, :unauthorized}
 ```
 
-Allow explicitly. Every LiveView `handle_params` and mutating `handle_event`
-calls `CorexAdmin.Policy`. Hiding a button is not access control.
+Allow `:index`, `:show`, `:new`, `:edit`, `:create`, `:update`, `:delete`,
+and (when you enable them) `:export` and `:history`. Hiding a button is not
+access control.
 
 Optional `authorize_field/5` can further lock fields. Field flags
 (`readable`, `writable`, `redact`) always apply.

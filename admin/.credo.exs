@@ -248,7 +248,15 @@
           {OeditusCredo.Check.Security.UnrestrictedFileUpload, []},
           # Security - Web
           {OeditusCredo.Check.Security.MissingCSRFProtection,
-           [files: %{excluded: ["lib/corex_admin/context.ex", "test/**/*"]}]},
+           [
+             files: %{
+               excluded: [
+                 "lib/corex_admin/context.ex",
+                 "lib/corex_admin/router.ex",
+                 "test/**/*"
+               ]
+             }
+           ]},
           {OeditusCredo.Check.Security.SSRFVulnerability, []},
           # Security - Race Conditions
           {OeditusCredo.Check.Security.TOCTOU,

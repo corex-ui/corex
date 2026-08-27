@@ -13,10 +13,14 @@ defmodule CorexAdmin.Router do
       end
 
   This expands to a dedicated `live_session` using the hub's `on_mount`, `layout`,
-  and generic LiveViews dispatched by resource slug.
+  and **per-resource** LiveViews (`live:` on the resource, or the generic
+  `CorexAdmin.Live.*` modules).
 
   Routes are declared with `alias: false` so they keep the `CorexAdmin.Live.*`
   modules even inside `scope "/", MyAppWeb`.
+
+  `POST /:resource/export` is mounted in the same scope (outside `live_session`)
+  so the picker can stream CSV/JSON through `CorexAdmin.ExportController`.
   """
 
   @doc """
@@ -42,16 +46,37 @@ defmodule CorexAdmin.Router do
             live(page_path, page_mod, :index)
           end
 
-          live("/:resource", CorexAdmin.Live.Index, :index)
-          live("/:resource/new", CorexAdmin.Live.Form, :new)
-          live("/:resource/:id", CorexAdmin.Live.Show, :show)
-          live("/:resource/:id/edit", CorexAdmin.Live.Form, :edit)
+          for resource <- config.resources do
+            spec = resource.__corex_admin_resource__()
+            lives = spec.live
+            index_mod = lives[:index] || CorexAdmin.Live.Index
+            form_mod = lives[:form] || CorexAdmin.Live.Form
+            show_mod = lives[:show] || CorexAdmin.Live.Show
+
+            live("/#{spec.slug}", index_mod, :index)
+            live("/#{spec.slug}/new", form_mod, :new)
+            live("/#{spec.slug}/:id", show_mod, :show)
+            live("/#{spec.slug}/:id/edit", form_mod, :edit)
+          end
         end
+
+        post("/:resource/export", CorexAdmin.ExportController, :create)
       end
     end
   end
 
-  @doc false
+  @doc "Resolves `home:` to `{module, live_action}`."
   def home_live({mod, action}) when is_atom(mod) and is_atom(action), do: {mod, action}
+
+  @doc "Resolves a home LiveView module with the default `:index` action."
   def home_live(mod) when is_atom(mod), do: {mod, :index}
+
+  @doc "Index/form/show modules for a resource spec, including `live:` overrides."
+  def live_modules(%{live: live}) when is_map(live) do
+    %{
+      index: live[:index] || CorexAdmin.Live.Index,
+      form: live[:form] || CorexAdmin.Live.Form,
+      show: live[:show] || CorexAdmin.Live.Show
+    }
+  end
 end

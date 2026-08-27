@@ -4,6 +4,7 @@ defmodule CorexAdmin.Resource.Field do
   defstruct [
     :name,
     :type,
+    :mod,
     :label,
     readable: true,
     writable: true,
@@ -21,6 +22,7 @@ defmodule CorexAdmin.Resource.Field do
   @type t :: %__MODULE__{
           name: atom(),
           type: atom(),
+          mod: module() | nil,
           label: String.t(),
           readable: boolean(),
           writable: boolean(),

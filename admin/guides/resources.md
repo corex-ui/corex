@@ -54,8 +54,11 @@ end
 | `default_sort` | none | `{field, :asc | :desc}` when the URL has no sort |
 | `default_filters` | `%{}` | Filter values applied when the matching query key is missing. An empty query value (`filters[status]=`) means “any” and will not re-apply the default. |
 | `filters_open` | `false` | Initial open state of the index filter popover |
-| `title_field` | primary key | Breadcrumbs, flash, show heading |
+| `title_field` | primary key | Breadcrumbs, flash, show heading (overridable via `title/1`) |
+| `singular` | schema name | “New Ticket”; empty copy still uses plural `label` |
 | `selectable` | `true` | Index checkboxes, bulk bar, and bulk delete |
+| `live` | generic LiveViews | `index` / `show` / `form` host modules (`use CorexAdmin.Live`) |
+| `history` | none | Optional `CorexAdmin.History` adapter (Show History tab) |
 
 ## Context contract
 

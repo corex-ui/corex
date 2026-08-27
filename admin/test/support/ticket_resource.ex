@@ -11,7 +11,8 @@ defmodule CorexAdmin.Test.TicketResource do
     page_size_options: [10, 25, 50, 100],
     default_sort: {:inserted_at, :desc},
     title_field: :title,
-    selectable: true
+    selectable: true,
+    history: CorexAdmin.Test.History
 
   scope(:current_scope)
 
@@ -47,5 +48,9 @@ defmodule CorexAdmin.Test.TicketResource do
     filter(:status, :multi_select, options: ~w(open done))
     filter(:priority, :number_range)
     filter(:inserted_at, :date_range)
+  end
+
+  def canned_filters do
+    [{"Open only", %{"filters" => %{"status" => ["open"]}}}]
   end
 end
