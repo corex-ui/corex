@@ -65,10 +65,8 @@ defmodule CorexAdmin.Router do
     end
   end
 
-  @doc "Resolves `home:` to `{module, live_action}`."
+  @doc "Resolves `home:` to `{module, live_action}` (default action `:index`)."
   def home_live({mod, action}) when is_atom(mod) and is_atom(action), do: {mod, action}
-
-  @doc "Resolves a home LiveView module with the default `:index` action."
   def home_live(mod) when is_atom(mod), do: {mod, :index}
 
   @doc "Index/form/show modules for a resource spec, including `live:` overrides."

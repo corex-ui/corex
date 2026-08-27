@@ -41,11 +41,16 @@ defmodule CorexAdmin.History.Carbonite do
 
   defp carbonite_changes(schema, id, opts) when is_atom(schema) do
     record = struct(schema, id: id)
-    Carbonite.Query.changes(record, Keyword.take(opts, [:prefix, :preload]))
+    carbonite_query_changes(record, opts)
   end
 
   defp carbonite_changes(record, _id, opts) when is_map(record) do
-    Carbonite.Query.changes(record, Keyword.take(opts, [:prefix, :preload]))
+    carbonite_query_changes(record, opts)
+  end
+
+  defp carbonite_query_changes(record, opts) do
+    query = Module.safe_concat(["Carbonite", "Query"])
+    apply(query, :changes, [record, Keyword.take(opts, [:prefix, :preload])])
   end
 
   defp to_version(change) when is_map(change) do
