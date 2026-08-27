@@ -67,6 +67,8 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     refute current_url(session) =~ "filters[status]"
 
     session = choose_status_filter(session, "done")
+    assert_has(session, css(".admin-chips", text: "Status: done"))
+    session = close_ticket_filters(session)
     session = click(session, css(~S(button[aria-label="Clear Status"])))
 
     refute_has(session, css(".admin-chips", text: "Status: done"))
@@ -154,6 +156,19 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     click(
       session,
       css("#tickets-filters [data-scope='collapsible'][data-part='trigger']")
+    )
+  end
+
+  defp close_ticket_filters(session) do
+    execute_script(
+      session,
+      """
+      var root = document.querySelector("#tickets-filters [data-scope='collapsible'][data-part='root']");
+      var trigger = document.querySelector("#tickets-filters [data-scope='collapsible'][data-part='trigger']");
+      if (root && trigger && root.getAttribute('data-state') === 'open') {
+        trigger.click();
+      }
+      """
     )
   end
 

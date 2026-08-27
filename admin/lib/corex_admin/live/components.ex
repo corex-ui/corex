@@ -195,7 +195,7 @@ defmodule CorexAdmin.Live.Components do
     assigns = assign(assigns, :chips, chips)
 
     ~H"""
-    <div class="admin-chips">
+    <div :if={@chips != []} class="admin-chips">
       <span :for={chip <- @chips} class="badge ui-size-sm">
         {chip.label}: {chip.text}
         <.action
