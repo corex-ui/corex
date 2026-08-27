@@ -30,7 +30,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ ~S(placeholder="Search Tickets")
     refute html =~ "admin-filter-search"
     assert html =~ ~S(class="admin-command-bar")
-    assert html =~ ~S(class="admin-table-bar")
+    assert html =~ ~S(class="admin-command-selection")
+    refute html =~ ~S(class="admin-table-bar")
     refute html =~ ~S(class="admin-table-toolbar")
     assert html =~ ~S(id="tickets-page-size")
     assert html =~ ~S(data-part="control-inputs")
@@ -65,7 +66,10 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {view, html} = live_ok!(conn, ~p"/admin/tickets/#{id}")
     assert has_element?(view, ".data-list")
     assert html =~ ~S(data-to="/en/admin/posts")
+    assert html =~ ~S(data-to="/en/admin/tickets")
     assert html =~ ~S(data-current)
+    assert html =~ ~S(data-value="/en/admin/tickets")
+    refute html =~ ~s(data-value="/en/admin/tickets/#{id}")
     refute html =~ "All Tickets"
   end
 

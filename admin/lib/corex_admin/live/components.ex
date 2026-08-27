@@ -53,7 +53,7 @@ defmodule CorexAdmin.Live.Components do
     assigns =
       assigns
       |> assign(:items, items)
-      |> assign(:selected, [request_path])
+      |> assign(:selected, List.wrap(current_to))
       |> assign(:expanded, expanded)
       |> assign(:current_to, current_to)
       |> assign(:hub_title, Helpers.hub_title(assigns.socket))
@@ -344,17 +344,19 @@ defmodule CorexAdmin.Live.Components do
           </.native_input>
           <fieldset class="admin-export-fields">
             <legend>{Gettext.t("Fields")}</legend>
-            <.native_input
+            <label
               :for={field <- @fields}
-              id={"#{@spec.slug}-export-field-#{field.name}"}
-              type="checkbox"
-              name="fields[]"
-              value={Atom.to_string(field.name)}
-              checked
-              class="native-input"
+              class="admin-export-field"
             >
-              <:label>{field.label}</:label>
-            </.native_input>
+              <input
+                id={"#{@spec.slug}-export-field-#{field.name}"}
+                type="checkbox"
+                name="fields[]"
+                value={Atom.to_string(field.name)}
+                checked
+              />
+              {field.label}
+            </label>
           </fieldset>
           <div class="admin-dialog-actions">
             <.action
@@ -364,7 +366,11 @@ defmodule CorexAdmin.Live.Components do
             >
               {Gettext.t("Cancel")}
             </.action>
-            <.action type="submit" class="button ui-size-sm ui-solid ui-brand">
+            <.action
+              type="submit"
+              phx-click={Corex.Dialog.set_open("#{@spec.slug}-export", false)}
+              class="button ui-size-sm ui-solid ui-brand"
+            >
               {Gettext.t("Download")}
             </.action>
           </div>

@@ -204,8 +204,7 @@
 
  .admin-chips,
  .admin-selection-bar,
- .admin-actions,
- .admin-table-bar {
+ .admin-actions {
  display: flex;
  flex-wrap: wrap;
  align-items: center;
@@ -228,14 +227,23 @@
  overflow: visible;
  }
 
- .admin-command-search {
+ .admin-command-search-form {
+ display: contents;
+ }
+
+ .admin .admin-command-bar .admin-command-search {
  flex: 1 1 var(--container-4xs);
  min-width: min(100%, var(--container-4xs));
  max-width: var(--container-sm);
+ width: auto;
  }
 
- .admin-table-bar {
- min-height: var(--spacing-size);
+ .admin-command-selection {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: var(--spacing-space);
+ margin-inline-start: auto;
  }
 
  .admin-table-bar-count {
@@ -328,6 +336,21 @@
 
  .admin-form-span {
  grid-column: 1 / -1;
+ }
+
+ .admin-export-fields {
+ display: flex;
+ flex-direction: column;
+ gap: var(--spacing-space-sm);
+ margin: 0;
+ padding: 0;
+ border: 0;
+ }
+
+ .admin-export-field {
+ display: flex;
+ align-items: center;
+ gap: var(--spacing-space-sm);
  }
 
  .admin-dialog-actions {
@@ -500,7 +523,6 @@
  position: relative;
  width: auto;
  max-width: none;
- margin-inline-start: auto;
  }
 
  .admin .admin-command-bar [data-scope="collapsible"][data-part="trigger"] {

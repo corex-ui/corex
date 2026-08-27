@@ -33,21 +33,21 @@ defmodule CorexAdmin.Components.Index do
       </.layout_heading>
 
       <div
-        :if={@list_opts.search_fields != [] or @spec.filters != []}
+        :if={@list_opts.search_fields != [] or @spec.filters != [] or @spec.selectable}
         class="admin-command-bar"
       >
         <form
           :if={@list_opts.search_fields != []}
           id={"#{@spec.slug}-search"}
           phx-change="search"
-          class="admin-command-search"
+          class="admin-command-search-form"
         >
           <.native_input
             id={"#{@spec.slug}-search-q"}
             type="search"
             name="q"
             value={@list_opts.search}
-            class="native-input ui-size-sm"
+            class="native-input ui-size-sm admin-command-search"
             placeholder={Gettext.t("Search %{label}", label: @spec.label)}
             phx-debounce="400"
           >
@@ -95,6 +95,27 @@ defmodule CorexAdmin.Components.Index do
             </div>
           </:content>
         </.collapsible>
+        <div :if={@spec.selectable} class="admin-command-selection">
+          <p class="admin-muted admin-table-bar-count">
+            {Gettext.t("%{count} selected", count: length(@selected))}
+          </p>
+          <div class={if(@selected == [], do: "admin-is-disabled")}>
+            <Components.bulk_delete_dialog
+              :if={
+                Action.registered?(@spec, :bulk, CorexAdmin.Action.BulkDelete) and
+                  Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok
+              }
+              id={"#{@spec.slug}-bulk-delete"}
+              spec={@spec}
+              count={length(@selected)}
+            />
+            <.export_trigger
+              :if={assigns[:can_export] and @selected != []}
+              spec={@spec}
+              variant={:bulk}
+            />
+          </div>
+        </div>
       </div>
 
       <Components.filter_chips spec={@spec} list_opts={@list_opts} />
@@ -109,28 +130,6 @@ defmodule CorexAdmin.Components.Index do
         >
           {label}
         </.action>
-      </div>
-
-      <div :if={@spec.selectable} class="admin-table-bar">
-        <p class="admin-muted admin-table-bar-count">
-          {Gettext.t("%{count} selected", count: length(@selected))}
-        </p>
-        <div class={if(@selected == [], do: "admin-is-disabled")}>
-          <Components.bulk_delete_dialog
-            :if={
-              Action.registered?(@spec, :bulk, CorexAdmin.Action.BulkDelete) and
-                Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok
-            }
-            id={"#{@spec.slug}-bulk-delete"}
-            spec={@spec}
-            count={length(@selected)}
-          />
-          <.export_trigger
-            :if={assigns[:can_export] and @selected != []}
-            spec={@spec}
-            variant={:bulk}
-          />
-        </div>
       </div>
 
       <div class="admin-table-wrap">

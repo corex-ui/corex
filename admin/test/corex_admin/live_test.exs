@@ -54,7 +54,11 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "0 selected"
     assert html =~ ~s(id="tickets-bulk-delete")
     assert html =~ ~s(class="admin-command-bar")
-    assert html =~ ~s(class="admin-table-bar")
+    assert html =~ ~s(class="admin-command-selection")
+    assert html =~ ~s(class="admin-muted admin-table-bar-count")
+    refute html =~ ~s(class="admin-table-bar")
+    assert html =~ ~s(class="admin-command-search-form")
+    assert html =~ "admin-command-search"
     assert html =~ "Show"
     assert html =~ ~s(class="sr-only")
     assert html =~ ~s(aria-label="Edit")
@@ -121,16 +125,32 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(data-value="/admin/tickets")
   end
 
-  test "show highlights the resource leaf without selecting it", %{
+  test "show selects the matching resource leaf", %{
     conn: conn,
     ticket: ticket
   } do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     assert html =~ ~s(data-to="/admin/tickets")
+    assert html =~ ~s(data-to="/admin/posts")
     assert html =~ ~s(data-current)
+    assert html =~ ~s(data-value="/admin/tickets")
+    refute html =~ ~s(data-value="/admin/tickets/#{ticket.id}")
     refute html =~ "All Tickets"
     refute html =~ ~s(data-on-selection-change="nav")
+  end
+
+  test "new and edit select the matching resource leaf", %{conn: conn, ticket: ticket} do
+    {:ok, _view, html} = live(conn, "/admin/tickets/new")
+    assert html =~ ~s(data-to="/admin/tickets")
+    assert html =~ ~s(data-to="/admin/posts")
+    assert html =~ ~s(data-value="/admin/tickets")
+    refute html =~ ~s(data-value="/admin/tickets/new")
+
+    {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}/edit")
+    assert html =~ ~s(data-to="/admin/posts")
+    assert html =~ ~s(data-value="/admin/tickets")
+    refute html =~ ~s(data-value="/admin/tickets/#{ticket.id}/edit")
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do
@@ -434,16 +454,32 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "Broken login"
   end
 
-  test "index offers export picker", %{conn: conn} do
+  test "index offers export picker with field names", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/admin/tickets")
     assert html =~ "Export"
     assert html =~ ~s(id="tickets-export")
     assert html =~ "CSV"
+    assert html =~ ~s(name="fields[]")
+    assert html =~ ~s(value="title")
+    assert html =~ ~s(value="email")
+    refute html =~ ~r/name="fields\[\]"[^>]*value="true"/
+    refute html =~ ~r/name="fields\[\]"[^>]*value="false"/
+    assert html =~ ~s(id="tickets-export-form")
   end
 
-  test "export controller streams csv", %{conn: conn} do
+  test "export controller streams csv from dialog field names", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/admin/tickets")
     [_, token] = Regex.run(~r/name="token"[^>]*value="([^"]+)"/, html)
+
+    fields =
+      ~r/name="fields\[\]"[^>]*value="([^"]+)"/
+      |> Regex.scan(html)
+      |> Enum.map(&List.last/1)
+
+    assert "title" in fields
+    assert "email" in fields
+    refute "true" in fields
+    refute "false" in fields
 
     conn =
       conn
@@ -451,7 +487,7 @@ defmodule CorexAdmin.LiveTest do
       |> post("/admin/tickets/export", %{
         "token" => token,
         "format" => "csv",
-        "fields" => ["title", "email"]
+        "fields" => fields
       })
 
     assert conn.status == 200
