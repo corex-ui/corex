@@ -18,7 +18,6 @@ defmodule CorexAdmin.Resource do
           default_sort: {:inserted_at, :desc},
           title_field: :email,
           selectable: true,
-          filters_open: true,
           default_filters: %{role: "admin"}
 
         scope :current_scope
@@ -82,7 +81,7 @@ defmodule CorexAdmin.Resource do
     default_sort: [type: {:or, [nil, {:tuple, [:atom, {:in, [:asc, :desc]}]}]}],
     title_field: [type: :atom],
     selectable: [type: :boolean, default: true],
-    filters_open: [type: :boolean, default: true],
+    filters_open: [type: :boolean, default: false],
     default_filters: [type: :map, default: %{}]
   ]
 

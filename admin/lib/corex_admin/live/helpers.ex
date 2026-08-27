@@ -63,6 +63,19 @@ defmodule CorexAdmin.Live.Helpers do
 
   def home_path(socket_or_assigns), do: view_assigns(socket_or_assigns).corex_admin_prefix
 
+  def current_path(socket_or_assigns) do
+    assigns = view_assigns(socket_or_assigns)
+    Map.get(assigns, :corex_admin_path) || home_path(assigns)
+  end
+
+  def hub_title(socket_or_assigns) do
+    config(socket_or_assigns).title || "Admin"
+  end
+
+  def hub_description(socket_or_assigns) do
+    config(socket_or_assigns).description
+  end
+
   def resource_path(socket_or_assigns, slug) when is_binary(slug) do
     Path.join(home_path(socket_or_assigns), slug)
   end

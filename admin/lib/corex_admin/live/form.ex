@@ -76,59 +76,52 @@ defmodule CorexAdmin.Live.Form do
   @impl true
   def render(assigns) do
     ~H"""
-    <Components.shell
-      :if={assigns[:form]}
-      socket={assigns}
-      current={@spec}
-      live_action={@live_action}
-      record={@record}
-    >
-      <div class="admin-stack admin-stack--lg">
-        <Components.breadcrumbs
-          prefix={@corex_admin_prefix}
-          spec={@spec}
-          live_action={@live_action}
-          record={@record}
-        />
-        <.layout_heading class="layout-heading">
-          <:title>{@page_title}</:title>
-          <:actions>
-            <.navigate
-              to={Helpers.resource_path(assigns, @spec)}
-              type="navigate"
-              class="button ui-trigger--square"
-              aria_label="Cancel"
-              title="Cancel"
-            >
-              <.heroicon name="hero-arrow-left" />
-              <span class="sr-only">Back to {@spec.label}</span>
-            </.navigate>
-          </:actions>
-        </.layout_heading>
+    <Components.shell :if={assigns[:form]}>
+      <Components.breadcrumbs
+        prefix={@corex_admin_prefix}
+        spec={@spec}
+        live_action={@live_action}
+        record={@record}
+        hub_title={Helpers.hub_title(assigns)}
+      />
+      <.layout_heading class="layout-heading">
+        <:title>{@page_title}</:title>
+        <:actions>
+          <.navigate
+            to={Helpers.resource_path(assigns, @spec)}
+            type="navigate"
+            class="button ui-trigger--square"
+            aria_label="Cancel"
+            title="Cancel"
+          >
+            <.heroicon name="hero-arrow-left" />
+            <span class="sr-only">Back to {@spec.label}</span>
+          </.navigate>
+        </:actions>
+      </.layout_heading>
 
-        <.form
-          for={@form}
-          id={@form.id}
-          phx-change="validate"
-          phx-submit="save"
-          class="admin-form"
-        >
-          <div class="admin-form-grid">
-            <div
-              :for={field <- @form_fields}
-              class={if field.type in [:textarea, :embeds_many], do: "admin-form-span"}
-            >
-              <Components.field_input field={field} form={@form} />
-            </div>
+      <.form
+        for={@form}
+        id={@form.id}
+        phx-change="validate"
+        phx-submit="save"
+        class="admin-form"
+      >
+        <div class="admin-form-grid">
+          <div
+            :for={field <- @form_fields}
+            class={if field.type in [:textarea, :embeds_many], do: "admin-form-span"}
+          >
+            <Components.field_input field={field} form={@form} />
           </div>
-          <div class="admin-actions">
-            <.action type="submit" class="button ui-solid ui-brand">Save</.action>
-            <.action type="submit" name="continue" value="true" class="button">
-              Save and continue
-            </.action>
-          </div>
-        </.form>
-      </div>
+        </div>
+        <div class="admin-actions">
+          <.action type="submit" class="button ui-solid ui-brand">Save</.action>
+          <.action type="submit" name="continue" value="true" class="button">
+            Save and continue
+          </.action>
+        </div>
+      </.form>
     </Components.shell>
     """
   end

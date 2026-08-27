@@ -45,6 +45,28 @@ defmodule CorexAdmin do
       type: :atom,
       default: :corex_admin,
       doc: "Name of the dedicated `live_session`."
+    ],
+    title: [
+      type: :string,
+      default: "Admin",
+      doc: "Hub title for the home heading, sidebar Admin leaf, and breadcrumbs."
+    ],
+    description: [
+      type: {:or, [:string, nil]},
+      default: nil,
+      doc: "Optional home subtitle. Do not put demo-only copy here."
+    ],
+    home: [
+      type: {:or, [:atom, {:tuple, [:atom, :atom]}]},
+      default: CorexAdmin.Live.Home,
+      doc:
+        "Home LiveView module, or `{Module, :live_action}`. Pass a host LiveView to replace the grouped resource list with a dashboard."
+    ],
+    pages: [
+      type: {:list, {:tuple, [:string, :atom]}},
+      default: [],
+      doc:
+        "Extra `{path, LiveView}` routes in the same `live_session` (for example `[{\"/reports\", MyAppWeb.Admin.ReportsLive}]`). Mounted before `/:resource`."
     ]
   ]
 
@@ -94,9 +116,31 @@ defmodule CorexAdmin do
       layout: opts[:layout],
       resources: resources,
       slugs: slugs,
-      live_session: opts[:live_session]
+      live_session: opts[:live_session],
+      title: opts[:title],
+      description: opts[:description],
+      home: opts[:home],
+      pages: validate_pages!(hub, opts[:pages])
     }
   end
+
+  defp validate_pages!(hub, pages) do
+    Enum.each(pages, fn {path, _mod} ->
+      unless valid_page_path?(path) do
+        raise ArgumentError,
+              "#{inspect(hub)} page path #{inspect(path)} must start with \"/\", must not be \"/\", and must not contain \":\" or \"..\""
+      end
+    end)
+
+    pages
+  end
+
+  defp valid_page_path?(path) when is_binary(path) do
+    String.starts_with?(path, "/") and path != "/" and
+      not String.contains?(path, ":") and not String.contains?(path, "..")
+  end
+
+  defp valid_page_path?(_), do: false
 
   @doc "Looks up a registered resource module by URL slug."
   @spec resource_for_slug(module(), String.t()) :: {:ok, module()} | :error

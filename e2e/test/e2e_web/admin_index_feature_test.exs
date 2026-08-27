@@ -9,7 +9,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
   alias E2eWeb.CheckboxModel
   alias E2eWeb.FormHelpers
   alias E2eWeb.SelectModel
-  alias E2eWeb.ToggleGroupModel
 
   feature "row checkbox stays checked and command bar count updates", %{session: session} do
     session = wait_tickets_index(session)
@@ -54,13 +53,14 @@ defmodule E2eWeb.AdminIndexFeatureTest do
   end
 
   feature "status filter widgets reset and chip X clear Zag state", %{session: session} do
-    session = wait_tickets_index(session)
+    session = wait_tickets_index(session) |> open_ticket_filters()
 
     session =
       session
-      |> ToggleGroupModel.click_item_by_value_in_host("tickets-filter-status", "open")
-      |> ToggleGroupModel.wait_item_on_in_host("tickets-filter-status", "open")
+      |> SelectModel.open_select_by_host_id("tickets-filter-status")
+      |> SelectModel.click_item_by_host_id("tickets-filter-status", "open")
 
+    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "open")
     assert_has(session, css(".admin-chips", text: "Status: open"))
     assert_has(session, css(".admin-command-bar .badge.ui-trigger--square", text: "1"))
     assert current_url(session) =~ "filters[status]"
@@ -68,19 +68,42 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session =
       click(session, css(~S(button[phx-click="reset_filter"][phx-value-field="status"])))
 
-    wait_item_off(session, "tickets-filter-status", "open")
+    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "")
     refute_has(session, css(".admin-chips", text: "Status: open"))
     refute current_url(session) =~ "filters[status]"
 
     session =
       session
-      |> ToggleGroupModel.click_item_by_value_in_host("tickets-filter-status", "done")
-      |> ToggleGroupModel.wait_item_on_in_host("tickets-filter-status", "done")
+      |> SelectModel.open_select_by_host_id("tickets-filter-status")
+      |> SelectModel.click_item_by_host_id("tickets-filter-status", "done")
 
+    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "done")
     session = click(session, css(~S(button[aria-label="Clear Status"])))
 
-    wait_item_off(session, "tickets-filter-status", "done")
+    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "")
     refute_has(session, css(".admin-chips", text: "Status: done"))
+  end
+
+  feature "sidebar Posts from ticket show live-navigates", %{session: session} do
+    session = wait_tickets_index(session)
+    row_id = first_row_id(session)
+
+    session =
+      session
+      |> click(css(~s(tr[id="#{row_id}"] td[data-part="cell"]), at: 0))
+      |> wait_path("/en/admin/tickets/#{row_id}")
+      |> wait_live_connected()
+
+    session =
+      session
+      |> click(
+        css(
+          ~S(#admin-nav-tree [data-scope="tree-view"][data-part="item"][data-to="/en/admin/posts"])
+        )
+      )
+      |> wait_path("/en/admin/posts")
+
+    assert_has(session, css("#posts-table", visible: :any))
   end
 
   feature "per page select and row show action", %{session: session} do
@@ -118,7 +141,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       css("#tickets-table-select-all[phx-hook='Checkbox']:not([data-loading])", visible: :any)
     )
     |> assert_has(
-      css("#tickets-filter-status[phx-hook='ToggleGroup']:not([data-loading])", visible: :any)
+      css("#tickets-filter-status[phx-hook='Select']:not([data-loading])", visible: :any)
     )
     |> assert_has(
       css("tr[data-part='row'] [phx-hook='Checkbox']:not([data-loading])",
@@ -128,6 +151,13 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     )
     |> assert_has(css("#tickets-page-size[phx-hook='Select']:not([data-loading])", visible: :any))
     |> wait_live_connected()
+  end
+
+  defp open_ticket_filters(session) do
+    click(
+      session,
+      css("#tickets-filters [data-scope='collapsible'][data-part='trigger']")
+    )
   end
 
   defp wait_live_connected(session, timeout \\ 8_000) do
@@ -176,17 +206,6 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     end
   end
 
-  defp wait_item_off(session, host_id, value) do
-    ToggleGroupModel.wait_for_has(
-      session,
-      css(
-        ~s|##{host_id} [data-scope="toggle-group"][data-part="item"][data-value="#{value}"][data-state="off"]|,
-        visible: :any
-      ),
-      timeout: 8_000
-    )
-  end
-
   defp first_row_id(session) do
     session
     |> find(css("tr[data-scope='data-table'][data-part='row']", at: 0))
@@ -199,7 +218,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       text,
       timeout,
       """
-      var el = document.querySelector('.admin-command-bar-start .admin-muted');
+      var el = document.querySelector('.admin-table-bar-count');
       return el ? el.textContent.trim() : null;
       """,
       fn actual -> "expected selected count #{inspect(text)}, got #{inspect(actual)}" end

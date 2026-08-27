@@ -22,9 +22,22 @@ The installer writes:
 
 - `lib/my_app_web/admin.ex` — hub with **required** `on_mount` and `policy`
 - `lib/my_app_web/admin_policy.ex` — **deny-all** policy
+- `lib/my_app_web/components/admin_layout.ex` — LiveView layout (`{@inner_content}`
+  + admin tree). Do not point `layout:` at a slot-based `Layouts.app`.
 
-Replace the placeholder `UserAuth` hook with your `phx.gen.auth` (or other)
-`on_mount`. Corex Admin never authenticates users itself.
+Optional hub options:
+
+```elixir
+use CorexAdmin,
+  # ...
+  title: "Admin",
+  description: nil,
+  home: CorexAdmin.Live.Home,
+  pages: []
+```
+
+`home:` is a LiveView module (or `{Module, :live_action}`). `pages:` are extra
+`{path, LiveView}` routes in the same session; see [Customization](customization.html).
 
 Mount inside the browser pipeline (CSRF already on):
 

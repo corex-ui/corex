@@ -195,10 +195,17 @@
  flex-wrap: nowrap;
  }
 
+ .admin-filter-presets {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: var(--spacing-space-sm);
+ }
+
  .admin-chips,
  .admin-selection-bar,
  .admin-actions,
- .admin-command-bar-start {
+ .admin-table-bar {
  display: flex;
  flex-wrap: wrap;
  align-items: center;
@@ -211,36 +218,30 @@
  }
 
  .admin-command-bar {
- display: grid;
+ display: flex;
+ position: relative;
  width: 100%;
- grid-template-columns: minmax(0, 1fr) auto auto;
+ flex-wrap: wrap;
  align-items: center;
- column-gap: var(--spacing-space);
- row-gap: var(--spacing-space);
+ gap: var(--spacing-space);
  min-height: var(--spacing-size);
- }
-
- @media (max-width: theme("breakpoint.sm")) {
- .admin-command-bar {
- grid-template-columns: minmax(0, 1fr);
- }
- }
-
- .admin-command-bar-start {
- grid-column: 1;
- grid-row: 1;
- min-height: var(--spacing-size);
- }
-
- .admin-command-bar-count {
- min-width: 8ch;
- font-variant-numeric: tabular-nums;
+ overflow: visible;
  }
 
  .admin-command-search {
- grid-column: 2;
- grid-row: 1;
+ flex: 1 1 var(--container-4xs);
  min-width: min(100%, var(--container-4xs));
+ max-width: var(--container-sm);
+ }
+
+ .admin-table-bar {
+ min-height: var(--spacing-size);
+ }
+
+ .admin-table-bar-count {
+ min-width: 8ch;
+ margin: 0;
+ font-variant-numeric: tabular-nums;
  }
 
  .admin-is-disabled {
@@ -265,15 +266,6 @@
  pointer-events: none;
  }
 
- .admin-table-toolbar {
- display: flex;
- width: 100%;
- flex-wrap: wrap;
- align-items: center;
- justify-content: flex-end;
- min-height: var(--spacing-size);
- }
-
  .admin-table-wrap {
  overflow-x: auto;
  }
@@ -281,7 +273,7 @@
  .admin-footer {
  display: flex;
  width: 100%;
- flex-wrap: nowrap;
+ flex-wrap: wrap;
  align-items: center;
  justify-content: space-between;
  gap: var(--spacing-space);
@@ -300,6 +292,10 @@
 
  .admin-footer .pagination {
  flex-shrink: 0;
+ }
+
+ .admin-footer .admin-page-size {
+ margin-inline-start: auto;
  }
 
  .admin-page-size {
@@ -499,73 +495,15 @@
  position: relative;
  }
 
- /* After `.admin .native-input { width: 100%; max-width: none }` so these stay compact. */
- .admin .native-input.admin-filter-search {
- width: 100%;
- max-width: min(100%, var(--container-sm));
- }
-
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="control"] {
- align-items: center;
- min-height: var(--ctl-size, var(--spacing-size));
- background: transparent;
- border: 0;
- box-shadow: none;
- }
-
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="input"] {
- border: 0;
- border-radius: 0;
- background-color: transparent;
- box-shadow: none;
- padding-block: 0;
- }
-
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="input"]:hover,
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="input"]:focus,
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="input"]:focus-within {
- background-color: transparent;
- box-shadow: none;
- outline: none;
- }
-
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] {
- position: absolute;
- inset-block: 0;
- inset-inline-start: 0;
- display: flex;
- align-items: center;
- justify-content: center;
- width: var(--ctl-size, var(--spacing-size));
- height: auto;
- padding: 0;
- line-height: 0;
- }
-
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] .icon,
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] svg,
- .admin .native-input.admin-filter-search [data-scope="native-input"][data-part="icon"] [class^="hero-"] {
- display: block;
- width: 1em;
- height: 1em;
- margin: 0;
- line-height: 1;
- }
-
- .admin .native-input.admin-filter-search:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
- padding-inline-start: var(--ctl-size, var(--spacing-size));
- }
-
  .admin .admin-command-bar .collapsible,
  .admin .admin-command-bar .collapsible [data-scope="collapsible"][data-part="root"] {
- display: contents;
+ position: relative;
  width: auto;
  max-width: none;
+ margin-inline-start: auto;
  }
 
  .admin .admin-command-bar [data-scope="collapsible"][data-part="trigger"] {
- grid-column: 3;
- grid-row: 1;
  width: auto;
  max-width: none;
  display: inline-flex;
@@ -574,22 +512,16 @@
  }
 
  .admin .admin-command-bar [data-scope="collapsible"][data-part="content"] {
- grid-column: 1 / -1;
- grid-row: 2;
- }
-
- @media (max-width: theme("breakpoint.sm")) {
- .admin-command-bar-start,
- .admin-command-search,
- .admin .admin-command-bar [data-scope="collapsible"][data-part="trigger"] {
- grid-column: 1;
- grid-row: auto;
- }
-
- .admin .admin-command-bar [data-scope="collapsible"][data-part="content"] {
- grid-column: 1;
- grid-row: auto;
- }
+ position: absolute;
+ inset-inline-end: 0;
+ top: calc(100% + var(--spacing-space-sm));
+ z-index: 20;
+ width: min(36rem, calc(100vw - 2 * var(--spacing-space-xl)));
+ padding: var(--spacing-space);
+ background-color: var(--color-surface);
+ border: 1px solid var(--color-border);
+ border-radius: var(--radius-md);
+ box-shadow: none;
  }
 
  .admin .admin-page-size .select {
@@ -739,7 +671,8 @@
  }
 
  .admin .navigation.tree-view [data-scope="tree-view"][data-part="item"][data-selected],
- .admin .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+ .admin .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"][data-selected],
+ .admin .navigation.tree-view [data-scope="tree-view"][data-part="item"]:has([data-current]) {
  border-inline-start-color: var(--color-link);
  background-color: transparent;
  box-shadow: none;
@@ -771,6 +704,7 @@
 .admin .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"][data-highlighted],
 .admin .navigation.tree-view [data-scope="tree-view"][data-part="item"][data-selected],
 .admin .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"][data-selected],
+.admin .navigation.tree-view [data-scope="tree-view"][data-part="item"]:has([data-current]),
 .admin .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"][data-state="open"] {
  background: transparent !important;
  background-color: transparent !important;

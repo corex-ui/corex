@@ -18,7 +18,7 @@ defmodule CorexAdmin.Resource.Spec do
     :default_sort,
     :title_field,
     selectable: true,
-    filters_open: true,
+    filters_open: false,
     default_filters: %{},
     actions: %{},
     fields: [],

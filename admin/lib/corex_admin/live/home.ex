@@ -9,27 +9,22 @@ defmodule CorexAdmin.Live.Home do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :page_title, "Admin")}
+    {:ok, assign(socket, :page_title, Helpers.hub_title(socket))}
   end
 
   @impl true
   def render(assigns) do
-    prefix = Helpers.home_path(assigns)
-
     assigns =
       assigns
       |> assign(:grouped, Helpers.grouped_resources(assigns))
-      |> assign(:admins_path, String.replace_suffix(prefix, "/admin", "/admins"))
+      |> assign(:hub_title, Helpers.hub_title(assigns))
+      |> assign(:hub_description, Helpers.hub_description(assigns))
 
     ~H"""
-    <Components.shell socket={assigns} current={:home}>
+    <Components.shell>
       <.layout_heading class="layout-heading">
-        <:title>Admin</:title>
-        <:subtitle>
-          Session-scoped demo data. Do not copy the unauthenticated
-          <.navigate to={@admins_path} class="link">/admins</.navigate>
-          CRUD.
-        </:subtitle>
+        <:title>{@hub_title}</:title>
+        <:subtitle :if={@hub_description}>{@hub_description}</:subtitle>
       </.layout_heading>
       <div :if={@grouped == %{}} class="admin-muted">No resources available.</div>
       <section :for={{group, resources} <- @grouped} class="admin-home-group">

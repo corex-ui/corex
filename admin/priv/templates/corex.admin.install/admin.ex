@@ -6,6 +6,7 @@ defmodule <%= inspect web_module %>.Admin do
     actor_assign: :current_scope,
     on_mount: [{<%= inspect web_module %>.UserAuth, :ensure_authenticated}],
     policy: <%= inspect web_module %>.AdminPolicy,
-    layout: {<%= inspect web_module %>.Layouts, :app},
+    layout: {<%= inspect web_module %>.AdminLayout, :admin},
+    title: "Admin",
     resources: []
 end

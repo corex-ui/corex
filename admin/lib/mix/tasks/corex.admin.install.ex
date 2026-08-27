@@ -21,6 +21,7 @@ defmodule Mix.Tasks.Corex.Admin.Install do
   use Mix.Task
 
   import Mix.Phoenix, only: [otp_app: 0, base: 0, web_module: 1, web_path: 1]
+  alias Mix.Generator
 
   @impl Mix.Task
   def run(_args) do
@@ -37,14 +38,19 @@ defmodule Mix.Tasks.Corex.Admin.Install do
     path = web_path(app)
     binding = [otp_app: app, web_module: web]
 
-    Mix.Generator.create_file(
+    Generator.create_file(
       Path.join(path, "admin_policy.ex"),
       EEx.eval_file(template("policy.ex"), binding)
     )
 
-    Mix.Generator.create_file(
+    Generator.create_file(
       Path.join(path, "admin.ex"),
       EEx.eval_file(template("admin.ex"), binding)
+    )
+
+    Generator.create_file(
+      Path.join([path, "components", "admin_layout.ex"]),
+      EEx.eval_file(template("admin_layout.ex"), binding)
     )
 
     Mix.shell().info("""
@@ -64,7 +70,11 @@ defmodule Mix.Tasks.Corex.Admin.Install do
         import CorexAdmin.Router
         live_corex_admin "/admin", #{inspect(web)}.Admin
 
-    5. Expand :filter_parameters to include admin secrets (passwords, tokens).
+    5. The generated `#{inspect(web)}.AdminLayout.admin/1` is a LiveView
+       layout: it renders `{@inner_content}` plus the admin tree. Do not
+       point the hub `layout:` at a slot-based `Layouts.app`.
+
+    6. Expand :filter_parameters to include admin secrets (passwords, tokens).
     """)
   end
 

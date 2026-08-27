@@ -22,6 +22,8 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin")
     assert html =~ "Tickets"
     assert html =~ "Support"
+    refute html =~ "Session-scoped"
+    refute html =~ "/admins"
     assert html =~ ~s(aria-label="Admin")
     assert length(Regex.scan(~r/aria-label="Admin"/, html)) == 1
   end
@@ -44,13 +46,14 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(data-range)
     refute html =~ ~s(type="date")
     assert html =~ "admin-footer"
+    assert html =~ ~s(id="tickets-page-size")
+    refute html =~ "admin-table-toolbar"
     refute html =~ "flex-nowrap"
     assert html =~ "Select all"
     assert html =~ "0 selected"
     assert html =~ ~s(id="tickets-bulk-delete")
     assert html =~ ~s(class="admin-command-bar")
-    assert html =~ ~s(id="tickets-page-size")
-    assert html =~ ~s(class="admin-table-toolbar")
+    assert html =~ ~s(class="admin-table-bar")
     assert html =~ "Show"
     assert html =~ ~s(class="sr-only")
     assert html =~ ~s(aria-label="Edit")
@@ -58,13 +61,24 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ "tickets-command-select-all"
     refute html =~ ~r/id="tickets-page-size"[^>]*data-controlled/
     refute html =~ ~r/id="tickets-filter-status"[^>]*data-controlled/
-    assert html =~ ~s(data-value="tickets")
+    refute html =~ ~s(data-value="tickets")
+    refute html =~ "All Tickets"
+    refute html =~ ~s(data-to="/admin/tickets/new")
     assert html =~ ~s(data-to="/admin")
     assert html =~ ~s(data-to="/admin/tickets")
-    assert html =~ "All Tickets"
-    assert html =~ "New Tickets"
+    assert html =~ ~s(data-value="/admin/tickets")
     assert html =~ ~s(placeholder="Search Tickets")
+    refute html =~ "admin-filter-search"
+    assert html =~ "native-input ui-size-sm"
     assert html =~ "ui-solid ui-brand"
+    assert html =~ "ui-ghost ui-alert"
+    assert html =~ "Today"
+    assert html =~ "Last 7 days"
+    assert html =~ "Last 30 days"
+    assert html =~ "This month"
+    assert html =~ "YTD"
+    assert html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="Select"/
+    refute html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="ToggleGroup"/
     assert html =~ "hero-bars-3"
   end
 
@@ -94,36 +108,28 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "1 selected"
   end
 
-  test "sidebar nav live-redirects to a resource", %{conn: conn} do
-    {:ok, view, html} = live(conn, "/admin")
+  test "sidebar tree uses index paths without a server nav event", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin")
     assert html =~ ~s(data-value="/admin")
     assert html =~ ~s(data-to="/admin/tickets")
-    assert html =~ "All Tickets"
+    refute html =~ "All Tickets"
+    refute html =~ ~s(data-on-selection-change="nav")
 
-    {:ok, _view, html} =
-      view
-      |> render_click("nav", %{"selectedValue" => ["/admin/tickets"], "isItem" => true})
-      |> follow_redirect(conn)
-
+    {:ok, _view, html} = live(conn, "/admin/tickets")
     assert html =~ "Broken login"
+    assert html =~ ~s(data-value="/admin/tickets")
   end
 
-  test "sidebar nav live-redirects from show back to the resource index", %{
+  test "show highlights the resource leaf without selecting it", %{
     conn: conn,
     ticket: ticket
   } do
-    {:ok, view, html} = live(conn, "/admin/tickets/#{ticket.id}")
+    {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     assert html =~ ~s(data-to="/admin/tickets")
-
-    {:ok, _view, html} =
-      view
-      |> render_click("nav", %{"selectedValue" => ["/admin/tickets"], "isItem" => true})
-      |> follow_redirect(conn)
-
-    assert html =~ "Broken login"
-    assert html =~ ~s(class="admin-command-bar")
-    assert html =~ "All Tickets"
+    assert html =~ ~s(data-current)
+    refute html =~ "All Tickets"
+    refute html =~ ~s(data-on-selection-change="nav")
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do
@@ -219,6 +225,25 @@ defmodule CorexAdmin.LiveTest do
     qs =
       Plug.Conn.Query.encode(%{
         "filters" => %{"inserted_at" => %{"from" => today, "to" => today}}
+      })
+
+    assert_patch(view, "/admin/tickets?" <> qs)
+  end
+
+  test "date presets patch from/to ISO dates", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+    today = Date.utc_today()
+    from = Date.add(today, -6)
+
+    view
+    |> element(~s(button[phx-click="filter_preset"][phx-value-preset="last_7"]))
+    |> render_click()
+
+    qs =
+      Plug.Conn.Query.encode(%{
+        "filters" => %{
+          "inserted_at" => %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(today)}
+        }
       })
 
     assert_patch(view, "/admin/tickets?" <> qs)

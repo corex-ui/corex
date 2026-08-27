@@ -53,7 +53,7 @@ defmodule CorexAdmin.Live.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Components.shell :if={assigns[:spec]} socket={assigns} current={@spec} live_action={@live_action}>
+    <Components.shell :if={assigns[:spec]}>
       <.layout_heading class="layout-heading">
         <:title>{@spec.label}</:title>
         <:actions>
@@ -71,22 +71,10 @@ defmodule CorexAdmin.Live.Index do
         </:actions>
       </.layout_heading>
 
-      <div class="admin-command-bar">
-        <div class="admin-command-bar-start">
-          <p :if={@spec.selectable} class="admin-muted admin-command-bar-count">
-            {length(@selected)} selected
-          </p>
-          <div
-            :if={@spec.selectable and Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok}
-            class={if(@selected == [], do: "admin-is-disabled")}
-          >
-            <Components.bulk_delete_dialog
-              id={"#{@spec.slug}-bulk-delete"}
-              spec={@spec}
-              count={length(@selected)}
-            />
-          </div>
-        </div>
+      <div
+        :if={@list_opts.search_fields != [] or @spec.filters != []}
+        class="admin-command-bar"
+      >
         <form
           :if={@list_opts.search_fields != []}
           id={"#{@spec.slug}-search"}
@@ -98,7 +86,7 @@ defmodule CorexAdmin.Live.Index do
             type="search"
             name="q"
             value={@list_opts.search}
-            class="native-input ui-size-sm admin-filter-search"
+            class="native-input ui-size-sm"
             placeholder={"Search #{@spec.label}"}
             phx-debounce="400"
           >
@@ -109,6 +97,7 @@ defmodule CorexAdmin.Live.Index do
           </.native_input>
         </form>
         <.collapsible
+          :if={@spec.filters != []}
           id={"#{@spec.slug}-filters"}
           class="collapsible admin-filters"
           open={@spec.filters_open}
@@ -137,7 +126,7 @@ defmodule CorexAdmin.Live.Index do
                 <.action
                   type="button"
                   phx-click="reset_filters"
-                  class="button ui-size-sm"
+                  class="button ui-size-sm ui-ghost ui-alert"
                 >
                   Reset all
                 </.action>
@@ -149,22 +138,19 @@ defmodule CorexAdmin.Live.Index do
 
       <Components.filter_chips spec={@spec} list_opts={@list_opts} />
 
-      <div class="admin-table-toolbar">
-        <div class="admin-page-size">
-          <.select
-            id={"#{@spec.slug}-page-size"}
-            class="select ui-size-sm"
-            name="page_size"
-            items={page_size_items(@page_size_options)}
-            value={[to_string(@list_opts.page_size)]}
-            on_value_change="page_size"
-            positioning={%Corex.Positioning{placement: "bottom-end"}}
-          >
-            <:label class="sr-only">Per page</:label>
-            <:trigger>
-              <.heroicon name="hero-chevron-down" />
-            </:trigger>
-          </.select>
+      <div :if={@spec.selectable} class="admin-table-bar">
+        <p class="admin-muted admin-table-bar-count">
+          {length(@selected)} selected
+        </p>
+        <div
+          :if={Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok}
+          class={if(@selected == [], do: "admin-is-disabled")}
+        >
+          <Components.bulk_delete_dialog
+            id={"#{@spec.slug}-bulk-delete"}
+            spec={@spec}
+            count={length(@selected)}
+          />
         </div>
       </div>
 
@@ -262,6 +248,22 @@ defmodule CorexAdmin.Live.Index do
           <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
           <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
         </.pagination>
+        <div class="admin-page-size">
+          <.select
+            id={"#{@spec.slug}-page-size"}
+            class="select ui-size-sm"
+            name="page_size"
+            items={page_size_items(@page_size_options)}
+            value={[to_string(@list_opts.page_size)]}
+            on_value_change="page_size"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:label class="sr-only">Per page</:label>
+            <:trigger>
+              <.heroicon name="hero-chevron-down" />
+            </:trigger>
+          </.select>
+        </div>
       </div>
     </Components.shell>
     """
@@ -293,6 +295,30 @@ defmodule CorexAdmin.Live.Index do
 
       params ->
         {:noreply, patch_index(socket, Map.put(params, "page", "1"))}
+    end
+  end
+
+  def handle_event("filter_preset", %{"field" => field, "preset" => preset}, socket) do
+    case date_preset_bounds(preset) do
+      {from, to} ->
+        current = ListOpts.to_params(socket.assigns.list_opts)
+        filters = Map.get(current, "filters", %{})
+
+        filters =
+          Map.put(filters, field, %{
+            "from" => Date.to_iso8601(from),
+            "to" => Date.to_iso8601(to)
+          })
+
+        params =
+          current
+          |> Map.put("filters", filters)
+          |> Map.delete("page")
+
+        {:noreply, patch_index(socket, params)}
+
+      :error ->
+        {:noreply, socket}
     end
   end
 
@@ -502,13 +528,13 @@ defmodule CorexAdmin.Live.Index do
     option_count = length(List.wrap(filter.options))
 
     cond do
-      filter.type in [:select, :multi_select, :boolean] and option_count > 0 and option_count <= 4 ->
+      filter.type == :boolean ->
         Corex.ToggleGroup.set_value(socket, id, [])
 
       filter.type in [:select, :multi_select] and option_count > 12 ->
         Corex.Combobox.set_value(socket, id, [])
 
-      filter.type in [:select, :multi_select, :boolean] ->
+      filter.type in [:select, :multi_select] ->
         Corex.Select.set_value(socket, id, [])
 
       true ->
@@ -773,6 +799,33 @@ defmodule CorexAdmin.Live.Index do
   defp page_size_items(options) do
     Corex.List.new(Enum.map(options, &%{label: to_string(&1), value: to_string(&1)}))
   end
+
+  defp date_preset_bounds("today") do
+    today = Date.utc_today()
+    {today, today}
+  end
+
+  defp date_preset_bounds("last_7") do
+    today = Date.utc_today()
+    {Date.add(today, -6), today}
+  end
+
+  defp date_preset_bounds("last_30") do
+    today = Date.utc_today()
+    {Date.add(today, -29), today}
+  end
+
+  defp date_preset_bounds("this_month") do
+    today = Date.utc_today()
+    {%{today | day: 1}, today}
+  end
+
+  defp date_preset_bounds("ytd") do
+    today = Date.utc_today()
+    {%{today | month: 1, day: 1}, today}
+  end
+
+  defp date_preset_bounds(_), do: :error
 
   # Table header checkboxes are library-controlled. Zag can echo onCheckedChange
   # when the header is patched to indeterminate or false after a partial select.

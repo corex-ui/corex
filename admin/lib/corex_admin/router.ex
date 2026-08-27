@@ -30,11 +30,18 @@ defmodule CorexAdmin.Router do
       on_mount =
         List.wrap(config.on_mount) ++ [{CorexAdmin.Live.Hook, {:init, admin, path}}]
 
+      {home_mod, home_action} = CorexAdmin.Router.home_live(config.home)
+
       scope path, alias: false, as: false do
         live_session session_name,
           on_mount: on_mount,
           layout: config.layout do
-          live("/", CorexAdmin.Live.Home, :index)
+          live("/", home_mod, home_action)
+
+          for {page_path, page_mod} <- config.pages do
+            live(page_path, page_mod, :index)
+          end
+
           live("/:resource", CorexAdmin.Live.Index, :index)
           live("/:resource/new", CorexAdmin.Live.Form, :new)
           live("/:resource/:id", CorexAdmin.Live.Show, :show)
@@ -43,4 +50,8 @@ defmodule CorexAdmin.Router do
       end
     end
   end
+
+  @doc false
+  def home_live({mod, action}) when is_atom(mod) and is_atom(action), do: {mod, action}
+  def home_live(mod) when is_atom(mod), do: {mod, :index}
 end

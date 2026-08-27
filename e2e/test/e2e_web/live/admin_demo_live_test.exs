@@ -8,7 +8,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin")
     assert html =~ "Tickets"
     assert html =~ "Posts"
-    assert html =~ "Session-scoped"
+    refute html =~ "Session-scoped"
     refute html =~ "Back to site"
     refute html =~ "Choose a resource"
     assert html =~ ~S(aria-current="page")
@@ -21,38 +21,39 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Select all"
     assert html =~ "0 selected"
     refute html =~ "tickets-command-select-all"
-    assert html =~ ~S(data-value="tickets")
+    refute html =~ ~S(data-value="tickets")
+    refute html =~ "All Tickets"
+    refute html =~ ~S(data-to="/en/admin/tickets/new")
     assert html =~ ~S(data-to="/en/admin")
     assert html =~ ~S(data-to="/en/admin/tickets")
-    assert html =~ "All Tickets"
+    assert html =~ ~S(data-value="/en/admin/tickets")
     assert html =~ ~S(placeholder="Search Tickets")
+    refute html =~ "admin-filter-search"
     assert html =~ ~S(class="admin-command-bar")
-    assert html =~ ~S(class="admin-table-toolbar")
+    assert html =~ ~S(class="admin-table-bar")
+    refute html =~ ~S(class="admin-table-toolbar")
+    assert html =~ ~S(id="tickets-page-size")
     assert html =~ ~S(data-part="control-inputs")
     assert html =~ ~S(data-range)
+    assert html =~ "Today"
+    assert html =~ "Last 7 days"
+    assert html =~ "ui-ghost ui-alert"
     refute html =~ ~S(type="date")
     refute html =~ ~S(aria-label="Breadcrumb")
+    assert html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="Select"/
+    refute html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="ToggleGroup"/
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets?page=2")
     assert html =~ "Queue ticket"
   end
 
-  test "sidebar nav live-redirects from tickets to posts", %{conn: conn} do
-    {view, html} = live_ok!(conn, ~p"/admin/tickets")
-    assert html =~ ~S(data-value="posts")
+  test "sidebar tree uses index paths from tickets and from show", %{conn: conn} do
+    {_view, html} = live_ok!(conn, ~p"/admin/tickets")
+    assert html =~ ~S(data-value="/en/admin/posts")
     assert html =~ ~S(data-to="/en/admin/posts")
+    refute html =~ ~S(data-value="posts")
+    refute html =~ "All Tickets"
 
-    {view, html} =
-      view
-      |> render_click("nav", %{"selectedValue" => ["/en/admin/posts"], "isItem" => true})
-      |> follow_redirect(conn)
-      |> unwrap_live_redirect!()
-
-    assert html =~ "Welcome post"
-    assert has_element?(view, "#posts-filters")
-  end
-
-  test "sidebar nav live-redirects from a ticket show back to posts", %{conn: conn} do
     conn = init_test_session(conn, %{"admin_demo_id" => "nav-show-to-posts"})
     {_view, html} = live_ok!(conn, ~p"/admin/tickets")
 
@@ -61,18 +62,11 @@ defmodule E2eWeb.AdminDemoLiveTest do
       |> then(&Regex.run(~r/tickets-table-select-(\d+)/, &1))
       |> List.last()
 
-    {view, _html} = live_ok!(conn, ~p"/admin/tickets/#{id}")
+    {view, html} = live_ok!(conn, ~p"/admin/tickets/#{id}")
     assert has_element?(view, ".data-list")
-    assert render(view) =~ ~S(data-to="/en/admin/posts")
-
-    {view, html} =
-      view
-      |> render_click("nav", %{"selectedValue" => ["/en/admin/posts"], "isItem" => true})
-      |> follow_redirect(conn)
-      |> unwrap_live_redirect!()
-
-    assert html =~ "Welcome post"
-    assert has_element?(view, "#posts-filters")
+    assert html =~ ~S(data-to="/en/admin/posts")
+    assert html =~ ~S(data-current)
+    refute html =~ "All Tickets"
   end
 
   test "posts index lists seeded rows", %{conn: conn} do

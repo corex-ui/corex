@@ -13,5 +13,6 @@ defmodule E2eWeb.Admin do
     ],
     policy: E2eWeb.AdminPolicy,
     layout: {E2eWeb.Layouts, :admin},
+    title: "Admin",
     resources: [E2eWeb.Admin.TicketResource, E2eWeb.Admin.PostResource]
 end

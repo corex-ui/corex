@@ -11,96 +11,72 @@ defmodule CorexAdmin.Live.Components do
   alias CorexAdmin.Resource.Spec
   alias Phoenix.LiveView.JS
 
-  attr(:socket, :any, required: true)
-  attr(:current, :any, default: nil)
-  attr(:live_action, :atom, default: nil)
-  attr(:record, :any, default: nil)
   slot(:inner_block, required: true)
 
   def shell(assigns) do
     ~H"""
-    <div class="admin">
-      <aside class="admin-sidebar" aria-label="Admin">
-        <.nav_tree
-          socket={@socket}
-          current={@current}
-          live_action={@live_action}
-          record={@record}
-          id="admin-nav-tree"
-        />
-      </aside>
-      <div class="admin-body">
-        <nav class="admin-mobile-nav" aria-label="Admin resources">
-          <.collapsible id="admin-nav-mobile" class="collapsible admin-mobile-menu">
-            <:trigger>
-              <.heroicon name="hero-bars-3" />
-              <span class="sr-only">Admin</span>
-            </:trigger>
-            <:content>
-              <.nav_tree
-                socket={@socket}
-                current={@current}
-                live_action={@live_action}
-                record={@record}
-                id="admin-nav-tree-mobile"
-              />
-            </:content>
-          </.collapsible>
-        </nav>
-        <div class="admin-content">
-          {render_slot(@inner_block)}
-        </div>
-      </div>
+    <div class="admin-stack admin-stack--lg">
+      {render_slot(@inner_block)}
     </div>
     """
   end
 
   attr(:socket, :any, required: true)
-  attr(:current, :any, default: nil)
-  attr(:live_action, :atom, default: nil)
-  attr(:record, :any, default: nil)
+
+  def mobile_nav(assigns) do
+    ~H"""
+    <.collapsible id="admin-nav-mobile" class="collapsible admin-mobile-menu">
+      <:trigger>
+        <.heroicon name="hero-bars-3" />
+        <span class="sr-only">Open admin navigation</span>
+      </:trigger>
+      <:content>
+        <.nav_tree socket={@socket} id="admin-nav-tree-mobile" />
+      </:content>
+    </.collapsible>
+    """
+  end
+
+  attr(:socket, :any, required: true)
   attr(:id, :string, required: true)
+  attr(:class, :string, default: "tree-view navigation max-w-xs aside-nav-tree")
 
   def nav_tree(assigns) do
     grouped = Helpers.grouped_resources(assigns.socket)
-    selected_path = current_nav_path(assigns)
+    request_path = Helpers.current_path(assigns.socket)
+    items = nav_tree_items(assigns.socket, grouped)
+    current_to = longest_matching_to(request_path, nav_leaf_tos(items))
 
-    expanded =
-      grouped
-      |> Enum.map(fn {group, _} -> "group:#{group}" end)
-      |> maybe_expand_resource(assigns.current)
+    expanded = Enum.map(grouped, fn {group, _} -> "group:#{group}" end)
 
     assigns =
       assigns
-      |> assign(
-        :items,
-        nav_tree_items(
-          assigns.socket,
-          grouped,
-          assigns.current,
-          assigns.live_action,
-          assigns.record
-        )
-      )
-      |> assign(:selected, [selected_path])
+      |> assign(:items, items)
+      |> assign(:selected, [request_path])
       |> assign(:expanded, expanded)
+      |> assign(:current_to, current_to)
+      |> assign(:hub_title, Helpers.hub_title(assigns.socket))
 
     ~H"""
     <.tree_view
       id={@id}
-      class="tree-view navigation"
+      class={@class}
       redirect
-      on_selection_change="nav"
       value={@selected}
       expanded_value={@expanded}
       items={@items}
     >
-      <:label>Admin</:label>
+      <:label>{@hub_title}</:label>
       <:branch :let={branch}>
         <span class="admin-truncate">{branch.label}</span>
       </:branch>
       <:item :let={item}>
-        <span class="admin-truncate">{item.label}</span>
+        <span
+          class={["admin-truncate", item.to == @current_to && "admin-nav-current"]}
+          data-current={if(item.to == @current_to, do: "")}
+        >
+          {item.label}
+        </span>
       </:item>
       <:branch_indicator>
         <.heroicon name="hero-chevron-right" class="icon" />
@@ -113,6 +89,7 @@ defmodule CorexAdmin.Live.Components do
   attr(:spec, Spec, default: nil)
   attr(:live_action, :atom, default: :index)
   attr(:record, :any, default: nil)
+  attr(:hub_title, :string, default: "Admin")
 
   def breadcrumbs(assigns) do
     ~H"""
@@ -123,7 +100,7 @@ defmodule CorexAdmin.Live.Components do
     >
       <ol class="admin-crumbs-list">
         <li>
-          <.navigate to={@prefix} class="admin-crumb-link">Admin</.navigate>
+          <.navigate to={@prefix} class="admin-crumb-link">{@hub_title}</.navigate>
         </li>
         <li :if={@spec} class="admin-crumbs-item">
           <.heroicon name="hero-chevron-right" class="icon ui-size-sm" />
@@ -517,7 +494,7 @@ defmodule CorexAdmin.Live.Components do
         type="button"
         phx-click="reset_filter"
         phx-value-field={Atom.to_string(@filter.field)}
-        class="button ui-size-sm ui-ghost"
+        class="button ui-size-sm ui-ghost ui-alert"
         aria_label={"Reset #{@filter.label}"}
       >
         Reset
@@ -531,9 +508,6 @@ defmodule CorexAdmin.Live.Components do
 
     cond do
       assigns.filter.type == :boolean ->
-        filter_toggle(assigns)
-
-      assigns.filter.type in [:select, :multi_select] and option_count > 0 and option_count <= 4 ->
         filter_toggle(assigns)
 
       assigns.filter.type in [:select, :multi_select] and option_count > 12 ->
@@ -636,10 +610,26 @@ defmodule CorexAdmin.Live.Components do
   end
 
   defp filter_date_range(assigns) do
-    assigns = assign(assigns, :picked, date_picker_value(assigns.value))
+    assigns =
+      assigns
+      |> assign(:picked, date_picker_value(assigns.value))
+      |> assign(:presets, date_presets())
 
     ~H"""
     <div class="admin-filter-date">
+      <.filter_legend filter={@filter} />
+      <div class="admin-filter-presets">
+        <.action
+          :for={preset <- @presets}
+          type="button"
+          phx-click="filter_preset"
+          phx-value-field={Atom.to_string(@filter.name)}
+          phx-value-preset={preset.id}
+          class="button ui-size-sm"
+        >
+          {preset.label}
+        </.action>
+      </div>
       <.date_picker
         id={@control_id}
         class="date-picker ui-size-sm"
@@ -648,9 +638,7 @@ defmodule CorexAdmin.Live.Components do
         value={@picked}
         on_value_change="filter"
       >
-        <:label>
-          <.filter_legend filter={@filter} />
-        </:label>
+        <:label>Custom</:label>
         <:trigger>
           <.heroicon name="hero-calendar" />
         </:trigger>
@@ -769,11 +757,11 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
-  defp nav_tree_items(socket, grouped, current, live_action, record) do
+  defp nav_tree_items(socket, grouped) do
     home = Helpers.home_path(socket)
 
     home_item = %{
-      label: "Admin",
+      label: Helpers.hub_title(socket),
       value: home,
       to: home,
       redirect: :navigate
@@ -787,12 +775,13 @@ defmodule CorexAdmin.Live.Components do
           children:
             Enum.map(resources, fn resource ->
               spec = Helpers.spec(resource)
+              path = Helpers.resource_path(socket, spec)
 
               %{
                 label: spec.label,
-                value: spec.slug,
-                children:
-                  resource_nav_children(socket, resource, spec, current, live_action, record)
+                value: path,
+                to: path,
+                redirect: :navigate
               }
             end)
         }
@@ -801,80 +790,41 @@ defmodule CorexAdmin.Live.Components do
     Corex.Tree.new([home_item | group_items])
   end
 
-  defp resource_nav_children(socket, resource, spec, current, live_action, record) do
-    index_path = Helpers.resource_path(socket, spec)
+  defp nav_leaf_tos(items) do
+    Enum.flat_map(List.wrap(items), &leaf_tos/1)
+  end
 
-    children = [
-      %{
-        label: "All #{spec.label}",
-        value: index_path,
-        to: index_path,
-        redirect: :navigate
-      }
-    ]
+  defp leaf_tos(%{children: children} = node) when is_list(children) and children != [] do
+    nested = Enum.flat_map(children, &leaf_tos/1)
 
-    children =
-      if Helpers.authorize(socket, :new, resource, nil) == :ok do
-        path = Helpers.new_path(socket, spec)
-
-        children ++
-          [%{label: "New #{spec.label}", value: path, to: path, redirect: :navigate}]
-      else
-        children
-      end
-
-    current_resource? = current_resource?(current, spec)
-
-    children =
-      if current_resource? and live_action in [:show, :edit] and record do
-        path = Helpers.record_path(socket, spec, record)
-        title = Helpers.record_title(spec, record)
-        children ++ [%{label: title, value: path, to: path, redirect: :navigate}]
-      else
-        children
-      end
-
-    if current_resource? and live_action == :edit and record do
-      path = Helpers.edit_path(socket, spec, record)
-      children ++ [%{label: "Edit", value: path, to: path, redirect: :navigate}]
-    else
-      children
+    case Map.get(node, :to) do
+      to when is_binary(to) -> nested ++ [to]
+      _ -> nested
     end
   end
 
-  defp current_nav_path(%{current: :home, socket: socket}), do: Helpers.home_path(socket)
+  defp leaf_tos(%{to: to}) when is_binary(to), do: [to]
+  defp leaf_tos(_), do: []
 
-  defp current_nav_path(%{current: %Spec{} = spec, live_action: :new, socket: socket}),
-    do: Helpers.new_path(socket, spec)
+  defp longest_matching_to(path, tos) when is_binary(path) do
+    tos
+    |> Enum.filter(fn to ->
+      is_binary(to) and (path == to or String.starts_with?(path, to <> "/"))
+    end)
+    |> Enum.max_by(&String.length/1, fn -> nil end)
+  end
 
-  defp current_nav_path(%{
-         current: %Spec{} = spec,
-         live_action: :show,
-         record: record,
-         socket: socket
-       })
-       when not is_nil(record),
-       do: Helpers.record_path(socket, spec, record)
+  defp longest_matching_to(_path, _tos), do: nil
 
-  defp current_nav_path(%{
-         current: %Spec{} = spec,
-         live_action: :edit,
-         record: record,
-         socket: socket
-       })
-       when not is_nil(record),
-       do: Helpers.edit_path(socket, spec, record)
-
-  defp current_nav_path(%{current: %Spec{} = spec, socket: socket}),
-    do: Helpers.resource_path(socket, spec)
-
-  defp current_nav_path(%{socket: socket}), do: Helpers.home_path(socket)
-
-  defp current_resource?(%Spec{slug: slug}, %Spec{slug: slug}), do: true
-  defp current_resource?(_current, _spec), do: false
-
-  defp maybe_expand_resource(expanded, %Spec{slug: slug}), do: expanded ++ [slug]
-  defp maybe_expand_resource(expanded, _current), do: expanded
+  defp date_presets do
+    [
+      %{id: "today", label: "Today"},
+      %{id: "last_7", label: "Last 7 days"},
+      %{id: "last_30", label: "Last 30 days"},
+      %{id: "this_month", label: "This month"},
+      %{id: "ytd", label: "YTD"}
+    ]
+  end
 
   attr(:id, :string, required: true)
   attr(:msg, :string, required: true)

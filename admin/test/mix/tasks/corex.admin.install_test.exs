@@ -13,6 +13,22 @@ defmodule Mix.Tasks.Corex.Admin.InstallTest do
     refute contents =~ "do: :ok"
   end
 
+  test "installer hub uses a LiveView admin layout, not slot-based Layouts.app" do
+    hub =
+      File.read!(Application.app_dir(:corex_admin, "priv/templates/corex.admin.install/admin.ex"))
+
+    layout =
+      File.read!(
+        Application.app_dir(:corex_admin, "priv/templates/corex.admin.install/admin_layout.ex")
+      )
+
+    assert hub =~ "layout: {<%= inspect web_module %>.AdminLayout, :admin}"
+    refute hub =~ "Layouts, :app"
+    assert layout =~ "{@inner_content}"
+    assert layout =~ "Components.nav_tree"
+    refute layout =~ "render_slot(@inner_block)"
+  end
+
   test "resource generator template points at a context, not Repo" do
     contents =
       File.read!(

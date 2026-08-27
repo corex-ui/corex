@@ -31,6 +31,9 @@ defmodule E2eWeb.App.Shell do
   def content,
     do: "mx-auto flex w-full max-w-6xl flex-1 flex-col items-center gap-size px-space-xl py-size"
 
+  def admin_content,
+    do: "mx-auto flex w-full min-w-0 flex-1 flex-col gap-size px-space-xl py-size"
+
   def article,
     do:
       "mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md"

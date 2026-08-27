@@ -7,6 +7,7 @@ defmodule E2eWeb.Layouts do
   import E2eWeb.SEO, only: [head: 1]
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
   alias E2eWeb.App.Shell
+  alias CorexAdmin.Live.Components, as: AdminComponents
 
   import E2eWeb.{ModeToggle, ThemeToggle}
 
@@ -126,27 +127,43 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <div class="flex min-h-dvh flex-col">
-      <.header path={@path} theme={@theme} mode={@mode} />
-      <main id="main-content" class="flex min-h-0 min-w-0 flex-1 flex-col">
-        {@inner_content}
-        <.toast_group
-          id="layout-toast"
-          class="toast"
-          phx-update="ignore"
-          flash={@flash}
-        >
-          <:loading>
-            <.heroicon name="hero-arrow-path" class="icon" />
-          </:loading>
-        </.toast_group>
-        <.toast_client_error
-          toast_group_id="layout-toast"
-          title={~t"We lost the connection"}
-          description={~t"We're trying to reconnect you..."}
-          type={:error}
-          duration={:infinity}
+    <.header path={@path} theme={@theme} mode={@mode} />
+    <div class={"admin " <> Shell.wrapper()}>
+      <aside class={Shell.side()} aria-label="Admin">
+        <AdminComponents.nav_tree
+          :if={assigns[:corex_admin]}
+          socket={assigns}
+          id="admin-nav-tree"
+          class={Shell.aside_tree()}
         />
+      </aside>
+      <main id="main-content" class={Shell.main()}>
+        <div class={Shell.docs_body()}>
+          <nav class="admin-mobile-nav" aria-label="Admin resources">
+            <AdminComponents.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
+          </nav>
+          <div class={Shell.admin_content()}>
+            {@inner_content}
+          </div>
+          <.toast_group
+            id="layout-toast"
+            class="toast"
+            phx-update="ignore"
+            flash={@flash}
+          >
+            <:loading>
+              <.heroicon name="hero-arrow-path" class="icon" />
+            </:loading>
+          </.toast_group>
+          <.toast_client_error
+            toast_group_id="layout-toast"
+            title={~t"We lost the connection"}
+            description={~t"We're trying to reconnect you..."}
+            type={:error}
+            duration={:infinity}
+          />
+        </div>
+        <.footer path={@path} />
       </main>
     </div>
     """
