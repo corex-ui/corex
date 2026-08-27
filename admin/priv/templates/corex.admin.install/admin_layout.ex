@@ -8,7 +8,7 @@ defmodule <%= inspect web_module %>.AdminLayout do
   # LiveView layout (`live_session layout:` / hub `layout:`). Uses `{@inner_content}`.
   def admin(assigns) do
     ~H"""
-    <div class="admin flex min-h-dvh min-w-0 flex-1 flex-col bg-root text-ink">
+    <div class="admin flex min-h-dvh min-w-0 flex-1 flex-col bg-root text-ink" data-scope="admin">
       <header class="sticky top-0 z-20 flex h-size-lg items-center border-b border-border bg-surface">
         <div class="mx-auto flex h-size-lg w-full max-w-9xl items-center px-space-xl">
           <span class="font-semibold uppercase">{CorexAdmin.Live.Helpers.hub_title(assigns)}</span>
@@ -23,7 +23,7 @@ defmodule <%= inspect web_module %>.AdminLayout do
         </aside>
         <main
           id="main-content"
-          class="admin-main relative mx-auto flex min-w-0 w-full flex-1 flex-col"
+          class="admin-main px-space-lg py-space-lg relative mx-auto flex min-w-0 w-full flex-1 flex-col"
         >
           <nav class="admin-mobile-nav" aria-label="Admin resources">
             <Components.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />

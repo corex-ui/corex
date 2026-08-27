@@ -8,6 +8,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin")
     assert html =~ "Tickets"
     assert html =~ "Posts"
+    assert html =~ ~S(data-scope="admin")
+    assert html =~ "admin-main px-space-lg py-space-lg"
     refute html =~ "Session-scoped"
     refute html =~ "Back to site"
     refute html =~ "Choose a resource"
@@ -85,6 +87,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
   test "posts index lists seeded rows", %{conn: conn} do
     {_view, html} = live_ok!(conn, ~p"/admin/posts")
     assert html =~ "Welcome post"
+    assert html =~ "admin-main px-space-lg py-space-lg"
     assert html =~ "Draft notes"
     assert html =~ ~S(id="posts-filters")
     assert html =~ ~S(data-state="closed")
@@ -241,6 +244,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin/tickets/new")
 
     assert html =~ "Social links"
+    assert html =~ "admin-main px-space-lg py-space-lg"
     assert html =~ ~S(data-scope="nested-fields")
     refute html =~ "max-w-3xl"
   end
@@ -261,6 +265,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets/#{ticket.id}/edit")
     assert html =~ "Social links"
+    assert html =~ "admin-main px-space-lg py-space-lg"
     assert html =~ "Docs"
     assert html =~ ~S(name="ticket[social_links][0][label]")
     refute html =~ "max-w-3xl"
@@ -268,6 +273,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin/tickets/#{ticket.id}")
     assert html =~ "Docs"
     assert html =~ "https://example.test/docs"
+    assert html =~ "admin-main px-space-lg py-space-lg"
     refute html =~ "max-w-3xl"
     assert html =~ ~S(class="data-list ui-size-sm")
     assert html =~ ~S(data-orientation="horizontal")
@@ -277,6 +283,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     conn = init_test_session(conn, %{"admin_demo_id" => "tooltip-errors"})
     {view, html} = live_ok!(conn, ~p"/admin/tickets/new")
     assert html =~ "admin-form-grid"
+    assert html =~ ~S(data-scope="admin")
+    assert html =~ "admin-main px-space-lg py-space-lg"
     refute html =~ "max-w-3xl"
 
     html =

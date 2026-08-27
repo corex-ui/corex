@@ -15,7 +15,7 @@ defmodule CorexAdmin.Test.Layouts do
     ~H"""
     <html>
       <body>
-        <div class="admin">
+        <div class="admin" data-scope="admin">
           <aside aria-label="Admin">
             <Components.nav_tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />
           </aside>

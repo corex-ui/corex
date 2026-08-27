@@ -849,3 +849,28 @@
  border-radius: 0;
  box-shadow: none;
 }
+
+.admin .admin-stack,
+.admin .admin-form-grid,
+.admin .layout-heading,
+.admin .data-list,
+.admin .data-table,
+.admin .tabs,
+.admin .pagination,
+.admin .native-input,
+.admin .select,
+.admin .textarea,
+.admin .combobox,
+.admin .date-picker,
+.admin .number-input,
+.admin .nested-fields,
+.admin .password-input,
+.admin .file-upload {
+ width: 100%;
+ max-width: none;
+}
+
+.admin-main > .shell-footer {
+ margin-inline: calc(-1 * var(--spacing-space-lg));
+ margin-block-end: calc(-1 * var(--spacing-space-lg));
+}
