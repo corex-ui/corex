@@ -68,8 +68,14 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ ~S(data-to="/en/admin/posts")
     assert html =~ ~S(data-to="/en/admin/tickets")
     assert html =~ ~S(data-current)
-    assert html =~ ~s(data-default-selected-value="[&quot;/en/admin/tickets&quot;]")
-    refute html =~ ~s(data-default-selected-value="[&quot;/en/admin/tickets/#{id}&quot;]")
+
+    [_, selected] =
+      Regex.run(
+        ~r/id="admin-nav-tree"[^>]*data-default-selected-value="([^"]*)"/,
+        html
+      )
+
+    assert selected == "[&quot;/en/admin/tickets&quot;]"
     refute html =~ "All Tickets"
   end
 

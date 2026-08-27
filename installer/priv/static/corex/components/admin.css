@@ -214,6 +214,8 @@
  .admin-chips {
  min-height: var(--spacing-size);
  gap: var(--spacing-space-sm);
+ position: relative;
+ z-index: 21;
  }
 
  .admin-command-bar {
