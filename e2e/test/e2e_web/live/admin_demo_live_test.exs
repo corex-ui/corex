@@ -139,6 +139,12 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~
              ~r/id="tickets-command-select-all"[^>]*data-checked="indeterminate"/
 
+    html = render_click(view, "select_all", %{"checked" => false, "id" => "tickets-command-select-all"})
+    assert html =~ "1 selected"
+
+    html = render_click(view, "select_all", %{"checked" => "indeterminate", "id" => "tickets-table-select-all"})
+    assert html =~ "1 selected"
+
     html = render_click(view, "select_all", %{"checked" => true})
     assert html =~ "25 selected"
     refute html =~ ~s(class="admin-is-disabled")

@@ -360,7 +360,7 @@ defmodule CorexAdmin.Live.Index do
   end
 
   def handle_event("select_all", params, socket) do
-    {:noreply, Selection.handle_select_all(socket, params, :entries)}
+    {:noreply, apply_select_all(socket, params)}
   end
 
   def handle_event("row_menu", %{"value" => "delete:" <> id}, socket) do
@@ -729,6 +729,40 @@ defmodule CorexAdmin.Live.Index do
 
   defp page_size_items(options) do
     Corex.List.new(Enum.map(options, &%{label: to_string(&1), value: to_string(&1)}))
+  end
+
+  # Zag fires onCheckedChange when a controlled checkbox is patched to
+  # :indeterminate, and handle_select set_checked(false) on the table header
+  # after a partial select. Those echoes must not clear the current selection.
+  defp apply_select_all(socket, params) do
+    case select_all_checked_param(params) do
+      :indeterminate ->
+        socket
+
+      true ->
+        Selection.handle_select_all(socket, %{"checked" => true}, :entries)
+
+      false ->
+        entries = socket.assigns.entries || []
+        selected = socket.assigns.selected || []
+        all_selected? = entries != [] and length(selected) == length(entries)
+
+        if all_selected? or selected == [] do
+          Selection.handle_select_all(socket, %{"checked" => false}, :entries)
+        else
+          socket
+        end
+    end
+  end
+
+  defp select_all_checked_param(params) do
+    case Map.get(params, "checked") do
+      true -> true
+      "true" -> true
+      :indeterminate -> :indeterminate
+      "indeterminate" -> :indeterminate
+      _ -> false
+    end
   end
 
   defp command_select_all_checked(entries, selected)

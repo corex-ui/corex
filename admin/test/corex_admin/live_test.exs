@@ -71,6 +71,14 @@ defmodule CorexAdmin.LiveTest do
 
     assert html =~
              ~r/id="tickets-command-select-all"[^>]*data-checked="indeterminate"/
+
+    html =
+      render_click(view, "select_all", %{
+        "checked" => false,
+        "id" => "tickets-command-select-all"
+      })
+
+    assert html =~ "1 selected"
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do
