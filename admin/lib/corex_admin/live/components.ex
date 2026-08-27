@@ -531,8 +531,10 @@ defmodule CorexAdmin.Live.Components do
       aria_label="Actions"
     >
       <:trigger>
-        <.heroicon name="hero-ellipsis-vertical" class="icon" />
-        <span class="admin-visually-hidden">Actions</span>
+        <span class="button ui-size-sm ui-trigger--square">
+          <.heroicon name="hero-ellipsis-vertical" class="icon" />
+          <span class="admin-visually-hidden">Actions</span>
+        </span>
       </:trigger>
     </.menu>
     <.delete_dialog

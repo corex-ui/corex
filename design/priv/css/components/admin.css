@@ -267,27 +267,6 @@
  max-width: none;
  }
 
- .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] > [data-scope="menu"][data-part="trigger"] {
- width: auto;
- min-width: var(--spacing-size-sm);
- min-height: var(--spacing-size-sm);
- max-width: none;
- margin-inline-end: 0;
- padding: 0;
- aspect-ratio: 1 / 1;
- justify-content: center;
- }
-
- .admin .admin-row-menu.menu [data-scope="menu"][data-part="root"] > [data-scope="menu"][data-part="trigger"] > [data-part="item-text"] {
- flex: none;
- display: flex;
- align-items: center;
- justify-content: center;
- overflow: visible;
- width: auto;
- max-width: none;
- }
-
  .admin-footer {
  display: flex;
  width: 100%;
