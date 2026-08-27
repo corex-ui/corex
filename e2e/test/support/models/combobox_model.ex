@@ -122,21 +122,24 @@ defmodule E2eWeb.ComboboxModel do
     open_q =
       css(
         ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
-        visible: :any
+        visible: :any,
+        timeout: 250
       )
 
-    session =
-      if has?(session, open_q) do
-        click(
+    if has?(session, open_q) do
+      _ =
+        execute_script(
           session,
-          css(
-            ~s|##{host_dom_id}[phx-hook="Combobox"] [data-scope="combobox"][data-part="trigger"]|,
-            visible: :any
-          )
+          """
+          const root = document.getElementById(arguments[0]);
+          const trigger = root?.querySelector(
+            '[data-scope="combobox"][data-part="trigger"]'
+          );
+          if (trigger) trigger.click();
+          """,
+          [host_dom_id]
         )
-      else
-        session
-      end
+    end
 
     wait_for_has(
       session,
@@ -336,6 +339,13 @@ defmodule E2eWeb.ComboboxModel do
     if not safe_dom_token?(value), do: raise(ArgumentError, "invalid item value")
 
     session
+    |> close_combobox_by_host_id("combobox-playground", timeout: 8_000)
+    |> assert_has(
+      css(
+        ~S|#combobox-playground-disabled-items[phx-hook="Select"]:not([data-loading])|,
+        visible: :any
+      )
+    )
     |> click(
       css(
         ~S|#combobox-playground-disabled-items [data-scope="select"][data-part="trigger"]|,

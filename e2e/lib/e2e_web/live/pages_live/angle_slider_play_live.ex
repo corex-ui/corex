@@ -202,7 +202,8 @@ defmodule E2eWeb.AngleSliderPlayLive do
             id="my-angle-slider"
             class="angle-slider"
             value_text_as={@controls.value_text_as}
-            marker_values={if(@controls.show_markers, do: [0, 90, 180, 270], else: [])}
+            markers={@controls.show_markers}
+            marker_values={[0, 90, 180, 270]}
             value={@angle}
             step={@controls.step}
             disabled={@controls.disabled}

@@ -338,6 +338,7 @@ defmodule Corex.MixProject do
         Corex.RadioGroup,
         Corex.Select,
         Corex.SignaturePad,
+        Corex.Slider,
         Corex.Switch,
         Corex.Tabs,
         Corex.Timer,

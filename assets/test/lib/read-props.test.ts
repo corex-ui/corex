@@ -15,6 +15,9 @@ import {
   readStringListControlledZagProps,
   readUpdatedServerString,
   mountCheckedBinding,
+  mountNumberListBinding,
+  parseDatasetNumberList,
+  readUpdatedServerNumberList,
 } from "../../lib/read-props";
 
 describe("readStringControlledZagProps", () => {
@@ -260,5 +263,55 @@ describe("readControlledOrDefaultBoolean", () => {
     expect(readControlledOrDefaultBoolean(el({ defaultOpen: true }), "open", "defaultOpen")).toBe(
       true
     );
+  });
+});
+
+describe("parseDatasetNumberList", () => {
+  it("parses JSON number arrays", () => {
+    expect(parseDatasetNumberList("[20,80]")).toEqual([20, 80]);
+    expect(parseDatasetNumberList("[30.0]")).toEqual([30]);
+  });
+
+  it("parses a single number", () => {
+    expect(parseDatasetNumberList("45")).toEqual([45]);
+  });
+
+  it("returns empty for missing or invalid input", () => {
+    expect(parseDatasetNumberList(undefined)).toEqual([]);
+    expect(parseDatasetNumberList("")).toEqual([]);
+    expect(parseDatasetNumberList("nope")).toEqual([]);
+  });
+});
+
+describe("mountNumberListBinding", () => {
+  it("returns defaultValue when uncontrolled", () => {
+    const node = el({ defaultValue: "[20,80]" });
+    expect(mountNumberListBinding(node)).toEqual({ defaultValue: [20, 80] });
+  });
+
+  it("returns value when controlled", () => {
+    const node = el({ controlled: true, value: "[10]" });
+    expect(mountNumberListBinding(node)).toEqual({ value: [10] });
+  });
+
+  it("defaults to [0] when the list is empty", () => {
+    expect(mountNumberListBinding(el({}))).toEqual({ defaultValue: [0] });
+  });
+});
+
+describe("readUpdatedServerNumberList", () => {
+  it("returns empty when uncontrolled", () => {
+    const node = el({ defaultValue: "[1]" });
+    expect(readUpdatedServerNumberList(node)).toEqual({});
+  });
+
+  it("syncs when form field defaultValue changes", () => {
+    const node = el({ formField: true, defaultValue: "[40]" });
+    expect(readUpdatedServerNumberList(node, { defaultValue: "[0]" })).toEqual({ value: [40] });
+  });
+
+  it("returns empty when form field value is unchanged", () => {
+    const node = el({ formField: true, defaultValue: "[40]" });
+    expect(readUpdatedServerNumberList(node, { defaultValue: "[40]" })).toEqual({});
   });
 });

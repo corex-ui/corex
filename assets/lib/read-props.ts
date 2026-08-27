@@ -267,6 +267,65 @@ export function readUpdatedServerNumber(
   };
 }
 
+export function parseDatasetNumberList(raw: string | undefined): number[] {
+  if (raw === undefined) return [];
+  const trimmed = raw.trim();
+  if (trimmed === "") return [];
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown;
+      if (!Array.isArray(parsed)) return [];
+      const nums = parsed.map((item) => Number(item)).filter((n) => Number.isFinite(n));
+      return nums;
+    } catch {
+      return [];
+    }
+  }
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? [n] : [];
+}
+
+function numberListOrDefault(values: number[]): number[] {
+  return values.length > 0 ? values : [0];
+}
+
+export type NumberListZag =
+  | { value: number[]; defaultValue?: never }
+  | { value?: never; defaultValue: number[] };
+
+export function mountNumberListBinding(el: HTMLElement): NumberListZag {
+  if (getBoolean(el, "controlled")) {
+    return { value: numberListOrDefault(parseDatasetNumberList(el.dataset.value)) };
+  }
+
+  return {
+    defaultValue: numberListOrDefault(parseDatasetNumberList(el.dataset.defaultValue)),
+  };
+}
+
+export function readUpdatedServerNumberList(
+  el: HTMLElement,
+  before?: DatasetSnapshot
+): { value: number[] } | Record<string, never> {
+  const sync = getBoolean(el, "controlled") || getBoolean(el, "formField");
+  if (!sync) {
+    return {};
+  }
+
+  if (!anyDatasetKeyChanged(before, el, ["value", "defaultValue"])) {
+    return {};
+  }
+
+  const raw =
+    getString(el, "value") ??
+    (getBoolean(el, "formField") ? getString(el, "defaultValue") : undefined);
+  if (raw === undefined) {
+    return {};
+  }
+
+  return { value: numberListOrDefault(parseDatasetNumberList(raw)) };
+}
+
 export function mountNumberBinding(el: HTMLElement): NumZag {
   const step = numberInputStep(el);
 

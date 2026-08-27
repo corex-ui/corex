@@ -91,6 +91,7 @@ defmodule Corex.AngleSliderTest do
               on_value_change_end="change_end"
               on_value_change_client="change_client"
               on_value_change_end_client="change_end_client"
+              markers
               marker_values={[0, 90, 180]}
             >
               <:label>Angle</:label>

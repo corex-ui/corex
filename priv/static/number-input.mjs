@@ -10,7 +10,7 @@ import {
   isValueWithinRange,
   roundToDpr,
   wrap
-} from "./chunks/chunk-HVJNI7F3.mjs";
+} from "./chunks/chunk-AJX2XHOK.mjs";
 import {
   dispatchFormInputEvents,
   markUsed,
@@ -23,7 +23,7 @@ import {
   mountNumberBinding,
   readUpdatedServerNumber,
   resolveNumberInputSubmitValue
-} from "./chunks/chunk-SFHJIQK5.mjs";
+} from "./chunks/chunk-I5HWU3ET.mjs";
 import {
   emitResponse,
   idMatches,

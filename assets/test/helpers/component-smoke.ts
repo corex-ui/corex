@@ -411,6 +411,68 @@ export function angleSliderTree(): HTMLElement {
   );
 }
 
+export function sliderTree(thumbs = 1): HTMLElement {
+  const thumbChildren = Array.from({ length: thumbs }, (_, index) => ({
+    part: "thumb",
+    attrs: {
+      "data-index": String(index),
+      role: "slider",
+      style: "width:22px;height:22px",
+    },
+    children: [{ part: "hidden-input", attrs: { "data-index": String(index) } }],
+  }));
+
+  const el = withId(
+    scopeTree("slider", [
+      {
+        part: "root",
+        attrs: { id: "slider:corex-smoke", style: "--thumb-size:22px" },
+        children: [
+          { part: "label", text: "Volume", attrs: { id: "slider:corex-smoke:label" } },
+          {
+            part: "control",
+            attrs: { id: "slider:corex-smoke:control" },
+            children: [
+              {
+                part: "track",
+                attrs: { id: "slider:corex-smoke:track" },
+                children: [{ part: "range", attrs: { id: "slider:corex-smoke:range" } }],
+              },
+              ...thumbChildren,
+            ],
+          },
+          {
+            part: "marker-group",
+            attrs: { id: "slider:corex-smoke:marker-group" },
+            children: [
+              {
+                part: "marker",
+                attrs: { "data-value": "0", id: "slider:corex-smoke:marker:0" },
+              },
+              {
+                part: "marker",
+                attrs: { "data-value": "50", id: "slider:corex-smoke:marker:50" },
+              },
+              {
+                part: "marker",
+                attrs: { "data-value": "100", id: "slider:corex-smoke:marker:100" },
+              },
+            ],
+          },
+          {
+            part: "value-text",
+            attrs: { id: "slider:corex-smoke:value-text" },
+            children: [{ part: "value", text: "0" }],
+          },
+        ],
+      },
+    ])
+  );
+
+  el.style.setProperty("--thumb-size", "22px");
+  return el;
+}
+
 export function avatarTree(): HTMLElement {
   return withId(
     scopeTree("avatar", [

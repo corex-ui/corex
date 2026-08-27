@@ -79,6 +79,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_server_change}
                   class="angle-slider"
+                  markers
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change="angle_slider_changed"
                 >
@@ -88,6 +89,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_server_end}
                   class="angle-slider"
+                  markers
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   value={90.0}
                   on_value_change_end="angle_slider_change_ended"
@@ -127,6 +129,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_client_change}
                   class="angle-slider"
+                  markers
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change_client={@client_event_change}
                 >
@@ -136,6 +139,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
                 <.angle_slider
                   id={@id_client_end}
                   class="angle-slider"
+                  markers
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   value={90.0}
                   on_value_change_end_client={@client_event_end}
@@ -157,8 +161,11 @@ defmodule E2eWeb.AngleSliderEventsLive do
                         const el = document.getElementById(id);
                         if(!el) return;
                         el.addEventListener(event, (e) => {
-                          const d = e.detail;
-                          this.pushEvent("angle_slider_client_changed", d);
+                          const d = e.detail ?? {};
+                          this.pushEvent("angle_slider_client_changed", {
+                            id: d.id,
+                            value: d.value,
+                          });
                         });
                       };
                       attach("events-angle-slider-on-value-change-client", "angle-slider-changed");
@@ -197,7 +204,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
         |> Calendar.strftime("%H:%M:%S"),
       source: source,
       slider_id: slider_id,
-      value: inspect(value)
+      value: E2eWeb.ComponentEventLog.format_angle_value(value)
     }
   end
 end

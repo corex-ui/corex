@@ -73,6 +73,7 @@ defmodule E2eWeb.DocDemoCoveragePolicyTest do
     radio_group: "radio_group_test.exs",
     select: "select_test.exs",
     signature_pad: "signature_pad_test.exs",
+    slider: "slider_test.exs",
     switch: "switch_test.exs",
     tabs: "tabs_test.exs",
     tags_input: "tags_input_test.exs",
