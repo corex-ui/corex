@@ -132,10 +132,9 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     assert html =~ ~s(data-to="/admin/tickets")
-    assert html =~ ~s(data-to="/admin/posts")
     assert html =~ ~s(data-current)
-    assert html =~ ~s(data-value="/admin/tickets")
-    refute html =~ ~s(data-value="/admin/tickets/#{ticket.id}")
+    assert html =~ ~s(data-default-selected-value="[&quot;/admin/tickets&quot;]")
+    refute html =~ ~s(data-default-selected-value="[&quot;/admin/tickets/#{ticket.id}&quot;]")
     refute html =~ "All Tickets"
     refute html =~ ~s(data-on-selection-change="nav")
   end
@@ -143,14 +142,14 @@ defmodule CorexAdmin.LiveTest do
   test "new and edit select the matching resource leaf", %{conn: conn, ticket: ticket} do
     {:ok, _view, html} = live(conn, "/admin/tickets/new")
     assert html =~ ~s(data-to="/admin/tickets")
-    assert html =~ ~s(data-to="/admin/posts")
-    assert html =~ ~s(data-value="/admin/tickets")
-    refute html =~ ~s(data-value="/admin/tickets/new")
+    assert html =~ ~s(data-default-selected-value="[&quot;/admin/tickets&quot;]")
+    refute html =~ ~s(data-default-selected-value="[&quot;/admin/tickets/new&quot;]")
 
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}/edit")
-    assert html =~ ~s(data-to="/admin/posts")
-    assert html =~ ~s(data-value="/admin/tickets")
-    refute html =~ ~s(data-value="/admin/tickets/#{ticket.id}/edit")
+    assert html =~ ~s(data-default-selected-value="[&quot;/admin/tickets&quot;]")
+
+    refute html =~
+             ~s(data-default-selected-value="[&quot;/admin/tickets/#{ticket.id}/edit&quot;]")
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do

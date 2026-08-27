@@ -68,8 +68,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ ~S(data-to="/en/admin/posts")
     assert html =~ ~S(data-to="/en/admin/tickets")
     assert html =~ ~S(data-current)
-    assert html =~ ~S(data-value="/en/admin/tickets")
-    refute html =~ ~s(data-value="/en/admin/tickets/#{id}")
+    assert html =~ ~s(data-default-selected-value="[&quot;/en/admin/tickets&quot;]")
+    refute html =~ ~s(data-default-selected-value="[&quot;/en/admin/tickets/#{id}&quot;]")
     refute html =~ "All Tickets"
   end
 
