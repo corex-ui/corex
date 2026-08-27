@@ -6,8 +6,8 @@ defmodule E2eWeb.Layouts do
   use E2eWeb, :html
   import E2eWeb.SEO, only: [head: 1]
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
-  alias E2eWeb.App.Shell
   alias CorexAdmin.Live.Components, as: AdminComponents
+  alias E2eWeb.App.Shell
 
   import E2eWeb.{ModeToggle, ThemeToggle}
 
