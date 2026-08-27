@@ -22,6 +22,9 @@ defmodule Corex.SliderTest do
       assert html =~ ~r/data-part="range"/
       assert html =~ ~r/data-part="thumb"/
       assert html =~ ~S(role="slider")
+      assert html =~ ~S(aria-valuemin="0")
+      assert html =~ ~S(aria-valuemax="100")
+      assert html =~ ~S(aria-valuenow="30")
       assert html =~ ~r/data-part="hidden-input"/
       assert html =~ ~r/data-part="value-text"/
       assert html =~ ~S(data-default-value="[30)
@@ -319,10 +322,14 @@ defmodule Corex.SliderTest do
       assert c["data-part"] == "control"
       assert c["id"] == "slider:x:control"
 
-      t = Connect.thumb(Map.put(base, :index, 0))
+      t = Connect.thumb(Map.merge(base, %{index: 0, value: 30, min: 0, max: 100}))
       assert t["data-part"] == "thumb"
       assert t["id"] == "slider:x:thumb:0"
       assert t["data-index"] == "0"
+      assert t["role"] == "slider"
+      assert t["aria-valuemin"] == "0"
+      assert t["aria-valuemax"] == "100"
+      assert t["aria-valuenow"] == "30"
     end
   end
 
