@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Security
+
+- [e2e, integration_test] Bump `postgrex` to **0.22.4** ([CVE-2026-66838](https://osv.dev/vulnerability/EEF-CVE-2026-66838) / [GHSA-3gww-3f36-2388](https://github.com/elixir-ecto/ecto/security/advisories/GHSA-3gww-3f36-2388): SQL injection via the `:comment` option on `Postgrex.stream/4`).
+
 ## 0.2.1 - 2026-08-08
 
 ### Bug fixes
