@@ -123,7 +123,6 @@ defmodule CorexAdmin.Query do
   defp maybe_lte(query, _field, nil), do: query
   defp maybe_lte(query, field, value), do: where(query, [row], field(row, ^field) <= ^value)
 
-  defp maybe_lt(query, _field, nil), do: query
   defp maybe_lt(query, field, value), do: where(query, [row], field(row, ^field) < ^value)
 
   # Dates are inclusive calendar days: >= from 00:00 and < to+1 day.
@@ -143,8 +142,6 @@ defmodule CorexAdmin.Query do
   defp exclusive_upper_bound(%Date{} = date) do
     DateTime.new!(Date.add(date, 1), ~T[00:00:00], "Etc/UTC")
   end
-
-  defp exclusive_upper_bound(other), do: other
 
   defp apply_sort(query, %ListOpts{sort: {field, :asc}}) do
     order_by(query, [row], asc: field(row, ^field))

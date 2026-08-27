@@ -66,7 +66,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     assert current_url(session) =~ "filters[status]"
 
     session =
-      click(session, css(~s(button[phx-click="reset_filter"][phx-value-field="status"])))
+      click(session, css(~S(button[phx-click="reset_filter"][phx-value-field="status"])))
 
     wait_item_off(session, "tickets-filter-status", "open")
     refute_has(session, css(".admin-chips", text: "Status: open"))
@@ -77,7 +77,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
       |> ToggleGroupModel.click_item_by_value_in_host("tickets-filter-status", "done")
       |> ToggleGroupModel.wait_item_on_in_host("tickets-filter-status", "done")
 
-    session = click(session, css(~s(button[aria-label="Clear Status"])))
+    session = click(session, css(~S(button[aria-label="Clear Status"])))
 
     wait_item_off(session, "tickets-filter-status", "done")
     refute_has(session, css(".admin-chips", text: "Status: done"))
@@ -221,9 +221,10 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     actual =
       receive do
         {^ref, value} ->
-          cond do
-            is_float(value) and value == trunc(value) -> trunc(value)
-            true -> value
+          if is_float(value) and value == trunc(value) do
+            trunc(value)
+          else
+            value
           end
       after
         2_000 -> nil

@@ -11,27 +11,27 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Session-scoped"
     refute html =~ "Back to site"
     refute html =~ "Choose a resource"
-    assert html =~ ~s(aria-current="page")
+    assert html =~ ~S(aria-current="page")
     assert html =~ "Main navigation"
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets")
     assert html =~ "Welcome ticket"
     assert html =~ "page=2"
-    assert html =~ ~s(id="tickets-filters")
+    assert html =~ ~S(id="tickets-filters")
     assert html =~ "Select all"
     assert html =~ "0 selected"
     refute html =~ "tickets-command-select-all"
-    assert html =~ ~s(data-value="tickets")
-    assert html =~ ~s(data-to="/en/admin")
-    assert html =~ ~s(data-to="/en/admin/tickets")
+    assert html =~ ~S(data-value="tickets")
+    assert html =~ ~S(data-to="/en/admin")
+    assert html =~ ~S(data-to="/en/admin/tickets")
     assert html =~ "All Tickets"
-    assert html =~ ~s(placeholder="Search Tickets")
-    assert html =~ ~s(class="admin-command-bar")
-    assert html =~ ~s(class="admin-table-toolbar")
-    assert html =~ ~s(data-part="control-inputs")
-    assert html =~ ~s(data-range)
-    refute html =~ ~s(type="date")
-    refute html =~ ~s(aria-label="Breadcrumb")
+    assert html =~ ~S(placeholder="Search Tickets")
+    assert html =~ ~S(class="admin-command-bar")
+    assert html =~ ~S(class="admin-table-toolbar")
+    assert html =~ ~S(data-part="control-inputs")
+    assert html =~ ~S(data-range)
+    refute html =~ ~S(type="date")
+    refute html =~ ~S(aria-label="Breadcrumb")
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets?page=2")
     assert html =~ "Queue ticket"
@@ -39,8 +39,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
   test "sidebar nav live-redirects from tickets to posts", %{conn: conn} do
     {view, html} = live_ok!(conn, ~p"/admin/tickets")
-    assert html =~ ~s(data-value="posts")
-    assert html =~ ~s(data-to="/en/admin/posts")
+    assert html =~ ~S(data-value="posts")
+    assert html =~ ~S(data-to="/en/admin/posts")
 
     {view, html} =
       view
@@ -63,7 +63,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     {view, _html} = live_ok!(conn, ~p"/admin/tickets/#{id}")
     assert has_element?(view, ".data-list")
-    assert render(view) =~ ~s(data-to="/en/admin/posts")
+    assert render(view) =~ ~S(data-to="/en/admin/posts")
 
     {view, html} =
       view
@@ -79,8 +79,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin/posts")
     assert html =~ "Welcome post"
     assert html =~ "Draft notes"
-    assert html =~ ~s(id="posts-filters")
-    assert html =~ ~s(data-state="closed")
+    assert html =~ ~S(id="posts-filters")
+    assert html =~ ~S(data-state="closed")
   end
 
   test "search filters tickets", %{conn: conn} do
@@ -176,7 +176,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
       |> render_click("select", %{"id" => "tickets-table-select-#{id}", "checked" => true})
 
     assert html =~ "1 selected"
-    assert html =~ ~s(id="tickets-bulk-delete")
+    assert html =~ ~S(id="tickets-bulk-delete")
 
     assert html =~
              ~r/id="tickets-table-select-#{Regex.escape(id)}"[^>]*data-checked="true"/
@@ -199,11 +199,11 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     html = render_click(view, "select_all", %{"checked" => true})
     assert html =~ "25 selected"
-    refute html =~ ~s(class="admin-is-disabled")
+    refute html =~ ~S(class="admin-is-disabled")
 
     html = render_click(view, "select_all", %{"checked" => false})
     assert html =~ "0 selected"
-    assert html =~ ~s(class="admin-is-disabled")
+    assert html =~ ~S(class="admin-is-disabled")
   end
 
   test "save and continue stays on the edit form", %{conn: conn} do
@@ -226,7 +226,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     assert html =~ "Keep editing"
     assert html =~ "Save and continue"
-    assert render(view) =~ ~s(id="tickets-form")
+    assert render(view) =~ ~S(id="tickets-form")
   end
 
   test "new ticket form includes nested social links", %{conn: conn} do
@@ -234,7 +234,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin/tickets/new")
 
     assert html =~ "Social links"
-    assert html =~ ~s(data-scope="nested-fields")
+    assert html =~ ~S(data-scope="nested-fields")
     refute html =~ "max-w-3xl"
   end
 
@@ -255,15 +255,15 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin/tickets/#{ticket.id}/edit")
     assert html =~ "Social links"
     assert html =~ "Docs"
-    assert html =~ ~s(name="ticket[social_links][0][label]")
+    assert html =~ ~S(name="ticket[social_links][0][label]")
     refute html =~ "max-w-3xl"
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets/#{ticket.id}")
     assert html =~ "Docs"
     assert html =~ "https://example.test/docs"
     refute html =~ "max-w-3xl"
-    assert html =~ ~s(class="data-list ui-size-sm")
-    assert html =~ ~s(data-orientation="horizontal")
+    assert html =~ ~S(class="data-list ui-size-sm")
+    assert html =~ ~S(data-orientation="horizontal")
   end
 
   test "invalid ticket create shows tooltip field errors", %{conn: conn} do
@@ -279,10 +279,10 @@ defmodule E2eWeb.AdminDemoLiveTest do
       })
       |> render_submit()
 
-    assert html =~ ~s(data-scope="tooltip")
+    assert html =~ ~S(data-scope="tooltip")
     assert html =~ "exclamation-circle"
     assert html =~ "admin-field-error"
-    refute html =~ ~s(data-part="error">can't be blank)
+    refute html =~ ~S(data-part="error">can't be blank)
   end
 
   test "sessions are isolated", %{conn: conn} do

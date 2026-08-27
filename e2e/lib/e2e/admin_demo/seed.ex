@@ -71,15 +71,14 @@ defmodule E2e.AdminDemo.Seed do
       welcome =
         Repo.get_by!(Ticket, demo_id: demo_id, title: "Welcome ticket")
 
-      {:ok, _} =
-        welcome
-        |> Ticket.changeset(%{
-          "social_links" => [
-            %{"label" => "Docs", "url" => "https://example.test/docs", "preferred" => true},
-            %{"label" => "Status", "url" => "https://example.test/status", "preferred" => false}
-          ]
-        })
-        |> Repo.update()
+      welcome
+      |> Ticket.changeset(%{
+        "social_links" => [
+          %{"label" => "Docs", "url" => "https://example.test/docs", "preferred" => true},
+          %{"label" => "Status", "url" => "https://example.test/status", "preferred" => false}
+        ]
+      })
+      |> Repo.update!()
     end
 
     :ok

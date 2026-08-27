@@ -172,7 +172,7 @@ defmodule CorexAdmin.ListOpts do
   end
 
   defp parsed_defaults(%Spec{} = spec) do
-    raw = spec.default_filters || %{}
+    raw = spec.default_filters
 
     Enum.reduce(spec.filters, %{}, fn %Filter{} = filter, acc ->
       value =

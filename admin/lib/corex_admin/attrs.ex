@@ -71,8 +71,6 @@ defmodule CorexAdmin.Attrs do
     end)
   end
 
-  defp stringify_keys(_), do: %{}
-
   # Empty password on edit means "leave unchanged" — do not send "" to the context.
   defp drop_blank_passwords(attrs, fields) do
     password_names =

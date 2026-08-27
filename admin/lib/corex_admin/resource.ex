@@ -188,7 +188,7 @@ defmodule CorexAdmin.Resource do
     end
   end
 
-  @doc false
+  @doc "Records a field definition while compiling a resource module."
   def __push_field__(mod, name, type, opts) do
     case Module.get_attribute(mod, :corex_admin_field_stack) do
       [current | rest] ->
@@ -201,7 +201,7 @@ defmodule CorexAdmin.Resource do
     end
   end
 
-  @doc false
+  @doc "Collects nested field definitions for an embeds_many block."
   def __collect_nested__(mod, fun) do
     stack = Module.get_attribute(mod, :corex_admin_field_stack) || []
     Module.put_attribute(mod, :corex_admin_field_stack, [[] | stack])
@@ -260,7 +260,7 @@ defmodule CorexAdmin.Resource do
     end
   end
 
-  @doc false
+  @doc "Builds a resource spec from compiled field, filter, and action attributes."
   def build_spec(module, opts, fields, filters, actions, scope) do
     opts = NimbleOptions.validate!(opts, @resource_schema)
     schema = opts[:schema]
