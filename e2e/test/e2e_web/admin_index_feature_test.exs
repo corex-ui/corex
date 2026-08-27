@@ -55,12 +55,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
   feature "status filter widgets reset and chip X clear Zag state", %{session: session} do
     session = wait_tickets_index(session) |> open_ticket_filters()
 
-    session =
-      session
-      |> SelectModel.open_select_by_host_id("tickets-filter-status")
-      |> SelectModel.click_item_by_host_id("tickets-filter-status", "open")
-
-    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "open")
+    session = choose_status_filter(session, "open")
     assert_has(session, css(".admin-chips", text: "Status: open"))
     assert_has(session, css(".admin-command-bar .badge.ui-trigger--square", text: "1"))
     assert current_url(session) =~ "filters[status]"
@@ -68,19 +63,12 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session =
       click(session, css(~S(button[phx-click="reset_filter"][phx-value-field="status"])))
 
-    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "")
     refute_has(session, css(".admin-chips", text: "Status: open"))
     refute current_url(session) =~ "filters[status]"
 
-    session =
-      session
-      |> SelectModel.open_select_by_host_id("tickets-filter-status")
-      |> SelectModel.click_item_by_host_id("tickets-filter-status", "done")
-
-    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "done")
+    session = choose_status_filter(session, "done")
     session = click(session, css(~S(button[aria-label="Clear Status"])))
 
-    SelectModel.wait_hidden_value_by_host_id(session, "tickets-filter-status", "")
     refute_has(session, css(".admin-chips", text: "Status: done"))
   end
 
@@ -126,6 +114,15 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     row_id = first_row_id(session)
 
     session =
+      execute_script(
+        session,
+        """
+        const row = document.querySelector('tr[data-scope="data-table"][data-part="row"]');
+        if (row) row.scrollIntoView({block: 'center'});
+        """
+      )
+
+    session =
       session
       |> click(css(~s(tr[id="#{row_id}"] td[data-part="cell"]), at: 0))
       |> wait_path("/en/admin/tickets/#{row_id}")
@@ -157,6 +154,16 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     click(
       session,
       css("#tickets-filters [data-scope='collapsible'][data-part='trigger']")
+    )
+  end
+
+  defp choose_status_filter(session, value) do
+    session
+    |> SelectModel.open_select_by_host_id("tickets-filter-status")
+    |> click(
+      css(
+        ~s|#tickets-filter-status [data-scope="select"][data-part="item"][data-value="#{value}"]:not([data-template])|
+      )
     )
   end
 
