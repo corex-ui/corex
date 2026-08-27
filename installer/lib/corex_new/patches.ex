@@ -26,7 +26,8 @@ defmodule Corex.New.Patches do
   When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`.
   When `--usage-rules` (default), adds `{:usage_rules, "~> 1.1", only: :dev}`
   and `usage_rules: usage_rules()` in `project/0`.
-  When `--design`, ensures `compilers: Mix.compilers() ++ [:corex_design]`.
+  When `--design`, adds `{:corex_design, ..., runtime: false}` and
+  `corex.design.build` to `assets.build` / `assets.deploy`.
   Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
@@ -42,7 +43,6 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_mcp_dep(opts)
       |> maybe_ensure_usage_rules_dep(opts)
       |> maybe_add_design_aliases(opts)
-      |> maybe_ensure_design_compilers(opts)
       |> maybe_ensure_usage_rules_project(opts)
       |> strip_daisyui_dep()
 
@@ -454,76 +454,6 @@ defmodule Corex.New.Patches do
           "      {:usage_rules, \"~> 1.1\", only: :dev}\n"
         )
       end
-    end
-  end
-
-  defp maybe_ensure_design_compilers(content, opts) do
-    cond do
-      not Keyword.get(opts, :design, false) ->
-        content
-
-      Regex.match?(~r/\bcompilers:[\s\S]*?:corex_design\b/u, content) ->
-        content
-
-      Regex.match?(~r/\bcompilers:\s*/u, content) ->
-        prepend_corex_design_compiler(content)
-
-      true ->
-        insert_design_compilers_into_project(content)
-    end
-  end
-
-  defp prepend_corex_design_compiler(content) do
-    replaced =
-      Regex.replace(
-        ~r/(compilers:\s*)\[/u,
-        content,
-        "\\1[:corex_design, ",
-        global: false
-      )
-
-    if replaced != content do
-      replaced
-    else
-      Regex.replace(
-        ~r/(compilers:\s*)(Mix\.compilers\(\))/u,
-        content,
-        "\\1\\2 ++ [:corex_design]",
-        global: false
-      )
-    end
-  end
-
-  defp insert_design_compilers_into_project(content) do
-    line = "      compilers: Mix.compilers() ++ [:corex_design],\n"
-
-    replaced =
-      Regex.replace(
-        ~r/(start_permanent:\s*Mix\.env\(\)\s*==\s*:prod,?\s*\n)/u,
-        content,
-        "\\1" <> line,
-        global: false
-      )
-
-    cond do
-      replaced != content ->
-        replaced
-
-      Regex.match?(~r/def project do\s*\n\s*\[\s*\n/u, content) ->
-        Regex.replace(
-          ~r/(def project do\s*\n\s*\[\s*\n)/u,
-          content,
-          "\\1" <> line,
-          global: false
-        )
-
-      true ->
-        Regex.replace(
-          ~r/(def project do\s*\n\s*\[)/u,
-          content,
-          "\\1compilers: Mix.compilers() ++ [:corex_design], ",
-          global: false
-        )
     end
   end
 

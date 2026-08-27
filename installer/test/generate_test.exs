@@ -64,7 +64,8 @@ defmodule Corex.New.GenerateTest do
       assert File.read!(".cursor/mcp.json") =~ "http://localhost:4000/corex/mcp"
       assert mix_exs =~ ~r/\{:usage_rules,\s*"~> 1.1",\s*only:\s*:dev\}/
       assert mix_exs =~ "usage_rules: usage_rules()"
-      assert mix_exs =~ "compilers: Mix.compilers() ++ [:corex_design]"
+      refute mix_exs =~ "[:corex_design"
+      refute mix_exs =~ "++ [:corex_design]"
       assert mix_exs =~ "package_skills: [:corex]"
       config = File.read!("config/config.exs")
       assert config =~ "config :corex_design"

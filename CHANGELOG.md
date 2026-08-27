@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Design CSS pipeline
+
+- Design CSS is an **asset build step** only (`mix corex.design.build` on `assets.build` / `assets.deploy`). The optional `Mix.Tasks.Compile.CorexDesign` compiler is removed; do not add `:corex_design` to `compilers`.
+- `mix corex.new` / `mix corex.tableau.new` add `{:corex_design, "~> 0.2", runtime: false}` in every Mix env (no `only: :dev`) so `MIX_ENV=prod mix assets.deploy` can run the Mix task.
+- After changing `config :corex_design`, re-run `mix corex.design.build` (or `mix assets.build`). `mix compile` does not regenerate Design CSS.
+- `--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`); they do not rebuild CSS. `runtime: false` means Design is not started as an OTP app. Apps that use `mix release` with `--a11y` must add `corex_design: :load` so Mix.Release keeps those BEAMs.
+
 ### Security
 
 - [e2e, integration_test] Bump `postgrex` to **0.22.4** ([CVE-2026-66838](https://osv.dev/vulnerability/EEF-CVE-2026-66838) / [GHSA-3gww-3f36-2388](https://github.com/elixir-ecto/ecto/security/advisories/GHSA-3gww-3f36-2388): SQL injection via the `:comment` option on `Postgrex.stream/4`).

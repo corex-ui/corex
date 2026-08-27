@@ -17,7 +17,7 @@ defmodule Corex.MCP.DesignAvailable do
       :ok
     else
       {:error,
-       "corex_design is not loaded. Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs."}
+       "corex_design is not loaded. Add {:corex_design, \"~> 0.2\", runtime: false} to mix.exs."}
     end
   end
 

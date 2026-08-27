@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+Host-app install snippets recommend `{:corex_design, "~> 0.2", runtime: false}`
+without `only: :dev`, matching the asset-pipeline Mix task. `design_guide`
+accessibility notes that preference CSS is a design build (not per request)
+and that `mix release` needs `corex_design: :load`.
+
+See the monorepo
+[CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+
 ## 0.2.1 - 2026-08-08
 
 Patch release aligned with Corex 0.2.1. No MCP API changes.

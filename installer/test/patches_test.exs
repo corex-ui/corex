@@ -235,17 +235,18 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds corex_design compiler when design: true" do
+    test "does not add a corex_design compiler when design: true" do
       in_tmp(:patch_mix_exs_design_compilers, fn ->
         File.write!("mix.exs", @mix_exs_with_aliases)
         Patches.patch_mix_exs(File.cwd!(), design: true, usage_rules: false)
         body = File.read!("mix.exs")
-        assert body =~ "compilers: Mix.compilers() ++ [:corex_design]"
+        refute body =~ "[:corex_design"
+        refute body =~ "++ [:corex_design]"
 
         Patches.patch_mix_exs(File.cwd!(), design: true, usage_rules: false)
         body2 = File.read!("mix.exs")
-        assert Regex.scan(~r/:corex_design/, body2) |> length() >= 1
-        assert length(String.split(body2, "Mix.compilers() ++ [:corex_design]")) == 2
+        refute body2 =~ "[:corex_design"
+        assert body2 =~ ~r/\{:corex_design,/
       end)
     end
 
@@ -407,7 +408,8 @@ defmodule Corex.New.PatchesTest do
 
         Patches.patch_mix_exs(File.cwd!(), design: true)
         body = File.read!("mix.exs")
-        assert body =~ ~r/\{:corex_design,\s*"~> 0.2",\s*runtime:\s*false,\s*only:\s*:dev\}/
+        assert body =~ ~r/\{:corex_design,\s*"~> 0.2",\s*runtime:\s*false\}/
+        refute body =~ ~r/\{:corex_design,[^}]*only:\s*:dev\}/
 
         assert body =~
                  ~r/"assets\.build":\s*\[\s*"compile",\s*"corex.design.build",\s*"tailwind my_app"/
@@ -421,7 +423,7 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "corex_design dep drops only: :dev when a11y: true" do
+    test "corex_design dep stays runtime: false without only: :dev when a11y: true" do
       in_tmp(:patch_mix_exs_corex_design_a11y, fn ->
         File.write!("mix.exs", @mix_exs_with_aliases)
 

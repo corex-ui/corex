@@ -44,6 +44,8 @@ config :corex_design,
 mix corex.design.build
 ```
 
+Design CSS is an asset step (`assets.build` / `assets.deploy`), not `mix compile`. Re-run the Mix task after changing this config.
+
 ## Modifier axes
 
 | Axis | Examples | Notes |

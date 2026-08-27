@@ -77,6 +77,8 @@ config :esbuild,
     }
   ]
 
+# Build-time CSS for `mix corex.design.build` (asset step, not `mix compile`).
+# After changing this config, re-run `mix corex.design.build` or `mix assets.build`.
 config :corex_design,
   output: "assets/corex",
   default_theme: :neo,

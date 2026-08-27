@@ -25,7 +25,7 @@ Never enable in production. Upgrading from 0.1.x: [Updating Corex](https://hexdo
 def deps do
   [
     {:corex, "~> 0.2"},
-    {:corex_design, "~> 0.2", runtime: false, only: :dev},
+    {:corex_design, "~> 0.2", runtime: false},
     {:corex_mcp, "~> 0.2", only: [:dev, :test]}
   ]
 end

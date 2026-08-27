@@ -40,17 +40,9 @@ config :corex_design,
 
 Add `/assets/corex/` to `.gitignore`. Do not commit the generated tree.
 
-Optionally rebuild on every compile:
+Wire `mix corex.design.build` into `assets.build` and `assets.deploy` (same layer as Tailwind/esbuild). After changing `config :corex_design`, re-run `mix corex.design.build` (or `mix assets.build`). Design CSS is not part of `mix compile`.
 
-```elixir
-def project do
-  [
-    compilers: Mix.compilers() ++ [:corex_design]
-  ]
-end
-```
-
-Most apps call the build from `assets.build` / `assets.deploy` instead (see Corex [Manual installation](https://hexdocs.pm/corex/manual_installation.html)).
+See Corex [Manual installation](https://hexdocs.pm/corex/manual_installation.html).
 
 ## Build
 

@@ -123,8 +123,7 @@ defmodule CorexDesign.MixProject do
           Corex.Design.Config.Schema,
           Mix.Tasks.Corex.Design.Build,
           Mix.Tasks.Corex.Design.Options,
-          Mix.Tasks.Corex.Design.Validate,
-          Mix.Tasks.Compile.CorexDesign
+          Mix.Tasks.Corex.Design.Validate
         ]
       ]
     ]
@@ -140,8 +139,7 @@ defmodule CorexDesign.MixProject do
         Corex.Design.Config.Schema,
         Mix.Tasks.Corex.Design.Build,
         Mix.Tasks.Corex.Design.Options,
-        Mix.Tasks.Corex.Design.Validate,
-        Mix.Tasks.Compile.CorexDesign
+        Mix.Tasks.Corex.Design.Validate
       ])
 
     if MapSet.member?(allowed, mod) do

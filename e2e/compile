@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Gigalixir phoenix-static compile hook. Design CSS is an asset step, not mix compile.
+cd "$phoenix_dir"
+mix assets.deploy
