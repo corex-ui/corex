@@ -51,7 +51,13 @@ defmodule CorexAdmin.Live.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <Components.shell :if={assigns[:record]} socket={assigns} current={@spec}>
+    <Components.shell
+      :if={assigns[:record]}
+      socket={assigns}
+      current={@spec}
+      live_action={@live_action}
+      record={@record}
+    >
       <div class="admin-stack admin-stack--lg">
         <Components.breadcrumbs
           prefix={@corex_admin_prefix}
@@ -76,7 +82,7 @@ defmodule CorexAdmin.Live.Show do
               :if={Helpers.authorize(assigns, :edit, @resource_mod, @record) == :ok}
               to={Helpers.edit_path(assigns, @spec, @record)}
               type="navigate"
-              class="button ui-accent"
+              class="button ui-solid ui-brand"
               aria_label="Edit"
             >
               <.heroicon name="hero-pencil-square" /> Edit
@@ -92,7 +98,8 @@ defmodule CorexAdmin.Live.Show do
         </.layout_heading>
 
         <.data_list
-          class="data-list"
+          class="data-list ui-size-sm"
+          orientation="horizontal"
           items={
             Corex.Content.new(
               for field <- @show_fields, field.type != :embeds_many do

@@ -13,23 +13,37 @@ defmodule CorexAdmin.Live.Components do
 
   attr(:socket, :any, required: true)
   attr(:current, :any, default: nil)
+  attr(:live_action, :atom, default: nil)
+  attr(:record, :any, default: nil)
   slot(:inner_block, required: true)
 
   def shell(assigns) do
     ~H"""
     <div class="admin">
       <aside class="admin-sidebar" aria-label="Admin">
-        <.nav_tree socket={@socket} current={@current} id="admin-nav-tree" />
+        <.nav_tree
+          socket={@socket}
+          current={@current}
+          live_action={@live_action}
+          record={@record}
+          id="admin-nav-tree"
+        />
       </aside>
       <div class="admin-body">
         <nav class="admin-mobile-nav" aria-label="Admin resources">
-          <.collapsible id="admin-nav-mobile" class="collapsible">
-            <:trigger>Resources</:trigger>
-            <:closed>
-              <.heroicon name="hero-chevron-right" />
-            </:closed>
+          <.collapsible id="admin-nav-mobile" class="collapsible admin-mobile-menu">
+            <:trigger>
+              <.heroicon name="hero-bars-3" />
+              <span class="sr-only">Admin</span>
+            </:trigger>
             <:content>
-              <.nav_tree socket={@socket} current={@current} id="admin-nav-tree-mobile" />
+              <.nav_tree
+                socket={@socket}
+                current={@current}
+                live_action={@live_action}
+                record={@record}
+                id="admin-nav-tree-mobile"
+              />
             </:content>
           </.collapsible>
         </nav>
@@ -43,29 +57,45 @@ defmodule CorexAdmin.Live.Components do
 
   attr(:socket, :any, required: true)
   attr(:current, :any, default: nil)
+  attr(:live_action, :atom, default: nil)
+  attr(:record, :any, default: nil)
   attr(:id, :string, required: true)
 
   def nav_tree(assigns) do
     grouped = Helpers.grouped_resources(assigns.socket)
-    current_slug = current_resource_slug(assigns.current)
+    selected_path = current_nav_path(assigns)
+
+    expanded =
+      grouped
+      |> Enum.map(fn {group, _} -> "group:#{group}" end)
+      |> maybe_expand_resource(assigns.current)
 
     assigns =
       assigns
-      |> assign(:items, nav_tree_items(assigns.socket, grouped))
-      |> assign(:selected, if(current_slug, do: [current_slug], else: []))
-      |> assign(:expanded, Enum.map(grouped, fn {group, _} -> "group:#{group}" end))
+      |> assign(
+        :items,
+        nav_tree_items(
+          assigns.socket,
+          grouped,
+          assigns.current,
+          assigns.live_action,
+          assigns.record
+        )
+      )
+      |> assign(:selected, [selected_path])
+      |> assign(:expanded, expanded)
 
     ~H"""
     <.tree_view
       id={@id}
-      class="tree-view"
+      class="tree-view navigation"
       redirect
       on_selection_change="nav"
       value={@selected}
       expanded_value={@expanded}
       items={@items}
     >
-      <:label class="sr-only">Admin</:label>
+      <:label>Admin</:label>
       <:branch :let={branch}>
         <span class="admin-truncate">{branch.label}</span>
       </:branch>
@@ -407,7 +437,7 @@ defmodule CorexAdmin.Live.Components do
               Corex.Dialog.set_open(@id, false)
               |> JS.push("delete", value: %{id: Helpers.record_id(@spec, @record)})
             }
-            class="button ui-size-sm ui-alert"
+            class="button ui-size-sm ui-solid ui-alert"
           >
             Delete
           </.action>
@@ -432,7 +462,10 @@ defmodule CorexAdmin.Live.Components do
       initial_focus={"#{@id}-cancel"}
       final_focus={"dialog:#{@id}:trigger"}
     >
-      <:trigger class="button ui-size-sm ui-alert" aria_label={"Delete selected #{@spec.label}"}>
+      <:trigger
+        class="button ui-size-sm ui-solid ui-alert"
+        aria_label={"Delete selected #{@spec.label}"}
+      >
         <.heroicon name="hero-trash" /> Delete selected
       </:trigger>
       <:title>Delete {@count} {@spec.label}?</:title>
@@ -449,7 +482,7 @@ defmodule CorexAdmin.Live.Components do
           <.action
             id={"#{@id}-confirm"}
             phx-click={Corex.Dialog.set_open(@id, false) |> JS.push("bulk_delete")}
-            class="button ui-size-sm ui-alert"
+            class="button ui-size-sm ui-solid ui-alert"
           >
             Delete selected
           </.action>
@@ -736,8 +769,17 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
-  defp nav_tree_items(socket, grouped) do
-    Corex.Tree.new(
+  defp nav_tree_items(socket, grouped, current, live_action, record) do
+    home = Helpers.home_path(socket)
+
+    home_item = %{
+      label: "Admin",
+      value: home,
+      to: home,
+      redirect: :navigate
+    }
+
+    group_items =
       Enum.map(grouped, fn {group, resources} ->
         %{
           label: group,
@@ -749,17 +791,90 @@ defmodule CorexAdmin.Live.Components do
               %{
                 label: spec.label,
                 value: spec.slug,
-                to: Helpers.resource_path(socket, spec),
-                redirect: :navigate
+                children:
+                  resource_nav_children(socket, resource, spec, current, live_action, record)
               }
             end)
         }
       end)
-    )
+
+    Corex.Tree.new([home_item | group_items])
   end
 
-  defp current_resource_slug(nil), do: nil
-  defp current_resource_slug(%Spec{slug: slug}), do: slug
+  defp resource_nav_children(socket, resource, spec, current, live_action, record) do
+    index_path = Helpers.resource_path(socket, spec)
+
+    children = [
+      %{
+        label: "All #{spec.label}",
+        value: index_path,
+        to: index_path,
+        redirect: :navigate
+      }
+    ]
+
+    children =
+      if Helpers.authorize(socket, :new, resource, nil) == :ok do
+        path = Helpers.new_path(socket, spec)
+
+        children ++
+          [%{label: "New #{spec.label}", value: path, to: path, redirect: :navigate}]
+      else
+        children
+      end
+
+    current_resource? = current_resource?(current, spec)
+
+    children =
+      if current_resource? and live_action in [:show, :edit] and record do
+        path = Helpers.record_path(socket, spec, record)
+        title = Helpers.record_title(spec, record)
+        children ++ [%{label: title, value: path, to: path, redirect: :navigate}]
+      else
+        children
+      end
+
+    if current_resource? and live_action == :edit and record do
+      path = Helpers.edit_path(socket, spec, record)
+      children ++ [%{label: "Edit", value: path, to: path, redirect: :navigate}]
+    else
+      children
+    end
+  end
+
+  defp current_nav_path(%{current: :home, socket: socket}), do: Helpers.home_path(socket)
+
+  defp current_nav_path(%{current: %Spec{} = spec, live_action: :new, socket: socket}),
+    do: Helpers.new_path(socket, spec)
+
+  defp current_nav_path(%{
+         current: %Spec{} = spec,
+         live_action: :show,
+         record: record,
+         socket: socket
+       })
+       when not is_nil(record),
+       do: Helpers.record_path(socket, spec, record)
+
+  defp current_nav_path(%{
+         current: %Spec{} = spec,
+         live_action: :edit,
+         record: record,
+         socket: socket
+       })
+       when not is_nil(record),
+       do: Helpers.edit_path(socket, spec, record)
+
+  defp current_nav_path(%{current: %Spec{} = spec, socket: socket}),
+    do: Helpers.resource_path(socket, spec)
+
+  defp current_nav_path(%{socket: socket}), do: Helpers.home_path(socket)
+
+  defp current_resource?(%Spec{slug: slug}, %Spec{slug: slug}), do: true
+  defp current_resource?(_current, _spec), do: false
+
+  defp maybe_expand_resource(expanded, %Spec{slug: slug}), do: expanded ++ [slug]
+  defp maybe_expand_resource(expanded, _current), do: expanded
 
   attr(:id, :string, required: true)
   attr(:msg, :string, required: true)
@@ -818,9 +933,9 @@ defmodule CorexAdmin.Live.Components do
 
   defp option_maps(_), do: []
 
-  defp delete_trigger_class(:labeled), do: "button ui-alert"
+  defp delete_trigger_class(:labeled), do: "button ui-solid ui-alert"
   defp delete_trigger_class(:hidden), do: "admin-visually-hidden"
-  defp delete_trigger_class(_), do: "button ui-size-sm ui-alert ui-trigger--square"
+  defp delete_trigger_class(_), do: "button ui-size-sm ui-solid ui-alert ui-trigger--square"
 
   defp select_value(nil), do: []
   defp select_value(list) when is_list(list), do: Enum.map(list, &to_string/1)

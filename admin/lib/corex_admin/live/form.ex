@@ -76,7 +76,13 @@ defmodule CorexAdmin.Live.Form do
   @impl true
   def render(assigns) do
     ~H"""
-    <Components.shell :if={assigns[:form]} socket={assigns} current={@spec}>
+    <Components.shell
+      :if={assigns[:form]}
+      socket={assigns}
+      current={@spec}
+      live_action={@live_action}
+      record={@record}
+    >
       <div class="admin-stack admin-stack--lg">
         <Components.breadcrumbs
           prefix={@corex_admin_prefix}
@@ -116,7 +122,7 @@ defmodule CorexAdmin.Live.Form do
             </div>
           </div>
           <div class="admin-actions">
-            <.action type="submit" class="button ui-accent">Save</.action>
+            <.action type="submit" class="button ui-solid ui-brand">Save</.action>
             <.action type="submit" name="continue" value="true" class="button">
               Save and continue
             </.action>

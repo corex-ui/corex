@@ -22,14 +22,13 @@ defmodule CorexAdmin.Live.Home do
       |> assign(:admins_path, String.replace_suffix(prefix, "/admin", "/admins"))
 
     ~H"""
-    <Components.shell socket={assigns}>
+    <Components.shell socket={assigns} current={:home}>
       <.layout_heading class="layout-heading">
         <:title>Admin</:title>
         <:subtitle>
-          Isolated Corex Admin demo — your data is scoped to this browser session and resets periodically.
-          The unauthenticated
+          Session-scoped demo data. Do not copy the unauthenticated
           <.navigate to={@admins_path} class="link">/admins</.navigate>
-          CRUD is a counterexample — do not copy it.
+          CRUD.
         </:subtitle>
       </.layout_heading>
       <div :if={@grouped == %{}} class="admin-muted">No resources available.</div>

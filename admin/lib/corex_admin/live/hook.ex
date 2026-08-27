@@ -4,8 +4,6 @@ defmodule CorexAdmin.Live.Hook do
   import Phoenix.Component, only: [assign: 3]
   import Phoenix.LiveView, only: [attach_hook: 4, push_navigate: 2]
 
-  alias CorexAdmin.Live.Helpers
-
   def on_mount({:init, admin, configured_path}, _params, _session, socket) do
     socket =
       socket
@@ -32,16 +30,11 @@ defmodule CorexAdmin.Live.Hook do
   defp handle_nav(_event, _params, socket), do: {:cont, socket}
 
   defp navigate_from_tree(socket, params) do
-    slug = nav_slug(params)
+    path = nav_path(params)
+    prefix = socket.assigns.corex_admin_prefix
 
-    if nav_item?(params) and is_binary(slug) do
-      case Helpers.fetch_resource(socket, slug) do
-        {:ok, resource_mod} ->
-          push_navigate(socket, to: Helpers.resource_path(socket, Helpers.spec(resource_mod)))
-
-        _ ->
-          socket
-      end
+    if nav_item?(params) and allowed_admin_path?(path, prefix) do
+      push_navigate(socket, to: path)
     else
       socket
     end
@@ -51,9 +44,19 @@ defmodule CorexAdmin.Live.Hook do
     Map.get(params, "isItem") in [true, "true"]
   end
 
-  defp nav_slug(%{"selectedValue" => [slug | _]}) when is_binary(slug), do: slug
-  defp nav_slug(%{"selectedValue" => slug}) when is_binary(slug), do: slug
-  defp nav_slug(_), do: nil
+  defp nav_path(%{"selectedValue" => [path | _]}) when is_binary(path), do: path
+  defp nav_path(%{"selectedValue" => path}) when is_binary(path), do: path
+  defp nav_path(_), do: nil
+
+  defp allowed_admin_path?(path, prefix) when is_binary(path) and is_binary(prefix) do
+    normalized = path |> String.split("?", parts: 2) |> hd()
+
+    String.starts_with?(normalized, "/") and
+      not String.contains?(normalized, "..") and
+      (normalized == prefix or String.starts_with?(normalized, prefix <> "/"))
+  end
+
+  defp allowed_admin_path?(_path, _prefix), do: false
 
   defp uri_path(uri) when is_binary(uri) do
     case URI.parse(uri) do

@@ -8,7 +8,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, ~p"/admin")
     assert html =~ "Tickets"
     assert html =~ "Posts"
-    assert html =~ "Isolated"
+    assert html =~ "Session-scoped"
     refute html =~ "Back to site"
     refute html =~ "Choose a resource"
     assert html =~ ~s(aria-current="page")
@@ -22,9 +22,12 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "0 selected"
     refute html =~ "tickets-command-select-all"
     assert html =~ ~s(data-value="tickets")
+    assert html =~ ~s(data-to="/en/admin")
     assert html =~ ~s(data-to="/en/admin/tickets")
+    assert html =~ "All Tickets"
     assert html =~ ~s(placeholder="Search Tickets")
     assert html =~ ~s(class="admin-command-bar")
+    assert html =~ ~s(class="admin-table-toolbar")
     assert html =~ ~s(data-part="control-inputs")
     assert html =~ ~s(data-range)
     refute html =~ ~s(type="date")
@@ -41,7 +44,30 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     {view, html} =
       view
-      |> render_click("nav", %{"selectedValue" => ["posts"], "isItem" => true})
+      |> render_click("nav", %{"selectedValue" => ["/en/admin/posts"], "isItem" => true})
+      |> follow_redirect(conn)
+      |> unwrap_live_redirect!()
+
+    assert html =~ "Welcome post"
+    assert has_element?(view, "#posts-filters")
+  end
+
+  test "sidebar nav live-redirects from a ticket show back to posts", %{conn: conn} do
+    conn = init_test_session(conn, %{"admin_demo_id" => "nav-show-to-posts"})
+    {_view, html} = live_ok!(conn, ~p"/admin/tickets")
+
+    id =
+      html
+      |> then(&Regex.run(~r/tickets-table-select-(\d+)/, &1))
+      |> List.last()
+
+    {view, _html} = live_ok!(conn, ~p"/admin/tickets/#{id}")
+    assert has_element?(view, ".data-list")
+    assert render(view) =~ ~s(data-to="/en/admin/posts")
+
+    {view, html} =
+      view
+      |> render_click("nav", %{"selectedValue" => ["/en/admin/posts"], "isItem" => true})
       |> follow_redirect(conn)
       |> unwrap_live_redirect!()
 
@@ -236,7 +262,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "Docs"
     assert html =~ "https://example.test/docs"
     refute html =~ "max-w-3xl"
-    assert html =~ ~s(class="data-list")
+    assert html =~ ~s(class="data-list ui-size-sm")
+    assert html =~ ~s(data-orientation="horizontal")
   end
 
   test "invalid ticket create shows tooltip field errors", %{conn: conn} do

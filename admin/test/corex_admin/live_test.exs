@@ -50,6 +50,7 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(id="tickets-bulk-delete")
     assert html =~ ~s(class="admin-command-bar")
     assert html =~ ~s(id="tickets-page-size")
+    assert html =~ ~s(class="admin-table-toolbar")
     assert html =~ "Show"
     assert html =~ ~s(class="sr-only")
     assert html =~ ~s(aria-label="Edit")
@@ -58,8 +59,13 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ ~r/id="tickets-page-size"[^>]*data-controlled/
     refute html =~ ~r/id="tickets-filter-status"[^>]*data-controlled/
     assert html =~ ~s(data-value="tickets")
+    assert html =~ ~s(data-to="/admin")
     assert html =~ ~s(data-to="/admin/tickets")
+    assert html =~ "All Tickets"
+    assert html =~ "New Tickets"
     assert html =~ ~s(placeholder="Search Tickets")
+    assert html =~ "ui-solid ui-brand"
+    assert html =~ "hero-bars-3"
   end
 
   test "selecting a row shows the selected count", %{conn: conn, ticket: ticket, scope: scope} do
@@ -90,15 +96,34 @@ defmodule CorexAdmin.LiveTest do
 
   test "sidebar nav live-redirects to a resource", %{conn: conn} do
     {:ok, view, html} = live(conn, "/admin")
-    assert html =~ ~s(data-value="tickets")
+    assert html =~ ~s(data-value="/admin")
+    assert html =~ ~s(data-to="/admin/tickets")
+    assert html =~ "All Tickets"
+
+    {:ok, _view, html} =
+      view
+      |> render_click("nav", %{"selectedValue" => ["/admin/tickets"], "isItem" => true})
+      |> follow_redirect(conn)
+
+    assert html =~ "Broken login"
+  end
+
+  test "sidebar nav live-redirects from show back to the resource index", %{
+    conn: conn,
+    ticket: ticket
+  } do
+    {:ok, view, html} = live(conn, "/admin/tickets/#{ticket.id}")
+    assert html =~ "Broken login"
     assert html =~ ~s(data-to="/admin/tickets")
 
     {:ok, _view, html} =
       view
-      |> render_click("nav", %{"selectedValue" => ["tickets"], "isItem" => true})
+      |> render_click("nav", %{"selectedValue" => ["/admin/tickets"], "isItem" => true})
       |> follow_redirect(conn)
 
     assert html =~ "Broken login"
+    assert html =~ ~s(class="admin-command-bar")
+    assert html =~ "All Tickets"
   end
 
   test "search filters tickets", %{conn: conn, scope: scope} do
@@ -263,7 +288,9 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     refute html =~ "Secret"
-    assert html =~ ~s(class="data-list")
+    assert html =~ ~s(class="data-list ui-size-sm")
+    assert html =~ ~s(data-orientation="horizontal")
+    assert html =~ "ui-solid ui-alert"
   end
 
   test "create via context form", %{conn: conn} do

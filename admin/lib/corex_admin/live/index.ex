@@ -53,7 +53,7 @@ defmodule CorexAdmin.Live.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Components.shell :if={assigns[:spec]} socket={assigns} current={@spec}>
+    <Components.shell :if={assigns[:spec]} socket={assigns} current={@spec} live_action={@live_action}>
       <.layout_heading class="layout-heading">
         <:title>{@spec.label}</:title>
         <:actions>
@@ -61,7 +61,7 @@ defmodule CorexAdmin.Live.Index do
             :if={Helpers.authorize(assigns, :new, @resource_mod, nil) == :ok}
             to={Helpers.new_path(assigns, @spec)}
             type="navigate"
-            class="button ui-accent ui-trigger--square"
+            class="button ui-solid ui-brand ui-trigger--square"
             aria_label={"New #{@spec.label}"}
             title={"New #{@spec.label}"}
           >
@@ -148,6 +148,25 @@ defmodule CorexAdmin.Live.Index do
       </div>
 
       <Components.filter_chips spec={@spec} list_opts={@list_opts} />
+
+      <div class="admin-table-toolbar">
+        <div class="admin-page-size">
+          <.select
+            id={"#{@spec.slug}-page-size"}
+            class="select ui-size-sm"
+            name="page_size"
+            items={page_size_items(@page_size_options)}
+            value={[to_string(@list_opts.page_size)]}
+            on_value_change="page_size"
+            positioning={%Corex.Positioning{placement: "bottom-end"}}
+          >
+            <:label class="sr-only">Per page</:label>
+            <:trigger>
+              <.heroicon name="hero-chevron-down" />
+            </:trigger>
+          </.select>
+        </div>
+      </div>
 
       <div class="admin-table-wrap">
         <.data_table
@@ -243,21 +262,6 @@ defmodule CorexAdmin.Live.Index do
           <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
           <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
         </.pagination>
-        <div class="admin-page-size">
-          <.select
-            id={"#{@spec.slug}-page-size"}
-            class="select ui-size-sm"
-            name="page_size"
-            items={page_size_items(@page_size_options)}
-            value={[to_string(@list_opts.page_size)]}
-            on_value_change="page_size"
-          >
-            <:label class="sr-only">Per page</:label>
-            <:trigger>
-              <.heroicon name="hero-chevron-down" />
-            </:trigger>
-          </.select>
-        </div>
       </div>
     </Components.shell>
     """
