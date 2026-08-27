@@ -78,6 +78,10 @@ defmodule Corex.MCP.Tools.InstallationTest do
 
     assert Enum.any?(titles, &(&1 =~ "dependency"))
     assert Enum.any?(titles, &(&1 =~ "MCP"))
+
+    note = decoded["design_assets"]["note"]
+    assert note =~ "does not rebuild CSS at request time"
+    assert note =~ "corex_design: :load"
   end
 
   test "installation_guide rejects invalid scenario and lists the allowed values" do

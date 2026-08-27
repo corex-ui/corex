@@ -60,12 +60,14 @@ defmodule Corex.MCP.Tools.DesignTest do
     assert decoded["reference_urls"]["accessibility"] =~ "accessibility.html"
   end
 
-  test "design_guide accessibility topic documents runtime corex_design" do
+  test "design_guide accessibility topic documents preference CSS and mix release load" do
     json = ok_json!(Design.design_guide(%{"topic" => "accessibility"}))
     decoded = Corex.MCP.Json.decode!(json)
     assert decoded["topic"] == "accessibility"
     assert decoded["flags"] =~ "--a11y"
     assert decoded["config"] =~ "accessibility: true"
+    assert decoded["tip"] =~ "mix corex.design.build"
+    assert decoded["tip"] =~ "corex_design: :load"
   end
 
   test "design_guide rejects unknown topic and lists the allowed values" do

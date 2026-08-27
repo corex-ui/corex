@@ -162,7 +162,7 @@ defmodule Corex.MCP.Tools.Installation do
           "Run mix corex.design.build"
         ],
         note:
-          "Do not use only: :dev on corex_design — MIX_ENV=prod mix assets.deploy must be able to run the Mix task. Generated apps from mix corex.new include these steps by default when --design is on."
+          "Do not use only: :dev on corex_design — MIX_ENV=prod mix assets.deploy must be able to run the Mix task. runtime: false does not rebuild CSS at request time. --a11y plugs call Corex.Design.Accessibility (cookie → data-*); mix release needs corex_design: :load. Generated apps from mix corex.new include the asset-pipeline steps by default when --design is on."
       }
     }
   end

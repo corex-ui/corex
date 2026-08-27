@@ -44,7 +44,9 @@ Design and MCP are separate Hex packages (they no longer ship inside `corex`).
 {:corex_design, "~> 0.2", runtime: false}
 ```
 
-Do not add `:corex_design` to `compilers`. Design CSS is an asset step: add `"corex.design.build"` to `assets.build` / `assets.deploy` (see [Manual installation](manual_installation.html)). If an earlier 0.2.x scaffold put `:corex_design` in `compilers`, remove it.
+Do not add `:corex_design` to `compilers`. Design CSS is an asset step: add `"corex.design.build"` to `assets.build` / `assets.deploy` (see [Manual installation](manual_installation.html)). If an earlier 0.2.x scaffold put `:corex_design` in `compilers`, remove it. After that, `mix compile` no longer regenerates `assets/corex/` — re-run `mix corex.design.build` (or `mix assets.build`) when config or tokens change.
+
+`runtime: false` means Design is not started as an OTP app. It is not “rebuild CSS while serving traffic.” `--a11y` plugs call `Corex.Design.Accessibility` to turn cookies into `data-*` attributes (same pattern as theme/mode). If you ship with `mix release`, Mix.Release omits `runtime: false` apps unless listed — add `corex_design: :load`. See [Accessibility](accessibility.html#mix-release) and [Production](production.html).
 
 **MCP** (AI discovery; never enable in `:prod`):
 

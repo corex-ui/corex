@@ -73,7 +73,7 @@ MCP lives in the separate Hex package `corex_mcp`. Mount `plug Corex.MCP` on the
 - [Design](design.html): `config :corex_design` and bundle filtering
 - [Theming](theming.html): runtime `data-theme` picker
 - [Dark mode](dark_mode.html): runtime `data-mode` toggle
-- [Accessibility](accessibility.html): optional preference axes (`data-text`, `data-contrast`, …). Scaffold with `mix corex.new --a11y` / `mix corex.tableau.new --a11y` (default off).
+- [Accessibility](accessibility.html): optional preference axes (`data-text`, `data-contrast`, …). Preference CSS is a design build; plugs only set `data-*`. Scaffold with `mix corex.new --a11y` / `mix corex.tableau.new --a11y` (default off).
 - [Localize](localize.html): locales and Gettext setup
 - [MCP](https://hexdocs.pm/corex_mcp/MCP.html): development tooling endpoint (`corex_mcp`)
 - [Installation](installation.html): first-time setup

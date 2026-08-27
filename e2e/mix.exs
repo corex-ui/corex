@@ -24,7 +24,8 @@ defmodule E2e.MixProject do
         include_executables_for: [:unix],
         applications: [
           runtime_tools: :permanent,
-          # Accessibility plugs/layouts call Corex.Design.Accessibility at runtime.
+          # Mix.Release omits runtime: false apps; keep Design BEAMs so
+          # Accessibility helpers can be called. Does not start Design or rebuild CSS.
           corex_design: :load
         ],
         strip_beams: true

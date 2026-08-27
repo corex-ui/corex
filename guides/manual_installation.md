@@ -227,7 +227,7 @@ Add the `corex_design` dependency to `mix.exs`:
 {:corex_design, "~> 0.2", runtime: false},
 ```
 
-Keep `runtime: false` so the Mix task is available in every Mix env (including `MIX_ENV=prod mix assets.deploy`) without starting Design as an OTP app. Do not use `only: :dev`.
+Keep `runtime: false` so the Mix task is available in every Mix env (including `MIX_ENV=prod mix assets.deploy`) without starting Design as an OTP app. That flag is not “rebuild CSS while serving traffic.” Do not use `only: :dev`.
 
 Add `"corex.design.build"` to your `assets.build` and `assets.deploy` aliases in `mix.exs` (same layer as Tailwind and esbuild). Design CSS is an asset build step, not part of `mix compile`.
 
@@ -382,8 +382,9 @@ Or by hand:
 2. Add `MyAppWeb.Plugs.Accessibility` to the browser pipeline and a LiveView `on_mount` that assigns `:a11y`
 3. Apply `a11y_data_attrs/1` on `<html>` and merge the `phx:a11y` bridge into the same `<head>` IIFE as theme/mode
 4. Render an accessibility panel once in the root layout; register `Dialog` and `ToggleGroup` hooks
+5. If you ship with `mix release`, add `corex_design: :load` so Mix.Release keeps Accessibility helper BEAMs (`runtime: false` apps are omitted otherwise). See [Accessibility](accessibility.html#mix-release).
 
-Scaffolding is also available as `mix corex.new --a11y` (default off) and `mix corex.tableau.new --a11y`.
+Scaffolding is also available as `mix corex.new --a11y` (default off) and `mix corex.tableau.new --a11y`. Preference CSS is still a design **build**; the plug only sets `data-*` on `<html>`.
 
 ## Optional: Locale wiring {: #optional-locale-wiring}
 

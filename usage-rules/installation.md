@@ -104,6 +104,8 @@ mix corex.design.build
 
 Do not commit `assets/corex/`. If already tracked: `git rm -r --cached assets/corex` after adding the ignore rule.
 
+`runtime: false` means Design is not started as an OTP app; it is not a per-request CSS rebuild. `--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`). For `mix release`, add `corex_design: :load` so Mix.Release keeps those BEAMs.
+
 When using mode/theme/lang pickers, include `toggle` and `select` in `components:` in `config :corex_design` so they appear in the generated `components.css` entry.
 
 ## Optional toast layout

@@ -167,5 +167,5 @@ For a manual install without Design, either use `mix corex.new --no-design` or a
 - [Manual installation](manual_installation.html) — Esbuild, hooks, optional toast layout
 - [Theming](theming.html) — `data-theme` and theme picker
 - [Dark mode](dark_mode.html) — `data-mode` and mode toggle
-- [Accessibility](accessibility.html): optional preference axes and panel wiring
+- [Accessibility](accessibility.html): optional preference axes and panel wiring (preference CSS is a design build; plugs set `data-*`. `mix release` needs `corex_design: :load`)
 - Component Hexdocs — anatomy, API, and per-component Design examples

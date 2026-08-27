@@ -47,7 +47,9 @@ This will:
 - Run `mix corex.design.build` into `assets/corex/`
 - Build frontend assets
 
-`assets/corex/` is generated locally (gitignored). Design CSS is an **asset** step (`mix corex.design.build` / `mix assets.build`), not `mix compile`. Edit `config :corex_design` in `config/config.exs` to customize tokens, then re-run `mix assets.build`.
+`assets/corex/` is generated locally (gitignored). Design CSS is an **asset** step (`mix corex.design.build` / `mix assets.build`), not `mix compile`. Edit `config :corex_design` in `config/config.exs` to customize tokens, then re-run `mix assets.build`. Accessibility preference CSS is part of that same build; request handling only sets `data-*` on `<html>`.
+
+This app uses `mix release` (Gigalixir). Mix.Release omits `runtime: false` apps, so `e2e/mix.exs` lists `corex_design: :load` to keep `Corex.Design.Accessibility` in the slug. That does not start Design or rebuild CSS.
 
 ## Run the server
 

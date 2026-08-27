@@ -11,7 +11,7 @@ You build and run a Phoenix app with Corex in production. Corex ships as plain H
 | `SECRET_KEY_BASE` | `mix phx.gen.secret` |
 | Database URL | Production or local stand-in |
 | ESM Esbuild | `--format=esm --splitting` from [Manual installation](manual_installation.html) |
-| Design (if used) | `corex.design.build` runs before Tailwind/Esbuild in `assets.deploy`. Keep `{:corex_design, ..., runtime: false}` (no `only: :dev`) so the Mix task is available under `MIX_ENV=prod`. |
+| Design (if used) | `corex.design.build` runs before Tailwind/Esbuild in `assets.deploy`. Keep `{:corex_design, ..., runtime: false}` (no `only: :dev`) so the Mix task is available under `MIX_ENV=prod`. That flag does not rebuild CSS at request time. |
 | MCP | Mount only in `:dev` / `:test`; never enable in `:prod` |
 
 ## How it works
@@ -46,8 +46,11 @@ Visit [http://localhost:4000/](http://localhost:4000/).
 
 For a release, run the same asset pipeline in your release build (Docker/`mix release`) so `priv/static` includes digested CSS and JS. Keep `plug Corex.MCP` out of the production endpoint.
 
+`--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`); they do not generate CSS. Mix.Release omits `runtime: false` apps unless listed, so add `corex_design: :load` to the release `applications` list. See [Accessibility](accessibility.html#mix-release).
+
 ## Related
 
 - [Manual installation](manual_installation.html) — Esbuild ESM and Design aliases
 - [Design](design.html) — CSS you import is the same in prod
+- [Accessibility](accessibility.html#mix-release) — `corex_design: :load` when using `mix release` with `--a11y`
 - [MCP](MCP.html) — never enable in `:prod`

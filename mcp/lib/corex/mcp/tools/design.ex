@@ -410,7 +410,7 @@ defmodule Corex.MCP.Tools.Design do
       @source \"../corex\";
       """,
       note:
-        "With accessibility preference CSS (--a11y), plugs/hooks call Corex.Design.Accessibility; keep corex_design without only: :dev so those modules load in every Mix env."
+        "Preference CSS is built by mix corex.design.build, not per request. --a11y plugs call Corex.Design.Accessibility (cookie → data-*). Keep corex_design without only: :dev so MIX_ENV=prod mix assets.deploy can run the Mix task. For mix release, add corex_design: :load so Mix.Release keeps those BEAMs."
     }
   end
 
@@ -447,7 +447,7 @@ defmodule Corex.MCP.Tools.Design do
       config: "config :corex_design, accessibility: true",
       flags: "--a11y on mix corex.new / mix corex.tableau.new",
       tip:
-        "accessibility: true enables all six axes; pass an axis list to emit a subset. Keep corex_design without only: :dev so plugs/hooks can call Corex.Design.Accessibility.",
+        "accessibility: true enables all six axes; pass an axis list to emit a subset. Preference CSS is built by mix corex.design.build; plugs only set data-* (same as theme/mode). Keep corex_design without only: :dev so MIX_ENV=prod mix assets.deploy can run the Mix task. For mix release, add corex_design: :load so Mix.Release keeps Corex.Design.Accessibility.",
       guide: "https://hexdocs.pm/corex/accessibility.html"
     }
   end
