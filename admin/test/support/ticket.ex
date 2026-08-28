@@ -15,6 +15,8 @@ defmodule CorexAdmin.Test.Ticket do
     field(:password, :string, redact: true)
     field(:secret, :string, redact: true)
 
+    belongs_to(:owner, CorexAdmin.Test.Owner)
+
     embeds_many(:social_links, SocialLink, on_replace: :delete)
 
     timestamps(type: :utc_datetime)

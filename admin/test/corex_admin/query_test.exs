@@ -5,6 +5,7 @@ defmodule CorexAdmin.QueryTest do
 
   alias CorexAdmin.ListOpts
   alias CorexAdmin.Query
+  alias CorexAdmin.Resource.Filter
   alias CorexAdmin.Test.Ticket
 
   test "applies allowlisted sort" do
@@ -84,5 +85,77 @@ defmodule CorexAdmin.QueryTest do
     query = Query.paginate(from(t in Ticket), opts)
     assert %{expr: {:^, _, [0]}, params: [{10, :integer}]} = query.limit
     assert %{expr: {:^, _, [0]}, params: [{20, :integer}]} = query.offset
+  end
+
+  test "joins an association named by a filter path" do
+    filter = %Filter{name: :owner_email, type: :text, field: :email, path: [:owner, :email]}
+
+    opts = %ListOpts{
+      page: 1,
+      page_size: 10,
+      filters: %{owner_email: %{contains: "ops"}},
+      filter_specs: %{owner_email: filter}
+    }
+
+    query = Query.apply(from(t in Ticket), opts)
+
+    assert Ecto.Query.has_named_binding?(query, :owner)
+    assert query.wheres != []
+  end
+
+  test "joins once when several filters share an association" do
+    specs = %{
+      owner_email: %Filter{name: :owner_email, type: :text, field: :email, path: [:owner, :email]},
+      owner_name: %Filter{name: :owner_name, type: :text, field: :name, path: [:owner, :name]}
+    }
+
+    opts = %ListOpts{
+      page: 1,
+      page_size: 10,
+      filters: %{owner_email: %{contains: "ops"}, owner_name: %{contains: "ada"}},
+      filter_specs: specs
+    }
+
+    query = Query.apply(from(t in Ticket), opts)
+
+    assert length(query.joins) == 1
+  end
+
+  test "searches across an association path" do
+    opts = %ListOpts{
+      page: 1,
+      page_size: 10,
+      search: "ada",
+      search_fields: [:owner_name],
+      search_paths: %{owner_name: [:owner, :name]}
+    }
+
+    query = Query.apply(from(t in Ticket), opts)
+
+    assert Ecto.Query.has_named_binding?(query, :owner)
+    assert query.wheres != []
+  end
+
+  test "raises rather than returning an unfiltered query for an unknown shape" do
+    opts = %ListOpts{page: 1, page_size: 10, filters: %{status: {:weird, :shape}}}
+
+    assert_raise ArgumentError, ~r/cannot apply filter :status/, fn ->
+      Query.apply(from(t in Ticket), opts)
+    end
+  end
+
+  test "a filter module may own its own query application" do
+    filter = %Filter{name: :fuzzy, type: :custom, mod: CorexAdmin.Test.Filters.Fuzzy, field: :title}
+
+    opts = %ListOpts{
+      page: 1,
+      page_size: 10,
+      filters: %{fuzzy: "abc"},
+      filter_specs: %{fuzzy: filter}
+    }
+
+    query = Query.apply(from(t in Ticket), opts)
+
+    assert inspect(query.wheres, limit: :infinity) =~ "fragment"
   end
 end
