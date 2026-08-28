@@ -1,17 +1,29 @@
 defmodule Mix.Tasks.Corex.Admin.Gen.Live do
-  @shortdoc "Generates thin host LiveViews that use CorexAdmin.Live"
+  @shortdoc "Generates host LiveViews that use CorexAdmin.Live"
 
   @moduledoc """
-  Writes ~40-line wrappers for a resource's index/show/form pages.
+  Writes host LiveViews for a resource's index, show, and form pages.
 
-  Like `phx.gen.auth`, this is an escape hatch — not a copy of package
-  internals. The generated modules `use CorexAdmin.Live, :index` (etc) so they
-  keep receiving library fixes. Override callbacks and call `super` when a page
-  must diverge.
+  This is tier two of three. The generated modules `use CorexAdmin.Live, :index`
+  (and friends), so behaviour — auth, URL state, events — stays in the package
+  and keeps receiving fixes. You own only what you choose to override.
 
       $ mix corex.admin.gen.live PostResource
+      $ mix corex.admin.gen.live PostResource --render
 
-  Then set `live:` on the resource:
+  Without `--render`, each file is a four-line wrapper: override a callback and
+  call `super` when you need to.
+
+  With `--render`, each file also gets a `render/1` that **composes public
+  `CorexAdmin.UI` blocks**. Reorder them, delete one, wrap one, or fill a slot.
+  The blocks stay in the package, so this is customization you do not have to
+  maintain against upstream changes.
+
+  When even that is not enough, `mix corex.admin.gen.admin` copies the block
+  markup into your app. That is tier three, and it is the only tier where you
+  take on maintenance.
+
+  Then point the resource at the generated modules:
 
       use CorexAdmin.Resource,
         live: [
@@ -25,19 +37,23 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Live do
 
   import Mix.Phoenix, only: [otp_app: 0, base: 0, web_module: 1, web_path: 1]
 
+  @switches [render: :boolean]
+
   @impl Mix.Task
   def run(args) do
-    case args do
+    {opts, positional} = OptionParser.parse!(args, strict: @switches)
+
+    case positional do
       [resource] ->
         Mix.Task.run("compile")
-        generate(resource)
+        generate(resource, Keyword.get(opts, :render, false))
 
       _ ->
-        Mix.raise("expected mix corex.admin.gen.live ResourceModule")
+        Mix.raise("expected mix corex.admin.gen.live ResourceModule [--render]")
     end
   end
 
-  defp generate(resource_name) do
+  defp generate(resource_name, render?) do
     app = otp_app()
     app_base = base()
     web = web_module(app_base)
@@ -57,14 +73,12 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Live do
     dir = Path.join([path, "admin", "#{basename}_live"])
     Mix.Generator.create_directory(dir)
 
-    for {file, template} <- [
-          {"index.ex", "index.ex"},
-          {"show.ex", "show.ex"},
-          {"form.ex", "form.ex"}
-        ] do
+    suffix = if render?, do: "_render", else: ""
+
+    for page <- ~w(index show form) do
       Mix.Generator.create_file(
-        Path.join(dir, file),
-        EEx.eval_file(template(template), binding)
+        Path.join(dir, "#{page}.ex"),
+        EEx.eval_file(template("#{page}#{suffix}.ex"), binding)
       )
     end
 
@@ -78,6 +92,13 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Live do
           form: #{inspect(binding[:form_module])}
         ]
     """)
+
+    if render? do
+      Mix.shell().info("""
+      These pages compose CorexAdmin.UI blocks. The block markup stays in the
+      package, so upstream fixes still reach them.
+      """)
+    end
   end
 
   defp template(name) do
