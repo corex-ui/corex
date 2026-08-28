@@ -33,7 +33,6 @@ use CorexAdmin,
   # ...
   title: "Admin",
   description: nil,
-  home: CorexAdmin.Live.Home,
   pages: []
 ```
 
