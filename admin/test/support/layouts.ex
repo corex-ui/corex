@@ -3,7 +3,7 @@ defmodule CorexAdmin.Test.Layouts do
   use Phoenix.Component
   use Corex
 
-  alias CorexAdmin.Live.Components
+  alias CorexAdmin.UI.Nav
 
   def root(assigns) do
     ~H"""
@@ -17,10 +17,10 @@ defmodule CorexAdmin.Test.Layouts do
       <body>
         <div class="admin" data-scope="admin">
           <aside aria-label="Admin">
-            <Components.nav_tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />
+            <Nav.tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />
           </aside>
           <nav class="admin-mobile-nav" aria-label="Admin resources">
-            <Components.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
+            <Nav.mobile :if={assigns[:corex_admin]} socket={assigns} />
           </nav>
           {@inner_content}
         </div>

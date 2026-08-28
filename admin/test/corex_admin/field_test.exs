@@ -4,9 +4,9 @@ defmodule CorexAdmin.FieldTest do
   alias CorexAdmin.Field
   alias CorexAdmin.Resource.Field, as: FieldSpec
 
-  test "resolves built-in aliases" do
-    assert Field.module(%FieldSpec{type: :text}) == CorexAdmin.Field.Text
-    assert Field.module(%FieldSpec{type: :select}) == CorexAdmin.Field.Select
+  test "built-in types have no host module" do
+    assert Field.module(%FieldSpec{type: :text}) == nil
+    assert Field.module(%FieldSpec{type: :select}) == nil
   end
 
   test "resolves a host module" do

@@ -6,7 +6,7 @@ defmodule E2eWeb.Layouts do
   use E2eWeb, :html
   import E2eWeb.SEO, only: [head: 1]
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
-  alias CorexAdmin.Live.Components, as: AdminComponents
+  alias CorexAdmin.UI.Nav, as: AdminNav
   alias E2eWeb.App.Shell
 
   import E2eWeb.{ModeToggle, ThemeToggle}
@@ -130,7 +130,7 @@ defmodule E2eWeb.Layouts do
     <.header path={@path} theme={@theme} mode={@mode} />
     <div class={"admin " <> Shell.wrapper()} data-scope="admin">
       <aside class={Shell.side()} aria-label="Admin">
-        <AdminComponents.nav_tree
+        <AdminNav.tree
           :if={assigns[:corex_admin]}
           socket={assigns}
           id="admin-nav-tree"
@@ -139,7 +139,7 @@ defmodule E2eWeb.Layouts do
       </aside>
       <main id="main-content" class={"admin-main " <> Shell.main()}>
         <nav class="admin-mobile-nav" aria-label="Admin resources">
-          <AdminComponents.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
+          <AdminNav.mobile :if={assigns[:corex_admin]} socket={assigns} />
         </nav>
         <div class={Shell.admin_content()}>
           {@inner_content}

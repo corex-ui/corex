@@ -3,7 +3,7 @@ defmodule <%= inspect web_module %>.AdminLayout do
 
   use <%= inspect web_module %>, :html
 
-  alias CorexAdmin.Live.Components
+  alias CorexAdmin.UI.Nav
 
   # LiveView layout (`live_session layout:` / hub `layout:`). Uses `{@inner_content}`.
   def admin(assigns) do
@@ -19,14 +19,14 @@ defmodule <%= inspect web_module %>.AdminLayout do
           class="sticky top-0 hidden h-dvh w-full max-w-2xs flex-col gap-size self-start overflow-y-auto border-r border-border py-size scrollbar scrollbar--sm lg:flex [scrollbar-gutter:stable]"
           aria-label="Admin"
         >
-          <Components.nav_tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />
+          <Nav.tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />
         </aside>
         <main
           id="main-content"
           class="admin-main relative mx-auto flex min-w-0 w-full flex-1 flex-col"
         >
           <nav class="admin-mobile-nav" aria-label="Admin resources">
-            <Components.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
+            <Nav.mobile :if={assigns[:corex_admin]} socket={assigns} />
           </nav>
           <div class="admin-content mx-auto flex w-full min-w-0 max-w-7xl flex-1 flex-col gap-size px-space-xl py-size">
             {@inner_content}

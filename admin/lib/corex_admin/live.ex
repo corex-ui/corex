@@ -35,7 +35,7 @@ defmodule CorexAdmin.Live do
 
       @impl true
       def render(assigns) do
-        CorexAdmin.Components.Index.page(assigns)
+        CorexAdmin.UI.Index.page(assigns)
       end
 
       defoverridable mount: 3, handle_params: 3, handle_event: 3, render: 1
@@ -64,7 +64,7 @@ defmodule CorexAdmin.Live do
 
       @impl true
       def render(assigns) do
-        CorexAdmin.Components.Show.page(assigns)
+        CorexAdmin.UI.Show.page(assigns)
       end
 
       defoverridable mount: 3, handle_params: 3, handle_event: 3, render: 1
@@ -93,7 +93,7 @@ defmodule CorexAdmin.Live do
 
       @impl true
       def render(assigns) do
-        CorexAdmin.Components.Form.page(assigns)
+        CorexAdmin.UI.Form.page(assigns)
       end
 
       defoverridable mount: 3, handle_params: 3, handle_event: 3, render: 1
@@ -112,7 +112,7 @@ defmodule CorexAdmin.Live do
 
       @impl true
       def render(assigns) do
-        CorexAdmin.Components.Home.page(assigns)
+        CorexAdmin.UI.Home.page(assigns)
       end
 
       defoverridable mount: 3, render: 1

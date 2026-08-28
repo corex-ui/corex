@@ -33,7 +33,7 @@ defmodule Mix.Tasks.Corex.Admin.InstallTest do
     assert layout =~ ~S(data-scope="admin")
     assert layout =~ "admin-content"
     assert layout =~ "{@inner_content}"
-    assert layout =~ "Components.nav_tree"
+    assert layout =~ "Nav.tree"
     refute layout =~ "render_slot(@inner_block)"
   end
 

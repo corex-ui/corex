@@ -1,13 +1,17 @@
-defmodule CorexAdmin.Components.Home do
-  @moduledoc false
+defmodule CorexAdmin.UI.Home do
+  @moduledoc """
+  Hub landing page.
 
-  use Phoenix.Component
-  use Corex
+  Lists only the resources the actor may index. Replace it entirely with a
+  dashboard by passing `home:` to `use CorexAdmin`.
+  """
 
-  alias CorexAdmin.Gettext
-  alias CorexAdmin.Live.Components
-  alias CorexAdmin.Live.Helpers
+  use CorexAdmin.UI
 
+  slot :before_groups
+  slot :after_groups
+
+  @doc "The hub landing page."
   def page(assigns) do
     assigns =
       assigns
@@ -16,11 +20,12 @@ defmodule CorexAdmin.Components.Home do
       |> assign(:hub_description, Helpers.hub_description(assigns))
 
     ~H"""
-    <Components.shell>
+    <.shell>
       <.layout_heading class="layout-heading">
         <:title>{@hub_title}</:title>
         <:subtitle :if={@hub_description}>{@hub_description}</:subtitle>
       </.layout_heading>
+      {render_slot(@before_groups)}
       <div :if={@grouped == %{}} class="admin-muted">{Gettext.t("No resources available.")}</div>
       <section :for={{group, resources} <- @grouped} class="admin-home-group">
         <h2 class="admin-home-title">{group}</h2>
@@ -38,7 +43,8 @@ defmodule CorexAdmin.Components.Home do
           </li>
         </ul>
       </section>
-    </Components.shell>
+      {render_slot(@after_groups)}
+    </.shell>
     """
   end
 end

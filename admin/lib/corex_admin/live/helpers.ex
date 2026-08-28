@@ -9,6 +9,7 @@ defmodule CorexAdmin.Live.Helpers do
   alias CorexAdmin.ListOpts
   alias CorexAdmin.Policy
   alias CorexAdmin.Resource.Field
+  alias CorexAdmin.Resource.Relation
   alias CorexAdmin.Resource.Spec
 
   def spec(resource_mod), do: resource_mod.__corex_admin_resource__()
@@ -227,6 +228,115 @@ defmodule CorexAdmin.Live.Helpers do
       authorize_field(socket_or_assigns, action, resource_mod, record, name) == :ok
     end)
   end
+
+  @doc "Named views declared by the resource."
+  def canned_filters(resource_mod) do
+    if function_exported?(resource_mod, :canned_filters, 0) do
+      List.wrap(resource_mod.canned_filters())
+    else
+      []
+    end
+  end
+
+  @doc """
+  Slider bounds per filter, from the resource or its static `min:` / `max:`.
+
+  A resource that implements `filter_bounds/2` gets to compute them from the
+  scoped data, so a priority slider spans the values that actually exist.
+  """
+  def filter_bounds(resource_mod, %Spec{} = spec, scope) do
+    dynamic =
+      if function_exported?(resource_mod, :filter_bounds, 2) do
+        Map.new(spec.filters, fn filter ->
+          {filter.name, normalize_bounds(resource_mod.filter_bounds(scope, filter.name))}
+        end)
+      else
+        %{}
+      end
+
+    Map.new(spec.filters, fn filter ->
+      static = normalize_bounds(%{min: filter.min, max: filter.max})
+      {filter.name, Map.get(dynamic, filter.name) || static}
+    end)
+  end
+
+  @doc """
+  Option lists per filter, from the resource or its static `options:`.
+
+  `filter_options/2` lets a resource read choices from the scoped context, so
+  enumerations stay in the database instead of being duplicated in the DSL.
+  """
+  def filter_options(resource_mod, %Spec{} = spec, scope) do
+    Map.new(spec.filters, fn filter ->
+      dynamic =
+        if function_exported?(resource_mod, :filter_options, 2) do
+          case resource_mod.filter_options(scope, filter.name) do
+            list when is_list(list) and list != [] -> list
+            _ -> nil
+          end
+        end
+
+      {filter.name, dynamic || filter.options}
+    end)
+  end
+
+  @doc "Index metric cards declared by the resource."
+  def metrics(resource_mod, scope, list_opts) do
+    if function_exported?(resource_mod, :metrics, 2) do
+      resource_mod.metrics(scope, list_opts)
+      |> List.wrap()
+      |> Enum.map(&normalize_metric/1)
+      |> Enum.reject(&is_nil/1)
+    else
+      []
+    end
+  end
+
+  @doc """
+  Candidate records for a relation field.
+
+  The relation's context function owns scoping and limits; this only shapes the
+  result into `{label, value}` options.
+  """
+  def relation_options(%Field{relation: %Relation{} = relation}, scope, opts \\ []) do
+    relation
+    |> fetch_relation_records(scope, opts)
+    |> Enum.map(fn record ->
+      {Relation.label(relation, record), Relation.value(relation, record)}
+    end)
+    |> Enum.reject(fn {label, value} -> label == "" and value == "" end)
+  end
+
+  defp fetch_relation_records(%Relation{context: context, list: list}, scope, opts)
+       when is_atom(context) and not is_nil(context) and is_atom(list) and not is_nil(list) do
+    cond do
+      function_exported?(context, list, 2) -> apply(context, list, [scope, opts])
+      function_exported?(context, list, 1) -> apply(context, list, [opts])
+      function_exported?(context, list, 0) -> apply(context, list, [])
+      true -> []
+    end
+    |> List.wrap()
+  rescue
+    error ->
+      Logger.warning("corex_admin relation options failed: #{Exception.message(error)}")
+      []
+  end
+
+  defp fetch_relation_records(_relation, _scope, _opts), do: []
+
+  defp normalize_bounds(%{min: min, max: max}) when is_number(min) and is_number(max) do
+    %{min: min, max: max}
+  end
+
+  defp normalize_bounds(_), do: nil
+
+  defp normalize_metric({label, value}), do: %{label: to_string(label), value: value, hint: nil}
+
+  defp normalize_metric(%{label: label, value: value} = metric) do
+    %{label: to_string(label), value: value, hint: Map.get(metric, :hint)}
+  end
+
+  defp normalize_metric(_), do: nil
 
   def grouped_resources(socket_or_assigns) do
     assigns = view_assigns(socket_or_assigns)

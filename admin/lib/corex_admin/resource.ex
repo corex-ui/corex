@@ -57,23 +57,43 @@ defmodule CorexAdmin.Resource do
   `scope/1` is declared. See the [resources](resources.html) guide.
   """
 
-  alias CorexAdmin.Resource.{Field, Filter, Section, Spec}
+  alias CorexAdmin.Resource.{Field, Filter, Relation, Section, Spec}
 
-  @field_types ~w(id text textarea email password number boolean select date datetime url embeds_many)a
+  @field_types ~w(id text textarea email password number boolean select radio date datetime url tags file embeds_many embeds_one belongs_to has_many)a
   @filter_types ~w(select multi_select date_range datetime_range number_range number boolean text presence tags id relative_date)a
   @required_actions ~w(list get create update delete change_create change_update)a
+
+  @renderer_type {:or, [{:tuple, [:atom, :atom]}, :atom, nil]}
+
+  @relation_schema [
+    context: [type: :atom],
+    list: [type: :atom],
+    schema: [type: :atom],
+    owner_key: [type: :atom],
+    related_key: [type: :atom],
+    label: [type: :atom, default: :id],
+    value: [type: :atom, default: :id],
+    search: [type: :boolean, default: false],
+    limit: [type: :pos_integer, default: 50],
+    columns: [type: {:list, :atom}, default: []]
+  ]
 
   @field_schema [
     readable: [type: :boolean],
     writable: [type: :boolean],
     searchable: [type: :boolean, default: false],
     sortable: [type: :boolean, default: false],
-    filterable: [type: :boolean, default: false],
     redact: [type: :boolean],
     index: [type: :boolean],
     show: [type: :boolean],
+    exclusive: [type: :boolean, default: false],
+    virtual: [type: :boolean, default: false],
     label: [type: :string],
-    options: [type: {:list, :any}]
+    options: [type: {:list, :any}],
+    path: [type: {:or, [{:list, :atom}, nil]}, default: nil],
+    relation: [type: {:or, [:keyword_list, nil]}, default: nil],
+    render: [type: @renderer_type, default: nil],
+    render_form: [type: @renderer_type, default: nil]
   ]
 
   @resource_schema [
@@ -140,6 +160,8 @@ defmodule CorexAdmin.Resource do
           field: 2,
           field: 3,
           field: 4,
+          column: 2,
+          column: 3,
           filter: 2,
           filter: 3,
           list: 1,
@@ -334,6 +356,26 @@ defmodule CorexAdmin.Resource do
     end
 
     Enum.reverse(current)
+  end
+
+  @doc """
+  A read-only column computed by a field module.
+
+  Use for values that are not schema columns — a joined label, a derived total,
+  a status rollup. The module renders the cell and the show value; the column is
+  never writable and never appears on the form.
+
+      column :owner, MyAppWeb.Admin.Cells.Owner, label: "Assigned to"
+  """
+  defmacro column(name, mod, opts \\ []) do
+    quote do
+      CorexAdmin.Resource.__push_field__(
+        __MODULE__,
+        unquote(name),
+        unquote(mod),
+        Keyword.merge(unquote(opts), virtual: true)
+      )
+    end
   end
 
   defmacro filter(name, type, opts \\ []) do
@@ -580,6 +622,7 @@ defmodule CorexAdmin.Resource do
     opts = NimbleOptions.validate!(opts, @field_schema)
     redact_fields = redact_fields(schema)
     embed_schema = embed_schema || embed_schema(schema, name)
+    relation = build_relation(schema, name, type_atom, opts[:relation])
 
     defaults = %{
       readable: default_readable(type_atom),
@@ -589,37 +632,86 @@ defmodule CorexAdmin.Resource do
 
     readable = Keyword.get(opts, :readable, defaults.readable)
     redact = Keyword.get(opts, :redact, defaults.redact)
+    virtual = opts[:virtual]
 
     %Field{
       name: name,
       type: type_atom,
       mod: mod,
       label: opts[:label] || Phoenix.Naming.humanize(Atom.to_string(name)),
+      path: opts[:path],
+      relation: relation,
+      render: opts[:render],
+      render_form: opts[:render_form],
       readable: readable,
-      writable: Keyword.get(opts, :writable, defaults.writable),
+      writable: not virtual and Keyword.get(opts, :writable, defaults.writable),
       searchable: opts[:searchable],
       sortable: opts[:sortable],
-      filterable: opts[:filterable],
       redact: redact,
       index: Keyword.get(opts, :index, default_index(type_atom, readable, redact)),
       show: Keyword.get(opts, :show, readable and not redact),
+      exclusive: opts[:exclusive],
+      virtual: virtual,
       options: opts[:options],
       schema: embed_schema,
       fields: Enum.map(List.wrap(children), &build_field(embed_schema || schema, &1))
     }
   end
 
-  defp resolve_field_type(type) when type in @field_types do
-    {Map.fetch!(CorexAdmin.Field.builtins(), type), type}
-  end
+  defp resolve_field_type(type) when type in @field_types, do: {nil, type}
 
-  defp resolve_field_type(type) when is_atom(type) do
-    {type, :custom}
+  defp resolve_field_type(type) when is_atom(type) and not is_nil(type) do
+    if CorexAdmin.Field.field_module?(type) do
+      {type, :custom}
+    else
+      raise ArgumentError,
+            "unknown field type #{inspect(type)}; expected one of #{inspect(@field_types)} " <>
+              "or a module implementing CorexAdmin.Field"
+    end
   end
 
   defp resolve_field_type(type) do
     raise ArgumentError,
           "unknown field type #{inspect(type)}; expected one of #{inspect(@field_types)} or a field module"
+  end
+
+  defp build_relation(_schema, _name, _type, nil), do: nil
+
+  defp build_relation(schema, name, type, opts) when is_list(opts) do
+    opts = NimbleOptions.validate!(opts, @relation_schema)
+    inferred = association(schema, name)
+
+    %Relation{
+      context: opts[:context],
+      list: opts[:list],
+      schema: opts[:schema] || inferred[:related],
+      owner_key: opts[:owner_key] || inferred[:owner_key],
+      related_key: opts[:related_key] || inferred[:related_key],
+      label: opts[:label],
+      value: opts[:value],
+      search: opts[:search],
+      limit: opts[:limit],
+      columns: opts[:columns],
+      cardinality: if(type == :has_many, do: :many, else: :one)
+    }
+  end
+
+  defp association(schema, name) do
+    if function_exported?(schema, :__schema__, 2) do
+      case schema.__schema__(:association, name) do
+        %{related: related} = assoc ->
+          [
+            related: related,
+            owner_key: Map.get(assoc, :owner_key),
+            related_key: Map.get(assoc, :related_key)
+          ]
+
+        _ ->
+          []
+      end
+    else
+      []
+    end
   end
 
   defp schema_singular(schema) do
@@ -664,12 +756,15 @@ defmodule CorexAdmin.Resource do
     end)
   end
 
-  defp build_filter({name, type, opts}) when type in @filter_types do
+  defp build_filter({name, type, opts}) do
+    {mod, type_atom} = resolve_filter_type(type)
+
     opts =
       Keyword.validate!(opts,
         label: nil,
         options: nil,
         field: nil,
+        path: nil,
         pin: true,
         min: nil,
         max: nil,
@@ -677,14 +772,17 @@ defmodule CorexAdmin.Resource do
         default_operator: nil
       )
 
-    field = opts[:field] || name
+    path = opts[:path]
+    field = opts[:field] || path_field(path) || name
 
     %Filter{
       name: name,
-      type: type,
+      type: type_atom,
+      mod: mod,
       label: opts[:label] || Phoenix.Naming.humanize(Atom.to_string(name)),
       options: opts[:options],
       field: field,
+      path: path,
       pin: opts[:pin] != false,
       min: opts[:min],
       max: opts[:max],
@@ -693,10 +791,25 @@ defmodule CorexAdmin.Resource do
     }
   end
 
-  defp build_filter({_name, type, _opts}) do
+  defp resolve_filter_type(type) when type in @filter_types, do: {nil, type}
+
+  defp resolve_filter_type(type) when is_atom(type) and not is_nil(type) do
+    if CorexAdmin.Filter.filter_module?(type) do
+      {type, :custom}
+    else
+      raise ArgumentError,
+            "unknown filter type #{inspect(type)}; expected one of #{inspect(@filter_types)} " <>
+              "or a module implementing CorexAdmin.Filter"
+    end
+  end
+
+  defp resolve_filter_type(type) do
     raise ArgumentError,
           "unknown filter type #{inspect(type)}; expected one of #{inspect(@filter_types)}"
   end
+
+  defp path_field(path) when is_list(path) and path != [], do: List.last(path)
+  defp path_field(_), do: nil
 
   defp default_readable(:password), do: false
   defp default_readable(_type), do: true

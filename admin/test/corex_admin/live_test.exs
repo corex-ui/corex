@@ -339,7 +339,7 @@ defmodule CorexAdmin.LiveTest do
     render_click(view, "add_filter", %{"value" => "email"})
 
     view
-    |> element(~s(button[aria-label="Clear Email"]))
+    |> element(~s(button[aria-label="Remove Email filter"]))
     |> render_click()
 
     html = render(view)
@@ -377,9 +377,9 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}")
     assert html =~ "Broken login"
     refute html =~ "Secret"
-    assert html =~ ~s(class="data-list ui-size-sm")
-    assert html =~ ~s(data-orientation="horizontal")
-    assert html =~ "ui-solid ui-alert"
+    assert html =~ ~s(class="admin-details")
+    assert html =~ ~s(class="admin-detail-label")
+    assert html =~ "ui-alert"
   end
 
   test "create via context form", %{conn: conn} do
@@ -400,7 +400,7 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "New ticket"
   end
 
-  test "save and continue stays on edit", %{conn: conn} do
+  test "create and add another returns to a blank form", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/admin/tickets/new")
 
     {:ok, _view, html} =
@@ -415,15 +415,22 @@ defmodule CorexAdmin.LiveTest do
       |> render_submit(%{"continue" => "true"})
       |> follow_redirect(conn)
 
-    assert html =~ "Keep editing"
-    assert html =~ "Save and continue"
+    assert html =~ "Create and add another"
+    refute html =~ "Keep editing"
+  end
+
+  test "edit offers Save and Save and close", %{conn: conn, ticket: ticket} do
+    {:ok, _view, html} = live(conn, "/admin/tickets/#{ticket.id}/edit")
+
+    assert html =~ "Save and close"
+    assert html =~ ~s(name="continue")
   end
 
   test "nested social links round-trip on create", %{conn: conn, scope: scope} do
     {:ok, _view, html} = live(conn, "/admin/tickets/new")
     assert html =~ "Social links"
     assert html =~ ~s(data-scope="nested-fields")
-    assert html =~ "Add Social links"
+    assert html =~ ~s(data-part="add-trigger")
 
     {:ok, ticket} =
       Tickets.create_ticket(scope, %{

@@ -130,12 +130,14 @@ defmodule CorexAdmin.Live.Form.Controller do
     end
   end
 
+  # "Create and add another" returns to a blank form; plain "Create" goes to the
+  # record that was just made.
   defp save_new(socket, spec, resource_mod, scope, attrs, continue?) do
     with :ok <- Helpers.authorize(socket, :create, resource_mod, nil),
          {:ok, record} <- Context.create(spec, scope, attrs) do
       dest =
         if continue?,
-          do: Helpers.edit_path(socket, spec, record),
+          do: Helpers.new_path(socket, spec),
           else: Helpers.record_path(socket, spec, record)
 
       {:noreply,
