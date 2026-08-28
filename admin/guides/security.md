@@ -64,10 +64,9 @@ already preloaded.
 
 `POST #{prefix}/:resource/export` is a Plug controller in the same router
 scope, outside `live_session`. Auth is a short-lived `Phoenix.Token` minted
-by the LiveView (`CorexAdmin.Export.token_salt/0` is `"corex_admin.export"`,
-max age 300 seconds). Policy `:export` is checked when the token is minted
-and when the controller runs. The export trigger is disabled until rows are
-selected.
+by the LiveView (salt `"corex_admin.export"`, max age 300 seconds). Policy
+`:export` is checked when the token is minted and when the controller runs.
+The export trigger is disabled until rows are selected.
 
 ## Other
 

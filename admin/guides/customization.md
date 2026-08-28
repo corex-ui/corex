@@ -17,8 +17,8 @@ Four rules:
 - Host **policy** stays deny-by-default `CorexAdmin.Policy` (including `:export`
   and `:history`)
 - **Rendering** is Corex plus Design `admin.css`
-- **Customization** is Elixir modules you own — not YAML, not a fork of
-  `CorexAdmin.Live.Index`, and not a second admin UI
+- **Customization** is Elixir modules you own — not YAML, not a fork of the
+  package index LiveView, and not a second admin UI
 
 Allowed Hex deps are **headless**: Carbonite or Threadline **query APIs**,
 `nimble_csv`, `jason`, Gettext / host `localize_web` (locale data + routing).
@@ -270,8 +270,8 @@ non-redacted, `authorize_field`-allowed fields.
 
 `POST #{prefix}/:resource/export` sits in the same `live_corex_admin` scope
 (outside `live_session`). Auth is a short-lived `Phoenix.Token` minted by the
-LiveView (`CorexAdmin.Export.token_salt/0` → `"corex_admin.export"`, max age
-300 seconds). No XLSX, XML, or queued jobs in this package.
+LiveView (salt `"corex_admin.export"`, max age 300 seconds). No XLSX, XML, or
+queued jobs in this package.
 
 ## History
 
@@ -300,15 +300,15 @@ UX.
 
 Do **not** add `localize_web` as a `corex_admin` dependency. Locale routing,
 language switcher, and `dir` stay in the **host layout** (already the Corex
-pattern). Admin chrome uses `Corex.Gettext` on domain `"admin"` (`~t` in the
-host). Resource **labels** stay developer strings.
+pattern). Admin chrome uses Gettext on domain `"admin"` (`~t` in the host).
+Resource **labels** stay developer strings.
 
 RTL: inherit `dir` from the layout; admin CSS uses logical properties
 (`margin-inline`, `inset-inline-end`).
 
 ## Hub `home:` and `pages:`
 
-Default home is `CorexAdmin.Live.Home`. Override with a host LiveView:
+Default home is `use CorexAdmin.Live, :home`. Override with a host LiveView:
 
 ```elixir
 use CorexAdmin,
