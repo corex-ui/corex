@@ -10,7 +10,7 @@ generic LiveViews you rarely copy, and **Corex UI exclusively**.
   and `:history`)
 - **Rendering** is Corex (`data_table`, `native_input`, `select`, `combobox`,
   `date_picker`, `data_list`, `dialog`, `menu`, `tabs`, `toast`, `pagination`,
-  `file_upload`, `nested_fields`, `layout_heading`) plus Design `admin.css`
+  `file_upload`, `nested_fields`, `checkbox`, `layout_heading`) plus Design `admin.css`
 - **Customization** is Elixir modules you own — not YAML, not a fork of
   `CorexAdmin.Live.Index`, and not a second admin UI
 
@@ -229,15 +229,19 @@ the `admin/` package.
 
 ## Index chrome
 
-Heading + New + Export, search, saved views, filter pills + **Add filter**,
-chips, slim bulk bar, streamed table, footer (Showing + pagination + page-size).
+Heading + New, then a two-row command bar: views + search + icon-only Export /
+Delete; filter row with compact Corex controls, **Add filter**, and **More filters**.
+Streamed table, footer (Showing + pagination + page-size).
 
 - Enumerated filters use `<.select>` (12 or fewer) or `<.combobox>` (more).
-  Toggle group is for `:boolean`, `:presence`, and `:relative_date`.
-  Is / Is not is opt-in via `operators: [:in, :not_in]` — status multi-select does not use it.
-- Text filters expose Contains / Is / Starts with / Ends with / Does not contain.
-- Date ranges include Today, Yesterday, Last 7/30/90, This week/month/quarter, YTD.
-- **Reset** / **Clear all** restore defaults; pill **X** clears that filter to Any.
+  `:boolean`, `:presence`, and `:relative_date` also use `<.select>`.
+  Is / Is not is opt-in via `operators: [:in, :not_in]` in More filters.
+- Text filters mount as an input with the filter label as placeholder.
+  Operators (Contains / Is / Starts with / Ends with / Does not contain) are in
+  More filters.
+- Date ranges use `<.date_picker>` on the bar; presets (Today, Yesterday,
+  Last 7/30/90, This week/month/quarter, YTD) are in More filters.
+- **Clear all** restores defaults; unpinned **X** removes that filter from the bar.
 
 ## Config (`config :corex_admin`)
 

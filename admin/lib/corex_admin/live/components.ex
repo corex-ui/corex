@@ -186,43 +186,35 @@ defmodule CorexAdmin.Live.Components do
   attr(:spec, Spec, required: true)
   attr(:list_opts, ListOpts, required: true)
   attr(:drafts, :list, default: [])
-  attr(:focus, :string, default: nil)
 
   def filter_bar(assigns) do
     visible = visible_filters(assigns.spec, assigns.list_opts, assigns.drafts)
-    hidden = hidden_filters(assigns.spec, visible)
-    chips = active_chips(assigns.spec, assigns.list_opts)
+    inline = Enum.filter(visible, &inline_filter?/1)
+    hidden = hidden_inline_filters(assigns.spec, inline)
     count = filter_badge_count(assigns.list_opts)
-    focus = assigns[:focus]
 
     assigns =
       assigns
-      |> assign(:visible, visible)
+      |> assign(:inline, inline)
       |> assign(:hidden, hidden)
-      |> assign(:chips, chips)
       |> assign(:count, count)
       |> assign(:add_items, add_filter_items(hidden))
       |> assign(:add_list, add_filter_list(hidden))
       |> assign(:searchable_add?, length(hidden) > 8)
-      |> assign(:focus, if(is_binary(focus), do: focus))
+      |> assign(:dialog_filters, assigns.spec.filters)
 
     ~H"""
     <div
       :if={@spec.filters != []}
       id={"#{@spec.slug}-filters"}
-      class="admin-filter-bar admin-chips"
+      class="admin-filter-bar"
       aria-label={Gettext.t("Filters")}
     >
-      <.filter_pill
-        :for={{filter, index} <- Enum.with_index(@visible)}
+      <.filter_inline
+        :for={filter <- @inline}
         spec={@spec}
         filter={filter}
         list_opts={@list_opts}
-        chip={Enum.find(@chips, &(&1.field == Atom.to_string(filter.name)))}
-        open={
-          to_string(filter.name) == @focus or
-            (index == 0 and @spec.filters_open and @focus in [nil, ""])
-        }
       />
       <.menu
         :if={@hidden != [] and not @searchable_add?}
@@ -251,9 +243,16 @@ defmodule CorexAdmin.Live.Components do
           <.heroicon name="hero-plus" class="icon" />
         </:trigger>
       </.combobox>
+      <.more_filters_dialog
+        spec={@spec}
+        list_opts={@list_opts}
+        filters={@dialog_filters}
+        count={@count}
+      />
       <span :if={@count > 0} class="badge ui-size-sm ui-trigger--square">{@count}</span>
       <.action
         :if={@count > 0}
+        id={"#{@spec.slug}-clear-filters"}
         type="button"
         phx-click="reset_filters"
         class="button ui-size-sm ui-ghost ui-alert"
@@ -267,35 +266,31 @@ defmodule CorexAdmin.Live.Components do
   attr(:spec, Spec, required: true)
   attr(:filter, Filter, required: true)
   attr(:list_opts, ListOpts, required: true)
-  attr(:chip, :map, default: nil)
-  attr(:open, :boolean, default: false)
 
-  defp filter_pill(assigns) do
+  defp filter_inline(assigns) do
+    active? = Filter.active_value?(Map.get(assigns.list_opts.filters, assigns.filter.name))
+
+    assigns =
+      assigns
+      |> assign(:active?, active?)
+
     ~H"""
-    <div class={["admin-filter-pill-wrap", @chip && "admin-is-active"]}>
-      <.collapsible
-        id={"#{@spec.slug}-filter-pill-#{@filter.name}"}
-        class="collapsible admin-filter-pill"
-        open={@open}
-      >
-        <:trigger>
-          <span :if={@chip} class="admin-filter-pill-label">
-            {@chip.label}: {@chip.text}
-          </span>
-          <span :if={!@chip} class="admin-filter-pill-label">{@filter.label}</span>
-        </:trigger>
-        <:closed>
-          <.heroicon name="hero-chevron-down" />
-        </:closed>
-        <:content>
-          <.filter_control spec={@spec} filter={@filter} list_opts={@list_opts} />
-        </:content>
-      </.collapsible>
+    <div class={[
+      "admin-filter-control",
+      "admin-filter-control--#{@filter.type}",
+      @active? && "admin-is-active"
+    ]}>
+      <.filter_control
+        spec={@spec}
+        filter={@filter}
+        list_opts={@list_opts}
+        variant={:inline}
+      />
       <.action
-        :if={@chip}
+        :if={@filter.pin != true}
         type="button"
-        phx-click="clear_filter"
-        phx-value-field={@chip.field}
+        phx-click="reset_filter"
+        phx-value-field={Atom.to_string(@filter.name)}
         class="button ui-size-sm ui-ghost ui-trigger--square"
         aria_label={Gettext.t("Clear %{label}", label: @filter.label)}
       >
@@ -306,12 +301,73 @@ defmodule CorexAdmin.Live.Components do
   end
 
   attr(:spec, Spec, required: true)
+  attr(:list_opts, ListOpts, required: true)
+  attr(:filters, :list, required: true)
+  attr(:count, :integer, default: 0)
+
+  defp more_filters_dialog(assigns) do
+    ~H"""
+    <.dialog id={"#{@spec.slug}-more-filters"} class="dialog" modal>
+      <:trigger
+        class="button ui-size-sm ui-trigger--square"
+        aria_label={Gettext.t("More filters")}
+      >
+        <.heroicon name="hero-funnel" />
+        <span class="sr-only">{Gettext.t("More filters")}</span>
+      </:trigger>
+      <:title>{Gettext.t("Filters")}</:title>
+      <:description>
+        {Gettext.t("Apply additional filters to this list.")}
+      </:description>
+      <:content>
+        <div class="admin-filter-form">
+          <div
+            :for={filter <- @filters}
+            class={[
+              "admin-filter-item",
+              filter.type in [:date_range, :datetime_range, :number_range] &&
+                "admin-filter-item--range"
+            ]}
+          >
+            <.filter_control
+              spec={@spec}
+              filter={filter}
+              list_opts={@list_opts}
+              variant={:dialog}
+              id_prefix={"#{@spec.slug}-more"}
+            />
+          </div>
+        </div>
+        <div class="admin-dialog-actions">
+          <.action
+            type="button"
+            phx-click="reset_filters"
+            class="button ui-size-sm ui-ghost ui-alert"
+          >
+            {Gettext.t("Clear all")}
+          </.action>
+          <.action
+            type="button"
+            phx-click={Corex.Dialog.set_open("#{@spec.slug}-more-filters", false)}
+            class="button ui-size-sm ui-solid ui-brand"
+          >
+            {Gettext.t("Done")}
+          </.action>
+        </div>
+      </:content>
+    </.dialog>
+    """
+  end
+
+  attr(:spec, Spec, required: true)
   attr(:filter, Filter, required: true)
   attr(:list_opts, ListOpts, required: true)
+  attr(:variant, :atom, default: :inline, values: [:inline, :dialog])
+  attr(:id_prefix, :string, default: nil)
 
   def filter_control(assigns) do
     value = Map.get(assigns.list_opts.filters, assigns.filter.name)
-    slug = assigns.spec.slug
+    slug = assigns.id_prefix || assigns.spec.slug
     name = assigns.filter.name
 
     assigns =
@@ -319,6 +375,7 @@ defmodule CorexAdmin.Live.Components do
       |> assign(:value, value)
       |> assign(:control_id, "#{slug}-filter-#{name}")
       |> assign(:input_name, "filters[#{name}]")
+      |> assign(:inline?, assigns.variant == :inline)
 
     case assigns.filter.type do
       type when type in [:select, :multi_select, :boolean] ->
@@ -351,31 +408,6 @@ defmodule CorexAdmin.Live.Components do
       _ ->
         filter_text(assigns)
     end
-  end
-
-  attr(:spec, Spec, required: true)
-  attr(:list_opts, ListOpts, required: true)
-
-  def filter_chips(assigns) do
-    chips = active_chips(assigns.spec, assigns.list_opts)
-    assigns = assign(assigns, :chips, chips)
-
-    ~H"""
-    <div :if={@chips != []} class="admin-chips">
-      <span :for={chip <- @chips} class="badge ui-size-sm">
-        {chip.label}: {chip.text}
-        <.action
-          type="button"
-          phx-click="clear_filter"
-          phx-value-field={chip.field}
-          class="button ui-size-sm ui-ghost ui-trigger--square"
-          aria_label={Gettext.t("Clear %{label}", label: chip.label)}
-        >
-          <.heroicon name="hero-x-mark" />
-        </.action>
-      </span>
-    </div>
-    """
   end
 
   attr(:id, :string, required: true)
@@ -445,10 +477,12 @@ defmodule CorexAdmin.Live.Components do
       final_focus={"dialog:#{@id}:trigger"}
     >
       <:trigger
-        class="button ui-size-sm ui-solid ui-alert"
+        class="button ui-size-sm ui-solid ui-alert ui-trigger--square"
         aria_label={Gettext.t("Delete selected %{label}", label: @spec.label)}
+        title={Gettext.t("Delete selected")}
       >
-        <.heroicon name="hero-trash" /> {Gettext.t("Delete selected")}
+        <.heroicon name="hero-trash" />
+        <span class="sr-only">{Gettext.t("Delete selected")}</span>
       </:trigger>
       <:title>{Gettext.t("Delete %{count} %{label}?", count: @count, label: @spec.label)}</:title>
       <:description>
@@ -482,7 +516,13 @@ defmodule CorexAdmin.Live.Components do
   attr(:action, :string, required: true)
 
   def export_dialog(assigns) do
-    assigns = assign(assigns, :csrf, Plug.CSRFProtection.get_csrf_token())
+    assigns =
+      assigns
+      |> assign(:csrf, Plug.CSRFProtection.get_csrf_token())
+      |> assign(
+        :format_items,
+        list_items([{Gettext.t("CSV"), "csv"}, {Gettext.t("JSON"), "json"}])
+      )
 
     ~H"""
     <.dialog id={"#{@spec.slug}-export"} class="dialog" modal>
@@ -498,31 +538,36 @@ defmodule CorexAdmin.Live.Components do
         >
           <input type="hidden" name="_csrf_token" value={@csrf} />
           <input type="hidden" name="token" value={@token} />
-          <.native_input
+          <.select
             id={"#{@spec.slug}-export-format"}
-            type="select"
+            class="select ui-size-sm"
             name="format"
-            value="csv"
-            options={[{Gettext.t("CSV"), "csv"}, {Gettext.t("JSON"), "json"}]}
-            class="native-input"
+            items={@format_items}
+            value={["csv"]}
           >
             <:label>{Gettext.t("Format")}</:label>
-          </.native_input>
+            <:trigger>
+              <.heroicon name="hero-chevron-down" />
+            </:trigger>
+          </.select>
           <fieldset class="admin-export-fields">
             <legend>{Gettext.t("Fields")}</legend>
-            <label
+            <.checkbox
               :for={field <- @fields}
-              class="admin-export-field"
+              id={"#{@spec.slug}-export-field-#{field.name}"}
+              class="checkbox ui-size-sm admin-export-field"
+              name={"fields[#{field.name}]"}
+              value="true"
+              checked
             >
-              <input
-                id={"#{@spec.slug}-export-field-#{field.name}"}
-                type="checkbox"
-                name="fields[]"
-                value={Atom.to_string(field.name)}
-                checked
-              />
-              {field.label}
-            </label>
+              <:label>{field.label}</:label>
+              <:indicator>
+                <.heroicon name="hero-check" class="icon" />
+              </:indicator>
+              <:indeterminate>
+                <.heroicon name="hero-minus" class="icon" />
+              </:indeterminate>
+            </.checkbox>
           </fieldset>
           <div class="admin-dialog-actions">
             <.action
@@ -546,9 +591,13 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
+  attr(:id, :string, required: true)
+  attr(:label, :string, required: true)
+  slot(:inner_block, required: true)
+
   def icon_tooltip(assigns) do
     ~H"""
-    <.tooltip id={@id} class="tooltip" show_arrow={false}>
+    <.tooltip id={@id} class="tooltip" show_arrow={false} trigger_tag={:span}>
       <:trigger>
         {render_slot(@inner_block)}
       </:trigger>
@@ -581,7 +630,7 @@ defmodule CorexAdmin.Live.Components do
 
     cond do
       assigns.filter.type == :boolean ->
-        filter_toggle(assigns)
+        filter_boolean_select(assigns)
 
       assigns.filter.type in [:select, :multi_select] and option_count > 12 ->
         filter_combobox(assigns)
@@ -592,7 +641,8 @@ defmodule CorexAdmin.Live.Components do
   end
 
   defp filter_select_dropdown(assigns) do
-    show_op? = :not_in in Filter.operators(assigns.filter)
+    show_op? = not assigns.inline? and :not_in in Filter.operators(assigns.filter)
+    placeholder = if(assigns.inline?, do: assigns.filter.label, else: Gettext.t("Any"))
 
     assigns =
       assigns
@@ -601,6 +651,7 @@ defmodule CorexAdmin.Live.Components do
       |> assign(:multiple, assigns.filter.type == :multi_select)
       |> assign(:show_op?, show_op?)
       |> assign(:membership_op, membership_op(assigns.filter, assigns.value))
+      |> assign(:placeholder, placeholder)
 
     ~H"""
     <div :if={@show_op?} class="admin-filter-stack">
@@ -623,7 +674,7 @@ defmodule CorexAdmin.Live.Components do
         items={@items}
         value={@selected}
         on_value_change="filter"
-        translation={%Corex.Select.Translation{placeholder: Gettext.t("Any")}}
+        translation={%Corex.Select.Translation{placeholder: @placeholder}}
       >
         <:label class="sr-only">{@filter.label}</:label>
         <:trigger>
@@ -640,10 +691,11 @@ defmodule CorexAdmin.Live.Components do
       items={@items}
       value={@selected}
       on_value_change="filter"
-      translation={%Corex.Select.Translation{placeholder: Gettext.t("Any")}}
+      translation={%Corex.Select.Translation{placeholder: @placeholder}}
     >
-      <:label>
-        <.filter_legend filter={@filter} />
+      <:label class={if(@inline?, do: "sr-only")}>
+        <.filter_legend :if={!@inline?} filter={@filter} />
+        <span :if={@inline?}>{@filter.label}</span>
       </:label>
       <:trigger>
         <.heroicon name="hero-chevron-down" />
@@ -652,49 +704,48 @@ defmodule CorexAdmin.Live.Components do
     """
   end
 
-  defp filter_toggle(assigns) do
-    {options, multiple} =
-      case assigns.filter.type do
-        :boolean ->
-          {[%{label: Gettext.t("Yes"), value: "true"}, %{label: Gettext.t("No"), value: "false"}],
-           false}
-
-        :multi_select ->
-          {option_maps(assigns.filter.options), true}
-
-        _ ->
-          {option_maps(assigns.filter.options), false}
-      end
+  defp filter_boolean_select(assigns) do
+    placeholder = if(assigns.inline?, do: assigns.filter.label, else: Gettext.t("Any"))
 
     assigns =
       assigns
-      |> assign(:options, options)
-      |> assign(:multiple, multiple)
+      |> assign(
+        :items,
+        list_items([{Gettext.t("Yes"), "true"}, {Gettext.t("No"), "false"}])
+      )
       |> assign(:selected, select_value(assigns.value))
+      |> assign(:placeholder, placeholder)
 
     ~H"""
-    <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
-      <.toggle_group
-        id={@control_id}
-        class="toggle-group ui-size-sm"
-        multiple={@multiple}
-        deselectable
-        value={@selected}
-        on_value_change="filter"
-      >
-        <:item :for={opt <- @options} value={opt.value}>{opt.label}</:item>
-      </.toggle_group>
-    </div>
+    <.select
+      id={@control_id}
+      class="select ui-size-sm"
+      name={@input_name}
+      items={@items}
+      value={@selected}
+      on_value_change="filter"
+      translation={%Corex.Select.Translation{placeholder: @placeholder}}
+    >
+      <:label class={if(@inline?, do: "sr-only")}>
+        <.filter_legend :if={!@inline?} filter={@filter} />
+        <span :if={@inline?}>{@filter.label}</span>
+      </:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
     """
   end
 
   defp filter_combobox(assigns) do
+    placeholder = if(assigns.inline?, do: assigns.filter.label, else: Gettext.t("Any"))
+
     assigns =
       assigns
       |> assign(:items, list_items(assigns.filter.options))
       |> assign(:selected, select_value(unwrap_membership(assigns.value)))
       |> assign(:multiple, assigns.filter.type == :multi_select)
+      |> assign(:placeholder, placeholder)
 
     ~H"""
     <.combobox
@@ -705,9 +756,11 @@ defmodule CorexAdmin.Live.Components do
       items={@items}
       value={@selected}
       on_value_change="filter"
+      translation={%Corex.Combobox.Translation{placeholder: @placeholder}}
     >
-      <:label>
-        <.filter_legend filter={@filter} />
+      <:label class={if(@inline?, do: "sr-only")}>
+        <.filter_legend :if={!@inline?} filter={@filter} />
+        <span :if={@inline?}>{@filter.label}</span>
       </:label>
       <:trigger>
         <.heroicon name="hero-chevron-down" />
@@ -724,8 +777,8 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <div class="admin-filter-date">
-      <.filter_legend filter={@filter} />
-      <div class="admin-filter-presets">
+      <.filter_legend :if={!@inline?} filter={@filter} />
+      <div :if={!@inline?} class="admin-filter-presets">
         <.action
           :for={preset <- @presets}
           type="button"
@@ -744,8 +797,12 @@ defmodule CorexAdmin.Live.Components do
         close_on_select={false}
         value={@picked}
         on_value_change="filter"
+        placeholder={@filter.label}
       >
-        <:label>{Gettext.t("Custom")}</:label>
+        <:label class={if(@inline?, do: "sr-only")}>
+          <span :if={@inline?}>{@filter.label}</span>
+          <span :if={!@inline?}>{Gettext.t("Custom")}</span>
+        </:label>
         <:trigger>
           <.heroicon name="hero-calendar" />
         </:trigger>
@@ -770,7 +827,7 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
+      <.filter_legend :if={!@inline?} filter={@filter} />
       <div class="admin-filter-row">
         <.native_input
           id={"#{@control_id}-from"}
@@ -822,9 +879,9 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
+      <.filter_legend :if={!@inline?} filter={@filter} />
       <.slider
-        :if={@slider?}
+        :if={!@inline? and @slider?}
         id={"#{@control_id}-slider"}
         class="slider ui-size-sm"
         min={@min_bound}
@@ -845,7 +902,7 @@ defmodule CorexAdmin.Live.Components do
           orientation="vertical"
           on_value_change="filter"
         >
-          <:label>{Gettext.t("Min")}</:label>
+          <:label class={if(@inline?, do: "sr-only")}>{Gettext.t("Min")}</:label>
           <:decrement_trigger>
             <.heroicon name="hero-chevron-down" class="icon" />
           </:decrement_trigger>
@@ -863,7 +920,7 @@ defmodule CorexAdmin.Live.Components do
           orientation="vertical"
           on_value_change="filter"
         >
-          <:label>{Gettext.t("Max")}</:label>
+          <:label class={if(@inline?, do: "sr-only")}>{Gettext.t("Max")}</:label>
           <:decrement_trigger>
             <.heroicon name="hero-chevron-down" class="icon" />
           </:decrement_trigger>
@@ -878,7 +935,7 @@ defmodule CorexAdmin.Live.Components do
 
   defp filter_text(assigns) do
     ops = Filter.operators(assigns.filter)
-    show_op? = length(ops) > 1
+    show_op? = not assigns.inline? and length(ops) > 1
     op = current_op(assigns.filter, assigns.value)
 
     text =
@@ -902,7 +959,7 @@ defmodule CorexAdmin.Live.Components do
 
     ~H"""
     <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
+      <.filter_legend :if={!@inline?} filter={@filter} />
       <div class="admin-filter-operator">
         <.select
           :if={@show_op?}
@@ -923,6 +980,7 @@ defmodule CorexAdmin.Live.Components do
           name={@text_name}
           value={@text}
           class="native-input ui-size-sm"
+          placeholder={@filter.label}
           phx-change="search"
           phx-debounce="400"
         >
@@ -952,12 +1010,17 @@ defmodule CorexAdmin.Live.Components do
       |> assign(:op_items, operator_items(ops))
       |> assign(:min_bound, assigns.filter.min)
       |> assign(:max_bound, assigns.filter.max)
+      |> assign(
+        :number_name,
+        if(assigns.inline?, do: assigns.input_name, else: "#{assigns.input_name}[value]")
+      )
 
     ~H"""
     <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
+      <.filter_legend :if={!@inline?} filter={@filter} />
       <div class="admin-filter-operator">
         <.select
+          :if={!@inline?}
           id={"#{@control_id}-op"}
           class="select ui-size-sm"
           items={@op_items}
@@ -971,7 +1034,7 @@ defmodule CorexAdmin.Live.Components do
         </.select>
         <.number_input
           id={@control_id}
-          name={"#{@input_name}[value]"}
+          name={@number_name}
           value={@number}
           min={@min_bound}
           max={@max_bound}
@@ -979,7 +1042,7 @@ defmodule CorexAdmin.Live.Components do
           orientation="vertical"
           on_value_change="filter"
         >
-          <:label class="sr-only">{@filter.label}</:label>
+          <:label class={if(@inline?, do: "sr-only")}>{@filter.label}</:label>
           <:decrement_trigger>
             <.heroicon name="hero-chevron-down" class="icon" />
           </:decrement_trigger>
@@ -1002,23 +1065,37 @@ defmodule CorexAdmin.Live.Components do
     assigns =
       assigns
       |> assign(:selected, selected)
-      |> assign(:windows, Filter.relative_windows(assigns.filter))
+      |> assign(
+        :items,
+        list_items(
+          Enum.map(Filter.relative_windows(assigns.filter), fn window ->
+            {relative_label(window), window}
+          end)
+        )
+      )
+      |> assign(
+        :placeholder,
+        if(assigns.inline?, do: assigns.filter.label, else: Gettext.t("Any"))
+      )
 
     ~H"""
-    <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
-      <.toggle_group
-        id={@control_id}
-        class="toggle-group ui-size-sm admin-filter-windows"
-        deselectable
-        value={@selected}
-        on_value_change="filter"
-      >
-        <:item :for={window <- @windows} value={Atom.to_string(window)}>
-          {relative_label(window)}
-        </:item>
-      </.toggle_group>
-    </div>
+    <.select
+      id={@control_id}
+      class="select ui-size-sm"
+      name={@input_name}
+      items={@items}
+      value={@selected}
+      on_value_change="filter"
+      translation={%Corex.Select.Translation{placeholder: @placeholder}}
+    >
+      <:label class={if(@inline?, do: "sr-only")}>
+        <.filter_legend :if={!@inline?} filter={@filter} />
+        <span :if={@inline?}>{@filter.label}</span>
+      </:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
     """
   end
 
@@ -1030,22 +1107,39 @@ defmodule CorexAdmin.Live.Components do
         _ -> []
       end
 
-    assigns = assign(assigns, :selected, selected)
+    assigns =
+      assigns
+      |> assign(:selected, selected)
+      |> assign(
+        :items,
+        list_items([
+          {Gettext.t("Has value"), "set"},
+          {Gettext.t("Is empty"), "empty"}
+        ])
+      )
+      |> assign(
+        :placeholder,
+        if(assigns.inline?, do: assigns.filter.label, else: Gettext.t("Any"))
+      )
 
     ~H"""
-    <div class="admin-filter-stack">
-      <.filter_legend filter={@filter} />
-      <.toggle_group
-        id={@control_id}
-        class="toggle-group ui-size-sm"
-        deselectable
-        value={@selected}
-        on_value_change="filter"
-      >
-        <:item value="set">{Gettext.t("Has value")}</:item>
-        <:item value="empty">{Gettext.t("Is empty")}</:item>
-      </.toggle_group>
-    </div>
+    <.select
+      id={@control_id}
+      class="select ui-size-sm"
+      name={@input_name}
+      items={@items}
+      value={@selected}
+      on_value_change="filter"
+      translation={%Corex.Select.Translation{placeholder: @placeholder}}
+    >
+      <:label class={if(@inline?, do: "sr-only")}>
+        <.filter_legend :if={!@inline?} filter={@filter} />
+        <span :if={@inline?}>{@filter.label}</span>
+      </:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
     """
   end
 
@@ -1067,8 +1161,9 @@ defmodule CorexAdmin.Live.Components do
       blur_behavior="add"
       on_value_change="filter"
     >
-      <:label>
-        <.filter_legend filter={@filter} />
+      <:label class={if(@inline?, do: "sr-only")}>
+        <.filter_legend :if={!@inline?} filter={@filter} />
+        <span :if={@inline?}>{@filter.label}</span>
       </:label>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
@@ -1151,15 +1246,6 @@ defmodule CorexAdmin.Live.Components do
 
   defp list_items(_), do: Corex.List.new([])
 
-  defp option_maps(options) when is_list(options) do
-    Enum.map(options, fn
-      {label, value} -> %{label: to_string(label), value: to_string(value)}
-      value -> %{label: to_string(value), value: to_string(value)}
-    end)
-  end
-
-  defp option_maps(_), do: []
-
   defp delete_trigger_class(:labeled), do: "button ui-solid ui-alert"
   defp delete_trigger_class(:hidden), do: "admin-visually-hidden"
   defp delete_trigger_class(_), do: "button ui-size-sm ui-solid ui-alert ui-trigger--square"
@@ -1192,68 +1278,6 @@ defmodule CorexAdmin.Live.Components do
   defp iso(%NaiveDateTime{} = dt), do: NaiveDateTime.to_iso8601(dt)
   defp iso(other), do: to_string(other)
 
-  defp active_chips(%Spec{} = spec, %ListOpts{} = opts) do
-    search_chip =
-      if opts.search not in [nil, ""] do
-        [%{field: "q", label: Gettext.t("Search"), text: opts.search}]
-      else
-        []
-      end
-
-    filter_chips =
-      Enum.flat_map(spec.filters, fn %Filter{} = filter ->
-        case Map.get(opts.filters, filter.name) do
-          value ->
-            if Filter.active_value?(value) do
-              [
-                %{
-                  field: Atom.to_string(filter.name),
-                  label: filter.label,
-                  text: chip_text(value)
-                }
-              ]
-            else
-              []
-            end
-        end
-      end)
-
-    search_chip ++ filter_chips
-  end
-
-  defp chip_text(value) when is_list(value), do: Enum.join(value, ", ")
-  defp chip_text(true), do: Gettext.t("Yes")
-  defp chip_text(false), do: Gettext.t("No")
-  defp chip_text(:empty), do: Gettext.t("empty")
-  defp chip_text(:set), do: Gettext.t("set")
-  defp chip_text(%{contains: value}), do: to_string(value)
-  defp chip_text(%{relative: window}), do: relative_label(window)
-
-  defp chip_text(%{op: :not_in, value: value}),
-    do: Gettext.t("not %{value}", value: chip_text(value))
-
-  defp chip_text(%{op: :contains, value: value}), do: to_string(value)
-  defp chip_text(%{op: :equals, value: value}), do: "= #{value}"
-  defp chip_text(%{op: :eq, value: value}), do: "= #{value}"
-  defp chip_text(%{op: :gte, value: value}), do: "≥ #{value}"
-  defp chip_text(%{op: :lte, value: value}), do: "≤ #{value}"
-
-  defp chip_text(%{op: :starts_with, value: value}),
-    do: Gettext.t("starts %{value}", value: value)
-
-  defp chip_text(%{op: :ends_with, value: value}), do: Gettext.t("ends %{value}", value: value)
-  defp chip_text(%{op: :not_contains, value: value}), do: Gettext.t("not %{value}", value: value)
-  defp chip_text(%{op: _, value: value}), do: chip_text(value)
-  defp chip_text(%{op: _}), do: ""
-
-  defp chip_text(%{from: from, to: to}), do: "#{iso(from)} – #{iso(to)}"
-  defp chip_text(%{from: from}), do: "from #{iso(from)}"
-  defp chip_text(%{to: to}), do: "to #{iso(to)}"
-  defp chip_text(%{min: min, max: max}), do: "#{min} – #{max}"
-  defp chip_text(%{min: min}), do: "≥ #{min}"
-  defp chip_text(%{max: max}), do: "≤ #{max}"
-  defp chip_text(value), do: to_string(value)
-
   defp visible_filters(%Spec{} = spec, %ListOpts{} = list_opts, drafts) do
     drafted = MapSet.new(Enum.map(List.wrap(drafts), &draft_name/1))
 
@@ -1264,10 +1288,15 @@ defmodule CorexAdmin.Live.Components do
     end)
   end
 
-  defp hidden_filters(%Spec{} = spec, visible) do
-    names = MapSet.new(Enum.map(visible, & &1.name))
-    Enum.reject(spec.filters, &MapSet.member?(names, &1.name))
+  defp hidden_inline_filters(%Spec{} = spec, inline) do
+    names = MapSet.new(Enum.map(inline, & &1.name))
+
+    Enum.filter(spec.filters, fn %Filter{} = filter ->
+      inline_filter?(filter) and not MapSet.member?(names, filter.name)
+    end)
   end
+
+  defp inline_filter?(%Filter{type: type}), do: type != :datetime_range
 
   defp add_filter_items(filters) do
     Corex.Tree.new(

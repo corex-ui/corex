@@ -151,7 +151,10 @@ defmodule CorexAdmin.Live.Index.Controller do
       |> Map.put("filters", filters)
       |> Map.delete("page")
 
-    {:noreply, patch_index_and_sync_filters(socket, params, field)}
+    {:noreply,
+     socket
+     |> drop_filter_draft(field)
+     |> patch_index_and_sync_filters(params, field)}
   end
 
   def handle_event("reset_filter", %{"field" => field}, socket) do
@@ -165,7 +168,10 @@ defmodule CorexAdmin.Live.Index.Controller do
       end)
       |> Map.delete("page")
 
-    {:noreply, patch_index_and_sync_filters(socket, params, field)}
+    {:noreply,
+     socket
+     |> drop_filter_draft(field)
+     |> patch_index_and_sync_filters(params, field)}
   end
 
   def handle_event("canned_filter", %{"index" => index}, socket) do
@@ -363,6 +369,15 @@ defmodule CorexAdmin.Live.Index.Controller do
     else
       []
     end
+  end
+
+  defp drop_filter_draft(socket, field) do
+    drafts =
+      socket.assigns[:filter_drafts]
+      |> List.wrap()
+      |> Enum.reject(&(to_string(&1) == to_string(field)))
+
+    assign(socket, :filter_drafts, drafts)
   end
 
   defp canned_filter_params(filters, index) do

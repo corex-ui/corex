@@ -136,7 +136,6 @@ defmodule E2eWeb.AdminDemoLiveTest do
     {_view, html} = live_ok!(conn, "#{index}?#{qs}")
     assert html =~ "Welcome ticket"
     refute html =~ "Search me"
-    assert html =~ "Status: open"
 
     today = Date.utc_today() |> Date.to_iso8601()
 
@@ -154,7 +153,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ "Reset all"
 
     view
-    |> element("button", "Clear all")
+    |> element("#tickets-clear-filters")
     |> render_click()
 
     assert_patch(view, index)

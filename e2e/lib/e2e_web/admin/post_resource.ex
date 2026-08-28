@@ -11,8 +11,7 @@ defmodule E2eWeb.Admin.PostResource do
     page_size_options: [10, 25, 50, 100],
     default_sort: {:inserted_at, :desc},
     title_field: :title,
-    selectable: true,
-    filters_open: false
+    selectable: true
 
   scope(:current_scope)
 

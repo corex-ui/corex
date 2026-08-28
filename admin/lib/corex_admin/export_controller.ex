@@ -84,16 +84,34 @@ defmodule CorexAdmin.ExportController do
   defp fetch_resource(_, _), do: :error
 
   defp export_fields(spec, payload, params) do
-    requested = List.wrap(params["fields"] || params["fields[]"])
+    requested = requested_export_fields(params)
     allowed = allowed_fields(spec, payload)
 
     if requested == [] do
       allowed
     else
-      wanted = MapSet.new(Enum.map(requested, &to_string/1))
+      wanted = MapSet.new(requested)
       Enum.filter(allowed, &(Atom.to_string(&1.name) in wanted))
     end
   end
+
+  defp requested_export_fields(params) do
+    case params["fields"] || params["fields[]"] do
+      map when is_map(map) ->
+        Enum.flat_map(map, fn {name, value} ->
+          if export_field_checked?(value), do: [to_string(name)], else: []
+        end)
+
+      other ->
+        other
+        |> List.wrap()
+        |> Enum.map(&to_string/1)
+        |> Enum.reject(&(&1 in ["", "true", "false"]))
+    end
+  end
+
+  defp export_field_checked?(value) when value in [true, "true", "on", "1", 1], do: true
+  defp export_field_checked?(_), do: false
 
   defp allowed_fields(spec, payload) do
     config = payload.hub.__corex_admin__()

@@ -223,28 +223,67 @@
  max-width: 12rem;
  }
 
- .admin-filter-bar {
+ .admin-command {
  display: flex;
- flex: 1 1 auto;
- flex-wrap: wrap;
- align-items: center;
+ width: 100%;
+ flex-direction: column;
  gap: var(--spacing-space-sm);
  min-width: 0;
  }
 
- .admin-filter-pill-wrap {
- display: inline-flex;
- align-items: center;
+ .admin-command-bar {
+ display: flex;
  position: relative;
+ width: 100%;
+ flex-wrap: nowrap;
+ align-items: center;
+ gap: var(--spacing-space);
+ min-height: var(--spacing-size);
+ overflow: visible;
+ }
+
+ .admin-filter-bar {
+ display: flex;
+ flex: 0 1 auto;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: var(--spacing-space-sm);
+ width: 100%;
+ min-width: 0;
+ }
+
+ .admin-filter-control {
+ display: inline-flex;
+ flex: 0 1 auto;
+ align-items: center;
  gap: 0;
+ width: auto;
+ max-width: 16rem;
+ min-width: 8rem;
  }
 
- .admin-filter-pill-label {
- white-space: nowrap;
+ .admin-filter-control--number_range,
+ .admin-filter-control--date_range,
+ .admin-filter-control--datetime_range {
+ max-width: none;
+ min-width: 12rem;
  }
 
- .admin-filter-pill-wrap.admin-is-active .admin-filter-pill-label {
- font-weight: 600;
+ .admin-filter-control .select,
+ .admin-filter-control .combobox,
+ .admin-filter-control .native-input,
+ .admin-filter-control .date-picker,
+ .admin-filter-control .number-input,
+ .admin-filter-control .tags-input {
+ width: auto;
+ min-width: 8rem;
+ max-width: 16rem;
+ flex: 1 1 auto;
+ }
+
+ .admin-filter-control--number_range .number-input {
+ max-width: 8rem;
+ min-width: 6rem;
  }
 
  .admin-filter-operator {
@@ -294,26 +333,15 @@
  z-index: 21;
  }
 
- .admin-command-bar {
- display: flex;
- position: relative;
- width: 100%;
- flex-wrap: nowrap;
- align-items: center;
- gap: var(--spacing-space);
- min-height: var(--spacing-size);
- overflow: visible;
- }
-
  .admin-command-search-form {
  display: flex;
  flex-direction: row;
- flex: 1 1 var(--container-4xs);
+ flex: 1 1 16rem;
  align-items: center;
  align-self: center;
- min-width: 0;
+ min-width: 16rem;
  width: auto;
- max-width: var(--container-sm);
+ max-width: none;
  height: auto;
  margin: 0;
  padding: 0;
@@ -339,7 +367,8 @@
  }
 
  .admin-command-selection,
- .admin-command-actions {
+ .admin-command-actions,
+ .admin-command-delete {
  display: flex;
  flex-wrap: nowrap;
  align-items: center;
@@ -355,7 +384,9 @@
  gap: var(--spacing-space-sm);
  }
 
- .admin-command-actions .dialog {
+ .admin-command-actions .dialog,
+ .admin-command-delete .dialog,
+ .admin-filter-bar .dialog {
  display: inline-flex;
  flex: 0 0 auto;
  width: auto;
@@ -365,6 +396,11 @@
  @media (max-width: theme("breakpoint.sm")) {
  .admin-command-bar {
  flex-wrap: wrap;
+ }
+
+ .admin-command-search-form {
+ min-width: 100%;
+ flex-basis: 100%;
  }
  }
 
@@ -613,7 +649,7 @@
  line-height: var(--text-sm--line-height);
  }
 
- .admin .collapsible:not(.admin-filters):not(.admin-filter-pill),
+ .admin .collapsible:not(.admin-filters),
  .admin .data-list,
  .admin .data-table,
  .admin .tree-view,
@@ -631,7 +667,8 @@
  .admin .file-upload,
  .admin .tags-input,
  .admin .slider,
- .admin .menu {
+ .admin .menu,
+ .admin .checkbox {
  width: 100%;
  max-width: none;
  }
@@ -650,49 +687,16 @@
  position: relative;
  }
 
- .admin .admin-command-bar .collapsible,
- .admin .admin-command-bar .collapsible [data-scope="collapsible"][data-part="root"] {
- position: relative;
- flex: 0 0 auto;
- align-self: center;
- width: auto;
- max-width: none;
- }
-
- .admin .admin-command-bar [data-scope="collapsible"][data-part="trigger"] {
- width: auto;
- max-width: none;
- display: inline-flex;
- align-items: center;
- gap: var(--spacing-space-sm);
- }
-
- .admin .admin-command-bar [data-scope="collapsible"][data-part="content"] {
- position: absolute;
- inset-inline-start: 0;
- inset-inline-end: auto;
- top: calc(100% + var(--spacing-space-sm));
- z-index: 20;
- width: min(36rem, calc(100vw - 2 * var(--spacing-space-lg)));
- padding: var(--spacing-space);
- background-color: var(--color-surface);
- border: 1px solid var(--color-border);
- border-radius: var(--radius-md);
- box-shadow: none;
- }
-
  .admin .admin-filter-views,
  .admin .admin-command-bar .admin-filter-views,
  .admin .admin-command-bar .select.admin-filter-views,
  .admin .admin-command-bar .menu.admin-add-filter,
- .admin .admin-command-bar .combobox.admin-add-filter {
+ .admin .admin-command-bar .combobox.admin-add-filter,
+ .admin .admin-filter-bar .menu.admin-add-filter,
+ .admin .admin-filter-bar .combobox.admin-add-filter,
+ .admin .admin-filter-bar .dialog {
  width: auto;
  max-width: 12rem;
- }
-
- .admin .admin-command-bar [data-scope="collapsible"][data-part="content"][data-state="closed"] {
- display: none;
- animation: none;
  }
 
  .admin .admin-command-bar .admin-command-search [data-scope="native-input"][data-part="root"] {
@@ -900,12 +904,12 @@
 .admin form.admin-command-search-form {
  display: flex;
  flex-direction: row;
- flex: 1 1 var(--container-4xs);
+ flex: 1 1 16rem;
  align-items: center;
  align-self: center;
- min-width: 0;
+ min-width: 16rem;
  width: auto;
- max-width: var(--container-sm);
+ max-width: none;
  height: auto;
  margin: 0;
  padding: 0;

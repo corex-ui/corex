@@ -196,8 +196,6 @@ defmodule CorexAdmin.LiveTest do
     html = render_click(view, "add_filter", %{"value" => "email"})
     assert html =~ ~s(id="tickets-filter-email")
     assert html =~ "Email"
-    assert html =~ "Contains"
-    assert html =~ "Starts with"
 
     html = render_click(view, "add_filter", %{"value" => "id"})
     assert html =~ ~s(id="tickets-filter-id")
@@ -222,7 +220,7 @@ defmodule CorexAdmin.LiveTest do
     html = render_click(view, "canned_filter", %{"index" => "0"})
     assert html =~ "Broken login"
     refute html =~ "Done ticket"
-    assert html =~ "Status: open"
+    assert html =~ ~s(id="tickets-filter-status")
 
     html = render_hook(view, "apply_view", %{"id" => "tickets-views", "value" => ["all"]})
     assert html =~ "Done ticket"
@@ -246,8 +244,7 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin/tickets?filters[status][]=open")
     assert html =~ "Broken login"
     refute html =~ "Done ticket"
-    assert html =~ "Status: open"
-    assert html =~ "ui-trigger--square"
+    assert html =~ "filters[status]"
 
     today = Date.utc_today() |> Date.to_iso8601()
 
@@ -264,22 +261,18 @@ defmodule CorexAdmin.LiveTest do
     {:ok, view, _html} = live(conn, "/admin/tickets")
     today = Date.utc_today() |> Date.to_iso8601()
 
-    html =
-      render_hook(view, "filter", %{
-        "id" => "tickets-filter-inserted_at",
-        "value" => today
-      })
+    render_hook(view, "filter", %{
+      "id" => "tickets-filter-inserted_at",
+      "value" => today
+    })
 
-    refute html =~ "Inserted at:"
     refute_patched(view)
 
-    html =
-      render_change(view, "search", %{
-        "q" => "",
-        "filters" => %{"inserted_at" => [today]}
-      })
+    render_change(view, "search", %{
+      "q" => "",
+      "filters" => %{"inserted_at" => [today]}
+    })
 
-    refute html =~ "Inserted at:"
     refute_patched(view)
 
     html =
@@ -289,7 +282,6 @@ defmodule CorexAdmin.LiveTest do
       })
 
     assert html =~ ticket.title
-    assert html =~ "Inserted at:"
 
     qs =
       Plug.Conn.Query.encode(%{
@@ -324,7 +316,7 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ "Reset all"
 
     view
-    |> element("button", "Clear all")
+    |> element("#tickets-clear-filters")
     |> render_click()
 
     assert_patch(view, "/admin/tickets")
@@ -334,21 +326,24 @@ defmodule CorexAdmin.LiveTest do
     {:ok, view, _html} = live(conn, "/admin/tickets?filters[status][]=open")
 
     view
-    |> element(~s(button[phx-click="reset_filter"][phx-value-field="status"]))
+    |> element(
+      ~s(#tickets-more-filters button[phx-click="reset_filter"][phx-value-field="status"])
+    )
     |> render_click()
 
     assert_patch(view, "/admin/tickets")
   end
 
-  test "chip X clears a filter to any", %{conn: conn} do
-    {:ok, view, html} = live(conn, "/admin/tickets?filters[status][]=open")
-    assert html =~ "Status: open"
+  test "unpinned filter X removes the control", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+    render_click(view, "add_filter", %{"value" => "email"})
 
     view
-    |> element(~s(button[aria-label="Clear Status"]))
+    |> element(~s(button[aria-label="Clear Email"]))
     |> render_click()
 
-    assert_patch(view, "/admin/tickets")
+    html = render(view)
+    refute html =~ ~s(id="tickets-filter-email")
   end
 
   test "bulk delete removes selected rows", %{conn: conn, ticket: ticket} do
@@ -489,11 +484,10 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "Export"
     assert html =~ ~s(id="tickets-export")
     assert html =~ "CSV"
-    assert html =~ ~s(name="fields[]")
-    assert html =~ ~s(value="title")
-    assert html =~ ~s(value="email")
-    refute html =~ ~r/name="fields\[\]"[^>]*value="true"/
-    refute html =~ ~r/name="fields\[\]"[^>]*value="false"/
+    assert html =~ ~s(id="tickets-export-field-title")
+    assert html =~ ~s(name="fields[title]")
+    assert html =~ ~s(name="fields[email]")
+    refute html =~ ~s(name="fields[]")
     assert html =~ ~s(id="tickets-export-form")
   end
 
@@ -501,23 +495,13 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin/tickets")
     [_, token] = Regex.run(~r/name="token"[^>]*value="([^"]+)"/, html)
 
-    fields =
-      ~r/name="fields\[\]"[^>]*value="([^"]+)"/
-      |> Regex.scan(html)
-      |> Enum.map(&List.last/1)
-
-    assert "title" in fields
-    assert "email" in fields
-    refute "true" in fields
-    refute "false" in fields
-
     conn =
       conn
       |> Plug.Conn.put_private(:plug_skip_csrf_protection, true)
       |> post("/admin/tickets/export", %{
         "token" => token,
         "format" => "csv",
-        "fields" => fields
+        "fields" => %{"title" => "true", "email" => "true"}
       })
 
     assert conn.status == 200

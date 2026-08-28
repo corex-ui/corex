@@ -52,25 +52,22 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     wait_selected_count(session, "0 selected")
   end
 
-  feature "status filter widgets reset and chip X clear Zag state", %{session: session} do
-    session = wait_tickets_index(session) |> open_ticket_filters()
+  feature "status filter select patches and reset clears Zag state", %{session: session} do
+    session = wait_tickets_index(session)
 
     session = choose_status_filter(session, "open")
-    assert_has(session, css(".admin-chips", text: "Status: open"))
-    assert_has(session, css(".admin-command-bar .badge.ui-trigger--square", text: "1"))
+    assert_has(session, css(".admin-filter-bar .badge.ui-trigger--square", text: "1"))
     assert current_url(session) =~ "filters[status]"
 
     session = click_reset_filter(session, "status")
 
-    refute_has(session, css(".admin-chips", text: "Status: open"))
     refute current_url(session) =~ "filters[status]"
 
     session = choose_status_filter(session, "done")
-    assert_has(session, css(".admin-chips", text: "Status: done"))
-    session = close_ticket_filters(session)
-    session = click(session, css(~S(button[aria-label="Clear Status"])))
+    assert current_url(session) =~ "filters[status]"
+    session = click_reset_filter(session, "status")
 
-    refute_has(session, css(".admin-chips", text: "Status: done"))
+    refute current_url(session) =~ "filters[status]"
   end
 
   feature "sidebar Posts from ticket show live-navigates", %{session: session} do
@@ -151,32 +148,12 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     |> wait_live_connected()
   end
 
-  defp open_ticket_filters(session) do
-    click(
-      session,
-      css("#tickets-filter-pill-status [data-scope='collapsible'][data-part='trigger']")
-    )
-  end
-
-  defp close_ticket_filters(session) do
-    execute_script(
-      session,
-      """
-      var root = document.querySelector("#tickets-filter-pill-status [data-scope='collapsible'][data-part='root']");
-      var trigger = document.querySelector("#tickets-filter-pill-status [data-scope='collapsible'][data-part='trigger']");
-      if (root && trigger && root.getAttribute('data-state') === 'open') {
-        trigger.click();
-      }
-      """
-    )
-  end
-
   defp click_reset_filter(session, field) do
     execute_script(
       session,
       """
       var btn = document.querySelector(
-        '#tickets-filters button[phx-click="reset_filter"][phx-value-field="#{field}"]'
+        '#tickets-more-filters button[phx-click="reset_filter"][phx-value-field="#{field}"]'
       );
       if (btn) btn.click();
       """

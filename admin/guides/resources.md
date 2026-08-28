@@ -57,7 +57,6 @@ end
 | `page_size_options` | app `[10, 25, 50, 100]` | Allowed `?page_size=` values (also capped by `max_page_size`) |
 | `default_sort` | none | `{field, :asc | :desc}` when the URL has no sort |
 | `default_filters` | `%{}` | Filter values applied when the matching query key is missing. An empty query value (`filters[status]=`) means “any” and will not re-apply the default. |
-| `filters_open` | `false` | Open the first pinned filter pill on first paint |
 | `title_field` | primary key | Breadcrumbs, flash, show heading (overridable via `title/1`) |
 | `singular` | schema name | “New Ticket”; empty copy still uses plural `label` |
 | `selectable` | `true` | Index checkboxes, bulk bar, and bulk delete |
@@ -114,30 +113,33 @@ end
 `filters do` is the source of truth for the index filter bar and the ListOpts
 allowlist. `filterable: true` on a field does not render a control.
 
-Pinned filters (`pin: true`, the default) are always on the bar as pills.
-Unpinned filters appear under **Add filter** until the operator adds them.
-Named views come from `canned_filters/0` and render as a select in the
-command bar (All plus each named view).
+Pinned filters (`pin: true`, the default) render as compact Corex controls on
+the filter row. Unpinned filters appear under **Add filter** and mount as the
+same control (for example a search input with the filter label as placeholder).
+`:datetime_range` and extra operators, date presets, and number sliders live in
+the **More filters** dialog. Named views come from `canned_filters/0` and render
+as a select in the command bar (All plus each named view).
 
 ## Filter types
 
-The index bar is Shopify/Linear-style: **saved views** (`canned_filters/0`) as a
-select, **pinned pills** always on the bar, and **Add filter** for the
-rest (`pin: false`). Each pill is a Corex collapsible popover.
+The index bar is two rows: **saved views**, **search** (never shrinks), and
+icon-only **Export** / **Delete** on the first row; **pinned filters**,
+**Add filter**, and **More filters** on the second. Overlay widgets are Corex
+Select, Combobox, Menu, DatePicker, and Dialog — not collapsible.
 
 | Type | Widget | Query |
 | ---- | ------ | ----- |
-| `:select` | `<.select>` (≤12 options) or `<.combobox>` (>12). Optional `operators: [:in, :not_in]` | `==` / `not in` |
+| `:select` | `<.select>` (≤12 options) or `<.combobox>` (>12). Optional `operators: [:in, :not_in]` in More filters | `==` / `not in` |
 | `:multi_select` | same widgets, `multiple` | `in` / `not in` |
-| `:date_range` | named presets (Today, Yesterday, Last 7/30/90, This week/month/quarter, YTD) plus `<.date_picker selection_mode="range">` | `>= from 00:00` and `< to+1 day` |
-| `:datetime_range` | two `<.native_input type="datetime-local">` | `>= from` and `<= to` |
-| `:relative_date` | `<.toggle_group>` of rolling windows (`options:` to subset them) | same bounds as `:date_range`, recomputed on each request |
-| `:number_range` | two `<.number_input>`; also `<.slider>` when `min:` and `max:` are set | `>= min` and `<= max` |
-| `:number` | operator + `<.number_input>` (`:eq`, `:gte`, `:lte`) | `==` / `>=` / `<=` |
-| `:boolean` | `<.toggle_group>` Yes / No (deselect for Any) | `==` |
-| `:text` | operator (`:contains`, `:equals`, `:starts_with`, `:ends_with`, `:not_contains`) + `<.native_input>` | `ilike` / `==` |
+| `:date_range` | `<.date_picker selection_mode="range">` on the bar; named presets in More filters | `>= from 00:00` and `< to+1 day` |
+| `:datetime_range` | two `<.native_input type="datetime-local">` in More filters | `>= from` and `<= to` |
+| `:relative_date` | `<.select>` of rolling windows (`options:` to subset them) | same bounds as `:date_range`, recomputed on each request |
+| `:number_range` | two `<.number_input>` on the bar; `<.slider>` in More filters when `min:` and `max:` are set | `>= min` and `<= max` |
+| `:number` | `<.number_input>` on the bar; operators (`:eq`, `:gte`, `:lte`) in More filters | `==` / `>=` / `<=` |
+| `:boolean` | `<.select>` Yes / No | `==` |
+| `:text` | `<.native_input>` with the filter label as placeholder; operators in More filters | `ilike` / `==` |
 | `:id` | `<.native_input>` exact match | `==` |
-| `:presence` | `<.toggle_group>` Has value / Is empty | `is_nil` / not nil |
+| `:presence` | `<.select>` Has value / Is empty | `is_nil` / not nil |
 | `:tags` | `<.tags_input>` | `in` |
 
 Optional `field:` on a filter if the URL name should differ from the schema column

@@ -87,7 +87,6 @@ defmodule CorexAdmin.Resource do
     default_sort: [type: {:or, [nil, {:tuple, [:atom, {:in, [:asc, :desc]}]}]}],
     title_field: [type: :atom],
     selectable: [type: :boolean, default: true],
-    filters_open: [type: :boolean, default: false],
     default_filters: [type: :map, default: %{}],
     singular: [type: :string],
     live: [
@@ -483,7 +482,6 @@ defmodule CorexAdmin.Resource do
       default_sort: opts[:default_sort],
       title_field: opts[:title_field],
       selectable: opts[:selectable],
-      filters_open: opts[:filters_open],
       default_filters: %{},
       live: Map.new(opts[:live] || []),
       history: opts[:history],

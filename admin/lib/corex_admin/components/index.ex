@@ -17,7 +17,6 @@ defmodule CorexAdmin.Components.Index do
       <.layout_heading class="layout-heading">
         <:title>{@spec.label}</:title>
         <:actions>
-          <.export_trigger :if={assigns[:can_export]} spec={@spec} />
           <.navigate
             :if={Helpers.authorize(assigns, :new, @resource_mod, nil) == :ok}
             to={Helpers.new_path(assigns, @spec)}
@@ -35,64 +34,69 @@ defmodule CorexAdmin.Components.Index do
       <div
         :if={
           @list_opts.search_fields != [] or @spec.filters != [] or @spec.selectable or
-            @canned_filters != []
+            @canned_filters != [] or assigns[:can_export]
         }
-        class="admin-command-bar"
+        class="admin-command"
       >
-        <Components.filter_views
-          :if={@canned_filters != []}
-          spec={@spec}
-          list_opts={@list_opts}
-          canned_filters={@canned_filters}
-        />
-        <form
-          :if={@list_opts.search_fields != []}
-          id={"#{@spec.slug}-search"}
-          phx-change="search"
-          class="admin-command-search-form"
-        >
-          <.native_input
-            id={"#{@spec.slug}-search-q"}
-            type="search"
-            name="q"
-            value={@list_opts.search}
-            class="native-input ui-size-sm admin-command-search"
-            placeholder={Gettext.t("Search %{label}", label: @spec.label)}
-            phx-debounce="400"
+        <div class="admin-command-bar">
+          <Components.filter_views
+            :if={@canned_filters != []}
+            spec={@spec}
+            list_opts={@list_opts}
+            canned_filters={@canned_filters}
+          />
+          <form
+            :if={@list_opts.search_fields != []}
+            id={"#{@spec.slug}-search"}
+            phx-change="search"
+            class="admin-command-search-form"
           >
-            <:label class="sr-only">{Gettext.t("Search %{label}", label: @spec.label)}</:label>
-            <:icon>
-              <.heroicon name="hero-magnifying-glass" class="icon" />
-            </:icon>
-          </.native_input>
-        </form>
+            <.native_input
+              id={"#{@spec.slug}-search-q"}
+              type="search"
+              name="q"
+              value={@list_opts.search}
+              class="native-input ui-size-sm admin-command-search"
+              placeholder={Gettext.t("Search %{label}", label: @spec.label)}
+              phx-debounce="400"
+            >
+              <:label class="sr-only">{Gettext.t("Search %{label}", label: @spec.label)}</:label>
+              <:icon>
+                <.heroicon name="hero-magnifying-glass" class="icon" />
+              </:icon>
+            </.native_input>
+          </form>
+          <div
+            :if={@spec.selectable or assigns[:can_export]}
+            class="admin-command-selection"
+          >
+            <p :if={@spec.selectable} class="admin-muted admin-table-bar-count">
+              {Gettext.t("%{count} selected", count: length(@selected))}
+            </p>
+            <div class="admin-command-actions">
+              <.export_trigger :if={assigns[:can_export]} spec={@spec} />
+              <div
+                :if={
+                  @spec.selectable and
+                    Action.registered?(@spec, :bulk, CorexAdmin.Action.BulkDelete) and
+                    Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok
+                }
+                class={["admin-command-delete", @selected == [] && "admin-is-disabled"]}
+              >
+                <Components.bulk_delete_dialog
+                  id={"#{@spec.slug}-bulk-delete"}
+                  spec={@spec}
+                  count={length(@selected)}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
         <Components.filter_bar
           spec={@spec}
           list_opts={@list_opts}
           drafts={assigns[:filter_drafts] || []}
-          focus={assigns[:filter_focus]}
         />
-        <div :if={@spec.selectable} class="admin-command-selection">
-          <p class="admin-muted admin-table-bar-count">
-            {Gettext.t("%{count} selected", count: length(@selected))}
-          </p>
-          <div class={["admin-command-actions", @selected == [] && "admin-is-disabled"]}>
-            <Components.bulk_delete_dialog
-              :if={
-                Action.registered?(@spec, :bulk, CorexAdmin.Action.BulkDelete) and
-                  Helpers.authorize(assigns, :delete, @resource_mod, nil) == :ok
-              }
-              id={"#{@spec.slug}-bulk-delete"}
-              spec={@spec}
-              count={length(@selected)}
-            />
-            <.export_trigger
-              :if={assigns[:can_export] and @selected != []}
-              spec={@spec}
-              variant={:bulk}
-            />
-          </div>
-        </div>
       </div>
 
       <div class="admin-table-wrap">
@@ -229,19 +233,20 @@ defmodule CorexAdmin.Components.Index do
   end
 
   attr(:spec, :any, required: true)
-  attr(:variant, :atom, default: :collection)
 
   defp export_trigger(assigns) do
     ~H"""
-    <.action
-      type="button"
-      phx-click={Corex.Dialog.set_open("#{@spec.slug}-export", true)}
-      class="button ui-size-sm"
-      aria_label={Gettext.t("Export")}
-    >
-      <.heroicon name="hero-arrow-down-tray" />
-      <span :if={@variant == :collection}>{Gettext.t("Export")}</span>
-    </.action>
+    <Components.icon_tooltip id={"#{@spec.slug}-export-tip"} label={Gettext.t("Export")}>
+      <.action
+        type="button"
+        phx-click={Corex.Dialog.set_open("#{@spec.slug}-export", true)}
+        class="button ui-size-sm ui-trigger--square"
+        aria_label={Gettext.t("Export")}
+      >
+        <.heroicon name="hero-arrow-down-tray" />
+        <span class="sr-only">{Gettext.t("Export")}</span>
+      </.action>
+    </Components.icon_tooltip>
     """
   end
 
