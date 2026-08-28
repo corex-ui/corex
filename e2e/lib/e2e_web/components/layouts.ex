@@ -137,7 +137,7 @@ defmodule E2eWeb.Layouts do
           class={Shell.aside_tree()}
         />
       </aside>
-      <main id="main-content" class={"admin-main px-space-lg py-space-lg " <> Shell.main()}>
+      <main id="main-content" class={"admin-main " <> Shell.main()}>
         <nav class="admin-mobile-nav" aria-label="Admin resources">
           <AdminComponents.mobile_nav :if={assigns[:corex_admin]} socket={assigns} />
         </nav>
