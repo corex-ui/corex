@@ -26,6 +26,8 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ ~S(id="tickets-filters")
     assert html =~ "Add filter"
     assert html =~ "admin-filter-bar"
+    assert html =~ ~r/id="tickets-views"[^>]*phx-hook="Select"/
+    refute html =~ ~r/id="tickets-views"[^>]*phx-hook="ToggleGroup"/
     assert html =~ "Yesterday"
     assert html =~ "Select all"
     assert html =~ "0 selected"

@@ -116,13 +116,13 @@ allowlist. `filterable: true` on a field does not render a control.
 
 Pinned filters (`pin: true`, the default) are always on the bar as pills.
 Unpinned filters appear under **Add filter** until the operator adds them.
-Named views come from `canned_filters/0` and render as a toggle group above
-the bar.
+Named views come from `canned_filters/0` and render as a select in the
+command bar (All plus each named view).
 
 ## Filter types
 
 The index bar is Shopify/Linear-style: **saved views** (`canned_filters/0`) as a
-toggle group, **pinned pills** always on the bar, and **Add filter** for the
+select, **pinned pills** always on the bar, and **Add filter** for the
 rest (`pin: false`). Each pill is a Corex collapsible popover.
 
 | Type | Widget | Query |

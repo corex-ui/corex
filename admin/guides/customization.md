@@ -64,8 +64,8 @@ Override `render/1` or `handle_event/3` and call `super` when needed.
 
 - `title/1` — show heading, breadcrumbs (default: `title_field`)
 - `query/2` — index/export list (default: context `list`)
-- `canned_filters/0` — optional `[{label, params_map}]` rendered as saved views
-  (toggle group) above the index filter bar; patches the current list URL
+- `canned_filters/0` — optional `[{label, params_map}]` rendered as a view
+  select (All + named views) in the index command bar; patches the current list URL
 - `singular:` — “New Ticket” / empty copy still uses the plural `label`
 
 ```elixir

@@ -160,24 +160,26 @@ defmodule CorexAdmin.Live.Components do
 
   def filter_views(assigns) do
     active = active_view_value(assigns.canned_filters, assigns.list_opts)
-    assigns = assign(assigns, :active, active)
+
+    assigns =
+      assigns
+      |> assign(:active, List.wrap(active))
+      |> assign(:items, view_items(assigns.canned_filters))
 
     ~H"""
-    <.toggle_group
+    <.select
       id={"#{@spec.slug}-views"}
-      class="toggle-group ui-size-sm admin-filter-views"
-      deselectable={false}
-      value={List.wrap(@active)}
+      class="select ui-size-sm admin-filter-views"
+      items={@items}
+      value={@active}
       on_value_change="apply_view"
+      translation={%Corex.Select.Translation{placeholder: Gettext.t("All")}}
     >
-      <:item value="all">{Gettext.t("All")}</:item>
-      <:item
-        :for={{{label, _params}, index} <- Enum.with_index(@canned_filters)}
-        value={Integer.to_string(index)}
-      >
-        {label}
-      </:item>
-    </.toggle_group>
+      <:label class="sr-only">{Gettext.t("View")}</:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
     """
   end
 
@@ -1278,6 +1280,21 @@ defmodule CorexAdmin.Live.Components do
   defp add_filter_list(filters) do
     list_items(Enum.map(filters, fn %Filter{} = filter -> {filter.label, filter.name} end))
   end
+
+  defp view_items(canned) do
+    all = {Gettext.t("All"), "all"}
+
+    named =
+      Enum.map(Enum.with_index(canned), fn {entry, index} ->
+        {view_entry_label(entry), Integer.to_string(index)}
+      end)
+
+    list_items([all | named])
+  end
+
+  defp view_entry_label({label, _params}) when is_binary(label), do: label
+  defp view_entry_label(%{label: label}) when is_binary(label), do: label
+  defp view_entry_label(_), do: Gettext.t("View")
 
   defp draft_name(name) when is_atom(name), do: name
 

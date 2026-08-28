@@ -32,17 +32,19 @@ defmodule CorexAdmin.Components.Index do
         </:actions>
       </.layout_heading>
 
-      <Components.filter_views
-        :if={@canned_filters != []}
-        spec={@spec}
-        list_opts={@list_opts}
-        canned_filters={@canned_filters}
-      />
-
       <div
-        :if={@list_opts.search_fields != [] or @spec.filters != [] or @spec.selectable}
+        :if={
+          @list_opts.search_fields != [] or @spec.filters != [] or @spec.selectable or
+            @canned_filters != []
+        }
         class="admin-command-bar"
       >
+        <Components.filter_views
+          :if={@canned_filters != []}
+          spec={@spec}
+          list_opts={@list_opts}
+          canned_filters={@canned_filters}
+        />
         <form
           :if={@list_opts.search_fields != []}
           id={"#{@spec.slug}-search"}

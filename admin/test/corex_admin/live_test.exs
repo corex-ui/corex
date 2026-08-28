@@ -32,6 +32,8 @@ defmodule CorexAdmin.LiveTest do
     {:ok, _view, html} = live(conn, "/admin/tickets")
     assert html =~ "Broken login"
     assert html =~ "Open only"
+    assert html =~ ~r/id="tickets-views"[^>]*phx-hook="Select"/
+    refute html =~ ~r/id="tickets-views"[^>]*phx-hook="ToggleGroup"/
     refute html =~ "password"
     assert html =~ "Per page"
     assert html =~ "Showing 1–1 of 1"
@@ -221,6 +223,9 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "Broken login"
     refute html =~ "Done ticket"
     assert html =~ "Status: open"
+
+    html = render_hook(view, "apply_view", %{"id" => "tickets-views", "value" => ["all"]})
+    assert html =~ "Done ticket"
   end
 
   test "out of range page clamps to last page", %{conn: conn} do

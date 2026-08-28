@@ -214,13 +214,13 @@
 
  .admin-filter-views {
  width: auto;
- max-width: none;
+ max-width: 12rem;
  flex: 0 0 auto;
  }
 
- .admin .toggle-group.admin-filter-views {
+ .admin .select.admin-filter-views {
  width: auto;
- max-width: none;
+ max-width: 12rem;
  }
 
  .admin-filter-bar {
@@ -683,11 +683,11 @@
 
  .admin .admin-filter-views,
  .admin .admin-command-bar .admin-filter-views,
- .admin .admin-command-bar .toggle-group.admin-filter-views,
+ .admin .admin-command-bar .select.admin-filter-views,
  .admin .admin-command-bar .menu.admin-add-filter,
  .admin .admin-command-bar .combobox.admin-add-filter {
  width: auto;
- max-width: none;
+ max-width: 12rem;
  }
 
  .admin .admin-command-bar [data-scope="collapsible"][data-part="content"][data-state="closed"] {
