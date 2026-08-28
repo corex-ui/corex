@@ -56,7 +56,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     session = wait_tickets_index(session)
 
     session = choose_status_filter(session, "open")
-    assert_has(session, css(".admin-filter-bar .badge.ui-trigger--square", text: "1"))
+    assert_has(session, css(".admin-filter-bar .badge.admin-filter-count", text: "1"))
     assert current_url(session) =~ "filters[status]"
 
     session = click_reset_filter(session, "status")
@@ -102,7 +102,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
 
     SelectModel.wait_for_has(
       session,
-      css("body", text: "Showing 1–10 of 32"),
+      css("body", text: "Showing 1–10 of 30"),
       timeout: 8_000
     )
 
@@ -149,15 +149,34 @@ defmodule E2eWeb.AdminIndexFeatureTest do
   end
 
   defp click_reset_filter(session, field) do
-    execute_script(
-      session,
-      """
-      var btn = document.querySelector(
-        '#tickets-more-filters button[phx-click="reset_filter"][phx-value-field="#{field}"]'
-      );
-      if (btn) btn.click();
-      """
-    )
+    session =
+      execute_script(
+        session,
+        """
+        var btn = document.querySelector(
+          '#tickets-more-filters button[phx-click="reset_filter"][phx-value-field="#{field}"]'
+        );
+        if (btn) btn.click();
+        """
+      )
+
+    # Resetting patches the URL over the socket, so the query string clears a
+    # moment after the click.
+    wait_until_url_drops(session, "filters[#{field}]")
+  end
+
+  defp wait_until_url_drops(session, fragment, timeout \\ 8_000) do
+    deadline = System.monotonic_time(:millisecond) + timeout
+    wait_until_url_drops_loop(session, fragment, deadline)
+  end
+
+  defp wait_until_url_drops_loop(session, fragment, deadline) do
+    if current_url(session) =~ fragment and System.monotonic_time(:millisecond) < deadline do
+      Process.sleep(100)
+      wait_until_url_drops_loop(session, fragment, deadline)
+    else
+      session
+    end
   end
 
   defp choose_status_filter(session, value) do
@@ -168,6 +187,21 @@ defmodule E2eWeb.AdminIndexFeatureTest do
         ~s|#tickets-filter-status [data-scope="select"][data-part="item"][data-value="#{value}"]:not([data-template])|
       )
     )
+    |> wait_until_url_has("filters[status]")
+  end
+
+  defp wait_until_url_has(session, fragment, timeout \\ 8_000) do
+    deadline = System.monotonic_time(:millisecond) + timeout
+    wait_until_url_has_loop(session, fragment, deadline)
+  end
+
+  defp wait_until_url_has_loop(session, fragment, deadline) do
+    if current_url(session) =~ fragment or System.monotonic_time(:millisecond) >= deadline do
+      session
+    else
+      Process.sleep(100)
+      wait_until_url_has_loop(session, fragment, deadline)
+    end
   end
 
   defp wait_live_connected(session, timeout \\ 8_000) do

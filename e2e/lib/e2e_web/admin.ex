@@ -14,5 +14,10 @@ defmodule E2eWeb.Admin do
     policy: E2eWeb.AdminPolicy,
     layout: {E2eWeb.Layouts, :admin},
     title: "Admin",
-    resources: [E2eWeb.Admin.TicketResource, E2eWeb.Admin.PostResource]
+    description: "Support queue and editorial calendar for this demo session",
+    resources: [
+      E2eWeb.Admin.TicketResource,
+      E2eWeb.Admin.PostResource,
+      E2eWeb.Admin.AuthorResource
+    ]
 end

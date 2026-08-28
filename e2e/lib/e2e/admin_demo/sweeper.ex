@@ -4,7 +4,7 @@ defmodule E2e.AdminDemo.Sweeper do
 
   import Ecto.Query
 
-  alias E2e.AdminDemo.{Post, Session, Ticket}
+  alias E2e.AdminDemo.{Author, Post, Session, Ticket}
   alias E2e.Repo
 
   @ttl_ms :timer.minutes(30)
@@ -37,9 +37,11 @@ defmodule E2e.AdminDemo.Sweeper do
     expired_ids =
       Repo.all(from(s in Session, where: s.last_seen_at < ^cutoff, select: s.demo_id))
 
+    # Tickets and posts reference authors, so they go first.
     if expired_ids != [] do
       Repo.delete_all(from(t in Ticket, where: t.demo_id in ^expired_ids))
       Repo.delete_all(from(p in Post, where: p.demo_id in ^expired_ids))
+      Repo.delete_all(from(a in Author, where: a.demo_id in ^expired_ids))
       Repo.delete_all(from(s in Session, where: s.demo_id in ^expired_ids))
     end
 
