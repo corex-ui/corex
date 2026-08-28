@@ -39,7 +39,11 @@ defmodule MyAppWeb.Admin.UserResource do
   end
 
   filters do
-    filter :role, :select, options: ~w(admin editor viewer)
+    filter :role, :select, options: ~w(admin editor viewer), pin: true, operators: [:in, :not_in]
+    filter :email, :text
+    filter :bio, :presence, pin: false
+    filter :id, :id, pin: false
+    filter :created, :relative_date, field: :inserted_at, pin: false
     filter :inserted_at, :date_range
   end
 end
@@ -53,7 +57,7 @@ end
 | `page_size_options` | app `[10, 25, 50, 100]` | Allowed `?page_size=` values (also capped by `max_page_size`) |
 | `default_sort` | none | `{field, :asc | :desc}` when the URL has no sort |
 | `default_filters` | `%{}` | Filter values applied when the matching query key is missing. An empty query value (`filters[status]=`) means “any” and will not re-apply the default. |
-| `filters_open` | `false` | Initial open state of the index filter popover |
+| `filters_open` | `false` | Open the first pinned filter pill on first paint |
 | `title_field` | primary key | Breadcrumbs, flash, show heading (overridable via `title/1`) |
 | `singular` | schema name | “New Ticket”; empty copy still uses plural `label` |
 | `selectable` | `true` | Index checkboxes, bulk bar, and bulk delete |
@@ -75,8 +79,9 @@ When `scope/1` is set, the scope/actor is the first argument.
 
 Use `CorexAdmin.Query.apply/2` and `paginate/2` **inside** the context after you
 scope the query. The admin does not run Repo. `Query.apply/2` dispatches filters
-by value shape: lists use `in`, `%{from, to}` / `%{min, max}` use range bounds,
-everything else uses equality.
+by value shape: lists use `in`, `%{contains: term}` uses `ilike`, `:empty` /
+`:set` test presence, `%{from, to}` / `%{min, max}` use range bounds, everything
+else uses equality.
 
 ```elixir
 def list_users(scope, %CorexAdmin.ListOpts{} = opts) do
@@ -106,8 +111,40 @@ end
 | `:password` | write-only, redacted |
 | schema `redact: true` | redacted |
 
-`filters do` is the source of truth for the index toolbar and the ListOpts
+`filters do` is the source of truth for the index filter bar and the ListOpts
 allowlist. `filterable: true` on a field does not render a control.
+
+Pinned filters (`pin: true`, the default) are always on the bar as pills.
+Unpinned filters appear under **Add filter** until the operator adds them.
+Named views come from `canned_filters/0` and render as a toggle group above
+the bar.
+
+## Filter types
+
+The index bar is Shopify/Linear-style: **saved views** (`canned_filters/0`) as a
+toggle group, **pinned pills** always on the bar, and **Add filter** for the
+rest (`pin: false`). Each pill is a Corex collapsible popover.
+
+| Type | Widget | Query |
+| ---- | ------ | ----- |
+| `:select` | `<.select>` (≤12 options) or `<.combobox>` (>12). Optional `operators: [:in, :not_in]` | `==` / `not in` |
+| `:multi_select` | same widgets, `multiple` | `in` / `not in` |
+| `:date_range` | named presets (Today, Yesterday, Last 7/30/90, This week/month/quarter, YTD) plus `<.date_picker selection_mode="range">` | `>= from 00:00` and `< to+1 day` |
+| `:datetime_range` | two `<.native_input type="datetime-local">` | `>= from` and `<= to` |
+| `:relative_date` | `<.toggle_group>` of rolling windows (`options:` to subset them) | same bounds as `:date_range`, recomputed on each request |
+| `:number_range` | two `<.number_input>`; also `<.slider>` when `min:` and `max:` are set | `>= min` and `<= max` |
+| `:number` | operator + `<.number_input>` (`:eq`, `:gte`, `:lte`) | `==` / `>=` / `<=` |
+| `:boolean` | `<.toggle_group>` Yes / No (deselect for Any) | `==` |
+| `:text` | operator (`:contains`, `:equals`, `:starts_with`, `:ends_with`, `:not_contains`) + `<.native_input>` | `ilike` / `==` |
+| `:id` | `<.native_input>` exact match | `==` |
+| `:presence` | `<.toggle_group>` Has value / Is empty | `is_nil` / not nil |
+| `:tags` | `<.tags_input>` | `in` |
+
+Optional `field:` on a filter if the URL name should differ from the schema column
+(for example `filter :created, :relative_date, field: :inserted_at`).
+Optional `pin: false` to hide a filter behind **Add filter**.
+Optional `operators:` / `default_operator:` to restrict or reorder comparison ops.
+Do not put HTML in resource modules.
 
 v0.1 field types: `:id`, `:text`, `:textarea`, `:email`, `:password`,
 `:number`, `:boolean`, `:select`, `:date`, `:datetime`, `:url`,
@@ -131,16 +168,3 @@ end
 params and keeps only allowlisted child keys — unknown nested keys are dropped
 and never atomized.
 
-## Filter types
-
-| Type | Widget | Query |
-| ---- | ------ | ----- |
-| `:select` | `<.select>` when there are 12 or fewer options, or `<.combobox>` when there are more than 12 | `==` |
-| `:multi_select` | same widgets as `:select`, with `multiple` | `in` |
-| `:date_range` | presets (Today, Last 7 days, Last 30 days, This month, YTD) plus `<.date_picker selection_mode="range">` | `>= from 00:00` and `< to+1 day` |
-| `:datetime_range` | two `<.native_input type="datetime-local">` | `>= from` and `<= to` |
-| `:number_range` | two `<.number_input>` | `>= min` and `<= max` |
-| `:boolean` | `<.toggle_group>` Yes / No (deselect for Any) | `==` |
-
-Optional `field:` on a filter if the URL name should differ from the schema column.
-Do not put HTML in resource modules.

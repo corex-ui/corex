@@ -24,6 +24,9 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ "admin-content"
     assert html =~ "page=2"
     assert html =~ ~S(id="tickets-filters")
+    assert html =~ "Add filter"
+    assert html =~ "admin-filter-bar"
+    assert html =~ "Yesterday"
     assert html =~ "Select all"
     assert html =~ "0 selected"
     refute html =~ "tickets-command-select-all"
@@ -144,11 +147,11 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ "High priority"
 
     {view, html} = live_ok!(conn, "#{index}?#{qs}")
-    assert html =~ "Reset all"
-    refute html =~ "Clear all"
+    assert html =~ "Clear all"
+    refute html =~ "Reset all"
 
     view
-    |> element("button", "Reset all")
+    |> element("button", "Clear all")
     |> render_click()
 
     assert_patch(view, index)

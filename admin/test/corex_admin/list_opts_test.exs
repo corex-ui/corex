@@ -26,6 +26,18 @@ defmodule CorexAdmin.ListOptsTest do
     assert opts.filters == %{status: ["open"]}
   end
 
+  test "parses text contains and presence filters" do
+    opts =
+      ListOpts.from_params(spec(), %{
+        "filters" => %{"email" => "ops@", "body" => "empty"}
+      })
+
+    assert opts.filters[:email] == %{contains: "ops@"}
+    assert opts.filters[:body] == :empty
+    assert ListOpts.to_params(opts)["filters"]["email"] == "ops@"
+    assert ListOpts.to_params(opts)["filters"]["body"] == "empty"
+  end
+
   test "parses multi-select, date range, and number range" do
     opts =
       ListOpts.from_params(spec(), %{
@@ -103,5 +115,29 @@ defmodule CorexAdmin.ListOptsTest do
     refute Map.has_key?(opts.filters, :status)
     assert MapSet.member?(opts.filters_cleared, :status)
     assert ListOpts.to_params(opts)["filters"]["status"] == ""
+  end
+
+  test "parses text operators, not-in, relative date, and id" do
+    opts =
+      ListOpts.from_params(spec(), %{
+        "filters" => %{
+          "email" => %{"op" => "starts_with", "value" => "ops"},
+          "status" => %{"op" => "not_in", "value" => ["open"]},
+          "created" => "last_7",
+          "id" => "12"
+        }
+      })
+
+    assert opts.filters[:email] == %{op: :starts_with, value: "ops"}
+    assert opts.filters[:status] == %{op: :not_in, value: ["open"]}
+    assert opts.filters[:created] == %{relative: :last_7}
+    assert opts.filters[:id] == 12
+    assert opts.filter_fields[:created] == :inserted_at
+
+    params = ListOpts.to_params(opts)
+    assert params["filters"]["email"]["op"] == "starts_with"
+    assert params["filters"]["status"]["op"] == "not_in"
+    assert params["filters"]["created"] == "last_7"
+    assert params["filters"]["id"] == "12"
   end
 end

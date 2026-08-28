@@ -90,8 +90,11 @@ defmodule CorexAdmin.Test.Tickets do
 
   defp apply_filters(entries, %ListOpts{filters: filters}) when filters == %{}, do: entries
 
-  defp apply_filters(entries, %ListOpts{filters: filters}) do
-    Enum.reduce(filters, entries, fn {field, value}, acc ->
+  defp apply_filters(entries, %ListOpts{filters: filters} = opts) do
+    fields = opts.filter_fields || %{}
+
+    Enum.reduce(filters, entries, fn {name, value}, acc ->
+      field = Map.get(fields, name, name)
       Enum.filter(acc, &Query.match_filter?(&1, field, value))
     end)
   end

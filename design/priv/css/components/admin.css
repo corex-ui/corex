@@ -212,6 +212,72 @@
  gap: var(--spacing-space-sm);
  }
 
+ .admin-filter-views {
+ width: auto;
+ max-width: none;
+ flex: 0 0 auto;
+ }
+
+ .admin .toggle-group.admin-filter-views {
+ width: auto;
+ max-width: none;
+ }
+
+ .admin-filter-bar {
+ display: flex;
+ flex: 1 1 auto;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: var(--spacing-space-sm);
+ min-width: 0;
+ }
+
+ .admin-filter-pill-wrap {
+ display: inline-flex;
+ align-items: center;
+ position: relative;
+ gap: 0;
+ }
+
+ .admin-filter-pill-label {
+ white-space: nowrap;
+ }
+
+ .admin-filter-pill-wrap.admin-is-active .admin-filter-pill-label {
+ font-weight: 600;
+ }
+
+ .admin-filter-operator {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: flex-end;
+ gap: var(--spacing-space-sm);
+ }
+
+ .admin-filter-operator > .select {
+ width: auto;
+ max-width: 12rem;
+ flex: 0 0 auto;
+ }
+
+ .admin-filter-operator > .native-input,
+ .admin-filter-operator > .number-input {
+ flex: 1 1 10rem;
+ min-width: 8rem;
+ }
+
+ .admin-filter-windows {
+ flex-wrap: wrap;
+ width: auto;
+ max-width: none;
+ }
+
+ .admin-add-filter {
+ width: auto;
+ max-width: none;
+ flex: 0 0 auto;
+ }
+
  .admin-chips,
  .admin-selection-bar,
  .admin-actions {
@@ -547,7 +613,7 @@
  line-height: var(--text-sm--line-height);
  }
 
- .admin .collapsible:not(.admin-filters),
+ .admin .collapsible:not(.admin-filters):not(.admin-filter-pill),
  .admin .data-list,
  .admin .data-table,
  .admin .tree-view,
@@ -562,7 +628,10 @@
  .admin .combobox,
  .admin .tabs,
  .admin .pagination,
- .admin .file-upload {
+ .admin .file-upload,
+ .admin .tags-input,
+ .admin .slider,
+ .admin .menu {
  width: 100%;
  max-width: none;
  }
@@ -600,7 +669,8 @@
 
  .admin .admin-command-bar [data-scope="collapsible"][data-part="content"] {
  position: absolute;
- inset-inline-end: 0;
+ inset-inline-start: 0;
+ inset-inline-end: auto;
  top: calc(100% + var(--spacing-space-sm));
  z-index: 20;
  width: min(36rem, calc(100vw - 2 * var(--spacing-space-lg)));
@@ -609,6 +679,15 @@
  border: 1px solid var(--color-border);
  border-radius: var(--radius-md);
  box-shadow: none;
+ }
+
+ .admin .admin-filter-views,
+ .admin .admin-command-bar .admin-filter-views,
+ .admin .admin-command-bar .toggle-group.admin-filter-views,
+ .admin .admin-command-bar .menu.admin-add-filter,
+ .admin .admin-command-bar .combobox.admin-add-filter {
+ width: auto;
+ max-width: none;
  }
 
  .admin .admin-command-bar [data-scope="collapsible"][data-part="content"][data-state="closed"] {
@@ -868,7 +947,9 @@
 .admin .number-input,
 .admin .nested-fields,
 .admin .password-input,
-.admin .file-upload {
+.admin .file-upload,
+.admin .tags-input,
+.admin .slider {
  width: 100%;
  max-width: none;
 }

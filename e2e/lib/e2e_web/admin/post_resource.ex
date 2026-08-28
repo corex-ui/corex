@@ -38,7 +38,10 @@ defmodule E2eWeb.Admin.PostResource do
   end
 
   filters do
-    filter(:status, :select, options: ~W(draft published))
-    filter(:inserted_at, :date_range, label: "Published")
+    filter(:status, :select, options: ~W(draft published), pin: true)
+    filter(:inserted_at, :date_range, label: "Published", pin: true)
+    filter(:author, :text, pin: false)
+    filter(:excerpt, :presence, pin: false)
+    filter(:id, :id, pin: false)
   end
 end

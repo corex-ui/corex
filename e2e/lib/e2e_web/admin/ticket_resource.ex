@@ -43,8 +43,19 @@ defmodule E2eWeb.Admin.TicketResource do
   end
 
   filters do
-    filter(:status, :multi_select, options: ~W(open done))
-    filter(:priority, :number_range)
-    filter(:inserted_at, :date_range)
+    filter(:status, :multi_select, options: ~W(open done), pin: true, operators: [:in, :not_in])
+    filter(:priority, :number_range, min: 1, max: 5, pin: true)
+    filter(:inserted_at, :date_range, pin: true)
+    filter(:email, :text, pin: false)
+    filter(:body, :presence, pin: false)
+    filter(:id, :id, pin: false)
+    filter(:created, :relative_date, field: :inserted_at, pin: false)
+  end
+
+  def canned_filters do
+    [
+      {"Open", %{"filters" => %{"status" => ["open"]}}},
+      {"Done", %{"filters" => %{"status" => ["done"]}}}
+    ]
   end
 end

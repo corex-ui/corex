@@ -42,6 +42,8 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ ~s(aria-label="Breadcrumb")
     refute html =~ "grid-cols-1 items-center"
     assert html =~ ~s(id="tickets-filters")
+    assert html =~ "admin-filter-bar"
+    assert html =~ "Add filter"
     assert html =~ "Filters"
     assert html =~ ~s(data-part="control-inputs")
     assert html =~ ~s(data-range)
@@ -79,9 +81,13 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "ui-solid ui-brand"
     assert html =~ "ui-ghost ui-alert"
     assert html =~ "Today"
+    assert html =~ "Yesterday"
     assert html =~ "Last 7 days"
     assert html =~ "Last 30 days"
+    assert html =~ "Last 90 days"
+    assert html =~ "This week"
     assert html =~ "This month"
+    assert html =~ "This quarter"
     assert html =~ "YTD"
     assert html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="Select"/
     refute html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="ToggleGroup"/
@@ -180,7 +186,25 @@ defmodule CorexAdmin.LiveTest do
     assert_patch(view, "/admin/tickets?page_size=10")
   end
 
-  test "canned filter patches list params", %{conn: conn, scope: scope} do
+  test "add filter menu reveals an unpinned text filter", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/admin/tickets")
+    refute html =~ ~s(id="tickets-filter-email")
+
+    html = render_click(view, "add_filter", %{"value" => "email"})
+    assert html =~ ~s(id="tickets-filter-email")
+    assert html =~ "Email"
+    assert html =~ "Contains"
+    assert html =~ "Starts with"
+
+    html = render_click(view, "add_filter", %{"value" => "id"})
+    assert html =~ ~s(id="tickets-filter-id")
+
+    html = render_click(view, "add_filter", %{"value" => "created"})
+    assert html =~ ~s(id="tickets-filter-created")
+    assert html =~ "Yesterday"
+  end
+
+  test "saved view toggle patches list params", %{conn: conn, scope: scope} do
     Tickets.create_ticket(scope, %{
       "title" => "Done ticket",
       "email" => "done@example.test",
@@ -288,13 +312,13 @@ defmodule CorexAdmin.LiveTest do
     assert_patch(view, "/admin/tickets?" <> qs)
   end
 
-  test "reset all restores default filter params", %{conn: conn} do
+  test "clear all restores default filter params", %{conn: conn} do
     {:ok, view, html} = live(conn, "/admin/tickets?filters[status][]=open")
-    assert html =~ "Reset all"
-    refute html =~ "Clear all"
+    assert html =~ "Clear all"
+    refute html =~ "Reset all"
 
     view
-    |> element("button", "Reset all")
+    |> element("button", "Clear all")
     |> render_click()
 
     assert_patch(view, "/admin/tickets")

@@ -38,6 +38,19 @@ defmodule CorexAdmin.ResourceTest do
     assert {:status, :multi_select} in names
     assert {:priority, :number_range} in names
     assert {:inserted_at, :date_range} in names
+    assert {:email, :text} in names
+    assert {:body, :presence} in names
+    assert {:id, :id} in names
+    assert {:created, :relative_date} in names
+
+    pins = Map.new(spec.filters, &{&1.name, &1.pin})
+    assert pins[:status]
+    refute pins[:email]
+    refute pins[:id]
+
+    status = Enum.find(spec.filters, &(&1.name == :status))
+    assert :not_in in CorexAdmin.Resource.Filter.operators(status)
+    assert CorexAdmin.Resource.Filter.relative_bounds("today") != :error
   end
 
   test "applies index/show defaults and resource options" do

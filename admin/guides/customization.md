@@ -64,8 +64,8 @@ Override `render/1` or `handle_event/3` and call `super` when needed.
 
 - `title/1` — show heading, breadcrumbs (default: `title_field`)
 - `query/2` — index/export list (default: context `list`)
-- `canned_filters/0` — optional `[{label, params_map}]` rendered as index
-  shortcuts that patch the current list URL
+- `canned_filters/0` — optional `[{label, params_map}]` rendered as saved views
+  (toggle group) above the index filter bar; patches the current list URL
 - `singular:` — “New Ticket” / empty copy still uses the plural `label`
 
 ```elixir
@@ -229,13 +229,14 @@ the `admin/` package.
 
 ## Index chrome
 
-Heading + New + Export, search + Filters trigger, chips, slim bulk bar on the
-table, streamed table, footer (Showing + pagination + page-size).
+Heading + New + Export, search, saved views, filter pills + **Add filter**,
+chips, slim bulk bar, streamed table, footer (Showing + pagination + page-size).
 
 - Enumerated filters use `<.select>` (12 or fewer) or `<.combobox>` (more).
-  Toggle group is only for `:boolean`.
-- Date ranges include Today / Last 7 days / Last 30 days / This month / YTD.
-- **Reset** / **Reset all** restore defaults; chip **X** clears to Any.
+  Toggle group is for `:boolean`, `:presence`, `:relative_date`, and Is / Is not.
+- Text filters expose Contains / Is / Starts with / Ends with / Does not contain.
+- Date ranges include Today, Yesterday, Last 7/30/90, This week/month/quarter, YTD.
+- **Reset** / **Clear all** restore defaults; pill **X** clears that filter to Any.
 
 ## Config (`config :corex_admin`)
 

@@ -22,6 +22,7 @@ defmodule CorexAdmin.ListOpts do
             search_fields: [],
             filters: %{},
             filter_defaults: %{},
+            filter_fields: %{},
             filters_cleared: MapSet.new()
 
   @type filter_value ::
@@ -34,6 +35,11 @@ defmodule CorexAdmin.ListOpts do
               optional(:to) => term()
             }
           | %{optional(:min) => number(), optional(:max) => number()}
+          | %{optional(:op) => atom(), optional(:value) => term()}
+          | %{optional(:contains) => String.t()}
+          | %{optional(:relative) => atom()}
+          | :empty
+          | :set
 
   @type t :: %__MODULE__{
           page: pos_integer(),
@@ -45,6 +51,7 @@ defmodule CorexAdmin.ListOpts do
           search_fields: [atom()],
           filters: %{optional(atom()) => filter_value()},
           filter_defaults: %{optional(atom()) => filter_value()},
+          filter_fields: %{optional(atom()) => atom()},
           filters_cleared: MapSet.t(atom())
         }
 
@@ -66,6 +73,7 @@ defmodule CorexAdmin.ListOpts do
       search_fields: searchable_names(spec),
       filters: filters,
       filter_defaults: defaults,
+      filter_fields: Map.new(spec.filters, &{&1.name, &1.field}),
       filters_cleared: cleared
     }
   end
@@ -157,13 +165,13 @@ defmodule CorexAdmin.ListOpts do
 
         if Map.has_key?(raw, key) do
           case parse_filter_value(filter, Map.get(raw, key)) do
-            nil -> {acc, MapSet.put(cleared, filter.field)}
-            parsed -> {Map.put(acc, filter.field, parsed), cleared}
+            nil -> {acc, MapSet.put(cleared, filter.name)}
+            parsed -> {Map.put(acc, filter.name, parsed), cleared}
           end
         else
-          case Map.get(defaults, filter.field) do
+          case Map.get(defaults, filter.name) do
             nil -> {acc, cleared}
-            parsed -> {Map.put(acc, filter.field, parsed), cleared}
+            parsed -> {Map.put(acc, filter.name, parsed), cleared}
           end
         end
       end)
@@ -183,7 +191,7 @@ defmodule CorexAdmin.ListOpts do
 
       case parse_filter_value(filter, value) do
         nil -> acc
-        parsed -> Map.put(acc, filter.field, parsed)
+        parsed -> Map.put(acc, filter.name, parsed)
       end
     end)
   end
@@ -191,7 +199,7 @@ defmodule CorexAdmin.ListOpts do
   defp parse_filter_value(_filter, nil), do: nil
   defp parse_filter_value(_filter, ""), do: nil
 
-  defp parse_filter_value(%Filter{type: :multi_select} = filter, value) do
+  defp parse_filter_value(%Filter{type: :multi_select} = filter, value) when not is_map(value) do
     allowed = option_values(filter)
 
     value
@@ -247,6 +255,59 @@ defmodule CorexAdmin.ListOpts do
     parse_number_range(value)
   end
 
+  defp parse_filter_value(%Filter{type: :text} = filter, value) do
+    parse_op_filter(filter, value, &parse_contains/1)
+  end
+
+  defp parse_filter_value(%Filter{type: :id} = filter, value) do
+    parse_op_filter(filter, value, &parse_id_value/1)
+  end
+
+  defp parse_filter_value(%Filter{type: :number} = filter, value) do
+    parse_op_filter(filter, value, &parse_number/1)
+  end
+
+  defp parse_filter_value(%Filter{type: :relative_date} = filter, value) do
+    window = value_to_string(unwrap_filter_value(value))
+    allowed = Enum.map(Filter.relative_windows(filter), &Atom.to_string/1)
+
+    if window in allowed do
+      %{relative: Filter.parse_atom(window)}
+    else
+      nil
+    end
+  end
+
+  defp parse_filter_value(%Filter{type: :presence}, value) do
+    case value_to_string(value) do
+      "empty" -> :empty
+      "set" -> :set
+      "blank" -> :empty
+      "present" -> :set
+      _ -> nil
+    end
+  end
+
+  defp parse_filter_value(%Filter{type: type} = filter, value)
+       when type in [:select, :multi_select, :tags] do
+    {op, inner} = split_op(filter, value)
+    parsed = parse_membership_value(filter, inner)
+
+    cond do
+      is_nil(parsed) and op not in [nil, Filter.default_operator(filter)] ->
+        %{op: op}
+
+      is_nil(parsed) ->
+        nil
+
+      op in [:not_in] ->
+        %{op: op, value: List.wrap(parsed)}
+
+      true ->
+        parsed
+    end
+  end
+
   defp parse_filter_value(_filter, value) when is_binary(value) do
     case String.trim(value) do
       "" -> nil
@@ -255,6 +316,130 @@ defmodule CorexAdmin.ListOpts do
   end
 
   defp parse_filter_value(_filter, _value), do: nil
+
+  defp parse_membership_value(%Filter{type: :tags}, value) do
+    value
+    |> List.wrap()
+    |> Enum.flat_map(&split_multi/1)
+    |> Enum.map(&to_string/1)
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.uniq()
+    |> case do
+      [] -> nil
+      list -> list
+    end
+  end
+
+  defp parse_membership_value(%Filter{type: :multi_select} = filter, value) do
+    allowed = option_values(filter)
+
+    value
+    |> List.wrap()
+    |> Enum.flat_map(&split_multi/1)
+    |> Enum.map(&to_string/1)
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.filter(&(&1 in allowed or allowed == []))
+    |> case do
+      [] -> nil
+      list -> Enum.uniq(list)
+    end
+  end
+
+  defp parse_membership_value(%Filter{type: :select} = filter, value) do
+    value = if is_list(value), do: List.first(value), else: value
+
+    case value do
+      value when is_binary(value) ->
+        trimmed = String.trim(value)
+        allowed = option_values(filter)
+
+        cond do
+          trimmed == "" -> nil
+          allowed == [] -> trimmed
+          trimmed in allowed -> trimmed
+          true -> nil
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  defp parse_op_filter(filter, value, parser) do
+    {op, inner} = split_op(filter, value)
+    parsed = parser.(inner)
+
+    cond do
+      is_nil(parsed) and op not in [nil, Filter.default_operator(filter)] ->
+        %{op: op}
+
+      is_nil(parsed) ->
+        nil
+
+      op in [nil, Filter.default_operator(filter)] and compact_default_op?(op) ->
+        default_op_value(op, parsed)
+
+      true ->
+        %{op: op, value: parsed}
+    end
+  end
+
+  defp compact_default_op?(op) when op in [:contains, :equals, :eq, :in, nil], do: true
+  defp compact_default_op?(_), do: false
+
+  defp default_op_value(:contains, text), do: %{contains: text}
+  defp default_op_value(_, parsed), do: parsed
+
+  defp split_op(filter, value) when is_map(value) do
+    map = stringify_keys(value)
+    op = allowed_op(filter, Map.get(map, "op"))
+    inner = Map.get(map, "value", Map.get(map, "contains", Map.get(map, "q")))
+    {op || Filter.default_operator(filter), inner}
+  end
+
+  defp split_op(filter, value) do
+    {Filter.default_operator(filter), value}
+  end
+
+  defp allowed_op(filter, raw) do
+    op = Filter.parse_atom(raw)
+    if op in Filter.operators(filter), do: op, else: nil
+  end
+
+  defp unwrap_filter_value(%{value: value}), do: value
+  defp unwrap_filter_value(%{"value" => value}), do: value
+  defp unwrap_filter_value(%{relative: value}), do: value
+  defp unwrap_filter_value(%{"relative" => value}), do: value
+  defp unwrap_filter_value(value), do: value
+
+  defp parse_id_value(value) do
+    case parse_contains(value) do
+      nil ->
+        nil
+
+      text ->
+        case Integer.parse(text) do
+          {int, ""} -> int
+          _ -> text
+        end
+    end
+  end
+
+  defp parse_contains(%{contains: value}), do: parse_contains(value)
+  defp parse_contains(%{value: value}), do: parse_contains(value)
+  defp parse_contains(%{"contains" => value}), do: parse_contains(value)
+  defp parse_contains(%{"value" => value}), do: parse_contains(value)
+
+  defp parse_contains(value) when is_binary(value) do
+    case String.trim(value) do
+      "" -> nil
+      trimmed -> trimmed
+    end
+  end
+
+  defp parse_contains(_), do: nil
 
   defp split_multi(value) when is_binary(value) do
     if String.contains?(value, ","), do: String.split(value, ",", trim: true), else: [value]
@@ -479,12 +664,26 @@ defmodule CorexAdmin.ListOpts do
   defp encode_filter(%{min: _, max: _} = range), do: encode_map_bounds(range)
   defp encode_filter(%{min: _} = range), do: encode_map_bounds(range)
   defp encode_filter(%{max: _} = range), do: encode_map_bounds(range)
+  defp encode_filter(%{op: :contains, value: value}), do: encode_filter(value)
+  defp encode_filter(%{op: :in, value: value}), do: encode_filter(value)
+  defp encode_filter(%{op: :eq, value: value}), do: encode_filter(value)
+  defp encode_filter(%{op: :equals, value: value}), do: encode_filter(value)
+
+  defp encode_filter(%{op: op, value: value}) do
+    %{"op" => Atom.to_string(op), "value" => encode_filter(value)}
+  end
+
+  defp encode_filter(%{op: op}) when is_atom(op), do: %{"op" => Atom.to_string(op)}
+  defp encode_filter(%{relative: window}), do: encode_filter(window)
+  defp encode_filter(%{contains: value}), do: encode_filter(value)
 
   defp encode_filter(%Date{} = date), do: Date.to_iso8601(date)
   defp encode_filter(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
   defp encode_filter(%NaiveDateTime{} = dt), do: NaiveDateTime.to_iso8601(dt)
   defp encode_filter(true), do: "true"
   defp encode_filter(false), do: "false"
+  defp encode_filter(:empty), do: "empty"
+  defp encode_filter(:set), do: "set"
   defp encode_filter(value), do: to_string(value)
 
   defp encode_map_bounds(map) do

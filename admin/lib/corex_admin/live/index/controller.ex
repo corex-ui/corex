@@ -10,7 +10,9 @@ defmodule CorexAdmin.Live.Index.Controller do
   alias CorexAdmin.ListOpts
   alias CorexAdmin.Live.Helpers
   alias CorexAdmin.Page
+  alias CorexAdmin.Resource.Filter
   alias Corex.DataTable.Selection
+  alias Corex.ToggleGroup
 
   def mount(_params, _session, socket) do
     {:ok,
@@ -23,6 +25,8 @@ defmodule CorexAdmin.Live.Index.Controller do
      |> assign(:export_token, nil)
      |> assign(:export_open, false)
      |> assign(:canned_filters, [])
+     |> assign(:filter_drafts, [])
+     |> assign(:filter_focus, nil)
      |> assign(:table_row_item, &Function.identity/1)
      |> assign(:can_export, false)
      |> assign(:export_fields, [])}
@@ -167,10 +171,45 @@ defmodule CorexAdmin.Live.Index.Controller do
   def handle_event("canned_filter", %{"index" => index}, socket) do
     case canned_filter_params(socket.assigns.canned_filters, index) do
       {:ok, params} ->
-        {:noreply, patch_index(socket, Map.put(params, "page", "1"))}
+        {:noreply,
+         socket
+         |> assign(:filter_drafts, [])
+         |> assign(:filter_focus, nil)
+         |> patch_index(Map.put(params, "page", "1"))}
 
       :error ->
         {:noreply, socket}
+    end
+  end
+
+  def handle_event("apply_view", params, socket) do
+    case event_scalar(params) do
+      "all" ->
+        handle_event("reset_filters", %{}, socket)
+
+      index ->
+        handle_event("canned_filter", %{"index" => index}, socket)
+    end
+  end
+
+  def handle_event("add_filter", params, socket) do
+    name = event_scalar(params)
+    spec = socket.assigns.spec
+
+    allowed =
+      spec.filters
+      |> Enum.map(&Atom.to_string(&1.name))
+      |> MapSet.new()
+
+    if is_binary(name) and MapSet.member?(allowed, name) do
+      drafts = Enum.uniq(List.wrap(socket.assigns[:filter_drafts]) ++ [name])
+
+      {:noreply,
+       socket
+       |> assign(:filter_drafts, drafts)
+       |> assign(:filter_focus, name)}
+    else
+      {:noreply, socket}
     end
   end
 
@@ -180,7 +219,11 @@ defmodule CorexAdmin.Live.Index.Controller do
       |> ListOpts.to_params()
       |> Map.drop(["q", "filters", "page"])
 
-    {:noreply, patch_index_and_sync_filters(socket, params, :all)}
+    {:noreply,
+     socket
+     |> assign(:filter_drafts, [])
+     |> assign(:filter_focus, nil)
+     |> patch_index_and_sync_filters(params, :all)}
   end
 
   def handle_event("clear_filters", _params, socket) do
@@ -387,7 +430,16 @@ defmodule CorexAdmin.Live.Index.Controller do
 
     cond do
       filter.type == :boolean ->
-        Corex.ToggleGroup.set_value(socket, id, [])
+        ToggleGroup.set_value(socket, id, [])
+
+      filter.type == :presence ->
+        ToggleGroup.set_value(socket, id, [])
+
+      filter.type == :relative_date ->
+        ToggleGroup.set_value(socket, id, [])
+
+      filter.type == :tags ->
+        Corex.TagsInput.set_value(socket, id, [])
 
       filter.type in [:select, :multi_select] and option_count > 12 ->
         Corex.Combobox.set_value(socket, id, [])
@@ -407,11 +459,34 @@ defmodule CorexAdmin.Live.Index.Controller do
   end
 
   defp merge_params(socket, params) do
-    socket.assigns.list_opts
-    |> ListOpts.to_params()
-    |> Map.merge(stringify_keys(params))
-    |> Map.drop(["_target", "_unused"])
+    current = ListOpts.to_params(socket.assigns.list_opts)
+    incoming = params |> stringify_keys() |> Map.drop(["_target", "_unused"])
+    filters = Map.get(incoming, "filters")
+
+    current
+    |> Map.merge(Map.delete(incoming, "filters"))
+    |> merge_incoming_filters(filters)
   end
+
+  defp merge_incoming_filters(current, nil), do: current
+
+  defp merge_incoming_filters(current, incoming) when is_map(incoming) do
+    left = stringify_keys(Map.get(current, "filters", %{}))
+    right = stringify_keys(incoming)
+
+    merged =
+      Map.merge(left, right, fn _key, old, new ->
+        if is_map(old) and is_map(new) do
+          Map.merge(stringify_keys(old), stringify_keys(new))
+        else
+          new
+        end
+      end)
+
+    put_filters(current, merged)
+  end
+
+  defp merge_incoming_filters(current, _), do: current
 
   defp merge_filter_event(socket, params) do
     id = to_string(Map.get(params, "id") || "")
@@ -422,20 +497,44 @@ defmodule CorexAdmin.Live.Index.Controller do
 
     case parse_filter_control_id(id) do
       {:value, name} ->
-        if date_range_filter?(spec, name) do
-          case complete_date_range_value(value) do
-            :incomplete ->
-              :ignore
+        cond do
+          date_range_filter?(spec, name) ->
+            case complete_date_range_value(value) do
+              :incomplete ->
+                :ignore
 
-            normalized ->
-              put_filters(current, put_or_delete_filter(spec, filters, name, normalized))
-          end
-        else
-          put_filters(
-            current,
-            put_or_delete_filter(spec, filters, name, normalize_filter_param(value))
-          )
+              normalized ->
+                put_filters(current, put_or_delete_filter(spec, filters, name, normalized))
+            end
+
+          number_range_filter?(spec, name) ->
+            put_filters(
+              current,
+              put_or_delete_filter(spec, filters, name, normalize_number_range_param(value))
+            )
+
+          true ->
+            put_filters(
+              current,
+              put_or_delete_filter(
+                spec,
+                filters,
+                name,
+                merge_filter_value(Map.get(filters, name), normalize_filter_param(value))
+              )
+            )
         end
+
+      {:op, name} ->
+        put_filters(
+          current,
+          put_or_delete_filter(
+            spec,
+            filters,
+            name,
+            merge_filter_op(Map.get(filters, name), normalize_filter_param(value))
+          )
+        )
 
       {:range, name, bound} ->
         nested = stringify_keys(Map.get(filters, name, %{}))
@@ -463,6 +562,37 @@ defmodule CorexAdmin.Live.Index.Controller do
     Enum.any?(filters, fn filter ->
       to_string(filter.name) == name and filter.type == :date_range
     end)
+  end
+
+  defp number_range_filter?(%{filters: filters}, name) do
+    Enum.any?(filters, fn filter ->
+      to_string(filter.name) == name and filter.type == :number_range
+    end)
+  end
+
+  defp normalize_number_range_param(value) do
+    case normalize_filter_param(value) do
+      [min, max] ->
+        %{"min" => min, "max" => max}
+
+      %{min: _, max: _} = map ->
+        stringify_keys(map)
+
+      %{"min" => _, "max" => _} = map ->
+        map
+
+      other ->
+        other
+    end
+  end
+
+  defp event_scalar(params) when is_map(params) do
+    case Map.get(params, "value") do
+      [value | _] -> to_string(value)
+      value when is_binary(value) -> value
+      value when is_atom(value) and not is_nil(value) -> Atom.to_string(value)
+      _ -> nil
+    end
   end
 
   defp complete_date_range_value(value) do
@@ -567,6 +697,12 @@ defmodule CorexAdmin.Live.Index.Controller do
           String.ends_with?(rest, "-to") ->
             {:range, String.trim_trailing(rest, "-to"), "to"}
 
+          String.ends_with?(rest, "-slider") ->
+            {:value, String.trim_trailing(rest, "-slider")}
+
+          String.ends_with?(rest, "-op") ->
+            {:op, String.trim_trailing(rest, "-op")}
+
           true ->
             {:value, rest}
         end
@@ -629,32 +765,56 @@ defmodule CorexAdmin.Live.Index.Controller do
 
   defp toggle_dir(_, _), do: "asc"
 
-  defp date_preset_bounds("today") do
-    today = Date.utc_today()
-    {today, today}
+  defp date_preset_bounds(preset), do: Filter.relative_bounds(preset)
+
+  defp merge_filter_value(existing, nil), do: drop_value_keep_op(existing)
+
+  defp merge_filter_value(existing, value) when is_map(existing) do
+    existing = stringify_keys(existing)
+
+    if Map.has_key?(existing, "op") do
+      Map.put(existing, "value", value)
+    else
+      value
+    end
   end
 
-  defp date_preset_bounds("last_7") do
-    today = Date.utc_today()
-    {Date.add(today, -6), today}
+  defp merge_filter_value(_existing, value), do: value
+
+  defp merge_filter_op(existing, nil), do: existing
+
+  defp merge_filter_op(existing, op) do
+    op = to_string(op)
+
+    case existing do
+      map when is_map(map) ->
+        map = stringify_keys(map)
+        inner = Map.get(map, "value")
+
+        if present_filter_value?(inner) do
+          %{"op" => op, "value" => inner}
+        else
+          %{"op" => op}
+        end
+
+      value when value not in [nil, "", []] ->
+        %{"op" => op, "value" => value}
+
+      _ ->
+        %{"op" => op}
+    end
   end
 
-  defp date_preset_bounds("last_30") do
-    today = Date.utc_today()
-    {Date.add(today, -29), today}
+  defp drop_value_keep_op(existing) when is_map(existing) do
+    existing = stringify_keys(existing)
+
+    case Map.get(existing, "op") do
+      op when op not in [nil, ""] -> %{"op" => op}
+      _ -> nil
+    end
   end
 
-  defp date_preset_bounds("this_month") do
-    today = Date.utc_today()
-    {%{today | day: 1}, today}
-  end
-
-  defp date_preset_bounds("ytd") do
-    today = Date.utc_today()
-    {%{today | month: 1, day: 1}, today}
-  end
-
-  defp date_preset_bounds(_), do: :error
+  defp drop_value_keep_op(_), do: nil
 
   # Table header checkboxes are library-controlled. Zag can echo onCheckedChange
   # when the header is patched to indeterminate or false after a partial select.

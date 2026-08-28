@@ -32,6 +32,13 @@ defmodule CorexAdmin.Components.Index do
         </:actions>
       </.layout_heading>
 
+      <Components.filter_views
+        :if={@canned_filters != []}
+        spec={@spec}
+        list_opts={@list_opts}
+        canned_filters={@canned_filters}
+      />
+
       <div
         :if={@list_opts.search_fields != [] or @spec.filters != [] or @spec.selectable}
         class="admin-command-bar"
@@ -57,44 +64,12 @@ defmodule CorexAdmin.Components.Index do
             </:icon>
           </.native_input>
         </form>
-        <.collapsible
-          :if={@spec.filters != []}
-          id={"#{@spec.slug}-filters"}
-          class="collapsible admin-filters"
-          open={@spec.filters_open}
-        >
-          <:trigger>
-            {Gettext.t("Filters")}
-            <span
-              :if={filter_badge_count(@list_opts) > 0}
-              class="badge ui-size-sm ui-trigger--square"
-            >
-              {filter_badge_count(@list_opts)}
-            </span>
-          </:trigger>
-          <:closed>
-            <.heroicon name="hero-chevron-right" />
-          </:closed>
-          <:content>
-            <div class="admin-filter-form">
-              <div
-                :for={filter <- @spec.filters}
-                class={filter_item_class(filter)}
-              >
-                <Components.filter_control spec={@spec} filter={filter} list_opts={@list_opts} />
-              </div>
-              <div class="admin-filter-actions">
-                <.action
-                  type="button"
-                  phx-click="reset_filters"
-                  class="button ui-size-sm ui-ghost ui-alert"
-                >
-                  {Gettext.t("Reset all")}
-                </.action>
-              </div>
-            </div>
-          </:content>
-        </.collapsible>
+        <Components.filter_bar
+          spec={@spec}
+          list_opts={@list_opts}
+          drafts={assigns[:filter_drafts] || []}
+          focus={assigns[:filter_focus]}
+        />
         <div :if={@spec.selectable} class="admin-command-selection">
           <p class="admin-muted admin-table-bar-count">
             {Gettext.t("%{count} selected", count: length(@selected))}
@@ -116,20 +91,6 @@ defmodule CorexAdmin.Components.Index do
             />
           </div>
         </div>
-      </div>
-
-      <Components.filter_chips spec={@spec} list_opts={@list_opts} />
-
-      <div :if={@canned_filters != []} class="admin-filter-presets">
-        <.action
-          :for={{{label, _params}, index} <- Enum.with_index(@canned_filters)}
-          type="button"
-          phx-click="canned_filter"
-          phx-value-index={index}
-          class="button ui-size-sm"
-        >
-          {label}
-        </.action>
       </div>
 
       <div class="admin-table-wrap">
@@ -294,17 +255,6 @@ defmodule CorexAdmin.Components.Index do
     else
       Gettext.t("No %{label} yet.", label: spec.label)
     end
-  end
-
-  defp filter_item_class(%{type: type})
-       when type in [:date_range, :datetime_range, :number_range],
-       do: "admin-filter-item admin-filter-item--range"
-
-  defp filter_item_class(_), do: "admin-filter-item"
-
-  defp filter_badge_count(%ListOpts{} = opts) do
-    search = if opts.search not in [nil, ""], do: 1, else: 0
-    search + map_size(opts.filters)
   end
 
   defp page_size_items(options) do

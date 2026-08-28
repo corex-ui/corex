@@ -41,7 +41,13 @@ defmodule CorexAdmin.Resource do
         end
 
         filters do
-          filter :role, :select, options: ~w(admin editor viewer)
+          filter :role, :select, options: ~w(admin editor viewer), pin: true, operators: [:in, :not_in]
+          filter :email, :text
+          filter :priority, :number, operators: [:eq, :gte, :lte]
+          filter :tags, :tags, pin: false
+          filter :bio, :presence, pin: false
+          filter :id, :id, pin: false
+          filter :created, :relative_date, field: :inserted_at, pin: false
           filter :inserted_at, :date_range
         end
       end
@@ -54,7 +60,7 @@ defmodule CorexAdmin.Resource do
   alias CorexAdmin.Resource.{Field, Filter, Section, Spec}
 
   @field_types ~w(id text textarea email password number boolean select date datetime url embeds_many)a
-  @filter_types ~w(select multi_select date_range datetime_range number_range boolean)a
+  @filter_types ~w(select multi_select date_range datetime_range number_range number boolean text presence tags id relative_date)a
   @required_actions ~w(list get create update delete change_create change_update)a
 
   @field_schema [
@@ -661,7 +667,18 @@ defmodule CorexAdmin.Resource do
   end
 
   defp build_filter({name, type, opts}) when type in @filter_types do
-    opts = Keyword.validate!(opts, label: nil, options: nil, field: nil)
+    opts =
+      Keyword.validate!(opts,
+        label: nil,
+        options: nil,
+        field: nil,
+        pin: true,
+        min: nil,
+        max: nil,
+        operators: nil,
+        default_operator: nil
+      )
+
     field = opts[:field] || name
 
     %Filter{
@@ -669,7 +686,12 @@ defmodule CorexAdmin.Resource do
       type: type,
       label: opts[:label] || Phoenix.Naming.humanize(Atom.to_string(name)),
       options: opts[:options],
-      field: field
+      field: field,
+      pin: opts[:pin] != false,
+      min: opts[:min],
+      max: opts[:max],
+      operators: opts[:operators],
+      default_operator: opts[:default_operator]
     }
   end
 

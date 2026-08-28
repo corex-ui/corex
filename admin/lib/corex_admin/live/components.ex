@@ -155,11 +155,160 @@ defmodule CorexAdmin.Live.Components do
   def embed_show(assigns), do: CorexAdmin.Field.Renderer.embed_show(assigns)
 
   attr(:spec, Spec, required: true)
+  attr(:list_opts, ListOpts, required: true)
+  attr(:canned_filters, :list, required: true)
+
+  def filter_views(assigns) do
+    active = active_view_value(assigns.canned_filters, assigns.list_opts)
+    assigns = assign(assigns, :active, active)
+
+    ~H"""
+    <.toggle_group
+      id={"#{@spec.slug}-views"}
+      class="toggle-group ui-size-sm admin-filter-views"
+      deselectable={false}
+      value={List.wrap(@active)}
+      on_value_change="apply_view"
+    >
+      <:item value="all">{Gettext.t("All")}</:item>
+      <:item
+        :for={{{label, _params}, index} <- Enum.with_index(@canned_filters)}
+        value={Integer.to_string(index)}
+      >
+        {label}
+      </:item>
+    </.toggle_group>
+    """
+  end
+
+  attr(:spec, Spec, required: true)
+  attr(:list_opts, ListOpts, required: true)
+  attr(:drafts, :list, default: [])
+  attr(:focus, :string, default: nil)
+
+  def filter_bar(assigns) do
+    visible = visible_filters(assigns.spec, assigns.list_opts, assigns.drafts)
+    hidden = hidden_filters(assigns.spec, visible)
+    chips = active_chips(assigns.spec, assigns.list_opts)
+    count = filter_badge_count(assigns.list_opts)
+    focus = assigns[:focus]
+
+    assigns =
+      assigns
+      |> assign(:visible, visible)
+      |> assign(:hidden, hidden)
+      |> assign(:chips, chips)
+      |> assign(:count, count)
+      |> assign(:add_items, add_filter_items(hidden))
+      |> assign(:add_list, add_filter_list(hidden))
+      |> assign(:searchable_add?, length(hidden) > 8)
+      |> assign(:focus, if(is_binary(focus), do: focus))
+
+    ~H"""
+    <div
+      :if={@spec.filters != []}
+      id={"#{@spec.slug}-filters"}
+      class="admin-filter-bar admin-chips"
+      aria-label={Gettext.t("Filters")}
+    >
+      <.filter_pill
+        :for={{filter, index} <- Enum.with_index(@visible)}
+        spec={@spec}
+        filter={filter}
+        list_opts={@list_opts}
+        chip={Enum.find(@chips, &(&1.field == Atom.to_string(filter.name)))}
+        open={
+          to_string(filter.name) == @focus or
+            (index == 0 and @spec.filters_open and @focus in [nil, ""])
+        }
+      />
+      <.menu
+        :if={@hidden != [] and not @searchable_add?}
+        id={"#{@spec.slug}-add-filter"}
+        class="menu ui-size-sm admin-add-filter"
+        items={@add_items}
+        close_on_select
+        loop_focus
+        on_select="add_filter"
+      >
+        <:trigger class="button ui-size-sm">
+          <.heroicon name="hero-plus" class="icon" />
+          {Gettext.t("Add filter")}
+        </:trigger>
+      </.menu>
+      <.combobox
+        :if={@searchable_add?}
+        id={"#{@spec.slug}-add-filter"}
+        class="combobox ui-size-sm admin-add-filter"
+        items={@add_list}
+        on_value_change="add_filter"
+        translation={%Corex.Combobox.Translation{placeholder: Gettext.t("Add filter")}}
+      >
+        <:label class="sr-only">{Gettext.t("Add filter")}</:label>
+        <:trigger>
+          <.heroicon name="hero-plus" class="icon" />
+        </:trigger>
+      </.combobox>
+      <span :if={@count > 0} class="badge ui-size-sm ui-trigger--square">{@count}</span>
+      <.action
+        :if={@count > 0}
+        type="button"
+        phx-click="reset_filters"
+        class="button ui-size-sm ui-ghost ui-alert"
+      >
+        {Gettext.t("Clear all")}
+      </.action>
+    </div>
+    """
+  end
+
+  attr(:spec, Spec, required: true)
+  attr(:filter, Filter, required: true)
+  attr(:list_opts, ListOpts, required: true)
+  attr(:chip, :map, default: nil)
+  attr(:open, :boolean, default: false)
+
+  defp filter_pill(assigns) do
+    ~H"""
+    <div class={["admin-filter-pill-wrap", @chip && "admin-is-active"]}>
+      <.collapsible
+        id={"#{@spec.slug}-filter-pill-#{@filter.name}"}
+        class="collapsible admin-filter-pill"
+        open={@open}
+      >
+        <:trigger>
+          <span :if={@chip} class="admin-filter-pill-label">
+            {@chip.label}: {@chip.text}
+          </span>
+          <span :if={!@chip} class="admin-filter-pill-label">{@filter.label}</span>
+        </:trigger>
+        <:closed>
+          <.heroicon name="hero-chevron-down" />
+        </:closed>
+        <:content>
+          <.filter_control spec={@spec} filter={@filter} list_opts={@list_opts} />
+        </:content>
+      </.collapsible>
+      <.action
+        :if={@chip}
+        type="button"
+        phx-click="clear_filter"
+        phx-value-field={@chip.field}
+        class="button ui-size-sm ui-ghost ui-trigger--square"
+        aria_label={Gettext.t("Clear %{label}", label: @filter.label)}
+      >
+        <.heroicon name="hero-x-mark" />
+      </.action>
+    </div>
+    """
+  end
+
+  attr(:spec, Spec, required: true)
   attr(:filter, Filter, required: true)
   attr(:list_opts, ListOpts, required: true)
 
   def filter_control(assigns) do
-    value = Map.get(assigns.list_opts.filters, assigns.filter.field)
+    value = Map.get(assigns.list_opts.filters, assigns.filter.name)
     slug = assigns.spec.slug
     name = assigns.filter.name
 
@@ -181,6 +330,21 @@ defmodule CorexAdmin.Live.Components do
 
       :number_range ->
         filter_number_range(assigns)
+
+      :number ->
+        filter_number(assigns)
+
+      :presence ->
+        filter_presence(assigns)
+
+      :tags ->
+        filter_tags(assigns)
+
+      :relative_date ->
+        filter_relative_date(assigns)
+
+      type when type in [:text, :id] ->
+        filter_text(assigns)
 
       _ ->
         filter_text(assigns)
@@ -400,7 +564,7 @@ defmodule CorexAdmin.Live.Components do
       <.action
         type="button"
         phx-click="reset_filter"
-        phx-value-field={Atom.to_string(@filter.field)}
+        phx-value-field={Atom.to_string(@filter.name)}
         class="button ui-size-sm ui-ghost ui-alert"
         aria_label={Gettext.t("Reset %{label}", label: @filter.label)}
       >
@@ -429,27 +593,41 @@ defmodule CorexAdmin.Live.Components do
     assigns =
       assigns
       |> assign(:items, list_items(assigns.filter.options))
-      |> assign(:selected, select_value(assigns.value))
+      |> assign(:selected, select_value(unwrap_membership(assigns.value)))
       |> assign(:multiple, assigns.filter.type == :multi_select)
+      |> assign(:show_op?, :not_in in Filter.operators(assigns.filter))
+      |> assign(:membership_op, membership_op(assigns.filter, assigns.value))
 
     ~H"""
-    <.select
-      id={@control_id}
-      class="select ui-size-sm"
-      name={@input_name}
-      multiple={@multiple}
-      items={@items}
-      value={@selected}
-      on_value_change="filter"
-      translation={%Corex.Select.Translation{placeholder: Gettext.t("Any")}}
-    >
-      <:label>
-        <.filter_legend filter={@filter} />
-      </:label>
-      <:trigger>
-        <.heroicon name="hero-chevron-down" />
-      </:trigger>
-    </.select>
+    <div class="admin-filter-stack">
+      <.filter_legend filter={@filter} />
+      <.toggle_group
+        :if={@show_op?}
+        id={"#{@control_id}-op"}
+        class="toggle-group ui-size-sm"
+        deselectable={false}
+        value={List.wrap(@membership_op)}
+        on_value_change="filter"
+      >
+        <:item value="in">{Gettext.t("Is")}</:item>
+        <:item value="not_in">{Gettext.t("Is not")}</:item>
+      </.toggle_group>
+      <.select
+        id={@control_id}
+        class="select ui-size-sm"
+        name={@input_name}
+        multiple={@multiple}
+        items={@items}
+        value={@selected}
+        on_value_change="filter"
+        translation={%Corex.Select.Translation{placeholder: Gettext.t("Any")}}
+      >
+        <:label class="sr-only">{@filter.label}</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" />
+        </:trigger>
+      </.select>
+    </div>
     """
   end
 
@@ -494,7 +672,7 @@ defmodule CorexAdmin.Live.Components do
     assigns =
       assigns
       |> assign(:items, list_items(assigns.filter.options))
-      |> assign(:selected, select_value(assigns.value))
+      |> assign(:selected, select_value(unwrap_membership(assigns.value)))
       |> assign(:multiple, assigns.filter.type == :multi_select)
 
     ~H"""
@@ -600,20 +778,48 @@ defmodule CorexAdmin.Live.Components do
 
   defp filter_number_range(assigns) do
     range = assigns.value || %{}
+    min_bound = assigns.filter.min
+    max_bound = assigns.filter.max
+    slider? = is_number(min_bound) and is_number(max_bound)
+
+    slider_value =
+      if slider? do
+        [
+          Map.get(range, :min) || min_bound,
+          Map.get(range, :max) || max_bound
+        ]
+      end
 
     assigns =
       assigns
       |> assign(:min, Map.get(range, :min))
       |> assign(:max, Map.get(range, :max))
+      |> assign(:slider?, slider?)
+      |> assign(:min_bound, min_bound)
+      |> assign(:max_bound, max_bound)
+      |> assign(:slider_value, slider_value)
 
     ~H"""
     <div class="admin-filter-stack">
       <.filter_legend filter={@filter} />
+      <.slider
+        :if={@slider?}
+        id={"#{@control_id}-slider"}
+        class="slider ui-size-sm"
+        min={@min_bound}
+        max={@max_bound}
+        value={@slider_value}
+        on_value_change_end="filter"
+      >
+        <:label class="sr-only">{Gettext.t("Range")}</:label>
+      </.slider>
       <div class="admin-filter-row admin-filter-row--nowrap">
         <.number_input
           id={"#{@control_id}-min"}
           name={"#{@input_name}[min]"}
           value={@min}
+          min={@min_bound}
+          max={@max_bound}
           class="number-input ui-size-sm"
           orientation="vertical"
           on_value_change="filter"
@@ -630,6 +836,8 @@ defmodule CorexAdmin.Live.Components do
           id={"#{@control_id}-max"}
           name={"#{@input_name}[max]"}
           value={@max}
+          min={@min_bound}
+          max={@max_bound}
           class="number-input ui-size-sm"
           orientation="vertical"
           on_value_change="filter"
@@ -648,20 +856,201 @@ defmodule CorexAdmin.Live.Components do
   end
 
   defp filter_text(assigns) do
+    ops = Filter.operators(assigns.filter)
+    show_op? = length(ops) > 1
+    op = current_op(assigns.filter, assigns.value)
+
+    text =
+      case assigns.value do
+        %{contains: value} -> value
+        %{op: _, value: value} -> value
+        %{op: _} -> nil
+        other -> other
+      end
+
+    assigns =
+      assigns
+      |> assign(:text, text)
+      |> assign(:show_op?, show_op?)
+      |> assign(:op, op && Atom.to_string(op))
+      |> assign(:op_items, operator_items(ops))
+      |> assign(
+        :text_name,
+        if(show_op?, do: "#{assigns.input_name}[value]", else: assigns.input_name)
+      )
+
     ~H"""
-    <.native_input
+    <div class="admin-filter-stack">
+      <.filter_legend filter={@filter} />
+      <div class="admin-filter-operator">
+        <.select
+          :if={@show_op?}
+          id={"#{@control_id}-op"}
+          class="select ui-size-sm"
+          items={@op_items}
+          value={List.wrap(@op)}
+          on_value_change="filter"
+        >
+          <:label class="sr-only">{Gettext.t("Operator")}</:label>
+          <:trigger>
+            <.heroicon name="hero-chevron-down" />
+          </:trigger>
+        </.select>
+        <.native_input
+          id={@control_id}
+          type="text"
+          name={@text_name}
+          value={@text}
+          class="native-input ui-size-sm"
+          phx-change="search"
+          phx-debounce="400"
+        >
+          <:label class="sr-only">{@filter.label}</:label>
+        </.native_input>
+      </div>
+    </div>
+    """
+  end
+
+  defp filter_number(assigns) do
+    ops = Filter.operators(assigns.filter)
+    op = current_op(assigns.filter, assigns.value)
+
+    number =
+      case assigns.value do
+        %{op: _, value: value} -> value
+        %{op: _} -> nil
+        value when is_number(value) -> value
+        _ -> nil
+      end
+
+    assigns =
+      assigns
+      |> assign(:number, number)
+      |> assign(:op, op && Atom.to_string(op))
+      |> assign(:op_items, operator_items(ops))
+      |> assign(:min_bound, assigns.filter.min)
+      |> assign(:max_bound, assigns.filter.max)
+
+    ~H"""
+    <div class="admin-filter-stack">
+      <.filter_legend filter={@filter} />
+      <div class="admin-filter-operator">
+        <.select
+          id={"#{@control_id}-op"}
+          class="select ui-size-sm"
+          items={@op_items}
+          value={List.wrap(@op)}
+          on_value_change="filter"
+        >
+          <:label class="sr-only">{Gettext.t("Operator")}</:label>
+          <:trigger>
+            <.heroicon name="hero-chevron-down" />
+          </:trigger>
+        </.select>
+        <.number_input
+          id={@control_id}
+          name={"#{@input_name}[value]"}
+          value={@number}
+          min={@min_bound}
+          max={@max_bound}
+          class="number-input ui-size-sm"
+          orientation="vertical"
+          on_value_change="filter"
+        >
+          <:label class="sr-only">{@filter.label}</:label>
+          <:decrement_trigger>
+            <.heroicon name="hero-chevron-down" class="icon" />
+          </:decrement_trigger>
+          <:increment_trigger>
+            <.heroicon name="hero-chevron-up" class="icon" />
+          </:increment_trigger>
+        </.number_input>
+      </div>
+    </div>
+    """
+  end
+
+  defp filter_relative_date(assigns) do
+    selected =
+      case assigns.value do
+        %{relative: window} -> [to_string(window)]
+        _ -> []
+      end
+
+    assigns =
+      assigns
+      |> assign(:selected, selected)
+      |> assign(:windows, Filter.relative_windows(assigns.filter))
+
+    ~H"""
+    <div class="admin-filter-stack">
+      <.filter_legend filter={@filter} />
+      <.toggle_group
+        id={@control_id}
+        class="toggle-group ui-size-sm admin-filter-windows"
+        deselectable
+        value={@selected}
+        on_value_change="filter"
+      >
+        <:item :for={window <- @windows} value={Atom.to_string(window)}>
+          {relative_label(window)}
+        </:item>
+      </.toggle_group>
+    </div>
+    """
+  end
+
+  defp filter_presence(assigns) do
+    selected =
+      case assigns.value do
+        :empty -> ["empty"]
+        :set -> ["set"]
+        _ -> []
+      end
+
+    assigns = assign(assigns, :selected, selected)
+
+    ~H"""
+    <div class="admin-filter-stack">
+      <.filter_legend filter={@filter} />
+      <.toggle_group
+        id={@control_id}
+        class="toggle-group ui-size-sm"
+        deselectable
+        value={@selected}
+        on_value_change="filter"
+      >
+        <:item value="set">{Gettext.t("Has value")}</:item>
+        <:item value="empty">{Gettext.t("Is empty")}</:item>
+      </.toggle_group>
+    </div>
+    """
+  end
+
+  defp filter_tags(assigns) do
+    values =
+      case assigns.value do
+        list when is_list(list) -> Enum.map(list, &to_string/1)
+        _ -> []
+      end
+
+    assigns = assign(assigns, :tags, values)
+
+    ~H"""
+    <.tags_input
       id={@control_id}
-      type="text"
+      class="tags-input ui-size-sm"
       name={@input_name}
-      value={@value}
-      class="native-input ui-size-sm"
-      phx-change="search"
-      phx-debounce="400"
+      value={@tags}
+      blur_behavior="add"
+      on_value_change="filter"
     >
       <:label>
         <.filter_legend filter={@filter} />
       </:label>
-    </.native_input>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
     """
   end
 
@@ -725,13 +1114,9 @@ defmodule CorexAdmin.Live.Components do
   defp longest_matching_to(_path, _tos), do: nil
 
   defp date_presets do
-    [
-      %{id: "today", label: Gettext.t("Today")},
-      %{id: "last_7", label: Gettext.t("Last 7 days")},
-      %{id: "last_30", label: Gettext.t("Last 30 days")},
-      %{id: "this_month", label: Gettext.t("This month")},
-      %{id: "ytd", label: Gettext.t("YTD")}
-    ]
+    Enum.map(Filter.relative_window_ids(), fn id ->
+      %{id: Atom.to_string(id), label: relative_label(id)}
+    end)
   end
 
   defp list_items(options) when is_list(options) do
@@ -796,12 +1181,19 @@ defmodule CorexAdmin.Live.Components do
 
     filter_chips =
       Enum.flat_map(spec.filters, fn %Filter{} = filter ->
-        case Map.get(opts.filters, filter.field) do
-          nil ->
-            []
-
+        case Map.get(opts.filters, filter.name) do
           value ->
-            [%{field: Atom.to_string(filter.field), label: filter.label, text: chip_text(value)}]
+            if Filter.active_value?(value) do
+              [
+                %{
+                  field: Atom.to_string(filter.name),
+                  label: filter.label,
+                  text: chip_text(value)
+                }
+              ]
+            else
+              []
+            end
         end
       end)
 
@@ -811,6 +1203,27 @@ defmodule CorexAdmin.Live.Components do
   defp chip_text(value) when is_list(value), do: Enum.join(value, ", ")
   defp chip_text(true), do: Gettext.t("Yes")
   defp chip_text(false), do: Gettext.t("No")
+  defp chip_text(:empty), do: Gettext.t("empty")
+  defp chip_text(:set), do: Gettext.t("set")
+  defp chip_text(%{contains: value}), do: to_string(value)
+  defp chip_text(%{relative: window}), do: relative_label(window)
+
+  defp chip_text(%{op: :not_in, value: value}),
+    do: Gettext.t("not %{value}", value: chip_text(value))
+
+  defp chip_text(%{op: :contains, value: value}), do: to_string(value)
+  defp chip_text(%{op: :equals, value: value}), do: "= #{value}"
+  defp chip_text(%{op: :eq, value: value}), do: "= #{value}"
+  defp chip_text(%{op: :gte, value: value}), do: "≥ #{value}"
+  defp chip_text(%{op: :lte, value: value}), do: "≤ #{value}"
+
+  defp chip_text(%{op: :starts_with, value: value}),
+    do: Gettext.t("starts %{value}", value: value)
+
+  defp chip_text(%{op: :ends_with, value: value}), do: Gettext.t("ends %{value}", value: value)
+  defp chip_text(%{op: :not_contains, value: value}), do: Gettext.t("not %{value}", value: value)
+  defp chip_text(%{op: _, value: value}), do: chip_text(value)
+  defp chip_text(%{op: _}), do: ""
 
   defp chip_text(%{from: from, to: to}), do: "#{iso(from)} – #{iso(to)}"
   defp chip_text(%{from: from}), do: "from #{iso(from)}"
@@ -819,4 +1232,136 @@ defmodule CorexAdmin.Live.Components do
   defp chip_text(%{min: min}), do: "≥ #{min}"
   defp chip_text(%{max: max}), do: "≤ #{max}"
   defp chip_text(value), do: to_string(value)
+
+  defp visible_filters(%Spec{} = spec, %ListOpts{} = list_opts, drafts) do
+    drafted = MapSet.new(Enum.map(List.wrap(drafts), &draft_name/1))
+
+    Enum.filter(spec.filters, fn %Filter{} = filter ->
+      filter.pin == true or
+        Map.has_key?(list_opts.filters, filter.name) or
+        MapSet.member?(drafted, filter.name)
+    end)
+  end
+
+  defp hidden_filters(%Spec{} = spec, visible) do
+    names = MapSet.new(Enum.map(visible, & &1.name))
+    Enum.reject(spec.filters, &MapSet.member?(names, &1.name))
+  end
+
+  defp add_filter_items(filters) do
+    Corex.Tree.new(
+      Enum.map(filters, fn %Filter{} = filter ->
+        %{value: Atom.to_string(filter.name), label: filter.label}
+      end)
+    )
+  end
+
+  defp add_filter_list(filters) do
+    list_items(Enum.map(filters, fn %Filter{} = filter -> {filter.label, filter.name} end))
+  end
+
+  defp draft_name(name) when is_atom(name), do: name
+
+  defp draft_name(name) when is_binary(name) do
+    try do
+      String.to_existing_atom(name)
+    rescue
+      ArgumentError -> nil
+    end
+  end
+
+  defp draft_name(_), do: nil
+
+  defp filter_badge_count(%ListOpts{} = opts) do
+    search = if opts.search not in [nil, ""], do: 1, else: 0
+    active = Enum.count(opts.filters, fn {_name, value} -> Filter.active_value?(value) end)
+    search + active
+  end
+
+  defp active_view_value(canned, %ListOpts{} = list_opts) do
+    current = Map.get(ListOpts.to_params(list_opts), "filters", %{})
+
+    canned
+    |> Enum.with_index()
+    |> Enum.find_value("all", fn {entry, index} ->
+      params =
+        case entry do
+          {_label, map} when is_map(map) -> map
+          %{params: map} when is_map(map) -> map
+          _ -> %{}
+        end
+
+      if view_filters(params) == stringify_keys_deep(current) do
+        Integer.to_string(index)
+      end
+    end)
+  end
+
+  defp view_filters(params) do
+    params
+    |> stringify_keys_deep()
+    |> Map.get("filters", %{})
+  end
+
+  defp stringify_keys_deep(map) when is_map(map) do
+    Map.new(map, fn {key, value} ->
+      {to_string(key), stringify_keys_deep(value)}
+    end)
+  end
+
+  defp stringify_keys_deep(list) when is_list(list), do: Enum.map(list, &stringify_keys_deep/1)
+  defp stringify_keys_deep(other), do: other
+
+  defp unwrap_membership(%{op: _, value: value}), do: value
+  defp unwrap_membership(%{op: _}), do: nil
+  defp unwrap_membership(value), do: value
+
+  defp current_op(_filter, %{op: op}) when is_atom(op), do: op
+
+  defp current_op(filter, %{op: op}) when is_binary(op) do
+    case Filter.parse_atom(op) do
+      nil -> Filter.default_operator(filter)
+      atom -> atom
+    end
+  end
+
+  defp current_op(filter, _), do: Filter.default_operator(filter)
+
+  defp membership_op(_filter, %{op: :not_in}), do: "not_in"
+  defp membership_op(_filter, %{op: "not_in"}), do: "not_in"
+  defp membership_op(_filter, _), do: "in"
+
+  defp operator_items(ops) do
+    list_items(Enum.map(ops, fn op -> {operator_label(op), Atom.to_string(op)} end))
+  end
+
+  defp operator_label(:contains), do: Gettext.t("Contains")
+  defp operator_label(:equals), do: Gettext.t("Is")
+  defp operator_label(:starts_with), do: Gettext.t("Starts with")
+  defp operator_label(:ends_with), do: Gettext.t("Ends with")
+  defp operator_label(:not_contains), do: Gettext.t("Does not contain")
+  defp operator_label(:in), do: Gettext.t("Is")
+  defp operator_label(:not_in), do: Gettext.t("Is not")
+  defp operator_label(:eq), do: Gettext.t("Equals")
+  defp operator_label(:gte), do: Gettext.t("At least")
+  defp operator_label(:lte), do: Gettext.t("At most")
+  defp operator_label(op), do: Phoenix.Naming.humanize(to_string(op))
+
+  defp relative_label(window) when is_binary(window) do
+    case Filter.parse_atom(window) do
+      nil -> Phoenix.Naming.humanize(window)
+      atom -> relative_label(atom)
+    end
+  end
+
+  defp relative_label(:today), do: Gettext.t("Today")
+  defp relative_label(:yesterday), do: Gettext.t("Yesterday")
+  defp relative_label(:last_7), do: Gettext.t("Last 7 days")
+  defp relative_label(:last_30), do: Gettext.t("Last 30 days")
+  defp relative_label(:last_90), do: Gettext.t("Last 90 days")
+  defp relative_label(:this_week), do: Gettext.t("This week")
+  defp relative_label(:this_month), do: Gettext.t("This month")
+  defp relative_label(:this_quarter), do: Gettext.t("This quarter")
+  defp relative_label(:ytd), do: Gettext.t("YTD")
+  defp relative_label(other), do: Phoenix.Naming.humanize(to_string(other))
 end
