@@ -596,6 +596,10 @@ defmodule CorexAdmin.UI.Filters do
 
   # Corex DatePicker has no time-of-day UI, so a datetime range uses two
   # native inputs that carry both date and time.
+  #
+  # They sit in a form because LiveView serializes a `phx-change` input through
+  # its enclosing form; a bare input has nothing to serialize and the event
+  # never carries a value.
   defp datetime_range(assigns) do
     range = assigns.value || %{}
 
@@ -605,7 +609,7 @@ defmodule CorexAdmin.UI.Filters do
       |> assign(:to, datetime_local(Map.get(range, :to)))
 
     ~H"""
-    <div class="admin-filter-stack">
+    <form id={"#{@id_base}-form"} phx-change="search" class="admin-filter-inline-form">
       <div class="admin-filter-row">
         <.native_input
           id={"#{@id_base}-from"}
@@ -613,7 +617,6 @@ defmodule CorexAdmin.UI.Filters do
           name={"#{@input_name}[from]"}
           value={@from}
           class="native-input ui-size-sm"
-          phx-change="search"
         >
           <:label>{Gettext.t("From")}</:label>
         </.native_input>
@@ -623,12 +626,11 @@ defmodule CorexAdmin.UI.Filters do
           name={"#{@input_name}[to]"}
           value={@to}
           class="native-input ui-size-sm"
-          phx-change="search"
         >
           <:label>{Gettext.t("To")}</:label>
         </.native_input>
       </div>
-    </div>
+    </form>
     """
   end
 
@@ -783,18 +785,19 @@ defmodule CorexAdmin.UI.Filters do
           <:label class="sr-only">{Gettext.t("Operator")}</:label>
           <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
         </.select>
-        <.native_input
-          id={@control_id}
-          type="text"
-          name={@text_name}
-          value={@text}
-          class="native-input ui-size-sm"
-          placeholder={@filter.label}
-          phx-change="search"
-          phx-debounce="400"
-        >
-          <:label class="sr-only">{@filter.label}</:label>
-        </.native_input>
+        <form id={"#{@id_base}-form"} phx-change="search" class="admin-filter-inline-form">
+          <.native_input
+            id={@control_id}
+            type="text"
+            name={@text_name}
+            value={@text}
+            class="native-input ui-size-sm"
+            placeholder={@filter.label}
+            phx-debounce="400"
+          >
+            <:label class="sr-only">{@filter.label}</:label>
+          </.native_input>
+        </form>
       </div>
     </div>
     """

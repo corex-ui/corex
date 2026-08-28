@@ -134,11 +134,16 @@ defmodule CorexAdmin.UI.Show do
   attr :fields, :list, required: true
   attr :record, :any, required: true
 
-  @doc "Scalar values as a data list, then a panel per embed."
+  @doc """
+  Scalar values as a definition list, then a panel per embed.
+
+  `has_many` relations are left out: they render as their own related list
+  below, and a list of titles squeezed into a detail row says nothing useful.
+  """
   def details(assigns) do
     assigns =
       assigns
-      |> assign(:scalars, Enum.reject(assigns.fields, &Field.nested?/1))
+      |> assign(:scalars, Enum.reject(assigns.fields, &detail_excluded?/1))
       |> assign(:embeds, Enum.filter(assigns.fields, &Field.nested?/1))
 
     ~H"""
@@ -158,17 +163,22 @@ defmodule CorexAdmin.UI.Show do
   attr :related, :map, default: %{}
 
   @doc """
-  One panel per `has_many` relation with rows loaded.
+  One panel per `has_many` relation.
 
-  Rows come from the show controller, which asked the host context for them.
+  Rows come from the show controller, which reads what the host context
+  preloaded. An empty relation still renders its panel, so the section does not
+  silently vanish when a record has no children yet.
   """
   def related_lists(assigns) do
-    assigns = assign(assigns, :entries, Enum.reject(assigns.related, fn {_k, v} -> v == [] end))
+    assigns = assign(assigns, :entries, Enum.sort_by(assigns.related, fn {f, _} -> f.name end))
 
     ~H"""
     <section :for={{field, rows} <- @entries} class="admin-embed">
       <h2 class="admin-embed-title">{field.label}</h2>
-      <div class="admin-embed-rows">
+      <p :if={rows == []} class="admin-embed-empty">
+        {Gettext.t("No %{label} yet.", label: field.label)}
+      </p>
+      <div :if={rows != []} class="admin-embed-rows">
         <div :for={row <- rows} class="admin-embed-row">
           <div :for={column <- related_columns(field)} class="admin-embed-field">
             <span class="admin-embed-label">{Phoenix.Naming.humanize(to_string(column))}</span>
@@ -199,6 +209,9 @@ defmodule CorexAdmin.UI.Show do
     </section>
     """
   end
+
+  defp detail_excluded?(%Field{type: :has_many}), do: true
+  defp detail_excluded?(field), do: Field.nested?(field)
 
   defp detail_tab?("details"), do: true
   defp detail_tab?(tab), do: String.starts_with?(to_string(tab), "section-")

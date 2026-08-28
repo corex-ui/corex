@@ -1020,6 +1020,30 @@
  color: inherit;
 }
 
+/*
+ * A `phx-change` input needs an enclosing form for LiveView to serialize it, so
+ * filter inputs are wrapped in one. The wrapper must not look like a form.
+ */
+.typo form.admin-filter-inline-form,
+.admin form.admin-filter-inline-form {
+ display: flex;
+ flex-direction: row;
+ align-items: center;
+ flex: 1 1 auto;
+ min-width: 0;
+ width: auto;
+ max-width: none;
+ height: auto;
+ margin: 0;
+ padding: 0;
+ gap: 0;
+ background: transparent;
+ border: 0;
+ border-radius: 0;
+ box-shadow: none;
+ color: inherit;
+}
+
 .typo form.admin-form,
 .admin form.admin-form {
  display: flex;

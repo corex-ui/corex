@@ -140,6 +140,23 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ author.name
     assert html =~ "Recent posts"
     assert Enum.any?(author.posts, fn post -> html =~ post.title end)
+
+    # The relation renders as its own panel, not also as a detail row.
+    refute html =~ ~s(<dt class="admin-detail-label">Recent posts</dt>)
+  end
+
+  test "a datetime range filter narrows posts by published window", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/admin/posts")
+
+    from = DateTime.utc_now() |> DateTime.add(-2, :day) |> Calendar.strftime("%Y-%m-%dT%H:%M")
+    to = DateTime.utc_now() |> Calendar.strftime("%Y-%m-%dT%H:%M")
+
+    view
+    |> form("#posts-range-filter-published_at-form")
+    |> render_change(%{"filters" => %{"published_at" => %{"from" => from, "to" => to}}})
+
+    assert_patch(view)
+    assert render(view) =~ "Showing"
   end
 
   test "search filters tickets", %{conn: conn} do

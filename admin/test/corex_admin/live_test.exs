@@ -346,6 +346,26 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ ~s(id="tickets-filter-email")
   end
 
+  test "a text filter on the row actually filters", %{conn: conn, scope: scope} do
+    {:ok, _other} =
+      Tickets.create_ticket(scope, %{
+        "title" => "Other ticket",
+        "email" => "someone@elsewhere.test",
+        "status" => "open"
+      })
+
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+    render_click(view, "add_filter", %{"value" => "email"})
+
+    html =
+      view
+      |> form("#tickets-filter-email-form")
+      |> render_change(%{"filters" => %{"email" => "ops@"}})
+
+    assert html =~ "Broken login"
+    refute html =~ "Other ticket"
+  end
+
   test "range filters get a compact trigger and their own dialog", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/admin/tickets")
 
