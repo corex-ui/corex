@@ -37,11 +37,22 @@ defmodule CorexAdmin.Test.TicketResource do
     field(:secret, :text, redact: true, readable: false)
     field(:inserted_at, :datetime, sortable: true)
 
+    field(:owner, :belongs_to,
+      relation: [
+        context: CorexAdmin.Test.Owners,
+        list: :list_owners,
+        label: :name,
+        owner_key: :owner_id
+      ]
+    )
+
     field :social_links, :embeds_many, schema: CorexAdmin.Test.SocialLink, index: false do
       field(:label, :text)
       field(:url, :url)
-      field(:preferred, :boolean)
+      field(:preferred, :boolean, exclusive: true)
     end
+
+    column(:shout, CorexAdmin.Test.Fields.Uppercase, label: "Shout")
   end
 
   filters do
@@ -56,5 +67,26 @@ defmodule CorexAdmin.Test.TicketResource do
 
   def canned_filters do
     [{"Open only", %{"filters" => %{"status" => ["open"]}}}]
+  end
+
+  def filter_bounds(_scope, :priority) do
+    case CorexAdmin.Test.Store.all() do
+      [] -> nil
+      tickets -> %{min: 1, max: Enum.max(Enum.map(tickets, & &1.priority))}
+    end
+  end
+
+  def filter_bounds(_scope, _name), do: nil
+
+  def filter_options(_scope, :status), do: ~w(open done)
+  def filter_options(_scope, _name), do: nil
+
+  def metrics(_scope, _list_opts) do
+    tickets = CorexAdmin.Test.Store.all()
+
+    [
+      {"Total", length(tickets)},
+      %{label: "Open", value: Enum.count(tickets, &(&1.status == "open")), hint: "unresolved"}
+    ]
   end
 end

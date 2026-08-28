@@ -309,6 +309,8 @@ defmodule CorexAdmin.Live.Helpers do
 
   defp fetch_relation_records(%Relation{context: context, list: list}, scope, opts)
        when is_atom(context) and not is_nil(context) and is_atom(list) and not is_nil(list) do
+    Code.ensure_loaded(context)
+
     cond do
       function_exported?(context, list, 2) -> apply(context, list, [scope, opts])
       function_exported?(context, list, 1) -> apply(context, list, [opts])

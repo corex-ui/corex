@@ -1,5 +1,7 @@
 defmodule CorexAdmin.Live.Form.Controller do
-  @moduledoc false
+  @moduledoc """
+  Behaviour behind `use CorexAdmin.Live, :form`.
+  """
 
   import Phoenix.Component, only: [assign: 3, to_form: 2]
   import Phoenix.LiveView, only: [put_flash: 3, push_navigate: 2]
@@ -9,6 +11,8 @@ defmodule CorexAdmin.Live.Form.Controller do
   alias CorexAdmin.Context
   alias CorexAdmin.Gettext
   alias CorexAdmin.Live.Helpers
+  alias CorexAdmin.Params
+  alias CorexAdmin.Resource.Field
 
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -68,6 +72,28 @@ defmodule CorexAdmin.Live.Form.Controller do
     end
   end
 
+  # A searchable relation picker asks for options as the user types, so large
+  # tables never ship every row to the client.
+  def handle_event("relation_search", params, socket) do
+    query = Params.event_value(params) || ""
+    id = to_string(Map.get(params, "id") || "")
+
+    case relation_field_for_control(socket.assigns.spec, id) do
+      nil ->
+        {:noreply, socket}
+
+      field ->
+        options =
+          Helpers.relation_options(field, Helpers.actor(socket),
+            query: query,
+            limit: field.relation.limit
+          )
+
+        current = socket.assigns[:relation_options] || %{}
+        {:noreply, assign(socket, :relation_options, Map.put(current, field.name, options))}
+    end
+  end
+
   def handle_event("delete", %{"id" => id}, socket) do
     spec = socket.assigns.spec
     resource_mod = socket.assigns.resource_mod
@@ -89,6 +115,7 @@ defmodule CorexAdmin.Live.Form.Controller do
 
   defp load_form(socket, spec, resource_mod, scope, :new, _params) do
     changeset = Context.change_create(spec, scope, %{})
+    fields = Helpers.form_fields(spec, socket, nil)
 
     {:ok,
      socket
@@ -96,8 +123,9 @@ defmodule CorexAdmin.Live.Form.Controller do
      |> assign(:resource_mod, resource_mod)
      |> assign(:spec, spec)
      |> assign(:record, nil)
-     |> assign(:form_fields, Helpers.form_fields(spec, socket, nil))
+     |> assign(:form_fields, fields)
      |> assign(:form_sections, Helpers.section_fields(spec, :form, socket, nil))
+     |> assign(:relation_options, load_relation_options(fields, scope))
      |> assign_form(changeset)}
   end
 
@@ -107,6 +135,7 @@ defmodule CorexAdmin.Live.Form.Controller do
         case Helpers.authorize(socket, :edit, resource_mod, record) do
           :ok ->
             changeset = Context.change_update(spec, scope, record, %{})
+            fields = Helpers.form_fields(spec, socket, record)
 
             {:ok,
              socket
@@ -117,8 +146,9 @@ defmodule CorexAdmin.Live.Form.Controller do
              |> assign(:resource_mod, resource_mod)
              |> assign(:spec, spec)
              |> assign(:record, record)
-             |> assign(:form_fields, Helpers.form_fields(spec, socket, record))
+             |> assign(:form_fields, fields)
              |> assign(:form_sections, Helpers.section_fields(spec, :form, socket, record))
+             |> assign(:relation_options, load_relation_options(fields, scope))
              |> assign_form(changeset)}
 
           {:error, _} ->
@@ -187,6 +217,25 @@ defmodule CorexAdmin.Live.Form.Controller do
 
   defp continue?(params) do
     params["continue"] in ["true", "continue", true]
+  end
+
+  defp load_relation_options(fields, scope) do
+    fields
+    |> Enum.filter(&Field.relation?/1)
+    |> Map.new(fn field ->
+      {field.name, Helpers.relation_options(field, scope, limit: field.relation.limit)}
+    end)
+  end
+
+  defp relation_field_for_control(spec, control_id) do
+    Enum.find(spec.fields, fn field ->
+      Field.relation?(field) and control_id != "" and
+        String.contains?(control_id, relation_control_key(field))
+    end)
+  end
+
+  defp relation_control_key(field) do
+    field |> CorexAdmin.UI.Fields.relation_key() |> Atom.to_string()
   end
 
   defp form_params(params, spec) do

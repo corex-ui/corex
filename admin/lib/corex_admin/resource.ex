@@ -661,7 +661,7 @@ defmodule CorexAdmin.Resource do
   defp resolve_field_type(type) when type in @field_types, do: {nil, type}
 
   defp resolve_field_type(type) when is_atom(type) and not is_nil(type) do
-    if CorexAdmin.Field.field_module?(type) do
+    if module_name?(type) do
       {type, :custom}
     else
       raise ArgumentError,
@@ -673,6 +673,13 @@ defmodule CorexAdmin.Resource do
   defp resolve_field_type(type) do
     raise ArgumentError,
           "unknown field type #{inspect(type)}; expected one of #{inspect(@field_types)} or a field module"
+  end
+
+  # Resources are compiled alongside the modules they name, so a field or filter
+  # module cannot be loaded yet. Distinguish a module from a misspelled type by
+  # the atom's shape and let the behaviour fail at call time if it is wrong.
+  defp module_name?(atom) do
+    String.starts_with?(Atom.to_string(atom), "Elixir.")
   end
 
   defp build_relation(_schema, _name, _type, nil), do: nil
@@ -794,7 +801,7 @@ defmodule CorexAdmin.Resource do
   defp resolve_filter_type(type) when type in @filter_types, do: {nil, type}
 
   defp resolve_filter_type(type) when is_atom(type) and not is_nil(type) do
-    if CorexAdmin.Filter.filter_module?(type) do
+    if module_name?(type) do
       {type, :custom}
     else
       raise ArgumentError,

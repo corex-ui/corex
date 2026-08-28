@@ -18,13 +18,17 @@ defmodule CorexAdmin.Test.Fields.Uppercase do
 
   @impl true
   def display(assigns) do
-    value = assigns.record |> Map.get(assigns.field.name) |> to_string() |> String.upcase()
-
-    assigns = assign(assigns, :value, value)
+    assigns = assign(assigns, :value, assigns.record |> source(assigns.field) |> String.upcase())
 
     ~H"""
     <span class="admin-cell">{@value}</span>
     """
+  end
+
+  # Used both as a normal field and as a computed column, where the record has
+  # no key of its own.
+  defp source(record, %Field{name: name}) do
+    (Map.get(record, name) || Map.get(record, :title)) |> to_string()
   end
 
   @impl true

@@ -341,7 +341,7 @@
  align-self: center;
  min-width: 16rem;
  width: auto;
- max-width: none;
+ max-width: 28rem;
  height: auto;
  margin: 0;
  padding: 0;
@@ -517,6 +517,105 @@
  flex-wrap: wrap;
  justify-content: flex-end;
  gap: var(--spacing-space-sm);
+ }
+
+ .admin-metrics {
+ display: flex;
+ flex-wrap: wrap;
+ gap: var(--spacing-space);
+ }
+
+ .admin-metric {
+ display: flex;
+ flex-direction: column;
+ gap: 0;
+ min-width: var(--container-6xs);
+ padding: var(--spacing-space);
+ border: 1px solid var(--color-border);
+ border-radius: var(--radius-md);
+ background-color: var(--color-ui);
+ }
+
+ .admin-metric-label {
+ font-size: var(--text-sm);
+ line-height: var(--text-sm--line-height);
+ color: var(--color-ink-muted);
+ }
+
+ .admin-metric-value {
+ font-size: var(--text-xl);
+ line-height: var(--text-xl--line-height);
+ font-weight: var(--font-weight-medium);
+ }
+
+ .admin-metric-hint {
+ font-size: var(--text-xs);
+ line-height: var(--text-xs--line-height);
+ color: var(--color-ink-muted);
+ }
+
+ .admin-details {
+ display: grid;
+ grid-template-columns: 1fr;
+ gap: 0;
+ margin: 0;
+ }
+
+ .admin-detail {
+ display: grid;
+ grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+ gap: var(--spacing-space);
+ align-items: baseline;
+ padding-block: var(--spacing-space-sm);
+ border-bottom: 1px solid var(--color-border);
+ }
+
+ .admin-detail:last-child {
+ border-bottom: 0;
+ }
+
+ .admin-detail-label {
+ font-size: var(--text-sm);
+ line-height: var(--text-sm--line-height);
+ color: var(--color-ink-muted);
+ }
+
+ .admin-detail-value {
+ margin: 0;
+ min-width: 0;
+ overflow-wrap: anywhere;
+ }
+
+ @media (max-width: theme("breakpoint.sm")) {
+ .admin-detail {
+ grid-template-columns: minmax(0, 1fr);
+ gap: 0;
+ }
+ }
+
+ /*
+  * A nested row is a grid of narrow controls. Its error belongs on the legend
+  * line, where there is room for it, not absolutely positioned inside a cell
+  * on top of the input it describes.
+  */
+ .admin-nested {
+ position: relative;
+ }
+
+ .admin-nested-legend {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: var(--spacing-space-sm);
+ width: 100%;
+ }
+
+ .admin-yes {
+ color: var(--color-success);
+ }
+
+ .admin-no {
+ color: var(--color-ink-muted);
  }
 
  .admin-field-error {
@@ -909,7 +1008,7 @@
  align-self: center;
  min-width: 16rem;
  width: auto;
- max-width: none;
+ max-width: 28rem;
  height: auto;
  margin: 0;
  padding: 0;
@@ -987,5 +1086,54 @@
 .admin .admin-filter-bar .date-picker {
  max-width: 16rem;
  min-width: 8rem;
+}
+
+/*
+ * A filter row control shows only its own value, so the legend and reset that
+ * belong to the dialog form are hidden rather than rendered twice.
+ */
+.admin .admin-filter-bar .admin-filter-legend {
+ display: none;
+}
+
+.admin .admin-filter-bar .admin-filter-stack {
+ gap: 0;
+}
+
+/* Compact trigger standing in for a calendar or slider on the filter row. */
+.admin .admin-filter-summary {
+ display: inline-flex;
+ align-items: center;
+ gap: var(--spacing-space-sm);
+ max-width: 16rem;
+ min-width: 0;
+ width: auto;
+ flex: 0 0 auto;
+}
+
+.admin .admin-filter-summary.admin-is-active {
+ border-color: var(--color-link);
+ color: var(--color-link);
+}
+
+.admin .admin-filter-count {
+ flex: 0 0 auto;
+}
+
+/*
+ * Dialogs that hold a whole form need a ceiling: Corex Dialog has no
+ * max-height modifier, and a tall filter form would otherwise run off screen
+ * with no way to scroll.
+ */
+.admin .admin-dialog--scroll [data-scope="dialog"][data-part="content"] {
+ max-height: min(90dvh, 100%);
+ overflow: hidden;
+}
+
+.admin .admin-dialog--scroll [data-scope="dialog"][data-part="content"] > form,
+.admin .admin-dialog--scroll .admin-filter-form {
+ min-height: 0;
+ overflow-y: auto;
+ overscroll-behavior: contain;
 }
 

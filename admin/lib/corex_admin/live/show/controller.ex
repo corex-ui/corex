@@ -1,5 +1,7 @@
 defmodule CorexAdmin.Live.Show.Controller do
-  @moduledoc false
+  @moduledoc """
+  Behaviour behind `use CorexAdmin.Live, :show`.
+  """
 
   import Phoenix.Component, only: [assign: 3]
   import Phoenix.LiveView, only: [put_flash: 3, push_navigate: 2]
@@ -8,6 +10,7 @@ defmodule CorexAdmin.Live.Show.Controller do
   alias CorexAdmin.Context
   alias CorexAdmin.History
   alias CorexAdmin.Live.Helpers
+  alias CorexAdmin.Resource.Field
 
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -50,6 +53,7 @@ defmodule CorexAdmin.Live.Show.Controller do
                |> assign(:show_sections, Helpers.section_fields(spec, :show, socket, record))
                |> assign(:history_enabled, history?)
                |> assign(:history_versions, versions)
+               |> assign(:related, related_rows(spec, record))
                |> assign(:can_delete, Action.registered?(spec, :record, CorexAdmin.Action.Delete))}
 
             {:error, _} ->
@@ -81,6 +85,21 @@ defmodule CorexAdmin.Live.Show.Controller do
     else
       {:error, :not_found} -> {:noreply, Helpers.not_found(socket)}
       {:error, _} -> {:noreply, Helpers.unauthorized(socket)}
+    end
+  end
+
+  # Related rows are whatever the record already carries. The admin does not
+  # preload: a context that wants the panel filled preloads in its `get`.
+  defp related_rows(spec, record) do
+    spec.fields
+    |> Enum.filter(&(&1.type == :has_many and Field.relation?(&1)))
+    |> Map.new(fn field -> {field, loaded_rows(record, field.name)} end)
+  end
+
+  defp loaded_rows(record, name) do
+    case Map.get(record, name) do
+      list when is_list(list) -> list
+      _ -> []
     end
   end
 

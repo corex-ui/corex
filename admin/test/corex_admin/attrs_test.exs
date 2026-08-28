@@ -54,4 +54,50 @@ defmodule CorexAdmin.AttrsTest do
     refute Map.has_key?(attrs, "bogus")
     refute Map.has_key?(attrs["social_links"]["0"], "bogus")
   end
+
+  test "an exclusive nested boolean keeps only the last row that set it" do
+    spec = TicketResource.__corex_admin_resource__()
+
+    attrs =
+      Attrs.take_writable(spec, %{
+        "title" => "Hello",
+        "social_links" => %{
+          "0" => %{"label" => "A", "url" => "https://a.test", "preferred" => "true"},
+          "1" => %{"label" => "B", "url" => "https://b.test", "preferred" => "true"},
+          "2" => %{"label" => "C", "url" => "https://c.test", "preferred" => "false"}
+        }
+      })
+
+    assert attrs["social_links"]["0"]["preferred"] == "false"
+    assert attrs["social_links"]["1"]["preferred"] == "true"
+    assert attrs["social_links"]["2"]["preferred"] == "false"
+  end
+
+  test "an exclusive nested boolean is left alone when no row sets it" do
+    spec = TicketResource.__corex_admin_resource__()
+
+    attrs =
+      Attrs.take_writable(spec, %{
+        "social_links" => %{
+          "0" => %{"label" => "A", "url" => "https://a.test", "preferred" => "false"}
+        }
+      })
+
+    assert attrs["social_links"]["0"]["preferred"] == "false"
+  end
+
+  test "reads a belongs_to from its foreign key" do
+    spec = TicketResource.__corex_admin_resource__()
+    attrs = Attrs.take_writable(spec, %{"title" => "Hello", "owner_id" => "2", "owner" => "nope"})
+
+    assert attrs["owner_id"] == "2"
+    refute Map.has_key?(attrs, "owner")
+  end
+
+  test "a computed column is never writable" do
+    spec = TicketResource.__corex_admin_resource__()
+    attrs = Attrs.take_writable(spec, %{"title" => "Hello", "shout" => "HELLO"})
+
+    refute Map.has_key?(attrs, "shout")
+  end
 end

@@ -346,6 +346,88 @@ defmodule CorexAdmin.LiveTest do
     refute html =~ ~s(id="tickets-filter-email")
   end
 
+  test "range filters get a compact trigger and their own dialog", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+
+    assert html =~ ~s(id="tickets-range-inserted_at")
+    assert html =~ ~s(id="tickets-range-priority")
+    assert html =~ "admin-filter-summary"
+    assert html =~ "admin-dialog--scroll"
+
+    # The calendar and slider live in the dialog, not on the row.
+    assert html =~ ~s(id="tickets-range-filter-inserted_at")
+    assert html =~ ~s(id="tickets-range-filter-priority-slider")
+    refute html =~ ~s(id="tickets-filter-inserted_at")
+  end
+
+  test "more filters excludes range filters so nothing renders twice", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+
+    assert html =~ ~s(id="tickets-more-filters")
+    assert html =~ ~s(id="tickets-more-filter-email")
+    refute html =~ ~s(id="tickets-more-filter-inserted_at")
+    assert length(Regex.scan(~r/phx-value-preset="last_7"/, html)) == 1
+  end
+
+  test "a range trigger summarizes the active value", %{conn: conn} do
+    {:ok, _view, html} =
+      live(conn, "/admin/tickets?filters[priority][min]=2&filters[priority][max]=4")
+
+    assert html =~ "2 – 4"
+  end
+
+  test "index shows metric cards from the resource", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+
+    assert html =~ "admin-metrics"
+    assert html =~ "Total"
+    assert html =~ "Open"
+    assert html =~ "unresolved"
+  end
+
+  test "a computed column renders through its field module", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+
+    assert html =~ "Shout"
+    assert html =~ "BROKEN LOGIN"
+  end
+
+  test "export is disabled until rows are selected", %{conn: conn, ticket: ticket} do
+    {:ok, view, html} = live(conn, "/admin/tickets")
+    assert html =~ "admin-is-disabled"
+
+    html =
+      render_click(view, "select", %{
+        "id" => "tickets-table-select-#{ticket.id}",
+        "checked" => true
+      })
+
+    assert html =~ "1 selected"
+  end
+
+  test "delete triggers are subtle and only the confirm is solid", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+
+    refute html =~ ~s(class="button ui-size-sm ui-solid ui-alert ui-trigger--square")
+    assert html =~ ~s(class="button ui-size-sm ui-alert ui-trigger--square")
+    assert html =~ "ui-solid ui-alert"
+  end
+
+  test "page size dropdown is sized to its content", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets")
+
+    assert html =~ ~r/id="tickets-page-size"[^>]*data-position-same-width="false"/
+  end
+
+  test "belongs_to renders a picker fed by the host context", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/admin/tickets/new")
+
+    assert html =~ "Owner"
+    assert html =~ "Ada"
+    assert html =~ "Grace"
+    assert html =~ ~s(name="ticket[owner_id]")
+  end
+
   test "bulk delete removes selected rows", %{conn: conn, ticket: ticket} do
     {:ok, view, _html} = live(conn, "/admin/tickets")
 
