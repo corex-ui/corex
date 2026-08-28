@@ -118,8 +118,17 @@ defmodule CorexAdmin.ListOptsTest do
   end
 
   test "parses text operators, not-in, relative date, and id" do
+    spec =
+      spec()
+      |> Map.update!(:filters, fn filters ->
+        Enum.map(filters, fn
+          %{name: :status} = filter -> %{filter | operators: [:in, :not_in]}
+          filter -> filter
+        end)
+      end)
+
     opts =
-      ListOpts.from_params(spec(), %{
+      ListOpts.from_params(spec, %{
         "filters" => %{
           "email" => %{"op" => "starts_with", "value" => "ops"},
           "status" => %{"op" => "not_in", "value" => ["open"]},

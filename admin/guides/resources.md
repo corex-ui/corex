@@ -39,7 +39,7 @@ defmodule MyAppWeb.Admin.UserResource do
   end
 
   filters do
-    filter :role, :select, options: ~w(admin editor viewer), pin: true, operators: [:in, :not_in]
+    filter :role, :select, options: ~w(admin editor viewer), pin: true
     filter :email, :text
     filter :bio, :presence, pin: false
     filter :id, :id, pin: false

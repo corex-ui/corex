@@ -53,6 +53,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ ~S(aria-label="Breadcrumb")
     assert html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="Select"/
     refute html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="ToggleGroup"/
+    refute html =~ ~S(id="tickets-filter-status-op")
 
     {_view, html} = live_ok!(conn, ~p"/admin/tickets?page=2")
     assert html =~ "Queue ticket"

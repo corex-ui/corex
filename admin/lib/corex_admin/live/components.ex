@@ -590,19 +590,20 @@ defmodule CorexAdmin.Live.Components do
   end
 
   defp filter_select_dropdown(assigns) do
+    show_op? = :not_in in Filter.operators(assigns.filter)
+
     assigns =
       assigns
       |> assign(:items, list_items(assigns.filter.options))
       |> assign(:selected, select_value(unwrap_membership(assigns.value)))
       |> assign(:multiple, assigns.filter.type == :multi_select)
-      |> assign(:show_op?, :not_in in Filter.operators(assigns.filter))
+      |> assign(:show_op?, show_op?)
       |> assign(:membership_op, membership_op(assigns.filter, assigns.value))
 
     ~H"""
-    <div class="admin-filter-stack">
+    <div :if={@show_op?} class="admin-filter-stack">
       <.filter_legend filter={@filter} />
       <.toggle_group
-        :if={@show_op?}
         id={"#{@control_id}-op"}
         class="toggle-group ui-size-sm"
         deselectable={false}
@@ -628,6 +629,24 @@ defmodule CorexAdmin.Live.Components do
         </:trigger>
       </.select>
     </div>
+    <.select
+      :if={!@show_op?}
+      id={@control_id}
+      class="select ui-size-sm"
+      name={@input_name}
+      multiple={@multiple}
+      items={@items}
+      value={@selected}
+      on_value_change="filter"
+      translation={%Corex.Select.Translation{placeholder: Gettext.t("Any")}}
+    >
+      <:label>
+        <.filter_legend filter={@filter} />
+      </:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
     """
   end
 

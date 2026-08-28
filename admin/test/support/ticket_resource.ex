@@ -45,7 +45,7 @@ defmodule CorexAdmin.Test.TicketResource do
   end
 
   filters do
-    filter(:status, :multi_select, options: ~w(open done), pin: true, operators: [:in, :not_in])
+    filter(:status, :multi_select, options: ~w(open done), pin: true)
     filter(:priority, :number_range, min: 1, max: 5)
     filter(:inserted_at, :date_range)
     filter(:email, :text, pin: false)

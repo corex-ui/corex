@@ -41,7 +41,7 @@ defmodule CorexAdmin.Resource do
         end
 
         filters do
-          filter :role, :select, options: ~w(admin editor viewer), pin: true, operators: [:in, :not_in]
+          filter :role, :select, options: ~w(admin editor viewer), pin: true
           filter :email, :text
           filter :priority, :number, operators: [:eq, :gte, :lte]
           filter :tags, :tags, pin: false

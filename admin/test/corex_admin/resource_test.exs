@@ -49,7 +49,8 @@ defmodule CorexAdmin.ResourceTest do
     refute pins[:id]
 
     status = Enum.find(spec.filters, &(&1.name == :status))
-    assert :not_in in CorexAdmin.Resource.Filter.operators(status)
+    assert CorexAdmin.Resource.Filter.operators(status) == [:in]
+    refute :not_in in CorexAdmin.Resource.Filter.operators(status)
     assert CorexAdmin.Resource.Filter.relative_bounds("today") != :error
   end
 

@@ -43,7 +43,7 @@ defmodule E2eWeb.Admin.TicketResource do
   end
 
   filters do
-    filter(:status, :multi_select, options: ~W(open done), pin: true, operators: [:in, :not_in])
+    filter(:status, :multi_select, options: ~W(open done), pin: true)
     filter(:priority, :number_range, min: 1, max: 5, pin: true)
     filter(:inserted_at, :date_range, pin: true)
     filter(:email, :text, pin: false)

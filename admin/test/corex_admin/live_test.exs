@@ -91,6 +91,7 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ "YTD"
     assert html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="Select"/
     refute html =~ ~r/id="tickets-filter-status"[^>]*phx-hook="ToggleGroup"/
+    refute html =~ ~s(id="tickets-filter-status-op")
     assert html =~ "hero-bars-3"
   end
 

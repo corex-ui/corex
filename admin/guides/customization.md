@@ -233,7 +233,8 @@ Heading + New + Export, search, saved views, filter pills + **Add filter**,
 chips, slim bulk bar, streamed table, footer (Showing + pagination + page-size).
 
 - Enumerated filters use `<.select>` (12 or fewer) or `<.combobox>` (more).
-  Toggle group is for `:boolean`, `:presence`, `:relative_date`, and Is / Is not.
+  Toggle group is for `:boolean`, `:presence`, and `:relative_date`.
+  Is / Is not is opt-in via `operators: [:in, :not_in]` — status multi-select does not use it.
 - Text filters expose Contains / Is / Starts with / Ends with / Does not contain.
 - Date ranges include Today, Yesterday, Last 7/30/90, This week/month/quarter, YTD.
 - **Reset** / **Clear all** restore defaults; pill **X** clears that filter to Any.
