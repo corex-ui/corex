@@ -958,3 +958,34 @@
  max-width: none;
 }
 
+.admin .admin-command-bar .select.admin-filter-views,
+.admin .admin-command-bar .admin-filter-views,
+.admin .admin-filter-bar .select,
+.admin .admin-filter-bar .combobox,
+.admin .admin-filter-bar .native-input,
+.admin .admin-filter-bar .date-picker,
+.admin .admin-filter-bar .number-input,
+.admin .admin-filter-bar .tags-input,
+.admin .admin-filter-bar .menu.admin-add-filter,
+.admin .admin-filter-bar .combobox.admin-add-filter,
+.admin .admin-command-selection,
+.admin .admin-command-actions,
+.admin .admin-command-delete,
+.admin .admin-command-actions .dialog,
+.admin .admin-command-delete .dialog,
+.admin .admin-filter-bar .dialog,
+.admin .admin-command-actions .tooltip,
+.admin .admin-command-selection .tooltip {
+ width: auto;
+ max-width: none;
+ flex: 0 0 auto;
+}
+
+.admin .admin-filter-bar .select,
+.admin .admin-filter-bar .combobox,
+.admin .admin-filter-bar .native-input,
+.admin .admin-filter-bar .date-picker {
+ max-width: 16rem;
+ min-width: 8rem;
+}
+
