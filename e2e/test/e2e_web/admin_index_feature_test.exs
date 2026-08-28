@@ -154,7 +154,7 @@ defmodule E2eWeb.AdminIndexFeatureTest do
   defp open_ticket_filters(session) do
     click(
       session,
-      css("#tickets-filters [data-scope='collapsible'][data-part='trigger']")
+      css("#tickets-filter-pill-status [data-scope='collapsible'][data-part='trigger']")
     )
   end
 
@@ -162,8 +162,8 @@ defmodule E2eWeb.AdminIndexFeatureTest do
     execute_script(
       session,
       """
-      var root = document.querySelector("#tickets-filters [data-scope='collapsible'][data-part='root']");
-      var trigger = document.querySelector("#tickets-filters [data-scope='collapsible'][data-part='trigger']");
+      var root = document.querySelector("#tickets-filter-pill-status [data-scope='collapsible'][data-part='root']");
+      var trigger = document.querySelector("#tickets-filter-pill-status [data-scope='collapsible'][data-part='trigger']");
       if (root && trigger && root.getAttribute('data-state') === 'open') {
         trigger.click();
       }
