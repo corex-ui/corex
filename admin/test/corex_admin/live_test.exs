@@ -428,6 +428,37 @@ defmodule CorexAdmin.LiveTest do
     assert html =~ ~s(name="ticket[owner_id]")
   end
 
+  test "a custom bulk action renders a form dialog and runs", %{conn: conn, ticket: ticket} do
+    {:ok, view, html} = live(conn, "/admin/tickets")
+
+    assert html =~ "Assign status"
+    assert html =~ ~s(id="tickets-action-assign")
+    assert html =~ ~s(name="payload[status]")
+
+    render_click(view, "select", %{
+      "id" => "tickets-table-select-#{ticket.id}",
+      "checked" => true
+    })
+
+    html =
+      view
+      |> form(~s(#tickets-action-assign-form), %{
+        "name" => "assign",
+        "payload" => %{"status" => "done"}
+      })
+      |> render_submit()
+
+    assert html =~ "Assigned 1."
+  end
+
+  test "an unknown action name is refused", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/admin/tickets")
+
+    html = render_click(view, "bulk_action", %{"name" => "nope"})
+
+    assert html =~ "Could not run action."
+  end
+
   test "bulk delete removes selected rows", %{conn: conn, ticket: ticket} do
     {:ok, view, _html} = live(conn, "/admin/tickets")
 

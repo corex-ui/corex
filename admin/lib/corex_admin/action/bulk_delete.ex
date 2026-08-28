@@ -1,5 +1,10 @@
 defmodule CorexAdmin.Action.BulkDelete do
-  @moduledoc false
+  @moduledoc """
+  Deletes the current selection, authorizing each record separately.
+
+  Registered by default. Its confirmation dialog is part of the index chrome, so
+  it declares `chrome/0` as `:dedicated`.
+  """
 
   @behaviour CorexAdmin.Action
 
@@ -19,6 +24,20 @@ defmodule CorexAdmin.Action.BulkDelete do
 
   @impl true
   def policy_action, do: :delete
+
+  @impl true
+  def icon, do: "hero-trash"
+
+  @impl true
+  def destructive?, do: true
+
+  @impl true
+  def chrome, do: :dedicated
+
+  @impl true
+  def confirm(%Spec{}) do
+    Gettext.t("This action cannot be undone. Each record is authorized separately.")
+  end
 
   @impl true
   def handle(%Spec{} = spec, scope, payload) do

@@ -1,5 +1,10 @@
 defmodule CorexAdmin.Action.Delete do
-  @moduledoc false
+  @moduledoc """
+  Deletes one record through the resource's `delete` context function.
+
+  Registered by default. Its confirmation dialog is part of the index and show
+  chrome, so it declares `chrome/0` as `:dedicated`.
+  """
 
   @behaviour CorexAdmin.Action
 
@@ -18,6 +23,18 @@ defmodule CorexAdmin.Action.Delete do
 
   @impl true
   def policy_action, do: :delete
+
+  @impl true
+  def icon, do: "hero-trash"
+
+  @impl true
+  def destructive?, do: true
+
+  @impl true
+  def chrome, do: :dedicated
+
+  @impl true
+  def confirm(%Spec{}), do: Gettext.t("This action cannot be undone.")
 
   @impl true
   def handle(%Spec{} = spec, scope, payload) do

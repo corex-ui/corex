@@ -88,7 +88,16 @@ defmodule CorexAdmin.Action do
   @doc "Whether the action destroys data."
   @callback destructive?() :: boolean()
 
-  @optional_callbacks icon: 0, form_fields: 1, confirm: 1, destructive?: 0
+  @doc """
+  Whether the index chrome renders this action generically.
+
+  `:dedicated` means the action has purpose-built chrome elsewhere — delete
+  confirmations and the export dialog — so the generic action button is not
+  rendered for it.
+  """
+  @callback chrome() :: :generic | :dedicated
+
+  @optional_callbacks icon: 0, form_fields: 1, confirm: 1, destructive?: 0, chrome: 0
 
   @doc "Looks up an action module by `name/0` in a list."
   @spec fetch([module()], atom()) :: {:ok, module()} | :error
@@ -105,13 +114,18 @@ defmodule CorexAdmin.Action do
     mod in Map.get(spec, action_key(kind), [])
   end
 
-  @doc "Actions of `kind` registered on `spec`, excluding ones with dedicated chrome."
+  @doc "Actions of `kind` registered on `spec` that the generic chrome renders."
   @spec custom(Spec.t(), atom()) :: [module()]
   def custom(%Spec{} = spec, kind) do
     spec
     |> Map.get(action_key(kind), [])
-    |> Enum.reject(&(&1 in [CorexAdmin.Action.Delete, CorexAdmin.Action.BulkDelete]))
-    |> Enum.reject(&(&1 == CorexAdmin.Action.Export))
+    |> Enum.filter(&(chrome(&1) == :generic))
+  end
+
+  @doc "How `mod` wants to be rendered."
+  @spec chrome(module()) :: :generic | :dedicated
+  def chrome(mod) do
+    if function_exported?(mod, :chrome, 0), do: mod.chrome(), else: :generic
   end
 
   @doc "Trigger icon for `mod`."

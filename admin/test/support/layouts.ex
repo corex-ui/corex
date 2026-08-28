@@ -15,6 +15,14 @@ defmodule CorexAdmin.Test.Layouts do
     ~H"""
     <html>
       <body>
+        <div id="flash" role="status">
+          <p :if={Phoenix.Flash.get(assigns[:flash] || %{}, :info)}>
+            {Phoenix.Flash.get(@flash, :info)}
+          </p>
+          <p :if={Phoenix.Flash.get(assigns[:flash] || %{}, :error)}>
+            {Phoenix.Flash.get(@flash, :error)}
+          </p>
+        </div>
         <div class="admin" data-scope="admin">
           <aside aria-label="Admin">
             <Nav.tree :if={assigns[:corex_admin]} socket={assigns} id="admin-nav-tree" />

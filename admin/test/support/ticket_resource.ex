@@ -16,6 +16,12 @@ defmodule CorexAdmin.Test.TicketResource do
 
   scope(:current_scope)
 
+  bulk_actions do
+    action(CorexAdmin.Action.BulkDelete)
+    action(CorexAdmin.Action.Export)
+    action(CorexAdmin.Test.Actions.Assign)
+  end
+
   actions do
     list(:list_tickets)
     get(:get_ticket!)
