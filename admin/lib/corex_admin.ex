@@ -7,7 +7,12 @@ defmodule CorexAdmin do
   to the host app via required `on_mount` hooks; this package owns authorization
   (`CorexAdmin.Policy`) and the resource/context contract.
 
-  See the [installation](installation.html) and [security](security.html) guides.
+  Pages are public `CorexAdmin.UI` blocks. Customize with a Resource module,
+  `mix corex.admin.gen.live --render`, or `mix corex.admin.gen.admin` plus
+  `mix corex.admin.doctor`.
+
+  See the [installation](installation.html), [security](security.html),
+  [resources](resources.html), and [customization](customization.html) guides.
   """
 
   @options_schema [

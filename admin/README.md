@@ -29,3 +29,8 @@ mix corex.admin.gen.resource Accounts User
 
 See [Installation](guides/installation.md), [Security](guides/security.md),
 [Resources](guides/resources.md), and [Customization](guides/customization.md).
+
+Customization is three tiers: a Resource module and callbacks, host LiveViews
+that compose `CorexAdmin.UI` (`mix corex.admin.gen.live --render`), and a
+tracked ejection of chrome (`mix corex.admin.gen.admin` +
+`mix corex.admin.doctor`).

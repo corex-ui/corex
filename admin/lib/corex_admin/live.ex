@@ -8,9 +8,8 @@ defmodule CorexAdmin.Live do
   wrapper that still `use`s this module.
 
   Callbacks are `defoverridable` so a host LiveView can override `render/1` or
-  `handle_event/3` and call `super`. Chrome is function components in
-  `CorexAdmin.Components.*` — do not copy package LiveView internals into the
-  host.
+  `handle_event/3` and call `super`. Chrome is the public function components in
+  `CorexAdmin.UI` — compose those, do not copy package LiveView internals.
   """
 
   defmacro __using__(:index) do
