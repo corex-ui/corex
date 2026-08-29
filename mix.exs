@@ -8,7 +8,7 @@ defmodule Corex.MixProject do
     end
   end
 
-  @version "0.2.1"
+  @version "0.2.2"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -192,7 +192,7 @@ defmodule Corex.MixProject do
 
     Mix.shell().info("Building --no-design Corex CSS snapshot (neo/light)…")
 
-    {_, 0} =
+    {_stream, exit_code} =
       System.cmd(
         "mix",
         [
@@ -206,6 +206,16 @@ defmodule Corex.MixProject do
         into: IO.stream(:stdio, :line),
         stderr_to_stdout: true
       )
+
+    if exit_code != 0 do
+      Mix.raise("""
+      Failed to build --no-design Corex CSS snapshot (exit #{exit_code}).
+
+      The nested Mix project lives in design/. Fetch its deps first:
+
+          cd design && mix deps.get
+      """)
+    end
 
     Mix.shell().info("Synced no-design export → installer/priv/static/corex")
     :ok
@@ -242,6 +252,7 @@ defmodule Corex.MixProject do
       source_ref: "v#{@version}",
       assets: %{"docs/images" => "images"},
       extras: [
+        "CHANGELOG.md",
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
@@ -272,6 +283,7 @@ defmodule Corex.MixProject do
       groups_for_extras: [
         {:Introduction,
          [
+           "CHANGELOG.md",
            "guides/installation.md",
            "guides/manual_installation.md",
            "guides/design.md",

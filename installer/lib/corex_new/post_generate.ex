@@ -140,12 +140,23 @@ defmodule Corex.New.PostGenerate do
         "#{indent}$ iex -S mix phx.server\n"
       ])
 
+    a11y_block =
+      if Keyword.get(opts, :a11y, false) do
+        IO.iodata_to_binary([
+          "\nIf you ship with mix release, add corex_design: :load so Mix.Release keeps ",
+          "Accessibility helper BEAMs (runtime: false apps are omitted otherwise).\n"
+        ])
+      else
+        ""
+      end
+
     IO.iodata_to_binary([
       initial,
       database_block,
       assets_block,
       localize_block,
-      server_block
+      server_block,
+      a11y_block
     ])
   end
 

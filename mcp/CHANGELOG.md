@@ -1,11 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.2 - 2026-08-29
 
-Host-app install snippets recommend `{:corex_design, "~> 0.2", runtime: false}`
-without `only: :dev`, matching the asset-pipeline Mix task. `design_guide`
-accessibility notes that preference CSS is a design build (not per request)
-and that `mix release` needs `corex_design: :load`.
+### Upgrade notes
+
+- Install snippets use `{:corex_design, "~> 0.2", runtime: false}` (no `only: :dev`).
+- For `--a11y` + `mix release`, add `corex_design: :load`.
 
 See the monorepo
 [CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).

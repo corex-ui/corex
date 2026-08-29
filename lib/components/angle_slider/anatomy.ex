@@ -172,6 +172,7 @@ defmodule Corex.AngleSlider.Anatomy do
     defstruct [
       :id,
       :dir,
+      :value,
       orientation: "horizontal",
       disabled: false,
       read_only: false,
@@ -181,6 +182,7 @@ defmodule Corex.AngleSlider.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
+            value: number() | nil,
             orientation: String.t(),
             disabled: boolean(),
             read_only: boolean(),

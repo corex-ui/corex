@@ -19,6 +19,10 @@ defmodule Corex.AngleSliderTest do
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r/data-part="control"/
       assert html =~ ~r/data-part="thumb"/
+      assert html =~ ~S(role="slider")
+      assert html =~ ~S(aria-valuemin="0")
+      assert html =~ ~S(aria-valuemax="360")
+      assert html =~ ~S(aria-valuenow="0")
       assert html =~ ~r/data-part="hidden-input"/
       assert html =~ ~r/data-part="value-text"/
     end
@@ -199,9 +203,14 @@ defmodule Corex.AngleSliderTest do
       assert c["data-part"] == "control"
       assert c["id"] == "angle-slider:x:control"
 
-      t = Connect.thumb(base)
+      t = Connect.thumb(Map.merge(base, %{value: 45}))
       assert t["data-part"] == "thumb"
       assert t["id"] == "angle-slider:x:thumb"
+      assert t["role"] == "slider"
+      assert t["aria-valuemin"] == "0"
+      assert t["aria-valuemax"] == "360"
+      assert t["aria-valuenow"] == "45"
+      assert t["tabindex"] == "0"
     end
   end
 
