@@ -1,22 +1,28 @@
 # Changelog
 
-## Unreleased
-
 ## 0.2.2 - 2026-08-29
 
 ### Upgrade notes
 
-- Design CSS is an **asset build step** only (`mix corex.design.build` on `assets.build` / `assets.deploy`). The optional `Mix.Tasks.Compile.CorexDesign` compiler is removed; do not add `:corex_design` to `compilers`.
-- `mix corex.new` / `mix corex.tableau.new` add `{:corex_design, "~> 0.2", runtime: false}` in every Mix env (no `only: :dev`) so `MIX_ENV=prod mix assets.deploy` can run the Mix task.
-- After changing `config :corex_design`, re-run `mix corex.design.build` (or `mix assets.build`). `mix compile` does not regenerate Design CSS.
-- `--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`); they do not rebuild CSS. `runtime: false` means Design is not started as an OTP app. Apps that use `mix release` with `--a11y` must add `corex_design: :load` so Mix.Release keeps those BEAMs. `mix corex.new --a11y` / `mix corex.tableau.new --a11y` print this as a follow-up step.
+- Remove `:corex_design` from `compilers` if present. Run `mix corex.design.build` from `assets.build` / `assets.deploy`.
+- Keep `{:corex_design, "~> 0.2", runtime: false}` (no `only: :dev`).
+- After changing `config :corex_design`, run `mix corex.design.build` (or `mix assets.build`).
+- For `--a11y` + `mix release`, add `corex_design: :load`.
+
+### Components
+
+- **Slider** — single thumb (`value={n}`) or range / N thumbs (`value={[a, b]}`) ([#106](https://github.com/corex-ui/corex/pull/106)).
 
 ### Bug fixes
 
-- Slider and angle-slider thumbs emit `aria-valuemin` / `aria-valuemax` / `aria-valuenow` in SSR (Zag still owns them after hydrate).
+- Slider and angle-slider thumbs emit `aria-valuemin` / `aria-valuemax` / `aria-valuenow` in SSR.
 - Doc a11y waits for descendant `[data-loading]` so async pattern skeletons are gone before axe runs.
 - [dev] `mix assets.build` raises a clear error when the nested `design/` Mix project fails (fetch `cd design && mix deps.get`) instead of a `MatchError`.
 - Hexdocs for `:corex` now include this changelog.
+
+### Dependencies
+
+- Zag.js **1.43.3**, Phoenix **1.8.13**, LiveView **1.2.10**, Credo / `oeditus_credo` updates ([#118](https://github.com/corex-ui/corex/pull/118)).
 
 ### Security
 

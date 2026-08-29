@@ -1,17 +1,12 @@
 # Changelog
 
-## Unreleased
-
 ## 0.2.2 - 2026-08-29
 
 ### Upgrade notes
 
-`mix corex.new` / `mix corex.tableau.new` no longer inject `:corex_design` into
-`compilers`. Design CSS is rebuilt from `assets.build` / `assets.deploy` via
-`mix corex.design.build`. The `corex_design` dep is `runtime: false` in every
-Mix env (no `only: :dev`). `--a11y` apps that use `mix release` should add
-`corex_design: :load` so Mix.Release keeps Accessibility helper BEAMs; the
-generators print that follow-up when `--a11y` is on.
+- Do not add `:corex_design` to `compilers`. Run `mix corex.design.build` from `assets.build` / `assets.deploy`.
+- Keep `{:corex_design, "~> 0.2", runtime: false}` (no `only: :dev`).
+- For `--a11y` + `mix release`, add `corex_design: :load` (printed as a follow-up step).
 
 See the monorepo
 [CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
