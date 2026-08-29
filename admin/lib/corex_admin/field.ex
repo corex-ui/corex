@@ -177,23 +177,26 @@ defmodule CorexAdmin.Field do
   end
 
   def format_value(%FieldSpec{name: name, type: type}, record) do
-    case Map.get(record, name) do
-      nil -> "—"
-      true -> CorexAdmin.Gettext.t("Yes")
-      false -> CorexAdmin.Gettext.t("No")
-      %Date{} = date -> Date.to_iso8601(date)
-      %DateTime{} = dt -> Calendar.strftime(dt, "%Y-%m-%d %H:%M")
-      %NaiveDateTime{} = dt -> NaiveDateTime.to_iso8601(dt)
-      %Ecto.Association.NotLoaded{} -> "—"
-      _value when type == :password -> "••••"
-      value when is_binary(value) -> value
-      value when is_integer(value) or is_float(value) -> to_string(value)
-      value when is_atom(value) -> Atom.to_string(value)
-      [] -> "—"
-      value when is_list(value) -> Enum.map_join(value, ", ", &to_string/1)
-      value -> inspect(value)
-    end
+    format_scalar(Map.get(record, name), type)
   end
+
+  defp format_scalar(nil, _type), do: "—"
+  defp format_scalar(true, _type), do: CorexAdmin.Gettext.t("Yes")
+  defp format_scalar(false, _type), do: CorexAdmin.Gettext.t("No")
+  defp format_scalar(%Date{} = date, _type), do: Date.to_iso8601(date)
+  defp format_scalar(%DateTime{} = dt, _type), do: Calendar.strftime(dt, "%Y-%m-%d %H:%M")
+  defp format_scalar(%NaiveDateTime{} = dt, _type), do: NaiveDateTime.to_iso8601(dt)
+  defp format_scalar(%Ecto.Association.NotLoaded{}, _type), do: "—"
+  defp format_scalar(_value, :password), do: "••••"
+  defp format_scalar(value, _type) when is_binary(value), do: value
+  defp format_scalar(value, _type) when is_integer(value) or is_float(value), do: to_string(value)
+  defp format_scalar(value, _type) when is_atom(value), do: Atom.to_string(value)
+  defp format_scalar([], _type), do: "—"
+
+  defp format_scalar(value, _type) when is_list(value),
+    do: Enum.map_join(value, ", ", &to_string/1)
+
+  defp format_scalar(value, _type), do: inspect(value)
 
   defp related_list_text(relation, list) do
     case Enum.map(list, &CorexAdmin.Resource.Relation.label(relation, &1)) do

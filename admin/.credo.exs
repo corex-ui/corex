@@ -253,6 +253,7 @@
                excluded: [
                  "lib/corex_admin/context.ex",
                  "lib/corex_admin/router.ex",
+                 "lib/corex_admin/ui/dialogs.ex",
                  "test/**/*"
                ]
              }

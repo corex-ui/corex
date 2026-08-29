@@ -98,9 +98,7 @@ defmodule CorexAdmin.ExportController do
   defp requested_export_fields(params) do
     case params["fields"] || params["fields[]"] do
       map when is_map(map) ->
-        Enum.flat_map(map, fn {name, value} ->
-          if export_field_checked?(value), do: [to_string(name)], else: []
-        end)
+        for {name, value} <- map, export_field_checked?(value), do: to_string(name)
 
       other ->
         other

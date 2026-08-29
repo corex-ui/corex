@@ -19,7 +19,7 @@ defmodule CorexAdmin.Live.Index.Controller do
   alias CorexAdmin.State.Filters
   alias Corex.DataTable.Selection
 
-  @doc false
+  @doc "Initial assigns for an index LiveView."
   def mount(_params, _session, socket) do
     {:ok,
      socket
@@ -40,7 +40,7 @@ defmodule CorexAdmin.Live.Index.Controller do
      |> assign(:export_fields, [])}
   end
 
-  @doc false
+  @doc "Loads the resource for the current slug and syncs URL state into assigns."
   def handle_params(params, _uri, socket) do
     slug = Helpers.resource_slug(socket, params)
 
@@ -68,7 +68,7 @@ defmodule CorexAdmin.Live.Index.Controller do
     end
   end
 
-  @doc false
+  @doc "Applies search and filter form params, patching the index when the query changes."
   def handle_event("search", params, socket) do
     spec = socket.assigns.spec
     current = ListOpts.to_params(socket.assigns.list_opts)
@@ -227,17 +227,15 @@ defmodule CorexAdmin.Live.Index.Controller do
   end
 
   def handle_event("action", %{"name" => name} = params, socket) do
-    with {:ok, action} <- fetch_action(socket.assigns.spec.record_actions, name) do
-      run_record_action(socket, action.name(), params)
-    else
+    case fetch_action(socket.assigns.spec.record_actions, name) do
+      {:ok, action} -> run_record_action(socket, action.name(), params)
       :error -> {:noreply, put_flash(socket, :error, Gettext.t("Could not run action."))}
     end
   end
 
   def handle_event("bulk_action", %{"name" => name} = params, socket) do
-    with {:ok, action} <- fetch_action(socket.assigns.spec.bulk_actions, name) do
-      run_bulk_action(socket, action.name(), params)
-    else
+    case fetch_action(socket.assigns.spec.bulk_actions, name) do
+      {:ok, action} -> run_bulk_action(socket, action.name(), params)
       :error -> {:noreply, put_flash(socket, :error, Gettext.t("Could not run action."))}
     end
   end

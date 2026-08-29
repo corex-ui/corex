@@ -47,7 +47,7 @@ defmodule CorexAdmin.Filter.Tags do
   def parse(%Filter{} = filter, value) do
     {op, inner} = Cast.split_op(filter, value)
 
-    case Cast.option_list(%Filter{filter | options: nil}, inner) do
+    case Cast.option_list(struct(filter, options: nil), inner) do
       nil -> if op in [nil, Filter.default_operator(filter)], do: nil, else: %{op: op}
       parsed when op == :not_in -> %{op: :not_in, value: parsed}
       parsed -> parsed

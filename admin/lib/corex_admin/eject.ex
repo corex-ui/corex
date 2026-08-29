@@ -86,13 +86,46 @@ defmodule CorexAdmin.Eject do
   def read_manifest(root \\ File.cwd!()) do
     path = Path.join(root, @manifest_path)
 
-    if File.exists?(path) do
-      {manifest, _} = Code.eval_file(path)
-      if is_map(manifest), do: manifest, else: %{}
+    with {:ok, contents} <- File.read(path),
+         {:ok, quoted} <- Code.string_to_quoted(contents),
+         {:ok, manifest} <- literal_map(quoted) do
+      manifest
     else
-      %{}
+      _ -> %{}
     end
   end
+
+  # Manifests are written by `render_manifest/1` as a map literal. Reject anything
+  # else so reading the host file never evaluates arbitrary Elixir.
+  defp literal_map({:%{}, _, entries}) when is_list(entries) do
+    Enum.reduce_while(entries, {:ok, %{}}, fn
+      {key, value}, {:ok, acc} when is_binary(key) ->
+        case literal_entry(value) do
+          {:ok, entry} -> {:cont, {:ok, Map.put(acc, key, entry)}}
+          :error -> {:halt, :error}
+        end
+
+      _, _ ->
+        {:halt, :error}
+    end)
+  end
+
+  defp literal_map(_), do: :error
+
+  defp literal_entry({:%{}, _, entries}) when is_list(entries) do
+    Enum.reduce_while(entries, {:ok, %{}}, fn
+      {:version, value}, {:ok, acc} when is_binary(value) ->
+        {:cont, {:ok, Map.put(acc, :version, value)}}
+
+      {:sha256, value}, {:ok, acc} when is_binary(value) ->
+        {:cont, {:ok, Map.put(acc, :sha256, value)}}
+
+      _, _ ->
+        {:halt, :error}
+    end)
+  end
+
+  defp literal_entry(_), do: :error
 
   @doc "Serializes a manifest for writing."
   @spec render_manifest(map()) :: String.t()
@@ -148,12 +181,14 @@ defmodule CorexAdmin.Eject do
     end
   end
 
-  defp resolve_module(key) do
-    mod = Module.concat([key])
-    if mod in @ejectable, do: {:ok, mod}, else: {:error, "#{key} is not an ejectable block"}
-  rescue
-    ArgumentError -> {:error, "#{key} is not a module name"}
+  defp resolve_module(key) when is_binary(key) do
+    case Enum.find(@ejectable, &(inspect(&1) == key)) do
+      nil -> {:error, "#{key} is not an ejectable block"}
+      mod -> {:ok, mod}
+    end
   end
+
+  defp resolve_module(key), do: {:error, "#{key} is not a module name"}
 
   @doc """
   Rewrites a block's source so it belongs to the host namespace.
@@ -166,7 +201,7 @@ defmodule CorexAdmin.Eject do
   def rewrite(source, target_namespace) do
     Enum.reduce(@ejectable, source, fn mod, acc ->
       from = inspect(mod)
-      to = inspect(Module.concat(target_namespace, block_name(mod)))
+      to = "#{inspect(target_namespace)}.#{block_name(mod)}"
       String.replace(acc, from, to)
     end)
   end
