@@ -15,7 +15,7 @@ Do not enable MCP in production. The tools are read-only, but the endpoint still
 | Elixir `~> 1.17` | Required by Corex packages (and `corex_design` / Hex `color`) |
 | `{:corex, "~> 0.2"}` | Host app dependency (MCP soft-loads it; not a dep of `corex_mcp`) |
 | `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` | This package (`plug` only; uses OTP `:json`) |
-| `{:corex_design, "~> 0.2", runtime: false, only: :dev}` | Optional host dep; enables design tools and richer `get_component` fields |
+| `{:corex_design, "~> 0.2", runtime: false}` | Optional host dep; enables design tools and richer `get_component` fields |
 | Running HTTP server | Phoenix endpoint or Tableau Bandit child |
 
 ## Mount the endpoint
@@ -161,5 +161,5 @@ config :corex_mcp, debug: true
 Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
 
 <p>
-<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+<a href="https://netoum.com"><img src="https://i.ibb.co/Rp2tcNgL/netoum-square.png" alt="Netoum" height="40"></a>
 </p>

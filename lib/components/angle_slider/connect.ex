@@ -180,16 +180,23 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec thumb(Thumb.t()) :: map()
   def thumb(assigns) do
+    value = effective_angle_value(Map.get(assigns, :value))
+
     %{
       "data-scope" => "angle-slider",
       "data-part" => "thumb",
       "id" => "angle-slider:#{assigns.id}:thumb",
       "dir" => assigns.dir,
       "style" => "rotate:var(--angle);",
+      "role" => "slider",
+      "aria-valuemin" => "0",
+      "aria-valuemax" => "360",
+      "aria-valuenow" => format_number(value),
       "data-disabled" => presence_attr(assigns.disabled),
       "data-invalid" => presence_attr(assigns.invalid),
       "data-readonly" => presence_attr(assigns.read_only)
     }
+    |> maybe_put("tabindex", if(assigns.disabled in [nil, false], do: "0"))
   end
 
   def ignore_thumb(assigns) do

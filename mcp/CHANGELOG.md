@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.2 - 2026-08-29
+
+### Upgrade notes
+
+- Install snippets use `{:corex_design, "~> 0.2", runtime: false}` (no `only: :dev`).
+- For `--a11y` + `mix release`, add `corex_design: :load`.
+
+See the monorepo
+[CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+
 ## 0.2.1 - 2026-08-08
 
 Patch release aligned with Corex 0.2.1. No MCP API changes.

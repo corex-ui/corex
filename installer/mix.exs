@@ -6,7 +6,7 @@ end
 defmodule Corex.New.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.2.2"
   @phoenix_version "1.8.7"
   @scm_url "https://github.com/corex-ui/corex"
 
@@ -44,7 +44,7 @@ defmodule Corex.New.MixProject do
   end
 
   def cli do
-    [preferred_envs: [docs: :docs, lint: :test]]
+    [preferred_envs: [docs: :docs, "hex.publish": :docs, lint: :test]]
   end
 
   def application do
@@ -85,7 +85,6 @@ defmodule Corex.New.MixProject do
     [
       main: "readme",
       extras: ["README.md", "CHANGELOG.md"],
-      assets: %{"../docs/images" => "images"},
       source_ref: "v#{@version}",
       source_url_pattern: "#{@scm_url}/blob/v#{@version}/installer/%{path}#L%{line}"
     ]

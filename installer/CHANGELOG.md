@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2 - 2026-08-29
+
+### Upgrade notes
+
+- Do not add `:corex_design` to `compilers`. Run `mix corex.design.build` from `assets.build` / `assets.deploy`.
+- Keep `{:corex_design, "~> 0.2", runtime: false}` (no `only: :dev`).
+- For `--a11y` + `mix release`, add `corex_design: :load` (printed as a follow-up step).
+
+See the monorepo
+[CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+
 ## 0.2.1 - 2026-08-08
 
 ### Bug fixes

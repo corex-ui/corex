@@ -25,7 +25,7 @@ Never enable in production. Upgrading from 0.1.x: [Updating Corex](https://hexdo
 def deps do
   [
     {:corex, "~> 0.2"},
-    {:corex_design, "~> 0.2", runtime: false, only: :dev},
+    {:corex_design, "~> 0.2", runtime: false},
     {:corex_mcp, "~> 0.2", only: [:dev, :test]}
   ]
 end
@@ -73,5 +73,5 @@ Apache-2.0 (MCP protocol stack adapted from Tidewave). Corex itself remains MIT.
 Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
 
 <p>
-<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+<a href="https://netoum.com"><img src="https://i.ibb.co/Rp2tcNgL/netoum-square.png" alt="Netoum" height="40"></a>
 </p>

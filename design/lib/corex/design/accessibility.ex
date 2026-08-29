@@ -4,9 +4,15 @@ defmodule Corex.Design.Accessibility do
   preference CSS (`data-text`, `data-contrast`, `data-motion`, `data-cursor`,
   `data-focus`, `data-links`).
 
+  Preference CSS is emitted by `mix corex.design.build`, not by these helpers.
+  Plugs and layouts call `parse/1` / `sanitize/1` to map cookies onto `data-*`
+  attributes. That does not rebuild CSS.
+
   Enable emit with `config :corex_design, accessibility: true` (all six axes)
   or an axis list, then rebuild with `mix corex.design.build`. See the
   Accessibility guide on Corex Hexdocs for app wiring (plug, LiveView, bridge).
+  With `mix release`, list `corex_design: :load` so Mix.Release keeps these
+  modules (`runtime: false` apps are omitted otherwise).
   """
 
   @axes [:text, :contrast, :motion, :cursor, :focus, :links]

@@ -3,8 +3,8 @@ defmodule Corex.Design do
   Optional config-driven tokens, themes, and component CSS for Corex.
 
   1. Add `{:corex_design, "~> 0.2", runtime: false}` and `config :corex_design` (see `Corex.Design.Config`).
-  2. Run `mix corex.design.build` (or add `:corex_design` to `compilers`).
-  3. Import `@import "../corex/corex.css"` in `app.css`.
+  2. Run `mix corex.design.build` from `assets.build` / `assets.deploy` (Design CSS is an asset step, not `mix compile`).
+  3. Import `@import "../corex/corex.css"` in `app.css`. After changing `config :corex_design`, re-run `mix corex.design.build`.
 
   Package docs: [corex_design](https://hexdocs.pm/corex_design). App wiring:
   [Design](https://hexdocs.pm/corex/design.html), [Theming](https://hexdocs.pm/corex/theming.html),
@@ -54,14 +54,4 @@ defmodule Corex.Design do
       output -> Path.expand(output, mix_root())
     end
   end
-
-  @doc false
-  def compile(opts \\ []) do
-    Corex.Design.Bundle.write!(output_path())
-    log_compile(Keyword.get(opts, :log, :info))
-    :ok
-  end
-
-  defp log_compile(false), do: :ok
-  defp log_compile(:info), do: Mix.shell().info("Corex design compiled")
 end

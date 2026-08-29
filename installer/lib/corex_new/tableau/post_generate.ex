@@ -84,7 +84,17 @@ defmodule Corex.New.Tableau.PostGenerate do
         "#{indent}$ mix build\n"
       ])
 
-    IO.iodata_to_binary([initial, assets_block, server_block])
+    a11y_block =
+      if Keyword.get(opts, :a11y, false) do
+        IO.iodata_to_binary([
+          "\nIf you ship with mix release, add corex_design: :load so Mix.Release keeps ",
+          "Accessibility helper BEAMs (runtime: false apps are omitted otherwise).\n"
+        ])
+      else
+        ""
+      end
+
+    IO.iodata_to_binary([initial, assets_block, server_block, a11y_block])
   end
 
   defp git_available? do

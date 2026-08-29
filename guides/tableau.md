@@ -39,7 +39,7 @@ Add deps:
 
 ```elixir
 {:corex, "~> 0.2"},
-{:corex_design, "~> 0.2", runtime: false, only: :dev},
+{:corex_design, "~> 0.2", runtime: false},
 ```
 
 ```bash

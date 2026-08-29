@@ -26,9 +26,9 @@ When release notes mention CSS or tokens:
 mix corex.design.build
 ```
 
-Or run a full asset build with `mix assets.build`.
+Or run a full asset build with `mix assets.build`. After changing `config :corex_design`, re-run that Mix task; `mix compile` does not regenerate Design CSS.
 
-For day-to-day patch notes, see [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md). The rest of this guide is the **0.1.x → 0.2.0** migration.
+For day-to-day patch notes, see the [changelog](changelog.html). The rest of this guide is the **0.1.x → 0.2.0** migration.
 
 ## Upgrading to 0.2.0
 
@@ -43,10 +43,12 @@ Design and MCP are separate Hex packages (they no longer ship inside `corex`).
 **Design** (tokens, themes, component CSS):
 
 ```elixir
-{:corex_design, "~> 0.2", runtime: false, only: :dev}
+{:corex_design, "~> 0.2", runtime: false}
 ```
 
-Add `:corex_design` to your project's `compilers` when you want design assets to rebuild on `mix compile` (see [Manual installation](manual_installation.html)).
+Do not add `:corex_design` to `compilers`. Design CSS is an asset step: add `"corex.design.build"` to `assets.build` / `assets.deploy` (see [Manual installation](manual_installation.html)). If an earlier 0.2.x scaffold put `:corex_design` in `compilers`, remove it. After that, `mix compile` no longer regenerates `assets/corex/` — re-run `mix corex.design.build` (or `mix assets.build`) when config or tokens change.
+
+`runtime: false` means Design is not started as an OTP app. It is not “rebuild CSS while serving traffic.” `--a11y` plugs call `Corex.Design.Accessibility` to turn cookies into `data-*` attributes (same pattern as theme/mode). If you ship with `mix release`, Mix.Release omits `runtime: false` apps unless listed — add `corex_design: :load`. See [Accessibility](accessibility.html#mix-release) and [Production](production.html).
 
 **MCP** (AI discovery; never enable in `:prod`):
 
@@ -164,7 +166,7 @@ Zag-faithful attrs (`checked` / `pressed` / `on_checked_change`, and data_table 
 
 1. Bump deps and add `corex_design` / `corex_mcp` if you use them.
 2. Move MCP config to `config :corex_mcp`.
-3. Wire `config :corex_design`, compilers, and `mix corex.design.build`.
+3. Wire `config :corex_design` and `mix corex.design.build` on `assets.build` / `assets.deploy`. Remove `:corex_design` from `compilers` if present. Drop `only: :dev` on `corex_design` so `MIX_ENV=prod mix assets.deploy` can run the Mix task.
 4. Grep templates for `--accent`, `--ghost`, `--outline`, and per-component size/radius BEM classes; rewrite to `ui-*`. Remove any remaining `ui-outline`.
 5. Grep for API renames (`toast-create`, `groupId`, `<:prev>`, color_picker `label=`, `file_upload_live` `field=`).
 6. Fix form controls missing `id` / `field`, and opt into `auto_invalid` where you want alert borders.

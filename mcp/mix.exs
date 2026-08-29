@@ -1,7 +1,7 @@
 defmodule CorexMcp.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.2.2"
   @scm_url "https://github.com/corex-ui/corex"
 
   def project do
@@ -25,7 +25,7 @@ defmodule CorexMcp.MixProject do
   end
 
   def cli do
-    [preferred_envs: [docs: :docs, lint: :test]]
+    [preferred_envs: [docs: :docs, "hex.publish": :docs, lint: :test]]
   end
 
   def application do
@@ -105,7 +105,6 @@ defmodule CorexMcp.MixProject do
       main: "mcp",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      assets: %{"../docs/images" => "images"},
       extras: ["README.md", "CHANGELOG.md", "guides/MCP.md"],
       filter_modules: fn
         Corex.MCP, _ ->

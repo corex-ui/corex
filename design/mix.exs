@@ -1,7 +1,7 @@
 defmodule CorexDesign.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.2.2"
   @scm_url "https://github.com/corex-ui/corex"
 
   def project do
@@ -24,7 +24,7 @@ defmodule CorexDesign.MixProject do
   end
 
   def cli do
-    [preferred_envs: [docs: :docs, lint: :test]]
+    [preferred_envs: [docs: :docs, "hex.publish": :docs, lint: :test]]
   end
 
   def application do
@@ -111,7 +111,6 @@ defmodule CorexDesign.MixProject do
       main: "readme",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      assets: %{"../docs/images" => "images"},
       extras: ["README.md", "CHANGELOG.md", "guides/modifiers.md"],
       filter_modules: &docs_filter_modules/2,
       groups_for_modules: [
@@ -123,8 +122,7 @@ defmodule CorexDesign.MixProject do
           Corex.Design.Config.Schema,
           Mix.Tasks.Corex.Design.Build,
           Mix.Tasks.Corex.Design.Options,
-          Mix.Tasks.Corex.Design.Validate,
-          Mix.Tasks.Compile.CorexDesign
+          Mix.Tasks.Corex.Design.Validate
         ]
       ]
     ]
@@ -140,8 +138,7 @@ defmodule CorexDesign.MixProject do
         Corex.Design.Config.Schema,
         Mix.Tasks.Corex.Design.Build,
         Mix.Tasks.Corex.Design.Options,
-        Mix.Tasks.Corex.Design.Validate,
-        Mix.Tasks.Compile.CorexDesign
+        Mix.Tasks.Corex.Design.Validate
       ])
 
     if MapSet.member?(allowed, mod) do

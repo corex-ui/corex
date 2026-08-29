@@ -8,7 +8,7 @@ defmodule Corex.MixProject do
     end
   end
 
-  @version "0.2.1"
+  @version "0.2.2"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -45,6 +45,7 @@ defmodule Corex.MixProject do
     [
       preferred_envs: [
         docs: :docs,
+        "hex.publish": :docs,
         lint: :test,
         ci: :test,
         "release.check": :test,
@@ -64,7 +65,7 @@ defmodule Corex.MixProject do
       {:phoenix_live_view, "~> 1.1 or ~> 1.2"},
       {:gettext, "~> 1.0"},
       {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
+      {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test, :docs], optional: true},
       {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},
@@ -197,7 +198,7 @@ defmodule Corex.MixProject do
 
     Mix.shell().info("Building --no-design Corex CSS snapshot (neo/light)…")
 
-    {_, 0} =
+    {_stream, exit_code} =
       System.cmd(
         "mix",
         [
@@ -211,6 +212,16 @@ defmodule Corex.MixProject do
         into: IO.stream(:stdio, :line),
         stderr_to_stdout: true
       )
+
+    if exit_code != 0 do
+      Mix.raise("""
+      Failed to build --no-design Corex CSS snapshot (exit #{exit_code}).
+
+      The nested Mix project lives in design/. Fetch its deps first:
+
+          cd design && mix deps.get
+      """)
+    end
 
     Mix.shell().info("Synced no-design export → installer/priv/static/corex")
     :ok
@@ -245,8 +256,8 @@ defmodule Corex.MixProject do
     [
       main: "installation",
       source_ref: "v#{@version}",
-      assets: %{"docs/images" => "images"},
       extras: [
+        "CHANGELOG.md",
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
@@ -277,6 +288,7 @@ defmodule Corex.MixProject do
       groups_for_extras: [
         {:Introduction,
          [
+           "CHANGELOG.md",
            "guides/installation.md",
            "guides/manual_installation.md",
            "guides/design.md",

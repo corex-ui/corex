@@ -144,6 +144,33 @@ defmodule Corex.New.PostGenerateTest do
         assert output =~ "mix localize.download_locales"
       end)
     end
+
+    test "prints mix release corex_design: :load hint when a11y is true" do
+      in_tmp(:prompt_a11y, fn ->
+        PostGenerate.prompt_install(File.cwd!(), File.cwd!(),
+          install: false,
+          ecto: false,
+          lang: false,
+          a11y: true
+        )
+
+        output = shell_info_text()
+        assert output =~ "corex_design: :load"
+      end)
+    end
+
+    test "omits mix release hint when a11y is false" do
+      in_tmp(:prompt_no_a11y, fn ->
+        PostGenerate.prompt_install(File.cwd!(), File.cwd!(),
+          install: false,
+          ecto: false,
+          lang: false
+        )
+
+        output = shell_info_text()
+        refute output =~ "corex_design: :load"
+      end)
+    end
   end
 
   defp shell_info_text(timeout \\ 50) do
