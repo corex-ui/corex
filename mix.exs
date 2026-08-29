@@ -45,6 +45,7 @@ defmodule Corex.MixProject do
     [
       preferred_envs: [
         docs: :docs,
+        "hex.publish": :docs,
         lint: :test,
         ci: :test,
         "release.check": :test,
@@ -64,7 +65,7 @@ defmodule Corex.MixProject do
       {:phoenix_live_view, "~> 1.1 or ~> 1.2"},
       {:gettext, "~> 1.0"},
       {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
+      {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test, :docs], optional: true},
       {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},
@@ -250,7 +251,6 @@ defmodule Corex.MixProject do
     [
       main: "installation",
       source_ref: "v#{@version}",
-      assets: %{"docs/images" => "images"},
       extras: [
         "CHANGELOG.md",
         "guides/installation.md",

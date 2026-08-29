@@ -118,5 +118,5 @@ Omit the component class for a fully custom instance.
 Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).
 
 <p>
-<a href="https://netoum.com"><img src="images/netoum.svg" alt="Netoum" height="40"></a>
+<a href="https://netoum.com"><img src="https://i.ibb.co/Rp2tcNgL/netoum-square.png" alt="Netoum" height="40"></a>
 </p>

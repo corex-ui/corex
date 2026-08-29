@@ -24,7 +24,7 @@ defmodule CorexDesign.MixProject do
   end
 
   def cli do
-    [preferred_envs: [docs: :docs, lint: :test]]
+    [preferred_envs: [docs: :docs, "hex.publish": :docs, lint: :test]]
   end
 
   def application do
@@ -111,7 +111,6 @@ defmodule CorexDesign.MixProject do
       main: "readme",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      assets: %{"../docs/images" => "images"},
       extras: ["README.md", "CHANGELOG.md", "guides/modifiers.md"],
       filter_modules: &docs_filter_modules/2,
       groups_for_modules: [
