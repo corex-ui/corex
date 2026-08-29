@@ -79,6 +79,24 @@ defmodule Corex.New.Tableau.PostGenerateTest do
       end)
     end
 
+    test "prints mix release corex_design: :load hint when a11y is true" do
+      in_tmp("tableau prompt a11y", fn ->
+        PostGenerate.prompt_install(File.cwd!(), install: false, design: true, a11y: true)
+
+        output = shell_info_text()
+        assert output =~ "corex_design: :load"
+      end)
+    end
+
+    test "omits mix release hint when a11y is false" do
+      in_tmp("tableau prompt no a11y", fn ->
+        PostGenerate.prompt_install(File.cwd!(), install: false, design: true)
+
+        output = shell_info_text()
+        refute output =~ "corex_design: :load"
+      end)
+    end
+
     test "prompts for install when the option is omitted" do
       in_tmp("tableau prompt lazy", fn ->
         send(self(), {:mix_shell_input, :yes?, false})
