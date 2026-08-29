@@ -44,7 +44,7 @@ defmodule Corex.New.MixProject do
   end
 
   def cli do
-    [preferred_envs: [docs: :docs, lint: :test]]
+    [preferred_envs: [docs: :docs, "hex.publish": :docs, lint: :test]]
   end
 
   def application do
@@ -85,7 +85,6 @@ defmodule Corex.New.MixProject do
     [
       main: "readme",
       extras: ["README.md", "CHANGELOG.md"],
-      assets: %{"../docs/images" => "images"},
       source_ref: "v#{@version}",
       source_url_pattern: "#{@scm_url}/blob/v#{@version}/installer/%{path}#L%{line}"
     ]

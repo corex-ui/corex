@@ -56,6 +56,10 @@ mix ci
 
 `mix ci` is the single local command that covers the monorepo packages contributors usually touch: format checks across packages, root `mix lint`, root tests, design/mcp/installer lint + dialyzer + tests, and `npm run check`. E2e and `integration_test/` stay separate because they need Postgres and generated apps.
 
+### Publishing
+
+From each Mix project (`corex`, `design/`, `mcp/`, `installer/`), `mix deps.get` then `mix hex.publish`. Publishing uses the docs Mix env so `ex_doc` is available.
+
 ### E2e app (`e2e/`)
 
 The demo and browser tests live here. See also [`e2e/README.md`](e2e/README.md).
