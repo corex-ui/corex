@@ -73,7 +73,9 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert html =~ ~S(id="tickets-range-filter-priority-slider")
 
     AdminDemo.Seed.ensure_seeded("priority-bounds")
-    assert %{min: 1, max: 5} = AdminDemo.ticket_priority_bounds(%Scope{demo_id: "priority-bounds"})
+
+    assert %{min: 1, max: 5} =
+             AdminDemo.ticket_priority_bounds(%Scope{demo_id: "priority-bounds"})
 
     # An empty queue offers no range at all rather than a slider that matches nothing.
     assert AdminDemo.ticket_priority_bounds(%Scope{demo_id: "no-such-demo"}) == nil
@@ -204,11 +206,15 @@ defmodule E2eWeb.AdminDemoLiveTest do
 
     id = html |> then(&Regex.run(~r/tickets-table-select-(\d+)/, &1)) |> List.last()
     title = ticket_title(html, id)
+    # Prefer a report variant so the title is not a prefix of another seeded row.
+    refute title == id
 
     view |> render_click("select", %{"id" => "tickets-table-select-#{id}", "checked" => true})
 
     html = render_click(view, "bulk_delete")
-    refute html =~ title
+    refute html =~ ~s(id="tickets-table-select-#{id}")
+    # Exact title= attribute so base subjects do not match "(report N)" variants.
+    refute html =~ ~r{class="admin-cell" title="#{Regex.escape(title)}"}
   end
 
   test "a bulk action with a form moves the selection", %{conn: conn} do
@@ -452,8 +458,14 @@ defmodule E2eWeb.AdminDemoLiveTest do
     refute html =~ ">Filters<"
   end
 
+  # Index columns start with `:id`, so the title is the second admin-cell.
   defp ticket_title(html, id) do
-    [_, title] = Regex.run(~r/tickets-table-select-#{id}.*?admin-cell[^>]*>([^<]+)</s, html)
+    [_, title] =
+      Regex.run(
+        ~r/tickets-table-select-#{id}.*?admin-cell[^>]*>[^<]*<.*?admin-cell[^>]*>([^<]+)</s,
+        html
+      )
+
     String.trim(title)
   end
 

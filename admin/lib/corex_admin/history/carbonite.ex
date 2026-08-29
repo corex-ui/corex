@@ -90,16 +90,12 @@ defmodule CorexAdmin.History.Carbonite do
     end)
   end
 
-  defp stringify_keys(%{__struct__: _} = struct), do: stringify_keys(Map.from_struct(struct))
-
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn
       {key, value} when is_atom(key) -> {Atom.to_string(key), value}
       {key, value} -> {to_string(key), value}
     end)
   end
-
-  defp stringify_keys(_), do: %{}
 
   defp normalize_map(%{__struct__: _} = struct), do: Map.from_struct(struct)
   defp normalize_map(map) when is_map(map), do: map

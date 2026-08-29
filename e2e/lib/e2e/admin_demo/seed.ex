@@ -113,7 +113,11 @@ defmodule E2e.AdminDemo.Seed do
       ticket
       |> Ticket.changeset(%{
         "social_links" => [
-          %{"label" => "Status page", "url" => "https://example.test/status", "preferred" => true},
+          %{
+            "label" => "Status page",
+            "url" => "https://example.test/status",
+            "preferred" => true
+          },
           %{"label" => "Docs", "url" => "https://example.test/docs", "preferred" => false}
         ]
       })

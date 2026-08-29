@@ -96,7 +96,7 @@ defmodule CorexAdmin.UI do
   Every select, combobox, and menu in the admin builds its items through this,
   so option shapes stay consistent between filters and form fields.
   """
-  @spec list_items(term()) :: Corex.List.t()
+  @spec list_items(term()) :: [Corex.List.Item.t()]
   def list_items(options) when is_list(options) do
     Corex.List.new(
       Enum.map(options, fn
