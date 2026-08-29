@@ -367,7 +367,7 @@ defmodule Corex.AngleSlider do
           {Connect.mounted_control(%Control{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
         >
           <div
-            {Connect.mounted_thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
+            {Connect.mounted_thumb(%Thumb{id: @id, dir: @dir, value: @value, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
             title="Thumb"
             />
           <div
@@ -492,6 +492,7 @@ defmodule Corex.AngleSlider do
       %Thumb{
         id: assigns.ctx.id,
         dir: assigns.ctx.dir,
+        value: assigns.ctx.value,
         orientation: assigns.ctx.orientation,
         disabled: assigns.ctx.disabled,
         read_only: assigns.ctx.read_only,
