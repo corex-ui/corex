@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.2.2 - 2026-08-29
+
+### Upgrade notes
+
 Design CSS is generated only by `mix corex.design.build` (Phoenix `assets.build` /
 `assets.deploy`). The `Mix.Tasks.Compile.CorexDesign` compiler is removed.
 `Corex.Design.Accessibility` is an allowlist helper (cookie → `data-*`), not a

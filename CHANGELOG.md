@@ -2,17 +2,25 @@
 
 ## Unreleased
 
-### Design CSS pipeline
+## 0.2.2 - 2026-08-29
+
+### Upgrade notes
 
 - Design CSS is an **asset build step** only (`mix corex.design.build` on `assets.build` / `assets.deploy`). The optional `Mix.Tasks.Compile.CorexDesign` compiler is removed; do not add `:corex_design` to `compilers`.
 - `mix corex.new` / `mix corex.tableau.new` add `{:corex_design, "~> 0.2", runtime: false}` in every Mix env (no `only: :dev`) so `MIX_ENV=prod mix assets.deploy` can run the Mix task.
 - After changing `config :corex_design`, re-run `mix corex.design.build` (or `mix assets.build`). `mix compile` does not regenerate Design CSS.
-- `--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`); they do not rebuild CSS. `runtime: false` means Design is not started as an OTP app. Apps that use `mix release` with `--a11y` must add `corex_design: :load` so Mix.Release keeps those BEAMs.
+- `--a11y` plugs call `Corex.Design.Accessibility` (cookie → `data-*`); they do not rebuild CSS. `runtime: false` means Design is not started as an OTP app. Apps that use `mix release` with `--a11y` must add `corex_design: :load` so Mix.Release keeps those BEAMs. `mix corex.new --a11y` / `mix corex.tableau.new --a11y` print this as a follow-up step.
+
+### Bug fixes
+
+- Slider and angle-slider thumbs emit `aria-valuemin` / `aria-valuemax` / `aria-valuenow` in SSR (Zag still owns them after hydrate).
+- Doc a11y waits for descendant `[data-loading]` so async pattern skeletons are gone before axe runs.
+- [dev] `mix assets.build` raises a clear error when the nested `design/` Mix project fails (fetch `cd design && mix deps.get`) instead of a `MatchError`.
+- Hexdocs for `:corex` now include this changelog.
 
 ### Security
 
 - [e2e, integration_test] Bump `postgrex` to **0.22.4** ([CVE-2026-66838](https://osv.dev/vulnerability/EEF-CVE-2026-66838) / [GHSA-3gww-3f36-2388](https://github.com/elixir-ecto/ecto/security/advisories/GHSA-3gww-3f36-2388): SQL injection via the `:comment` option on `Postgrex.stream/4`).
-- Slider thumbs emit `aria-valuemin` / `aria-valuemax` / `aria-valuenow` in SSR (Zag still owns them after hydrate). Doc a11y waits for descendant `[data-loading]` so async pattern skeletons are gone before axe runs.
 
 ## 0.2.1 - 2026-08-08
 

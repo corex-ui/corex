@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.2.2 - 2026-08-29
+
+### Enhancements
+
 Host-app install snippets recommend `{:corex_design, "~> 0.2", runtime: false}`
 without `only: :dev`, matching the asset-pipeline Mix task. `design_guide`
 accessibility notes that preference CSS is a design build (not per request)

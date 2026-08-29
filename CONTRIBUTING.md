@@ -26,11 +26,14 @@ For large features (new components, API changes), open an issue first so we can 
 git clone https://github.com/corex-ui/corex.git
 cd corex
 mix deps.get
+(cd design && mix deps.get)
 npm install
 mix assets.build
 mix test
 npm run check
 ```
+
+`mix assets.build` ends by shelling into `design/` (`mix corex.design.build`) to refresh the `--no-design` CSS snapshot. That project has its own Mix deps; skip `cd design && mix deps.get` and the nested Mix run fails.
 
 ### Test coverage
 

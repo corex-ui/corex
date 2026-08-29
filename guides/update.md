@@ -26,7 +26,7 @@ mix corex.design.build
 
 Or run a full asset build with `mix assets.build`. After changing `config :corex_design`, re-run that Mix task; `mix compile` does not regenerate Design CSS.
 
-For day-to-day patch notes, see [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md). The rest of this guide is the **0.1.x → 0.2.0** migration.
+For day-to-day patch notes, see the [changelog](changelog.html). The rest of this guide is the **0.1.x → 0.2.0** migration.
 
 ## Upgrading to 0.2.0
 
