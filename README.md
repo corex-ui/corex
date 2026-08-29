@@ -26,7 +26,7 @@ With `{:corex, "~> 0.2.0"}`, patch releases stay backward compatible within 0.2.
 | [`corex`](https://hex.pm/packages/corex) | Hex dep | Unstyled Phoenix components, hooks, LiveView API | Always |
 | [`corex_design`](https://hex.pm/packages/corex_design) | Hex dep (`runtime: false`) | Config-driven tokens, themes, and component CSS ([Design](https://hexdocs.pm/corex/design.html)) | On by default; `--no-design` to skip |
 | [`corex_mcp`](https://hex.pm/packages/corex_mcp) | Hex dep (`only: [:dev, :test]`) | Dev MCP server for AI component and design discovery ([MCP](https://hexdocs.pm/corex/MCP.html)); never enable in `:prod` | On by default; `--no-mcp` to skip |
-| [`corex_admin`](https://hex.pm/packages/corex_admin) | Hex dep | Context-first, deny-by-default LiveView admin for Phoenix+Ecto | Manual (`mix corex.admin.install`) |
+| [`corex_admin`](https://hex.pm/packages/corex_admin) | Hex dep | Context-first, deny-by-default LiveView admin for Phoenix+Ecto ([docs](https://hexdocs.pm/corex_admin)) | Manual (`mix corex.admin.install`) |
 | [`corex_new`](https://hex.pm/packages/corex_new) | Mix archive | Greenfield generator (`mix corex.new`) | Install once with `mix archive.install hex corex_new` |
 
 ## Installation
