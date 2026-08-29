@@ -42,7 +42,7 @@ Design and MCP ship as separate Hex packages. Theming is config-driven through a
 
 ### Security
 
-- Strip leading C0/space before URL scheme checks in `Corex.Url` and the JS redirect helper so prefixed `javascript:` / `data:` cannot bypass allowlists (same class as LiveView CVE-2026-58228). See [SECURITY.md](SECURITY.md).
+- Strip leading C0/space before URL scheme checks in the URL allowlist helper and the JS redirect helper so prefixed `javascript:` / `data:` cannot bypass allowlists (same class as LiveView CVE-2026-58228). See [SECURITY.md](https://github.com/corex-ui/corex/blob/main/SECURITY.md).
 - Require Phoenix LiveView **≥ 1.2.7** and Phoenix **≥ 1.8.9** for upstream link/navigation fixes.
 
 ### Design
