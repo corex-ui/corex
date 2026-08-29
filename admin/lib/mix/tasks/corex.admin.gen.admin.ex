@@ -32,6 +32,9 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Admin do
   A copied block stops tracking upstream. Run `mix corex.admin.doctor` to list
   which copies have fallen behind the installed package; it reports drift so you
   can diff and decide, which is the best any tool can do here.
+
+  See the [eject](eject.html) guide for when to eject, the manifest, CI, and the
+  upgrade workflow.
   """
 
   use Mix.Task

@@ -1,57 +1,22 @@
 # Customization
 
-Corex Admin is the Phoenix **staff admin**: host **Resource** modules you own,
-generic LiveViews you rarely copy, and **Corex UI exclusively**.
+Most staff screens need only a [Resource](resources.md) module. When that is
+not enough, customize in this order:
 
-Four rules:
+1. **Compose pages** — override `render/1` with public `CorexAdmin.UI` blocks
+2. **Extend behaviour** — Field, Filter, and Action modules you own
+3. **Eject chrome** — copy markup into your app ([Eject](eject.md)) only when
+   the block itself must change
 
-1. A **resource is data** — DSL + callbacks, never HEEx, never `{:safe, html}`.
-2. **Config points at modules** — Field, Filter, Action, History, Live.
-3. **UI is public slotted blocks** — `CorexAdmin.UI.*`. Compose them; copy them
-   only as a last resort.
-4. **The host owns every query** — the admin never calls Repo.
+Rules that never change: a resource is data (no HEEx), config points at
+modules, UI is Corex + `admin.css`, and the host owns every query. Do not mount
+a second admin product (Backpex, AshAdmin, Kaffy, Threadline’s operator
+console) beside this one. Headless Hex deps (Carbonite / Threadline **query**
+APIs, `nimble_csv`, `jason`, Gettext) are fine.
 
-- Host **contexts** stay the source of truth (`list` / `get` / `create` /
-  `update` / `delete`)
-- Host **auth** stays `on_mount` (never ship an open admin)
-- Host **policy** stays deny-by-default `CorexAdmin.Policy` (including `:export`
-  and `:history`)
-- **Rendering** is Corex plus Design `admin.css`
-- **Customization** is Elixir modules you own — not YAML, not a fork of the
-  package index LiveView, and not a second admin UI
+## Compose pages
 
-Allowed Hex deps are **headless**: Carbonite or Threadline **query APIs**,
-`nimble_csv`, `jason`, Gettext / host `localize_web` (locale data + routing).
-They must not render.
-
-Forbidden: mounting Threadline’s operator console, Backpex HTML, AshAdmin,
-Kaffy, or any other admin surface; third-party table/form widgets; host Field
-or Action modules that emit non-Corex HTML; a second admin stylesheet.
-
-## Three tiers
-
-Copying package Index/Show/Form into the host (Torch) is the wrong default.
-YAML-only config is also wrong. Elixir customization is **modules you own**
-(Django `ModelAdmin`, Filament `Resource`, Ash `admin do`).
-
-### 1. Resource DSL + callbacks
-
-Host **Resource module** — fields, filters, relations, actions, plus optional
-`title/1`, `query/2`, `canned_filters/0`, `filter_options/2`,
-`filter_bounds/2`, `metrics/2`. Not a copy of our internals.
-
-This is enough for almost every staff tool. See [Resources](resources.html).
-
-### 2. Compose public blocks
-
-Generic LiveViews: `use CorexAdmin.Live, :index | :show | :form | :home`.
-Package modules are one-liners. Override `render/1` or `handle_event/3` and
-call `super` when needed.
-
-`mix corex.admin.gen.live PostResource` writes ~40 lines that `use`
-`CorexAdmin.Live`. Add `--render` to also write a `render/1` that **composes
-`CorexAdmin.UI` blocks**. Reorder them, drop one, wrap one, or fill a slot.
-The block markup stays in the package, so upstream fixes still reach the page.
+### Generic LiveViews
 
 ```elixir
 use CorexAdmin.Resource,
@@ -61,6 +26,18 @@ use CorexAdmin.Resource,
     form: MyAppWeb.Admin.PostLive.Form
   ]
 ```
+
+```bash
+mix corex.admin.gen.live PostResource
+mix corex.admin.gen.live PostResource --render
+```
+
+Without `--render`, each file is a thin `use CorexAdmin.Live, :index` (and
+friends). Override a callback and call `super` when needed.
+
+With `--render`, each file gets a `render/1` that **composes** public UI
+blocks. Reorder them, drop one, wrap one, or fill a slot. Markup stays in the
+package, so upstream fixes still reach the page.
 
 ```elixir
 defmodule MyAppWeb.Admin.PostLive.Index do
@@ -78,49 +55,10 @@ defmodule MyAppWeb.Admin.PostLive.Index do
 end
 ```
 
-Behaviour (auth, URL state, events) stays in
-`CorexAdmin.Live.Index.Controller`. You do **not** copy that module.
+Auth, URL state, and events stay in `CorexAdmin.Live.Index.Controller` (and
+show/form counterparts). Do not copy those controllers.
 
-`--render` expands `page/1` into the named blocks (`heading`, `metrics`,
-`command`, `table`, `footer`, dialogs) so you can delete or wrap one without
-forking the composition helper.
-
-### 3. Eject the chrome
-
-`mix corex.admin.gen.admin` copies `CorexAdmin.UI` blocks into
-`MyAppWeb.Admin.Components`. That is the only tier that costs you
-maintenance. Prefer `--render` first.
-
-```bash
-mix corex.admin.gen.admin
-mix corex.admin.gen.admin --only index,filters
-```
-
-It writes:
-
-- `lib/my_app_web/admin/components/*.ex` — copied blocks, rewritten into your
-  namespace
-- `priv/corex_admin/ejected.exs` — which blocks were copied, from which
-  version, with a sha256 of the package source
-
-Configuration is **not** copied. Ejected blocks still receive the same
-assigns, still read `@spec`, and still delegate events to the package
-controllers. Fields, filters, policy, and the context contract stay in your
-resource modules.
-
-`CorexAdmin.UI` itself and `CorexAdmin.UI.Labels` are not ejectable: the
-first is only imports, the second is translated vocabulary.
-
-Run `mix corex.admin.doctor` after upgrading. It reports **current**,
-**behind**, or **unknown** per block, and exits 1 if anything is behind so CI
-can fail on unreviewed drift. It does not merge — copied markup cannot be
-merged automatically. Diff, decide, then re-copy or patch by hand.
-
-## `CorexAdmin.UI`
-
-Every admin page is a composition of these blocks. They never query and they
-never decide authorization — they receive assigns the controller already
-resolved.
+### `CorexAdmin.UI` blocks
 
 | Module | Role |
 | ------ | ---- |
@@ -131,19 +69,55 @@ resolved.
 | `UI.Nav` | sidebar `tree/1`, `mobile/1`, breadcrumbs |
 | `UI.Filters` | views, bar, range dialogs |
 | `UI.Dialogs` | delete, bulk delete, export, action forms |
-| `UI.Fields` | one field on any surface (`value/1`, `input/1`) |
+| `UI.Fields` | one field on any surface |
 | `UI.Labels` | translated operator / preset vocabulary |
 
 Index slots: `:heading_actions`, `:command_bar_actions`, `:before_table`,
 `:after_table`. Show slots: `:heading_actions`, `:before_details`,
 `:after_details`.
 
-## Field modules
+The index command bar is two rows (views + search + actions; then filters).
+Text and datetime-local filter inputs sit in a form so LiveView serializes
+`phx-change`. Filter types and pinning: [Resources](resources.md).
 
-`field :title, :text` stays. Internally a built-in type renders Corex inputs.
-Host modules must compose Corex components. Index, show, form, and export all
-go through `CorexAdmin.UI.Fields` so a custom module cannot change one
-surface and silently miss another.
+### Hub `home:` and `pages:`
+
+```elixir
+use CorexAdmin,
+  title: "Staff",
+  description: "Day-to-day operations",
+  home: MyAppWeb.Admin.DashboardLive,
+  pages: [
+    {"/reports", MyAppWeb.Admin.ReportsLive}
+  ]
+```
+
+`home:` replaces the default grouped resource list. `pages:` mount **before**
+resource routes in the same session (`/admin/reports`). They are not added to
+the resource sidebar automatically — link them from home, the layout, or an
+index slot.
+
+```elixir
+defmodule MyAppWeb.Admin.DashboardLive do
+  use CorexAdmin.Live, :home
+
+  # Override render/1 to build a dashboard with Corex cards/tables.
+end
+```
+
+### App layout
+
+Pass `layout: {MyAppWeb.AdminLayout, :admin}`. Render `{@inner_content}`.
+Mount `CorexAdmin.UI.Nav.tree/1` in the aside and `Nav.mobile/1` for small
+viewports. The installer writes this layout. `Nav.tree/1` only lists resources
+the actor may index.
+
+## Extend behaviour
+
+### Field modules
+
+Index, show, form, and export all go through `CorexAdmin.UI.Fields`, so a
+custom module cannot change one surface and miss another.
 
 ```elixir
 field :color, MyApp.Admin.Fields.Color
@@ -173,29 +147,22 @@ defmodule MyApp.Admin.Fields.Color do
 end
 ```
 
-`export/2` is data-only (CSV/JSON scalars). Never return HTML.
+`export/2` is data-only. Never return HTML.
 
-### Overriding one surface
-
-When only the cell needs to change, name a function instead of writing a
-whole module:
+Override one surface without a module:
 
 ```elixir
 field :status, :select, options: ~w(open done),
   render: {MyAppWeb.Admin.Cells, :status_badge}
 ```
 
-`render:` replaces `display/1`; `render_form:` replaces `input/1`. Both
-receive the same assigns (`@field`, `@record` or `@form`, `@value`) and must
-return a rendered template. They are `{module, function}` pairs rather than
-captures so a resource stays serializable data.
+`render:` replaces `display/1`; `render_form:` replaces `input/1`. Both are
+`{module, function}` pairs so the resource stays serializable.
 
-## Filter modules
+### Filter modules
 
-Built-in type atoms (`:select`, `:date_range`, …) resolve to
-`CorexAdmin.Filter.*`. A host module owns `parse/2` (untrusted params →
-canonical value, or `nil` for “no constraint”) and optionally `apply/3` for
-SQL the built-in shapes cannot express.
+Built-in atoms resolve to `CorexAdmin.Filter.*`. A host module owns `parse/2`
+and optionally `apply/3` for SQL the built-in shapes cannot express:
 
 ```elixir
 filters do
@@ -216,22 +183,20 @@ defmodule MyApp.Admin.Filters.Nearby do
 end
 ```
 
-`apply/3` runs inside the host context, never against a repo owned by the
-admin. `CorexAdmin.Query` raises on unrecognized shapes rather than returning
-an unfiltered query; implement `apply/3` if you introduce a new shape.
+`apply/3` runs inside the host context. Unrecognized shapes raise in
+`CorexAdmin.Query` — implement `apply/3` if you introduce a new shape.
 
-## Actions
+### Action modules
 
-An action is a module the resource registers. `handle/3` calls a **host
-context function**. Optional callbacks describe presentation so the index
-chrome can render it without knowing what it does:
+`handle/3` calls a **host context function**. Optional callbacks describe how
+the index chrome presents the action:
 
 | Callback | Default | Effect |
 | -------- | ------- | ------ |
 | `icon/0` | `hero-bolt` | Trigger icon |
 | `form_fields/1` | `[]` | Inputs in the action dialog |
-| `confirm/1` | `nil` | Dialog description; presence implies confirmation |
-| `destructive?/0` | `false` | Alert styling and `alertdialog` role |
+| `confirm/1` | `nil` | Confirmation copy when present |
+| `destructive?/0` | `false` | Alert styling |
 | `chrome/0` | `:generic` | `:dedicated` hides the generic button (Delete, Export) |
 
 ```elixir
@@ -257,26 +222,21 @@ defmodule MyApp.Admin.Actions.SetStatus do
 end
 ```
 
-`handle/3` receives string-keyed params: `"id"` (record), `"ids"` (bulk),
-`"payload"` (form fields). Built-ins (`Delete`, `BulkDelete`, `Export`)
-implement the same behaviour.
+Params: `"id"` (record), `"ids"` (bulk), `"payload"` (form fields). Register
+with `bulk_actions do` / `collection_actions do` / `record_actions do` on the
+resource ([Resources](resources.md)).
 
-## Export
+### Export
 
-Corex **dialog** picker on index; **Plug controller** streams chunks. CSV via
-`nimble_csv`, JSON via `jason`. Policy `:export`. Selected ids if any; the
-export trigger is disabled when nothing is selected. Field picker = readable,
-non-redacted, `authorize_field`-allowed fields.
+Corex dialog on index; Plug controller streams CSV (`nimble_csv`) or JSON
+(`jason`). Policy `:export`. Trigger disabled until rows are selected. Token
+salt `"corex_admin.export"`, max age 300 seconds. Details:
+[Security](security.md).
 
-`POST #{prefix}/:resource/export` sits in the same `live_corex_admin` scope
-(outside `live_session`). Auth is a short-lived `Phoenix.Token` minted by the
-LiveView (salt `"corex_admin.export"`, max age 300 seconds). No XLSX, XML, or
-queued jobs in this package.
+### History
 
-## History
-
-Corex Admin does **not** capture writes. Show an optional History **tab**
-(Corex `tabs` + definition list) by setting a data adapter:
+Corex Admin does **not** capture writes. Optional History tab via a data
+adapter:
 
 ```elixir
 use CorexAdmin.Resource,
@@ -284,72 +244,22 @@ use CorexAdmin.Resource,
   history_opts: [repo: MyApp.Repo]
 ```
 
-Or a host module wrapping Threadline’s `history/3`:
+Or a host wrapper around Threadline’s `history/3`. Policy `:history`. Redacted
+fields are masked. Never auto-install triggers or mount Threadline’s operator
+console as the History UX.
 
-```elixir
-use CorexAdmin.Resource,
-  history: CorexAdmin.History.Threadline
-```
+### Localization
 
-Policy `:history`. Sensitive fields with `redact: true` are masked in diffs.
-If no adapter: the tab is hidden. Never auto-install PostgreSQL triggers.
-Never mount Threadline’s operator console or deep-link `/audit` as the History
-UX.
+Locale routing and `dir` stay in the **host layout**. Admin chrome uses
+Gettext on domain `"admin"`. Resource labels stay developer strings. CSS uses
+logical properties for RTL.
 
-## Localization
-
-Do **not** add `localize_web` as a `corex_admin` dependency. Locale routing,
-language switcher, and `dir` stay in the **host layout** (already the Corex
-pattern). Admin chrome uses Gettext on domain `"admin"` (`~t` in the host).
-Resource **labels** stay developer strings.
-
-RTL: inherit `dir` from the layout; admin CSS uses logical properties
-(`margin-inline`, `inset-inline-end`).
-
-## Hub `home:` and `pages:`
-
-Default home is `use CorexAdmin.Live, :home`. Override with a host LiveView:
-
-```elixir
-use CorexAdmin,
-  title: "Staff",
-  description: "Day-to-day operations",
-  home: MyAppWeb.Admin.DashboardLive,
-  pages: [
-    {"/reports", MyAppWeb.Admin.ReportsLive}
-  ]
-```
-
-Custom pages mount **before** resource routes in the same session. Build them
-with Corex cards/tables.
-
-## App layout
-
-Pass `layout: {MyAppWeb.AdminLayout, :admin}`. This is a **LiveView layout**,
-so the function must render `{@inner_content}`. Mount `CorexAdmin.UI.Nav.tree/1`
-in the aside and `Nav.mobile/1` for small viewports. Hosts must not `@source`
-the `admin/` package.
-
-The installer writes this layout. `Nav.tree/1` only lists resources the actor
-may index.
-
-## Index chrome
-
-Heading + New, then optional metric cards, then a two-row command bar: views
-+ search + icon-only Export / Delete; filter row with compact Corex controls,
-**Add filter**, and **More filters**. Streamed table, footer (Showing +
-pagination + page-size). Range filters open their own dialogs.
-
-- Enumerated filters use `<.select>` (12 or fewer) or `<.combobox>` (more).
-- Text and datetime-local inputs sit in a form so LiveView serializes
-  `phx-change`.
-- **Clear all** restores defaults; unpinned **X** removes that filter from the
-  bar.
-
-## Config (`config :corex_admin`)
+### Config (`config :corex_admin`)
 
 - `:debug` — log authorize results in development (never attrs)
 - `:default_page_size` / `:max_page_size` / `:page_size_options`
 
-Gettext uses Phoenix's `gettext_backend` when set. There is no required
-`localize_web` dep on `corex_admin`.
+## When markup must change
+
+Prefer `gen.live --render` first. When you need to edit the block HTML itself,
+see [Eject](eject.md) (`mix corex.admin.gen.admin` + `mix corex.admin.doctor`).

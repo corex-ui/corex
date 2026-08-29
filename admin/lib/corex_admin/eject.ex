@@ -13,6 +13,8 @@ defmodule CorexAdmin.Eject do
   divergence is a fixable problem, and a silent one is not.
 
   The manifest lives at `priv/corex_admin/ejected.exs` in the host app.
+
+  See the [eject](eject.html) guide.
   """
 
   @manifest_path Path.join(["priv", "corex_admin", "ejected.exs"])

@@ -15,7 +15,8 @@ defmodule Mix.Tasks.Corex.Admin.Install do
       import CorexAdmin.Router
       live_corex_admin "/admin", MyAppWeb.Admin
 
-  See the [installation](installation.html) and [security](security.html) guides.
+  See the [Getting started](installation.html) and [security](security.html)
+  guides.
   """
 
   use Mix.Task

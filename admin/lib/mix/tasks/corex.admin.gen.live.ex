@@ -21,7 +21,8 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Live do
 
   When even that is not enough, `mix corex.admin.gen.admin` copies the block
   markup into your app. That is tier three, and it is the only tier where you
-  take on maintenance.
+  take on maintenance. See [customization](customization.html) and
+  [eject](eject.html).
 
   Then point the resource at the generated modules:
 

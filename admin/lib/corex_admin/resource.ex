@@ -13,12 +13,7 @@ defmodule CorexAdmin.Resource do
           slug: "users",
           group: "Accounts",
           label: "Users",
-          page_size: 25,
-          page_size_options: [10, 25, 50, 100],
-          default_sort: {:inserted_at, :desc},
-          title_field: :email,
-          selectable: true,
-          default_filters: %{role: "admin"}
+          title_field: :email
 
         scope :current_scope
 
@@ -36,25 +31,23 @@ defmodule CorexAdmin.Resource do
           field :id, :id
           field :email, :email, searchable: true, sortable: true
           field :role, :select, options: ~w(admin editor viewer)
-          field :password, :password
           field :inserted_at, :datetime, sortable: true
         end
 
         filters do
-          filter :role, :select, options: ~w(admin editor viewer), pin: true
-          filter :email, :text
-          filter :priority, :number, operators: [:eq, :gte, :lte]
-          filter :tags, :tags, pin: false
-          filter :bio, :presence, pin: false
-          filter :id, :id, pin: false
-          filter :created, :relative_date, field: :inserted_at, pin: false
-          filter :inserted_at, :date_range
+          filter :role, :select, options: ~w(admin editor viewer)
         end
       end
 
-  Filters are per resource. The generic index LiveView only renders `filters do`.
-  Context functions receive the Phoenix scope as the first argument when
-  `scope/1` is declared. See the [resources](resources.html) guide.
+  Beyond this minimal shape the DSL supports `belongs_to` / `has_many`,
+  embeds, `column/3`, sections, collection/bulk/record actions, and callbacks
+  such as `title/1`, `canned_filters/0`, `filter_options/2`, `filter_bounds/2`,
+  and `metrics/2`.
+
+  Filters are per resource. Context functions receive the Phoenix scope as the
+  first argument when `scope/1` is declared. See the [resources](resources.html)
+  guide for the full reference, and [customization](customization.html) for
+  Field / Filter / Action modules.
   """
 
   alias CorexAdmin.Resource.{Field, Filter, Relation, Section, Spec}

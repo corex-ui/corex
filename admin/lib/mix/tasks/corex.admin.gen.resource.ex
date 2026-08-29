@@ -13,6 +13,8 @@ defmodule Mix.Tasks.Corex.Admin.Gen.Resource do
   Add the module to your admin hub `resources:` list after generating.
 
   Pass `--no-scope` to skip the `scope :current_scope` declaration.
+
+  See [Getting started](installation.html) and [resources](resources.html).
   """
 
   use Mix.Task

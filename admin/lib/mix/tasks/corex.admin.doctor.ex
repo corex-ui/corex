@@ -19,6 +19,8 @@ defmodule Mix.Tasks.Corex.Admin.Doctor do
 
   Exits non-zero when any block is behind, so a CI job can fail on unreviewed
   drift.
+
+  See the [eject](eject.html) guide.
   """
 
   use Mix.Task

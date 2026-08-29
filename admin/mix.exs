@@ -127,7 +127,8 @@ defmodule CorexAdmin.MixProject do
         "guides/installation.md",
         "guides/security.md",
         "guides/resources.md",
-        "guides/customization.md"
+        "guides/customization.md",
+        "guides/eject.md"
       ],
       filter_modules: &docs_filter_modules/2,
       groups_for_extras: [
@@ -135,7 +136,8 @@ defmodule CorexAdmin.MixProject do
           "guides/installation.md",
           "guides/security.md",
           "guides/resources.md",
-          "guides/customization.md"
+          "guides/customization.md",
+          "guides/eject.md"
         ]
       ]
     ]

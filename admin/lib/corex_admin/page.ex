@@ -1,6 +1,22 @@
 defmodule CorexAdmin.Page do
   @moduledoc """
   A page of records returned by a context `list/2` function.
+
+  Contexts return `{:ok, %CorexAdmin.Page{}}` (or `{:error, term}`). The admin
+  never builds this struct itself:
+
+      {:ok,
+       %CorexAdmin.Page{
+         entries: rows,
+         total: total_count,
+         page: opts.page,
+         page_size: opts.page_size
+       }}
+
+  `entries` is the current page of records (already scoped and filtered).
+  `total` is the full matching count used for pagination. `page` is 1-based.
+
+  See the [resources](resources.html) guide for the context contract.
   """
 
   @enforce_keys [:entries, :total, :page, :page_size]

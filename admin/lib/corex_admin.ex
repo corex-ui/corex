@@ -11,8 +11,9 @@ defmodule CorexAdmin do
   `mix corex.admin.gen.live --render`, or `mix corex.admin.gen.admin` plus
   `mix corex.admin.doctor`.
 
-  See the [installation](installation.html), [security](security.html),
-  [resources](resources.html), and [customization](customization.html) guides.
+  See [Getting started](installation.html), [security](security.html),
+  [resources](resources.html), [customization](customization.html), and
+  [eject](eject.html).
   """
 
   @options_schema [

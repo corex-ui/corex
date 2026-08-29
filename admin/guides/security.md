@@ -21,39 +21,59 @@ On sign-out, disconnect LiveView sockets the same way `phx.gen.auth` does.
 
 ## Authorization is deny-by-default
 
-The installer generates:
+The installer generates a policy that rejects every action. Allow explicitly:
 
 ```elixir
-def authorize(_actor, _action, _resource, _record), do: {:error, :unauthorized}
+defmodule MyAppWeb.AdminPolicy do
+  @behaviour CorexAdmin.Policy
+
+  @crud ~w(index show new edit create update delete)a
+
+  def authorize(%{user: %{role: :admin}}, action, _resource, _record)
+      when action in @crud,
+      do: :ok
+
+  def authorize(%{user: %{role: :admin}}, :export, _resource, _record), do: :ok
+  def authorize(%{user: %{role: :admin}}, :history, _resource, _record), do: :ok
+
+  def authorize(_actor, _action, _resource, _record), do: {:error, :unauthorized}
+end
 ```
 
-Allow `:index`, `:show`, `:new`, `:edit`, `:create`, `:update`, `:delete`,
-and (when you enable them) `:export` and `:history`. Custom actions declare
-their own `policy_action/0` (often `:update`). Hiding a button is not access
-control. `CorexAdmin.UI.Nav.tree/1` only lists resources the actor may index.
+Also allow `:export` and `:history` when you enable those features. Custom
+actions declare their own `policy_action/0` (often `:update`). Hiding a button
+is not access control. `CorexAdmin.UI.Nav.tree/1` only lists resources the
+actor may index.
 
-Optional `authorize_field/5` can further lock fields. Field flags
-(`readable`, `writable`, `redact`) always apply.
+### Field-level checks
 
-This callback is Bodyguard-shaped so you can wrap `Bodyguard.permit/4` or
-Permit without depending on those libraries.
+Optional `authorize_field/5` can hide a field on index, show, form, and export:
+
+```elixir
+def authorize_field(_actor, _action, _resource, _record, :salary), do: {:error, :unauthorized}
+def authorize_field(_actor, _action, _resource, _record, _field), do: :ok
+```
+
+Field flags (`readable`, `writable`, `redact`) always apply on top of this.
+
+The callback is Bodyguard-shaped so you can wrap `Bodyguard.permit/4` or Permit
+without depending on those libraries.
 
 ## Data plane
 
 The admin **never** calls `Repo.insert/update/delete/get`. Contexts do.
 `get!` must be scoped (IDOR). `list/2` must apply the same scope.
-Relation pickers call a **host** `list/2` with the same scope; the admin
-does not query associations, and `has_many` panels read only what `get!`
-already preloaded.
+Relation pickers call a **host** list function with that scope; `has_many`
+panels read only what `get!` already preloaded. See
+[Resources](resources.md) for the context contract.
 
 ## Mass assignment and params
 
 - Only **writable** fields are copied into context attrs.
 - `belongs_to` writes the foreign key (`owner_key`), not the association name.
-- Nested `:embeds_many` payloads keep allowlisted child keys plus `{name}_sort`
-  / `{name}_drop`. Unknown nested keys are dropped and never atomized.
-- `exclusive: true` nested booleans: at most one row stays true; `Attrs`
-  clears the rest so the UI cannot be trusted for uniqueness.
+- Nested embeds keep allowlisted child keys plus `{name}_sort` / `{name}_drop`.
+  Unknown nested keys are dropped and never atomized. Exclusive nested
+  booleans and embed DSL details: [Resources](resources.md).
 - Sort/filter/search keys are **allowlisted**. Unknown query params are dropped.
 - User input is never turned into unbounded atoms.
 - `:password` fields are write-only and never rendered on index/show.

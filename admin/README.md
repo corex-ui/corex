@@ -1,7 +1,8 @@
 # Corex Admin
 
-Context-first, deny-by-default LiveView admin for Phoenix+Ecto apps, built on
-[Corex](https://hex.pm/packages/corex).
+Context-first, deny-by-default LiveView admin for Phoenix + Ecto, built on
+[Corex](https://hex.pm/packages/corex). You own Resource modules and contexts;
+the package owns authorization checks and Corex chrome. It never calls `Repo`.
 
 **v0.1 is LiveView-only.** Resource, policy, and context modules have no LiveView
 dependency so a controller renderer can land later without rewriting resources.
@@ -23,14 +24,21 @@ This package does **not** ship login, registration, or an admin user table.
 ```
 
 ```bash
+mix deps.get
 mix corex.admin.install
-mix corex.admin.gen.resource Accounts User
 ```
 
-See [Installation](guides/installation.md), [Security](guides/security.md),
-[Resources](guides/resources.md), and [Customization](guides/customization.md).
+Full day-one path: [Getting started](guides/installation.md).
 
-Customization is three tiers: a Resource module and callbacks, host LiveViews
-that compose `CorexAdmin.UI` (`mix corex.admin.gen.live --render`), and a
-tracked ejection of chrome (`mix corex.admin.gen.admin` +
-`mix corex.admin.doctor`).
+## Start here
+
+Read the guides in this order:
+
+1. [Getting started](guides/installation.md) — install, auth hook, first resource, `/admin`
+2. [Security](guides/security.md) — deny-by-default policy, scoping, export tokens
+3. [Resources](guides/resources.md) — fields, filters, relations, actions, callbacks
+4. [Customization](guides/customization.md) — compose `CorexAdmin.UI`, custom Field/Filter/Action modules
+5. [Eject](guides/eject.md) — copy chrome into your app and track drift with `doctor`
+
+Most apps stop at Resources. Reach for Customization when a page needs its own
+layout; eject only when you must change the markup itself.
