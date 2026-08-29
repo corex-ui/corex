@@ -51,10 +51,8 @@ defmodule E2eWeb.Admin.Actions.SetTicketStatus do
         {:error, "Pick a status."}
 
       true ->
-        case E2e.AdminDemo.set_ticket_status(scope, ids, status) do
-          {:ok, count} -> {:ok, "Moved #{count} ticket(s) to #{status}."}
-          {:error, _} = error -> error
-        end
+        count = E2e.AdminDemo.set_ticket_status(scope, ids, status)
+        {:ok, "Moved #{count} ticket(s) to #{status}."}
     end
   end
 end

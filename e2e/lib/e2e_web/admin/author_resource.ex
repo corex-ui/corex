@@ -67,9 +67,8 @@ defmodule E2eWeb.Admin.AuthorResource do
   end
 
   def metrics(scope, _list_opts) do
-    case E2e.AdminDemo.list_authors(scope, %CorexAdmin.ListOpts{page: 1, page_size: 1}) do
-      {:ok, page} -> [%{label: "Authors", value: page.total}]
-      {:error, _} -> []
-    end
+    scope
+    |> E2e.AdminDemo.list_authors(%CorexAdmin.ListOpts{page: 1, page_size: 1})
+    |> then(fn {:ok, page} -> [%{label: "Authors", value: page.total}] end)
   end
 end

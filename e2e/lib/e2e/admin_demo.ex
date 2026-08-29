@@ -57,7 +57,7 @@ defmodule E2e.AdminDemo do
       |> where([t], t.demo_id == ^scope.demo_id and t.id in ^normalize_ids(ids))
       |> Repo.update_all(set: [status: status, updated_at: DateTime.utc_now(:second)])
 
-    {:ok, count}
+    count
   end
 
   @doc """
