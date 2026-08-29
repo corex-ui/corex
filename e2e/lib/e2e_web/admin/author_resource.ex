@@ -35,7 +35,7 @@ defmodule E2eWeb.Admin.AuthorResource do
     field(:id, :id)
     field(:name, :text, searchable: true, sortable: true)
     field(:email, :email, searchable: true, sortable: true)
-    field(:role, :radio, options: ~w(editor writer reviewer))
+    field(:role, :radio, options: ~W(editor writer reviewer))
     field(:active, :boolean)
     field(:bio, :textarea)
 
@@ -56,7 +56,7 @@ defmodule E2eWeb.Admin.AuthorResource do
   end
 
   filters do
-    filter(:role, :multi_select, options: ~w(editor writer reviewer), pin: true)
+    filter(:role, :multi_select, options: ~W(editor writer reviewer), pin: true)
     filter(:active, :boolean, label: "Active", pin: true)
     filter(:name, :text, pin: false)
     filter(:bio, :presence, pin: false)
@@ -67,9 +67,9 @@ defmodule E2eWeb.Admin.AuthorResource do
   end
 
   def metrics(scope, _list_opts) do
-    {:ok, page} =
-      E2e.AdminDemo.list_authors(scope, %CorexAdmin.ListOpts{page: 1, page_size: 1})
-
-    [%{label: "Authors", value: page.total}]
+    case E2e.AdminDemo.list_authors(scope, %CorexAdmin.ListOpts{page: 1, page_size: 1}) do
+      {:ok, page} -> [%{label: "Authors", value: page.total}]
+      {:error, _} -> []
+    end
   end
 end

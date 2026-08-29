@@ -144,7 +144,7 @@ defmodule E2eWeb.AdminDemoLiveTest do
     assert Enum.any?(author.posts, fn post -> html =~ post.title end)
 
     # The relation renders as its own panel, not also as a detail row.
-    refute html =~ ~s(<dt class="admin-detail-label">Recent posts</dt>)
+    refute html =~ ~S(<dt class="admin-detail-label">Recent posts</dt>)
   end
 
   test "a datetime range filter narrows posts by published window", %{conn: conn} do

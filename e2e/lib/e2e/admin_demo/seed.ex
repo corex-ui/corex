@@ -78,7 +78,7 @@ defmodule E2e.AdminDemo.Seed do
             demo_id: demo_id,
             title: ticket_title(subject, n),
             email: "customer#{seq + 1}@example.test",
-            status: Enum.at(~w(open pending done), rem(seq, 3)),
+            status: Enum.at(~W(open pending done), rem(seq, 3)),
             priority: rem(seq, 5) + 1,
             due_on: Date.add(today, rem(seq, 9) - 3),
             assignee_id: assignee && assignee.id,
@@ -132,19 +132,19 @@ defmodule E2e.AdminDemo.Seed do
       now = DateTime.utc_now(:second)
 
       drafts = [
-        {"Shipping Corex Admin", "shipping-corex-admin", ~w(release admin)},
-        {"How we scope every query", "scoping-every-query", ~w(engineering ecto)},
-        {"Designing the filter row", "designing-the-filter-row", ~w(design ux)},
-        {"What we learned from Filament", "lessons-from-filament", ~w(research)},
-        {"Accessibility in data tables", "accessible-data-tables", ~w(design a11y)},
-        {"Export without blocking", "export-without-blocking", ~w(engineering)},
-        {"Relations, finally", "relations-finally", ~w(release admin)},
-        {"A tour of the DSL", "a-tour-of-the-dsl", ~w(docs)}
+        {"Shipping Corex Admin", "shipping-corex-admin", ~W(release admin)},
+        {"How we scope every query", "scoping-every-query", ~W(engineering ecto)},
+        {"Designing the filter row", "designing-the-filter-row", ~W(design ux)},
+        {"What we learned from Filament", "lessons-from-filament", ~W(research)},
+        {"Accessibility in data tables", "accessible-data-tables", ~W(design a11y)},
+        {"Export without blocking", "export-without-blocking", ~W(engineering)},
+        {"Relations, finally", "relations-finally", ~W(release admin)},
+        {"A tour of the DSL", "a-tour-of-the-dsl", ~W(docs)}
       ]
 
       rows =
         for {{title, slug, tags}, index} <- Enum.with_index(drafts) do
-          status = Enum.at(~w(published published scheduled draft archived), rem(index, 5))
+          status = Enum.at(~W(published published scheduled draft archived), rem(index, 5))
           author = Enum.at(authors, rem(index, max(length(authors), 1)))
 
           %{

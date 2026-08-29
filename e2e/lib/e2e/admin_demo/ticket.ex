@@ -5,7 +5,7 @@ defmodule E2e.AdminDemo.Ticket do
 
   alias E2e.AdminDemo.{Author, SocialLink}
 
-  @statuses ~w(open pending done)
+  @statuses ~W(open pending done)
 
   schema "admin_demo_tickets" do
     field(:demo_id, :string)

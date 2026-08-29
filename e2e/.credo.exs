@@ -295,6 +295,7 @@
                  "lib/e2e_web/live/pages_live/blog_post_live.ex",
                  "lib/e2e_web/admin/ticket_resource.ex",
                  "lib/e2e_web/admin/post_resource.ex",
+                 "lib/e2e_web/admin/author_resource.ex",
                  "lib/e2e/admin_demo.ex",
                  "lib/e2e/admin_demo/seed.ex",
                  "lib/e2e/admin_demo/post.ex",

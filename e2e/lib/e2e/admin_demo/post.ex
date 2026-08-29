@@ -5,7 +5,7 @@ defmodule E2e.AdminDemo.Post do
 
   alias E2e.AdminDemo.Author
 
-  @statuses ~w(draft scheduled published archived)
+  @statuses ~W(draft scheduled published archived)
 
   schema "admin_demo_posts" do
     field(:demo_id, :string)
@@ -53,7 +53,7 @@ defmodule E2e.AdminDemo.Post do
   # correctly, so the state and the timestamp are validated together.
   defp require_publish_date(changeset) do
     case get_field(changeset, :status) do
-      status when status in ~w(scheduled published) ->
+      status when status in ~W(scheduled published) ->
         validate_required(changeset, [:published_at])
 
       _ ->

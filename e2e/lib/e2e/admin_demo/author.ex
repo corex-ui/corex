@@ -5,7 +5,7 @@ defmodule E2e.AdminDemo.Author do
 
   alias E2e.AdminDemo.{Post, Ticket}
 
-  @roles ~w(editor writer reviewer)
+  @roles ~W(editor writer reviewer)
 
   schema "admin_demo_authors" do
     field(:demo_id, :string)

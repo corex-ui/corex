@@ -42,7 +42,7 @@ defmodule E2eWeb.Admin.TicketResource do
     field(:id, :id)
     field(:title, :text, searchable: true, sortable: true)
     field(:email, :email, searchable: true, sortable: true)
-    field(:status, :select, options: ~w(open pending done), render: {E2eWeb.Admin.Cells, :status})
+    field(:status, :select, options: ~W(open pending done), render: {E2eWeb.Admin.Cells, :status})
     field(:priority, :number, sortable: true)
     field(:due_on, :date, sortable: true)
 
@@ -74,7 +74,7 @@ defmodule E2eWeb.Admin.TicketResource do
   end
 
   filters do
-    filter(:status, :multi_select, options: ~w(open pending done), pin: true)
+    filter(:status, :multi_select, options: ~W(open pending done), pin: true)
     filter(:priority, :number_range, pin: true)
     filter(:due_on, :date_range, label: "Due", pin: true)
     filter(:assignee_name, :text, label: "Assignee", path: [:assignee, :name], pin: false)

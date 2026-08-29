@@ -37,7 +37,7 @@ defmodule E2eWeb.Admin.PostResource do
     field(:slug, :text, searchable: true, sortable: true)
 
     field(:status, :select,
-      options: ~w(draft scheduled published archived),
+      options: ~W(draft scheduled published archived),
       render: {E2eWeb.Admin.Cells, :status}
     )
 
@@ -65,7 +65,7 @@ defmodule E2eWeb.Admin.PostResource do
   end
 
   filters do
-    filter(:status, :multi_select, options: ~w(draft scheduled published archived), pin: true)
+    filter(:status, :multi_select, options: ~W(draft scheduled published archived), pin: true)
     filter(:published_at, :datetime_range, label: "Published", pin: true)
     filter(:featured, :boolean, pin: true)
     filter(:author_name, :text, label: "Author", path: [:author, :name], pin: false)
