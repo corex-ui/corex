@@ -145,7 +145,12 @@ defmodule CorexAdmin.QueryTest do
   end
 
   test "a filter module may own its own query application" do
-    filter = %Filter{name: :fuzzy, type: :custom, mod: CorexAdmin.Test.Filters.Fuzzy, field: :title}
+    filter = %Filter{
+      name: :fuzzy,
+      type: :custom,
+      mod: CorexAdmin.Test.Filters.Fuzzy,
+      field: :title
+    }
 
     opts = %ListOpts{
       page: 1,

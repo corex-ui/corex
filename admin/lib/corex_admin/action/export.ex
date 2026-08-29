@@ -34,7 +34,6 @@ defmodule CorexAdmin.Action.Export do
 
   @impl true
   def handle(_spec, _scope, _payload) do
-    {:error,
-     Gettext.t("Export runs through the export controller, not as a LiveView action.")}
+    {:error, Gettext.t("Export runs through the export controller, not as a LiveView action.")}
   end
 end

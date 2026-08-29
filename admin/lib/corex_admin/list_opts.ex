@@ -220,7 +220,10 @@ defmodule CorexAdmin.ListOpts do
 
   defp searchable_paths(spec) do
     Map.new(
-      for field <- spec.fields, field.searchable, is_list(field.path), do: {field.name, field.path}
+      for field <- spec.fields,
+          field.searchable,
+          is_list(field.path),
+          do: {field.name, field.path}
     )
   end
 

@@ -122,7 +122,9 @@ defmodule CorexAdmin.Eject do
   unchanged since it was copied, `{:stale, from, to}` when it has moved on, and
   `{:unknown, reason}` when the source cannot be read.
   """
-  @spec audit(map()) :: [{String.t(), :current | {:stale, String.t(), String.t()} | {:unknown, String.t()}}]
+  @spec audit(map()) :: [
+          {String.t(), :current | {:stale, String.t(), String.t()} | {:unknown, String.t()}}
+        ]
   def audit(manifest) do
     manifest
     |> Enum.sort_by(fn {key, _} -> key end)

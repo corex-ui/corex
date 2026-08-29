@@ -237,7 +237,9 @@ defmodule CorexAdmin.UI.Index do
         checkbox_class="checkbox ui-size-sm"
       >
         <:checkbox_indicator><.heroicon name="hero-check" class="icon" /></:checkbox_indicator>
-        <:checkbox_indeterminate><.heroicon name="hero-minus" class="icon" /></:checkbox_indeterminate>
+        <:checkbox_indeterminate>
+          <.heroicon name="hero-minus" class="icon" />
+        </:checkbox_indeterminate>
         <:sort_icon :let={%{direction: direction}}>
           <.heroicon name={sort_icon(direction)} class="icon" />
         </:sort_icon>

@@ -330,7 +330,11 @@ defmodule CorexAdmin.UI.Fields do
   @doc "Inline error indicator with the message in a tooltip."
   def error_tip(assigns) do
     ~H"""
-    <.tooltip id={@id} class="tooltip ui-size-sm" positioning={%Corex.Positioning{placement: "top-end"}}>
+    <.tooltip
+      id={@id}
+      class="tooltip ui-size-sm"
+      positioning={%Corex.Positioning{placement: "top-end"}}
+    >
       <:trigger>
         <.heroicon name="hero-exclamation-circle" class="icon" />
       </:trigger>

@@ -90,7 +90,13 @@ defmodule CorexAdmin.UI.Form do
       <.action :if={@live_action == :new} type="submit" name="continue" value="true" class="button">
         {Gettext.t("Create and add another")}
       </.action>
-      <.action :if={@live_action == :edit} type="submit" name="continue" value="true" class="button ui-solid ui-brand">
+      <.action
+        :if={@live_action == :edit}
+        type="submit"
+        name="continue"
+        value="true"
+        class="button ui-solid ui-brand"
+      >
         {Gettext.t("Save")}
       </.action>
       <.action :if={@live_action == :edit} type="submit" class="button">

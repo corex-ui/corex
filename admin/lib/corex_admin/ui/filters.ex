@@ -276,7 +276,8 @@ defmodule CorexAdmin.UI.Filters do
   # Range filters are edited in their own dialogs, so listing them here too
   # would render every calendar and preset twice.
   defp more_dialog(assigns) do
-    assigns = assign(assigns, :dialog_filters, Enum.reject(assigns.spec.filters, &range_filter?/1))
+    assigns =
+      assign(assigns, :dialog_filters, Enum.reject(assigns.spec.filters, &range_filter?/1))
 
     ~H"""
     <.dialog
