@@ -72,6 +72,8 @@ defmodule E2eWeb.Router do
       live("/accordion/patterns", AccordionPatternsLive)
       live("/accordion/animation", AccordionAnimationLive)
 
+      live("/native-accordion/playground", NativeAccordionPlayLive)
+
       live("/tree-view/playground", TreeViewPlayLive)
       live("/tree-view/api", TreeViewApiLive)
       live("/tree-view/events", TreeViewEventsLive)

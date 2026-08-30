@@ -60,6 +60,16 @@ defmodule Corex do
     file_upload_live: {Corex.FileUploadLive, [file_upload_live: 1]},
     floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
     heroicon: {Corex.Heroicon, [heroicon: 1]},
+    native_accordion:
+      {Corex.NativeAccordion,
+       [
+         native_accordion: 1,
+         native_accordion_root: 1,
+         native_accordion_item: 1,
+         native_accordion_trigger: 1,
+         native_accordion_indicator: 1,
+         native_accordion_content: 1
+       ]},
     native_input: {Corex.NativeInput, [native_input: 1]},
     hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},

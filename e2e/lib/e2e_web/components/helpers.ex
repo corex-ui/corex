@@ -31,7 +31,7 @@ defmodule E2eWeb.Helpers do
   defp maybe_add(list, true, fun), do: list ++ [fun.()]
   defp maybe_add(list, false, _fun), do: list
 
-  @aside_no_zag ~W(action navigate data-list data-table layout-heading code native-input file-upload-live)
+  @aside_no_zag ~W(action navigate data-list data-table layout-heading code native-input native-accordion file-upload-live)
 
   defp components_docs_node(%{label: label, id: id} = cfg) do
     badges =
@@ -183,6 +183,16 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/accordion/patterns",
           animation_to: ~p"/accordion/animation",
           style_to: ~p"/accordion/style"
+        },
+        %{
+          label: ~t"Native Accordion",
+          id: "native-accordion",
+          playground_to: ~p"/native-accordion/playground",
+          anatomy: false,
+          api: false,
+          event: false,
+          pattern: false,
+          style: false
         },
         %{
           label: ~t"Action",
