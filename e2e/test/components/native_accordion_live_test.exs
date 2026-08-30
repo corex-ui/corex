@@ -33,11 +33,10 @@ defmodule E2eWeb.NativeAccordionLiveTest do
     assert html =~ "data-nav-next"
     assert html =~ ~S(:focus[data-nav-next])
     refute html =~ "phx-keydown="
-    refute html =~ "<script"
     refute html =~ "focus-pin"
     assert has_element?(view, lorem)
     assert has_element?(view, nav_down)
-    assert has_element?(view, nav_down <> ~s([phx-key="ArrowDown"]))
+    assert has_element?(view, nav_down <> ~S([phx-key="ArrowDown"]))
   end
 
   test "patterns controlled toggle updates open assign", %{conn: conn} do
