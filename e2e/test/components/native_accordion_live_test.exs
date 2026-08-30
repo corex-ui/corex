@@ -32,6 +32,7 @@ defmodule E2eWeb.NativeAccordionLiveTest do
     assert html =~ "phx-window-keydown"
     assert html =~ "data-nav-next"
     assert html =~ ~S(:focus[data-nav-next])
+    assert html =~ "preventDefault"
     refute html =~ "phx-keydown="
     refute html =~ "focus-pin"
     assert has_element?(view, lorem)
