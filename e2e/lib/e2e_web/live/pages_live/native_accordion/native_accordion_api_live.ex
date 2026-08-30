@@ -7,7 +7,7 @@ defmodule E2eWeb.NativeAccordionApiLive do
   alias E2eWeb.Demos.NativeAccordionDemo, as: Demo
 
   @id_sv_client "api-set-value-client"
-  @all_values ~w(lorem duis donec)
+  @all_values ~W(lorem duis donec)
 
   def mount(_params, _session, socket) do
     {:ok,

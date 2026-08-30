@@ -15,11 +15,11 @@ defmodule E2eWeb.NativeAccordionLiveTest do
     {view, html} = live_ok!(conn, ~p"/native-accordion/playground")
 
     assert html =~ "Native Accordion"
-    assert html =~ ~s(data-native="")
-    assert html =~ ~s(id="orientation")
+    assert html =~ ~S(data-native="")
+    assert html =~ ~S(id="orientation")
     refute html =~ "Controlled (LiveView value)"
     refute html =~ "Uncontrolled (JS pipes)"
-    refute html =~ ~s(phx-hook="Accordion")
+    refute html =~ ~S(phx-hook="Accordion")
     assert has_element?(view, "##{@playground_id}")
   end
 
