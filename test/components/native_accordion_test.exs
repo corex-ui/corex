@@ -92,6 +92,8 @@ defmodule Corex.NativeAccordionTest do
       assert html =~ ~S(:focus[data-nav-prev])
       assert html =~ ~S(:focus[data-nav-first])
       assert html =~ ~S(:focus[data-nav-last])
+      assert html =~ "onkeydown"
+      assert html =~ "preventDefault"
       refute html =~ "focus-pin"
     end
 

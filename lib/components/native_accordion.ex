@@ -66,7 +66,8 @@ defmodule Corex.NativeAccordion do
 
   Enter/Space activate the focused trigger (native `<button>`). Arrow keys / Home / End
   are `phx-window-keydown={JS.exec(%JS{}, "data-nav-*", to: ":focus[data-nav-*]")}`.
-  Each trigger stores neighbor `JS.focus` commands. No `handle_event`, no hook, no JS file.
+  Each trigger stores neighbor `JS.focus` commands and `preventDefault`s those keys so the
+  page does not scroll. No `handle_event`, no hook, no JS file.
 
   - Vertical: ArrowDown / ArrowUp
   - Horizontal: ArrowRight / ArrowLeft (swapped when `dir="rtl"`)
@@ -385,6 +386,7 @@ defmodule Corex.NativeAccordion do
       |> assign(:nav_prev, nav_focus_js(item, :prev))
       |> assign(:nav_first, nav_focus_js(item, :first))
       |> assign(:nav_last, nav_focus_js(item, :last))
+      |> assign(:prevent_nav_scroll, prevent_nav_scroll_js())
 
     ~H"""
     <h3>
@@ -408,6 +410,7 @@ defmodule Corex.NativeAccordion do
         phx-click={@click_js}
         {dir_attrs(@item.dir)}
         {@rest}
+        onkeydown={@prevent_nav_scroll}
       >
         <span data-scope="accordion" data-part="item-text">
           {render_slot(@inner_block)}
@@ -523,6 +526,11 @@ defmodule Corex.NativeAccordion do
       end
 
     AccordionJS.focus_item(item.id, target)
+  end
+
+  defp prevent_nav_scroll_js do
+    keys = Enum.map_join(@nav_keys, ",", &"'#{&1}'")
+    "if([#{keys}].includes(event.key))event.preventDefault()"
   end
 
   defp nav_keys(orientation, dir) do
