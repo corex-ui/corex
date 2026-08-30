@@ -11,6 +11,7 @@ defmodule E2eWeb.E2eBehaviorExceptions do
       data_table
       heroicon
       hidden_input
+      native_accordion
       native_input
       file_upload_live
     )
