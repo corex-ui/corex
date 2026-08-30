@@ -6,6 +6,7 @@ defmodule E2eWeb.Layouts do
   use E2eWeb, :html
   import E2eWeb.SEO, only: [head: 1]
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
+  alias CorexAdmin.UI.Nav, as: AdminNav
   alias E2eWeb.App.Shell
 
   import E2eWeb.{ModeToggle, ThemeToggle}
@@ -117,6 +118,52 @@ defmodule E2eWeb.Layouts do
       </main>
     </div>
     <.footer path={@path} />
+    """
+  end
+
+  # LiveView layout (`live_session layout:` / hub `layout:`). Uses `@inner_content`.
+  def admin(assigns) do
+    path = path_resolved(assigns)
+    assigns = assign(assigns, :path, path)
+
+    ~H"""
+    <.header path={@path} theme={@theme} mode={@mode} />
+    <div class={"admin " <> Shell.wrapper()} data-scope="admin">
+      <aside class={Shell.side()} aria-label="Admin">
+        <AdminNav.tree
+          :if={assigns[:corex_admin]}
+          socket={assigns}
+          id="admin-nav-tree"
+          class={Shell.aside_tree()}
+        />
+      </aside>
+      <main id="main-content" class={"admin-main " <> Shell.main()}>
+        <nav class="admin-mobile-nav" aria-label="Admin resources">
+          <AdminNav.mobile :if={assigns[:corex_admin]} socket={assigns} />
+        </nav>
+        <div class={Shell.admin_content()}>
+          {@inner_content}
+        </div>
+        <.toast_group
+          id="layout-toast"
+          class="toast"
+          phx-update="ignore"
+          flash={@flash}
+        >
+          <:loading>
+            <.heroicon name="hero-arrow-path" class="icon" />
+          </:loading>
+        </.toast_group>
+        <.toast_client_error
+          toast_group_id="layout-toast"
+          title={~t"We lost the connection"}
+          description={~t"We're trying to reconnect you..."}
+          type={:error}
+          duration={:infinity}
+        />
+        <.footer path={@path} />
+      </main>
+    </div>
     """
   end
 

@@ -31,7 +31,7 @@ defmodule E2eWeb.Helpers do
   defp maybe_add(list, true, fun), do: list ++ [fun.()]
   defp maybe_add(list, false, _fun), do: list
 
-  @aside_no_zag ~W(action navigate data-list data-table layout-heading code native-input file-upload-live)
+  @aside_no_zag ~W(action navigate data-list data-table layout-heading code native-input nested-fields file-upload-live)
 
   defp components_docs_node(%{label: label, id: id} = cfg) do
     badges =
@@ -320,6 +320,17 @@ defmodule E2eWeb.Helpers do
           event: false,
           pattern: true,
           patterns_to: ~p"/data-list/patterns"
+        },
+        %{
+          label: ~t"Nested fields",
+          id: "nested-fields",
+          anatomy_to: ~p"/nested-fields/anatomy",
+          playground: false,
+          api: false,
+          event: false,
+          style: false,
+          pattern: true,
+          patterns_to: ~p"/nested-fields/patterns"
         },
         %{
           label: ~t"Data table",

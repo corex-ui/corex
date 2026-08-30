@@ -21,6 +21,7 @@ defmodule Corex.Design.Components do
           | :host_badge
 
   @components %{
+    "admin" => %{family: :static},
     "accordion" => %{family: :action},
     "angle-slider" => %{family: :selection},
     "avatar" => %{family: :action},
@@ -47,6 +48,7 @@ defmodule Corex.Design.Components do
     "marquee" => %{family: :static},
     "menu" => %{family: :action},
     "native-input" => %{family: :field},
+    "nested-fields" => %{family: :field},
     "number-input" => %{family: :field},
     "pagination" => %{family: :selection},
     "password-input" => %{family: :field},
@@ -157,6 +159,10 @@ defmodule Corex.Design.Components do
     {"native-input", "label", :label},
     {"native-input", "input", :input},
     {"native-input", "error", :error},
+    {"nested-fields", "root", :root},
+    {"nested-fields", "legend", :label},
+    {"nested-fields", "add-trigger", :trigger},
+    {"nested-fields", "remove-trigger", :trigger},
     {"number-input", "root", :root},
     {"number-input", "label", :label},
     {"number-input", "input", :input},
@@ -235,7 +241,7 @@ defmodule Corex.Design.Components do
     "link" => "navigate"
   }
 
-  @css_only_ids ~w(badge scrollbar typo)
+  @css_only_ids ~w(admin badge scrollbar typo)
 
   @unknown_part_hosts for {host, _part, _role} <- @parts,
                           not Map.has_key?(@components, host),

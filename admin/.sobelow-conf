@@ -1,0 +1,17 @@
+[
+  exit: false,
+  format: "txt",
+  ignore_files: [],
+  ignore: [
+    "Config",
+    "RCE.EEx",
+    "Traversal.FileModule"
+  ],
+  out: nil,
+  private: false,
+  router: "test/support/router.ex",
+  skip: false,
+  threshold: :low,
+  verbose: false,
+  version: false
+]

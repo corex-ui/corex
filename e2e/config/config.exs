@@ -102,6 +102,11 @@ config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :corex_admin,
+  default_page_size: 25,
+  page_size_options: [10, 25, 50, 100],
+  max_page_size: 100
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

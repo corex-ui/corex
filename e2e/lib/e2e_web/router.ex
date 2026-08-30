@@ -1,5 +1,6 @@
 defmodule E2eWeb.Router do
   use E2eWeb, :router
+  import CorexAdmin.Router
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -20,6 +21,7 @@ defmodule E2eWeb.Router do
     plug(Localize.Plug.PutSession)
     plug(E2eWeb.Plugs.Path)
     plug(E2eWeb.Plugs.SEO)
+    plug(E2eWeb.Plugs.AdminDemoSession)
     plug(:put_root_layout, html: {E2eWeb.Layouts, :root})
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
@@ -123,6 +125,7 @@ defmodule E2eWeb.Router do
 
       live("/data-list/playground", DataListPlayLive)
       live("/data-list/patterns", DataListPatternsLive)
+      live("/nested-fields/patterns", NestedFieldsPatternsLive)
 
       live("/date-picker/playground", DatePickerPlayLive)
       live("/date-picker/api", DatePickerApiLive)
@@ -253,6 +256,8 @@ defmodule E2eWeb.Router do
       live("/tooltip/patterns", TooltipPatternsLive)
     end
 
+    live_corex_admin("/admin", E2eWeb.Admin)
+
     get("/templates", ShowcaseRedirectController, :to_showcases)
     get("/games", ShowcaseRedirectController, :to_showcases)
     get("/games/tetrex/*rest", ShowcaseRedirectController, :games_tetrex)
@@ -347,6 +352,7 @@ defmodule E2eWeb.Router do
     get("/carousel/style", PageController, :carousel_styling_page)
     get("/data-list/anatomy", PageController, :data_list_page)
     get("/data-list/style", PageController, :data_list_styling_page)
+    get("/nested-fields/anatomy", PageController, :nested_fields_page)
     get("/data-table/anatomy", PageController, :data_table_page)
     get("/editable/anatomy", PageController, :editable_page)
     get("/editable/style", PageController, :editable_styling_page)

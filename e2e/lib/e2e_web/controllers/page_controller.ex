@@ -1129,6 +1129,10 @@ defmodule E2eWeb.PageController do
     render(conn, :data_list_styling_page)
   end
 
+  def nested_fields_page(conn, _params) do
+    render(conn, :nested_fields_page)
+  end
+
   def data_table_page(conn, _params) do
     render(conn, :data_table_page)
   end

@@ -131,12 +131,14 @@ defmodule Corex.MixProject do
         "format",
         "cmd --cd design mix format",
         "cmd --cd mcp mix format",
+        "cmd --cd admin mix format",
         "cmd --cd installer mix format"
       ],
       "format.all.check": [
         "format --check-formatted",
         "cmd --cd design mix format --check-formatted",
         "cmd --cd mcp mix format --check-formatted",
+        "cmd --cd admin mix format --check-formatted",
         "cmd --cd installer mix format --check-formatted"
       ],
       lint: [
@@ -157,6 +159,9 @@ defmodule Corex.MixProject do
         "cmd --cd mcp mix lint",
         "cmd --cd mcp mix dialyzer",
         "cmd --cd mcp mix test",
+        "cmd --cd admin mix lint",
+        "cmd --cd admin mix dialyzer",
+        "cmd --cd admin mix test",
         "cmd --cd installer mix lint",
         "cmd --cd installer mix dialyzer",
         "cmd --cd installer mix test",

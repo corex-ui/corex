@@ -1,0 +1,8 @@
+## This file is a PO Template file.
+##
+## "msgid"s here are often extracted from source code.
+msgid ""
+msgstr ""
+
+msgid "Filters"
+msgstr ""

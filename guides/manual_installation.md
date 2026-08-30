@@ -454,6 +454,7 @@ Also:
 - [Design](design.html) modifiers, bundle filtering, and themes
 - [Forms](forms.html) `field`, validation, and `auto_invalid`
 - [MCP](https://hexdocs.pm/corex_mcp/MCP.html) AI tooling in development (`mix corex.new` writes `.cursor/mcp.json`; use `--no-mcp` to skip)
+- [Corex Admin](https://hexdocs.pm/corex_admin/installation.html) optional staff admin (`{:corex_admin, "~> 0.1"}`, then `mix corex.admin.install`)
 - [Production](production.html) prod build and run
 - [Updating Corex](update.html) migrate an existing app
 

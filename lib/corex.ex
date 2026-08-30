@@ -61,6 +61,7 @@ defmodule Corex do
     floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
     heroicon: {Corex.Heroicon, [heroicon: 1]},
     native_input: {Corex.NativeInput, [native_input: 1]},
+    nested_fields: {Corex.NestedFields, [nested_fields: 1]},
     hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
     layout_heading: {Corex.Layout.Heading, [layout_heading: 1]},

@@ -7,23 +7,31 @@ defmodule E2e.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      E2eWeb.Telemetry,
-      E2e.Repo,
-      {DNSCluster, query: Application.get_env(:corex_web, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: E2e.PubSub},
-      {Registry, keys: :unique, name: E2e.Tetrex.SessionRegistry},
-      {DynamicSupervisor, name: E2e.Tetrex.SessionSupervisor, strategy: :one_for_one},
-      E2e.Tetrex.Registry,
-      E2e.Tetrex.OwnershipStore,
-      E2eWeb.TetrexPresence,
-      E2eWeb.Endpoint
-    ]
+    children =
+      [
+        E2eWeb.Telemetry,
+        E2e.Repo,
+        {DNSCluster, query: Application.get_env(:corex_web, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: E2e.PubSub},
+        {Registry, keys: :unique, name: E2e.Tetrex.SessionRegistry},
+        {DynamicSupervisor, name: E2e.Tetrex.SessionSupervisor, strategy: :one_for_one},
+        E2e.Tetrex.Registry,
+        E2e.Tetrex.OwnershipStore,
+        E2eWeb.TetrexPresence
+      ] ++ admin_demo_sweeper() ++ [E2eWeb.Endpoint]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: E2e.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp admin_demo_sweeper do
+    if Application.get_env(:corex_web, :sql_sandbox, false) do
+      []
+    else
+      [E2e.AdminDemo.Sweeper]
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration

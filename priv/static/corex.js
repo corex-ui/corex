@@ -29202,6 +29202,7 @@ ${err}`);
   __export(menu_exports, {
     Menu: () => MenuHook,
     findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl,
+    handleMenuSelect: () => handleMenuSelect,
     menuSetOpenMatches: () => menuSetOpenMatches
   });
   function mergeProps(...args) {
@@ -29820,6 +29821,30 @@ ${err}`);
     const targetId = readPayloadId(payload);
     if (!targetId) return false;
     return elId === targetId || elId === `menu:${targetId}`;
+  }
+  function handleMenuSelect(el, details, liveSocket, pushEvent) {
+    var _a4;
+    const redirected = getBoolean(el, "redirect") && details.value ? redirectMenuItem(el, details.value, liveSocket) : false;
+    if (redirected) return true;
+    notifyChange({
+      el,
+      canPushServer: canPushEvent(liveSocket),
+      pushEvent,
+      payload: {
+        id: el.id,
+        value: (_a4 = details.value) != null ? _a4 : null
+      },
+      serverEventName: getString(el, "onSelect"),
+      clientEventName: getString(el, "onSelectClient")
+    });
+    return false;
+  }
+  function redirectMenuItem(el, value, liveSocket) {
+    if (redirectCollectionItem(el, "menu", value, liveSocket)) return true;
+    const itemEl = document.querySelector(
+      `[id="${CSS.escape(el.id)}:content"] [data-scope="menu"][data-part="item"][data-value="${CSS.escape(value)}"]`
+    );
+    return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
   }
   var anatomy17, parts17, clsx, ownedBy, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl6, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
   var init_menu = __esm({
@@ -31007,21 +31032,7 @@ ${err}`);
           const pushEvent = hook.pushEvent.bind(hook);
           const liveSocket = hook.liveSocket;
           const buildOnSelect = () => (details) => {
-            var _a4;
-            if (getBoolean(el, "redirect") && details.value) {
-              redirectCollectionItem(el, "menu", details.value, liveSocket);
-            }
-            notifyChange({
-              el,
-              canPushServer: canPushEvent(liveSocket),
-              pushEvent,
-              payload: {
-                id: el.id,
-                value: (_a4 = details.value) != null ? _a4 : null
-              },
-              serverEventName: getString(el, "onSelect"),
-              clientEventName: getString(el, "onSelectClient")
-            });
+            handleMenuSelect(el, details, liveSocket, pushEvent);
           };
           const menu = new Menu(el, {
             id: el.id.replace(/^menu:/, ""),

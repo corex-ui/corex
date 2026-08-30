@@ -1,5 +1,6 @@
 /* Corex generated components - do not edit */
 @import "./components/accordion.css";
+@import "./components/admin.css";
 @import "./components/angle-slider.css";
 @import "./components/avatar.css";
 @import "./components/badge.css";
@@ -25,6 +26,7 @@
 @import "./components/marquee.css";
 @import "./components/menu.css";
 @import "./components/native-input.css";
+@import "./components/nested-fields.css";
 @import "./components/number-input.css";
 @import "./components/pagination.css";
 @import "./components/password-input.css";

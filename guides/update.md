@@ -13,10 +13,12 @@ In `mix.exs`:
 `~> 0.2.0` keeps you on **0.2.x**. Then:
 
 ```bash
-mix deps.update corex corex_design corex_mcp
+mix deps.update corex corex_design corex_mcp corex_admin
 mix deps.get
 mix compile
 ```
+
+Omit packages you do not use (`corex_admin` is optional and not added by `mix corex.new`).
 
 When release notes mention CSS or tokens:
 

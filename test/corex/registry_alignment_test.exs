@@ -12,6 +12,7 @@ defmodule Corex.RegistryAlignmentTest do
                       ])
 
   @expected_css_only MapSet.new([
+                       "admin",
                        "badge",
                        "button",
                        "icon",
@@ -37,7 +38,7 @@ defmodule Corex.RegistryAlignmentTest do
   test "Design.css_only_ids/0 is the fetch_elixir_id CSS-only list" do
     css_only = MapSet.new(Components.css_only_ids())
 
-    assert css_only == MapSet.new(~W(badge scrollbar typo))
+    assert css_only == MapSet.new(~W(admin badge scrollbar typo))
 
     for id <- Components.ids() do
       if id in css_only do
