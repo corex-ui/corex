@@ -73,6 +73,9 @@ defmodule E2eWeb.Router do
       live("/accordion/animation", AccordionAnimationLive)
 
       live("/native-accordion/playground", NativeAccordionPlayLive)
+      live("/native-accordion/api", NativeAccordionApiLive)
+      live("/native-accordion/events", NativeAccordionEventsLive)
+      live("/native-accordion/patterns", NativeAccordionPatternsLive)
 
       live("/tree-view/playground", TreeViewPlayLive)
       live("/tree-view/api", TreeViewApiLive)
@@ -263,6 +266,9 @@ defmodule E2eWeb.Router do
 
     get("/accordion/anatomy", PageController, :accordion_page)
     get("/accordion/style", PageController, :accordion_styling_page)
+
+    get("/native-accordion/anatomy", PageController, :native_accordion_page)
+    get("/native-accordion/style", PageController, :native_accordion_styling_page)
     get("/action/anatomy", PageController, :action_page)
     get("/action/style", PageController, :action_styling_page)
     get("/checkbox/anatomy", PageController, :checkbox_page)

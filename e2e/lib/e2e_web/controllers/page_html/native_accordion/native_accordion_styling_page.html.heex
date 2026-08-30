@@ -1,0 +1,51 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="native-accordion-styling-page"
+    title={~t"Native Accordion · Style"}
+    subtitle={
+      ~t"Same Design CSS as Accordion via data-scope=\"accordion\" — semantic colors and density modifiers."
+    }
+  >
+    <.demo_section
+      id="native-accordion-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.NativeAccordionDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-accordion-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.NativeAccordionDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="accordion" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-accordion-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.NativeAccordionDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="accordion" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

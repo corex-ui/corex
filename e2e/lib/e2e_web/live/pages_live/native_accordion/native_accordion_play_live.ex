@@ -5,40 +5,69 @@ defmodule E2eWeb.NativeAccordionPlayLive do
 
   alias Corex.NativeAccordion
 
-  defp items do
+  @accordion_id "my-native-accordion"
+
+  defp item_values, do: ~W(lorem duis donec)
+
+  defp accordion_items(controls) do
+    disabled = Map.get(controls, :disabled_items, [])
+    horizontal? = Map.get(controls, :orientation) == "horizontal"
+
+    {t1, t2, t3} =
+      if horizontal? do
+        {"Lorem", "Duis", "Donec"}
+      else
+        {
+          "Lorem duis donec sit amet",
+          "Duis dictum gravida odio ac pharetra?",
+          "Donec condimentum ex mi"
+        }
+      end
+
     Corex.Content.new([
       %{
         value: "lorem",
-        label: "Lorem duis donec sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+        label: t1,
+        content: ~t"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+        disabled: "lorem" in disabled
       },
       %{
         value: "duis",
-        label: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
+        label: t2,
+        content: ~t"Nullam eget vestibulum ligula, at interdum tellus.",
+        disabled: "duis" in disabled
       },
       %{
         value: "donec",
-        label: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+        label: t3,
+        content: ~t"Congue molestie ipsum gravida a. Sed ac eros luctus.",
+        disabled: "donec" in disabled
       }
     ])
   end
 
   @impl true
   def mount(_params, _session, socket) do
+    controls = %{
+      disabled_items: [],
+      orientation: "vertical",
+      collapsible: true,
+      multiple: true,
+      dir: "ltr"
+    }
+
     {:ok,
      socket
-     |> assign(:controls, %{dir: "ltr", collapsible: true, multiple: true})
-     |> assign(:open, ["lorem"])
-     |> assign(:items, items())
-     |> assign(:controlled_id, "native-accordion-controlled")
-     |> assign(:uncontrolled_id, "native-accordion-uncontrolled")}
+     |> assign(:controls, controls)
+     |> assign(:disabled_select_items, disabled_select_items())
+     |> assign(:items, accordion_items(controls))
+     |> assign(:focused, "lorem")
+     |> assign(:accordion_id, @accordion_id)}
   end
 
   @impl true
   def handle_event("control_changed", %{"checked" => raw, "id" => id}, socket) do
-    checked = raw in [true, "true"]
+    checked = control_bool(raw)
     {:noreply, update_control(socket, control_id(id), checked)}
   end
 
@@ -46,47 +75,65 @@ defmodule E2eWeb.NativeAccordionPlayLive do
     {:noreply, update_control(socket, control_id(id), value)}
   end
 
-  def handle_event("faq_toggle", params, socket) do
+  def handle_event("disabled_items_changed", %{"value" => value}, socket) when is_list(value) do
     {:noreply,
-     NativeAccordion.handle_toggle(socket, :open, params,
-       multiple: socket.assigns.controls.multiple,
-       collapsible: socket.assigns.controls.collapsible
-     )}
+     socket
+     |> update(:controls, &%{&1 | disabled_items: value})
+     |> sync_items()}
+  end
+
+  def handle_event("disabled_items_changed", _params, socket) do
+    {:noreply,
+     socket
+     |> update(:controls, &%{&1 | disabled_items: []})
+     |> sync_items()}
+  end
+
+  def handle_event("native_accordion_keydown", params, socket) do
+    {:noreply, NativeAccordion.handle_keydown(socket, :focused, params)}
+  end
+
+  defp update_control(socket, "orientation", value) do
+    socket
+    |> update(:controls, &%{&1 | orientation: value})
+    |> sync_items()
   end
 
   defp update_control(socket, "dir", value),
     do: update(socket, :controls, &%{&1 | dir: value})
 
-  defp update_control(socket, "collapsible", checked) do
-    controls =
-      if checked do
-        %{socket.assigns.controls | collapsible: true}
-      else
-        %{socket.assigns.controls | collapsible: false, multiple: false}
-      end
+  defp update_control(socket, "collapsible", true),
+    do: update(socket, :controls, &%{&1 | collapsible: true})
 
-    assign(socket, :controls, controls)
-  end
+  defp update_control(socket, "collapsible", false),
+    do: update(socket, :controls, &%{&1 | collapsible: false, multiple: false})
 
-  defp update_control(socket, "multiple", checked) do
-    controls =
-      if checked do
-        %{socket.assigns.controls | multiple: true, collapsible: true}
-      else
-        %{socket.assigns.controls | multiple: false}
-      end
+  defp update_control(socket, "multiple", true),
+    do: update(socket, :controls, &%{&1 | multiple: true, collapsible: true})
 
-    socket
-    |> assign(:controls, controls)
-    |> then(fn s ->
-      if checked, do: s, else: assign(s, :open, Enum.take(s.assigns.open, 1))
-    end)
-  end
+  defp update_control(socket, "multiple", false),
+    do: update(socket, :controls, &%{&1 | multiple: false})
 
   defp update_control(socket, _, _), do: socket
 
+  defp sync_items(socket) do
+    assign(socket, :items, accordion_items(socket.assigns.controls))
+  end
+
+  defp control_bool(v) when v in [true, "true"], do: true
+  defp control_bool(v) when v in [false, "false"], do: false
+  defp control_bool(v), do: !!v
+
   defp control_id("playground-collapsible-" <> _), do: "collapsible"
   defp control_id(id), do: id
+
+  defp disabled_select_items do
+    [
+      %{label: ~t"Lorem", value: "lorem"},
+      %{label: ~t"Duis", value: "duis"},
+      %{label: ~t"Donec", value: "donec"}
+    ]
+  end
 
   @impl true
   def render(assigns) do
@@ -104,6 +151,38 @@ defmodule E2eWeb.NativeAccordionPlayLive do
               on_value_change="control_changed"
               value={[@controls.dir]}
             />
+
+            <.toggle_group
+              class="toggle-group ui-size-sm max-w-3xs"
+              id="orientation"
+              on_value_change="control_changed"
+              multiple={false}
+              deselectable={false}
+              value={[@controls.orientation]}
+            >
+              <:item value="vertical" aria_label="Vertical orientation">
+                <.heroicon name="hero-arrows-up-down" class="icon ui-size-lg" />
+              </:item>
+              <:item value="horizontal" aria_label="Horizontal orientation">
+                <.heroicon name="hero-arrows-right-left" class="icon ui-size-lg" />
+              </:item>
+            </.toggle_group>
+
+            <.select
+              id="playground-disabled-items"
+              class="select ui-size-sm w-4xs"
+              multiple
+              deselectable={true}
+              close_on_select={false}
+              value={@controls.disabled_items}
+              items={@disabled_select_items}
+              on_value_change="disabled_items_changed"
+              translation={%Corex.Select.Translation{placeholder: "Select items"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Disabled items</:label>
+            </.select>
 
             <.switch
               class="switch ui-size-sm"
@@ -124,56 +203,26 @@ defmodule E2eWeb.NativeAccordionPlayLive do
             </.switch>
           </:controls>
           <:canvas>
-            <div class="flex flex-col gap-space-xl w-full max-w-xl">
-              <section class="flex flex-col gap-space-sm">
-                <h2 class="text-lg font-semibold">Controlled (LiveView value)</h2>
-                <p class="text-sm opacity-80">
-                  Open: {inspect(@open)} — no phx-hook / Zag machine
-                </p>
-                <.native_accordion
-                  id={@controlled_id}
-                  class="accordion"
-                  controlled
-                  value={@open}
-                  on_value_change="faq_toggle"
-                  collapsible={@controls.collapsible}
-                  multiple={@controls.multiple}
-                  dir={@controls.dir}
-                  items={@items}
-                >
-                  <:content :let={item}>
-                    <p class="break-words">{item.content}</p>
-                  </:content>
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.native_accordion>
-              </section>
-
-              <section class="flex flex-col gap-space-sm">
-                <h2 class="text-lg font-semibold">Uncontrolled (JS pipes)</h2>
-                <p class="text-sm opacity-80">
-                  Client-only toggle via LiveView JS commands
-                </p>
-                <.native_accordion
-                  id={@uncontrolled_id}
-                  class="accordion"
-                  controlled={false}
-                  value={["lorem"]}
-                  multiple={@controls.multiple}
-                  collapsible={@controls.collapsible}
-                  dir={@controls.dir}
-                  items={@items}
-                >
-                  <:content :let={item}>
-                    <p class="break-words">{item.content}</p>
-                  </:content>
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.native_accordion>
-              </section>
-            </div>
+            <.native_accordion
+              id={@accordion_id}
+              class="accordion"
+              controlled={false}
+              value={item_values()}
+              items={@items}
+              collapsible={@controls.multiple or @controls.collapsible}
+              multiple={@controls.multiple}
+              orientation={@controls.orientation}
+              dir={@controls.dir}
+              on_keydown="native_accordion_keydown"
+              focused_value={@focused}
+            >
+              <:content :let={item}>
+                <p class="break-words">{item.content}</p>
+              </:content>
+              <:indicator>
+                <.heroicon name="hero-chevron-right" />
+              </:indicator>
+            </.native_accordion>
           </:canvas>
         </.demo_playground>
       </.demo_page>

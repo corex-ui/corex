@@ -187,12 +187,16 @@ defmodule E2eWeb.Helpers do
         %{
           label: ~t"Native Accordion",
           id: "native-accordion",
+          anatomy_to: ~p"/native-accordion/anatomy",
+          api: true,
+          event: true,
+          pattern: true,
+          style: true,
           playground_to: ~p"/native-accordion/playground",
-          anatomy: false,
-          api: false,
-          event: false,
-          pattern: false,
-          style: false
+          api_to: ~p"/native-accordion/api",
+          events_to: ~p"/native-accordion/events",
+          patterns_to: ~p"/native-accordion/patterns",
+          style_to: ~p"/native-accordion/style"
         },
         %{
           label: ~t"Action",
