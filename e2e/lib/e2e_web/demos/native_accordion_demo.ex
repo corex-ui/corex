@@ -94,7 +94,11 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def custom_slots_example(assigns) do
     ~H"""
-    <.native_accordion id="native-accordion-anatomy-custom" class="accordion" items={items_with_meta()}>
+    <.native_accordion
+      id="native-accordion-anatomy-custom"
+      class="accordion"
+      items={items_with_meta()}
+    >
       <:trigger :let={item}>
         <.heroicon name={item.meta.icon} />{item.label}
       </:trigger>
