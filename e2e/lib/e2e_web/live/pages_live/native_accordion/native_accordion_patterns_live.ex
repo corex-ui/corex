@@ -27,7 +27,6 @@ defmodule E2eWeb.NativeAccordionPatternsLive do
      |> assign(:id_uncontrolled, @id_uncontrolled)
      |> assign(:id_dynamic, @id_dynamic)
      |> assign(:open, ["lorem"])
-     |> assign(:focused, "lorem")
      |> assign(:items, Demo.patterns_items())
      |> assign(:controlled_heex, Demo.patterns_controlled_heex())
      |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())
@@ -39,10 +38,6 @@ defmodule E2eWeb.NativeAccordionPatternsLive do
   def handle_event("patterns_controlled_changed", params, socket) do
     {:noreply,
      NativeAccordion.handle_toggle(socket, :open, params, multiple: false, collapsible: true)}
-  end
-
-  def handle_event("patterns_keydown", params, socket) do
-    {:noreply, NativeAccordion.handle_keydown(socket, :focused, params)}
   end
 
   def handle_event("add_item", _params, socket) do
@@ -86,8 +81,6 @@ defmodule E2eWeb.NativeAccordionPatternsLive do
               controlled
               value={@open}
               on_value_change="patterns_controlled_changed"
-              on_keydown="patterns_keydown"
-              focused_value={@focused}
             >
               <:indicator>
                 <.heroicon name="hero-chevron-right" />
@@ -108,8 +101,6 @@ defmodule E2eWeb.NativeAccordionPatternsLive do
               items={@items}
               controlled={false}
               value={["lorem"]}
-              on_keydown="patterns_keydown"
-              focused_value={@focused}
             >
               <:indicator>
                 <.heroicon name="hero-chevron-right" />
@@ -136,8 +127,6 @@ defmodule E2eWeb.NativeAccordionPatternsLive do
               class="accordion"
               controlled={false}
               items={Corex.Content.new(@dynamic_items)}
-              on_keydown="patterns_keydown"
-              focused_value={@focused}
             >
               <:indicator>
                 <.heroicon name="hero-chevron-right" />

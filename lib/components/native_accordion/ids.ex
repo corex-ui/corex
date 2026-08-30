@@ -18,4 +18,7 @@ defmodule Corex.NativeAccordion.Ids do
 
   @spec indicator_id(String.t(), String.t()) :: String.t()
   def indicator_id(id, value), do: "accordion:#{id}:indicator:#{value}"
+
+  @spec region_label_id(String.t(), String.t()) :: String.t()
+  def region_label_id(id, value), do: "accordion:#{id}:region-label:#{value}"
 end

@@ -51,8 +51,8 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
   def minimal_example(assigns) do
     ~H"""
     <.native_accordion
+      id="native-accordion-anatomy-minimal"
       class="accordion"
-      controlled={false}
       items={items_with_values()}
     />
     """
@@ -61,8 +61,8 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
   def minimal_code do
     ~S"""
     <.native_accordion
+      id="faq"
       class="accordion"
-      controlled={false}
       items={Corex.Content.new([
         %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
@@ -74,7 +74,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def with_indicator_example(assigns) do
     ~H"""
-    <.native_accordion class="accordion" controlled={false} items={items_basic()}>
+    <.native_accordion id="native-accordion-anatomy-indicator" class="accordion" items={items_basic()}>
       <:indicator>
         <.heroicon name="hero-chevron-right" />
       </:indicator>
@@ -84,7 +84,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def with_indicator_code do
     ~S"""
-    <.native_accordion class="accordion" controlled={false} items={items}>
+    <.native_accordion id="faq" class="accordion" items={items}>
       <:indicator>
         <.heroicon name="hero-chevron-right" />
       </:indicator>
@@ -94,7 +94,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def custom_slots_example(assigns) do
     ~H"""
-    <.native_accordion class="accordion" controlled={false} items={items_with_meta()}>
+    <.native_accordion id="native-accordion-anatomy-custom" class="accordion" items={items_with_meta()}>
       <:trigger :let={item}>
         <.heroicon name={item.meta.icon} />{item.label}
       </:trigger>
@@ -110,7 +110,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def custom_slots_code do
     ~S"""
-    <.native_accordion class="accordion" controlled={false} items={items}>
+    <.native_accordion id="faq" class="accordion" items={items}>
       <:trigger :let={item}>
         <.heroicon name={item.meta.icon} />{item.label}
       </:trigger>
@@ -127,7 +127,6 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
     <.native_accordion
       id="native-accordion-anatomy-manual"
       class="accordion"
-      controlled={false}
       value="lorem"
     >
       <:trigger value="lorem">
@@ -163,7 +162,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def manual_slots_code do
     ~S"""
-    <.native_accordion class="accordion" controlled={false} value="lorem">
+    <.native_accordion id="faq" class="accordion" value="lorem">
       <:trigger value="lorem">Lorem ipsum dolor sit amet</:trigger>
       <:content value="lorem"><p>Consectetur adipiscing elit.</p></:content>
       <:indicator value="lorem"><.heroicon name="hero-chevron-right" /></:indicator>
@@ -175,8 +174,17 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
   end
 
   def compound_example(assigns) do
+    assigns = assign(assigns, :items, Enum.take(items_with_values(), 2))
+
     ~H"""
-    <.native_accordion :let={ctx} compound class="accordion" controlled={false} value="lorem">
+    <.native_accordion
+      :let={ctx}
+      id="native-accordion-anatomy-compound"
+      compound
+      class="accordion"
+      value="lorem"
+      items={@items}
+    >
       <.native_accordion_root ctx={ctx}>
         <.native_accordion_item :let={item} ctx={ctx} value="lorem">
           <.native_accordion_trigger item={item}>
@@ -211,7 +219,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def compound_code do
     ~S"""
-    <.native_accordion :let={ctx} compound class="accordion" controlled={false} value="lorem">
+    <.native_accordion :let={ctx} id="faq" compound class="accordion" value="lorem" items={items}>
       <.native_accordion_root ctx={ctx}>
         <.native_accordion_item :let={item} ctx={ctx} value="lorem">
           <.native_accordion_trigger item={item}>
@@ -241,8 +249,6 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
       controlled
       value={@open}
       on_value_change="patterns_controlled_changed"
-      on_keydown="patterns_keydown"
-      focused_value={@focused}
     >
       <:indicator>
         <.heroicon name="hero-chevron-right" />
@@ -260,10 +266,6 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
          collapsible: true
        )}
     end
-
-    def handle_event("patterns_keydown", params, socket) do
-      {:noreply, Corex.NativeAccordion.handle_keydown(socket, :focused, params)}
-    end
     """
   end
 
@@ -274,8 +276,6 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
       controlled={false}
       value={["lorem"]}
       items={items}
-      on_keydown="patterns_keydown"
-      focused_value={@focused}
     >
       <:indicator>
         <.heroicon name="hero-chevron-right" />
@@ -292,8 +292,6 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
       controlled
       value={@open}
       on_value_change="accordion_value_changed"
-      on_keydown="events_keydown"
-      focused_value={@focused}
       items={items}
     >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
@@ -333,7 +331,7 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
   def styling_canonical_code do
     ~S"""
-    <.native_accordion class="accordion" controlled={false} value="item-1" items={items}>
+    <.native_accordion id="faq" class="accordion" value="item-1" items={items}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     """
@@ -343,7 +341,12 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
     _ = assigns
 
     ~H"""
-    <.native_accordion class="accordion" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      id="native-accordion-style-preview"
+      class="accordion"
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     """
@@ -355,36 +358,41 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
     _ = assigns
 
     ~H"""
-    <.native_accordion class="accordion" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      id="native-accordion-style-color"
+      class="accordion"
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     <.native_accordion
+      id="native-accordion-style-color-accent"
       class="accordion ui-accent"
-      controlled={false}
       value="item-1"
       items={styling_items()}
     >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     <.native_accordion
+      id="native-accordion-style-color-brand"
       class="accordion ui-brand"
-      controlled={false}
       value="item-1"
       items={styling_items()}
     >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     <.native_accordion
+      id="native-accordion-style-color-alert"
       class="accordion ui-alert"
-      controlled={false}
       value="item-1"
       items={styling_items()}
     >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     <.native_accordion
+      id="native-accordion-style-color-success"
       class="accordion ui-success"
-      controlled={false}
       value="item-1"
       items={styling_items()}
     >
@@ -400,19 +408,24 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
 
     ~H"""
     <.native_accordion
+      id="native-accordion-style-size-sm"
       class="accordion ui-size-sm"
-      controlled={false}
       value="item-1"
       items={styling_items()}
     >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
-    <.native_accordion class="accordion" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      id="native-accordion-style-size"
+      class="accordion"
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     <.native_accordion
+      id="native-accordion-style-size-lg"
       class="accordion ui-size-lg"
-      controlled={false}
       value="item-1"
       items={styling_items()}
     >

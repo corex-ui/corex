@@ -23,26 +23,19 @@ defmodule E2eWeb.NativeAccordionLiveTest do
     assert has_element?(view, "##{@playground_id}")
   end
 
-  test "playground keydown ArrowUp updates focused_value", %{conn: conn} do
-    {view, _html} = live_ok!(conn, ~p"/native-accordion/playground")
+  test "playground compiles client keyboard nav without handle_event", %{conn: conn} do
+    {view, html} = live_ok!(conn, ~p"/native-accordion/playground")
 
     lorem = trigger_sel(@playground_id, "lorem")
-    duis = trigger_sel(@playground_id, "duis")
+    nav_down = ~s([id="#{Ids.root_id(@playground_id)}-nav-ArrowDown"])
 
-    assert has_element?(view, lorem <> "[tabindex='0']")
-
-    view
-    |> element(lorem)
-    |> render_keydown(%{"key" => "ArrowDown"})
-
-    assert has_element?(view, duis <> "[tabindex='0']")
-    assert has_element?(view, ~s([id="#{Ids.trigger_id(@playground_id, "duis")}-focus-pin"]))
-
-    view
-    |> element(duis)
-    |> render_keydown(%{"key" => "ArrowUp"})
-
-    assert has_element?(view, lorem <> "[tabindex='0']")
+    assert html =~ "phx-window-keydown"
+    assert html =~ "data-nav-next"
+    refute html =~ "phx-keydown="
+    refute html =~ "focus-pin"
+    assert has_element?(view, lorem)
+    assert has_element?(view, nav_down)
+    assert has_element?(view, nav_down <> ~s([phx-key="ArrowDown"]))
   end
 
   test "patterns controlled toggle updates open assign", %{conn: conn} do

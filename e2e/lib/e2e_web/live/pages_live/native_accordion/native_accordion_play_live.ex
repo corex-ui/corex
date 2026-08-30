@@ -3,8 +3,6 @@ defmodule E2eWeb.NativeAccordionPlayLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, playground_dir_toggle: 1]
 
-  alias Corex.NativeAccordion
-
   @accordion_id "my-native-accordion"
 
   defp item_values, do: ~W(lorem duis donec)
@@ -61,7 +59,6 @@ defmodule E2eWeb.NativeAccordionPlayLive do
      |> assign(:controls, controls)
      |> assign(:disabled_select_items, disabled_select_items())
      |> assign(:items, accordion_items(controls))
-     |> assign(:focused, "lorem")
      |> assign(:accordion_id, @accordion_id)}
   end
 
@@ -87,10 +84,6 @@ defmodule E2eWeb.NativeAccordionPlayLive do
      socket
      |> update(:controls, &%{&1 | disabled_items: []})
      |> sync_items()}
-  end
-
-  def handle_event("native_accordion_keydown", params, socket) do
-    {:noreply, NativeAccordion.handle_keydown(socket, :focused, params)}
   end
 
   defp update_control(socket, "orientation", value) do
@@ -213,8 +206,6 @@ defmodule E2eWeb.NativeAccordionPlayLive do
               multiple={@controls.multiple}
               orientation={@controls.orientation}
               dir={@controls.dir}
-              on_keydown="native_accordion_keydown"
-              focused_value={@focused}
             >
               <:content :let={item}>
                 <p class="break-words">{item.content}</p>

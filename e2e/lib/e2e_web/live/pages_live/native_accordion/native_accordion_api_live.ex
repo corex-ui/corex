@@ -15,12 +15,7 @@ defmodule E2eWeb.NativeAccordionApiLive do
      |> assign(:id_sv_client, @id_sv_client)
      |> assign(:all_values, @all_values)
      |> assign(:items, Demo.shared_items_full())
-     |> assign(:focused, "lorem")
      |> assign(:set_value_binding, Demo.api_set_value_client_binding_code())}
-  end
-
-  def handle_event("api_keydown", params, socket) do
-    {:noreply, NativeAccordion.handle_keydown(socket, :focused, params)}
   end
 
   def render(assigns) do
@@ -71,8 +66,6 @@ defmodule E2eWeb.NativeAccordionApiLive do
                 controlled={false}
                 value={["lorem"]}
                 items={@items}
-                on_keydown="api_keydown"
-                focused_value={@focused}
               >
                 <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
               </.native_accordion>

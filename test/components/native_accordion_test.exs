@@ -3,7 +3,10 @@ defmodule Corex.NativeAccordionTest do
   import Phoenix.Component
 
   alias Corex.NativeAccordion
+  alias Corex.NativeAccordion.Ids
+  alias Corex.NativeAccordion.Keymap
   alias Corex.NativeAccordion.State
+  alias Corex.NativeAccordion.Trigger
 
   describe "State.toggle/3" do
     test "multiple collapsible opens and closes" do
@@ -44,42 +47,34 @@ defmodule Corex.NativeAccordionTest do
     end
   end
 
-  describe "State.focus_target/1" do
-    test "resolves next item from keydown payload" do
-      params = %{
-        "item" => "lorem",
-        "key" => "ArrowDown",
-        "orientation" => "vertical",
-        "item_values" => ~W(lorem duis donec),
-        "disabled_values" => []
-      }
-
-      assert State.focus_target(params) == "duis"
+  describe "Keymap.bindings/1" do
+    test "vertical compiles down/up plus home/end" do
+      assert Keymap.bindings(Keymap.new("vertical", nil)) == [
+               {"ArrowDown", :next},
+               {"ArrowUp", :prev},
+               {"Home", :first},
+               {"End", :last}
+             ]
     end
 
-    test "resolves prev with ArrowUp" do
-      params = %{
-        "item" => "duis",
-        "key" => "ArrowUp",
-        "orientation" => "vertical",
-        "item_values" => ~W(lorem duis donec),
-        "disabled_values" => []
-      }
-
-      assert State.focus_target(params) == "lorem"
+    test "horizontal rtl swaps left/right" do
+      assert Keymap.bindings(Keymap.new("horizontal", "rtl")) == [
+               {"ArrowLeft", :next},
+               {"ArrowRight", :prev},
+               {"Home", :first},
+               {"End", :last}
+             ]
     end
+  end
 
-    test "horizontal ArrowRight" do
-      params = %{
-        "item" => "lorem",
-        "key" => "ArrowRight",
-        "orientation" => "horizontal",
-        "dir" => "ltr",
-        "item_values" => ~W(lorem duis),
-        "disabled_values" => []
-      }
-
-      assert State.focus_target(params) == "duis"
+  describe "Trigger.new/5" do
+    test "skips disabled neighbors" do
+      nav = Trigger.new("faq", "a", ~W(a b c), ["b"])
+      assert nav.next == "c"
+      assert nav.prev == "c"
+      assert nav.first == "a"
+      assert nav.last == "c"
+      refute nav.disabled?
     end
   end
 
@@ -99,7 +94,7 @@ defmodule Corex.NativeAccordionTest do
   end
 
   describe "native_accordion/1" do
-    test "renders anatomy without phx-hook" do
+    test "renders anatomy without phx-hook or trigger phx-keydown" do
       items = Corex.Content.new([%{value: "lorem", label: "Lorem", content: "Body"}])
 
       html =
@@ -108,8 +103,7 @@ defmodule Corex.NativeAccordionTest do
           items: items,
           value: ["lorem"],
           controlled: true,
-          on_value_change: "toggle",
-          on_keydown: "keydown"
+          on_value_change: "toggle"
         )
 
       assert html =~ ~S(data-scope="accordion")
@@ -118,8 +112,24 @@ defmodule Corex.NativeAccordionTest do
       assert html =~ ~S(data-native="")
       refute html =~ "phx-hook"
       assert html =~ ~S(aria-expanded="true")
-      assert html =~ "phx-keydown"
-      refute html =~ ~S(phx-key="ArrowDown")
+      refute html =~ "phx-keydown="
+      assert html =~ "phx-window-keydown"
+      assert html =~ ~S(phx-key="ArrowDown")
+      assert html =~ "data-nav-next"
+      refute html =~ "focus-pin"
+    end
+
+    test "defaults to uncontrolled" do
+      items = Corex.Content.new([%{value: "lorem", label: "Lorem", content: "Body"}])
+
+      html =
+        render_component(&NativeAccordion.native_accordion/1,
+          id: "faq",
+          items: items
+        )
+
+      refute html =~ "data-controlled=\"\""
+      assert html =~ "phx-click"
     end
 
     test "closed item is hidden" do
@@ -159,25 +169,44 @@ defmodule Corex.NativeAccordionTest do
       assert html =~ "phx-click"
     end
 
-    test "focus pin renders when focused_value matches" do
+    test "region landmark names include accordion id" do
       items =
         Corex.Content.new([
-          %{value: "a", label: "A", content: "A body"},
-          %{value: "b", label: "B", content: "B body"}
+          %{value: "a", label: "Lorem", content: "A body"},
+          %{value: "b", label: "Lorem", content: "B body"}
         ])
 
       html =
         render_component(&NativeAccordion.native_accordion/1,
           id: "faq",
           items: items,
-          value: [],
-          controlled: false,
-          on_keydown: "kd",
-          focused_value: "b"
+          value: ["a"]
         )
 
-      assert html =~ ~S(id="accordion:faq:trigger:b-focus-pin")
-      refute html =~ ~S(id="accordion:faq:trigger:a-focus-pin")
+      a_trigger = Ids.trigger_id("faq", "a")
+      a_region = Ids.region_label_id("faq", "a")
+      b_region = Ids.region_label_id("faq", "b")
+
+      assert html =~ ~s(aria-labelledby="#{a_trigger} #{a_region}")
+      assert html =~ ~s(id="#{a_region}")
+      assert html =~ ~s(id="#{b_region}")
+      assert html =~ "faq:a"
+      refute a_region == b_region
+    end
+
+    test "horizontal rtl compiles ArrowLeft as next" do
+      items = Corex.Content.new([%{value: "lorem", label: "Lorem", content: "Body"}])
+
+      html =
+        render_component(&NativeAccordion.native_accordion/1,
+          id: "faq",
+          items: items,
+          orientation: "horizontal",
+          dir: "rtl"
+        )
+
+      assert html =~ ~S(phx-key="ArrowLeft")
+      refute html =~ ~S(phx-key="ArrowDown")
     end
 
     test "renders indicator and dir" do

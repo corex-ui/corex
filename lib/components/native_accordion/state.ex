@@ -102,39 +102,4 @@ defmodule Corex.NativeAccordion.State do
   defp arrow_direction("ArrowLeft", "horizontal", false), do: :prev
   defp arrow_direction("ArrowLeft", "horizontal", true), do: :next
   defp arrow_direction(_key, _orientation, _rtl?), do: nil
-
-  @doc """
-  Resolve the next focused item from a keydown payload.
-
-  Payload keys: `"item"`, `"key"`, `"orientation"`, `"dir"`, `"item_values"`, `"disabled_values"`.
-  """
-  @spec focus_target(map()) :: String.t() | nil
-  def focus_target(params) when is_map(params) do
-    params = stringify_keys(params)
-    item = params["item"]
-    key = params["key"]
-    orientation = params["orientation"] || "vertical"
-    dir = params["dir"]
-    item_values = List.wrap(params["item_values"] || [])
-    disabled = List.wrap(params["disabled_values"] || [])
-
-    navigate_focus(item, key, orientation, dir, item_values, disabled)
-  end
-
-  defp navigate_focus(item, key, orientation, dir, item_values, disabled)
-       when is_binary(item) and is_binary(key) do
-    case key_direction(key, orientation, dir) do
-      nil -> nil
-      direction -> next_item(item_values, item, disabled, direction)
-    end
-  end
-
-  defp navigate_focus(_item, _key, _orientation, _dir, _item_values, _disabled), do: nil
-
-  defp stringify_keys(map) do
-    Map.new(map, fn
-      {key, value} when is_atom(key) -> {Atom.to_string(key), value}
-      pair -> pair
-    end)
-  end
 end

@@ -13,7 +13,6 @@ defmodule E2eWeb.NativeAccordionEventsLive do
      socket
      |> assign(:id_server, @id_server)
      |> assign(:open, ["lorem"])
-     |> assign(:focused, "lorem")
      |> assign(:server_heex, Demo.events_server_heex())
      |> assign(:server_elixir, Demo.events_server_elixir())
      |> assign(:demo_items, Demo.events_items())
@@ -27,10 +26,6 @@ defmodule E2eWeb.NativeAccordionEventsLive do
      socket
      |> NativeAccordion.handle_toggle(:open, params)
      |> stream_insert(:server_logs, log, at: 0)}
-  end
-
-  def handle_event("events_keydown", params, socket) do
-    {:noreply, NativeAccordion.handle_keydown(socket, :focused, params)}
   end
 
   defp new_log(params) do
@@ -72,8 +67,6 @@ defmodule E2eWeb.NativeAccordionEventsLive do
                 controlled
                 value={@open}
                 on_value_change="accordion_value_changed"
-                on_keydown="events_keydown"
-                focused_value={@focused}
                 items={@demo_items}
               >
                 <:indicator><.heroicon name="hero-chevron-right" /></:indicator>

@@ -6,7 +6,33 @@ defmodule Corex.NativeAccordion do
   Prefer `Corex.Accordion` for production a11y parity with Zag; use this module to explore
   server-owned or pure-`JS` behavior and LiveViewTest coverage without Wallaby.
 
-  ## Controlled (default)
+  Works in LiveView and in controller / dead views: keyboard focus is compiled into
+  `JS.exec` + stored `JS.focus` commands. Open state is uncontrolled by default (client
+  JS pipes). Controlled open state is opt-in and needs a LiveView `handle_event`.
+
+  ## Uncontrolled (default)
+
+  Clicks run client `JS` pipes (`toggle_item/3`) with no round trip. Arrow / Home / End
+  focus is client-only. Query APIs (`value/1`, `focused/1`, …) are **not** implemented —
+  those stay on Zag accordion.
+
+  ```heex
+  <.native_accordion
+    id="faq"
+    class="accordion"
+    multiple={false}
+    items={
+      Corex.Content.new([
+        %{value: "lorem", label: "Lorem", content: "Body one."},
+        %{value: "duis", label: "Duis", content: "Body two."}
+      ])
+    }
+  >
+    <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+  </.native_accordion>
+  ```
+
+  ## Controlled
 
   LiveView owns open items via `value` + `on_value_change`. Triggers push a toggle event;
   handle it with `handle_toggle/4` (or your own assign update).
@@ -18,8 +44,6 @@ defmodule Corex.NativeAccordion do
     controlled
     value={@open}
     on_value_change="faq_toggle"
-    on_keydown="faq_keydown"
-    focused_value={@focused}
     multiple={false}
     items={
       Corex.Content.new([
@@ -36,23 +60,13 @@ defmodule Corex.NativeAccordion do
   def handle_event("faq_toggle", params, socket) do
     {:noreply, Corex.NativeAccordion.handle_toggle(socket, :open, params, multiple: false)}
   end
-
-  def handle_event("faq_keydown", params, socket) do
-    {:noreply, Corex.NativeAccordion.handle_keydown(socket, :focused, params)}
-  end
   ```
-
-  ## Uncontrolled
-
-  Set `controlled={false}`. Clicks run client `JS` pipes (`toggle_item/3`) with no round trip.
-  Wire `on_keydown` + `focused_value` for arrow-key focus (LiveView still owns focus assign).
-  Query APIs (`value/1`, `focused/1`, …) are **not** implemented — those stay on Zag accordion.
 
   ## Keyboard
 
-  Enter/Space activate the focused trigger (native button). Arrow keys / Home / End push
-  `on_keydown`; handle with `handle_keydown/3` and pass `focused_value` back so a focus pin
-  moves DOM focus without a hook.
+  Enter/Space activate the focused trigger (native `<button>`). Arrow keys / Home / End
+  are compiled at render onto the root as `phx-window-keydown` + `JS.exec("data-nav-*")`.
+  Each trigger stores neighbor `JS.focus` commands. No `handle_event` and no hook.
 
   - Vertical: ArrowDown / ArrowUp
   - Horizontal: ArrowRight / ArrowLeft (swapped when `dir="rtl"`)
@@ -63,12 +77,12 @@ defmodule Corex.NativeAccordion do
   | Feature | Zag Accordion | Native Accordion |
   | -------- | ------------- | ---------------- |
   | Hook / Zag machine | Yes | No |
-  | Controlled / uncontrolled | Yes (default uncontrolled) | Yes (default **controlled**) |
+  | Controlled / uncontrolled | Yes (default uncontrolled) | Yes (default uncontrolled) |
   | `set_value` client/server | Machine API | Client `JS` / assign helpers |
   | `value` / `focused` / `item_state` queries | Yes | Not implemented |
   | `on_focus_change*` / `on_value_change_client` | Yes | Not implemented |
   | Height `animation: "js"` | Yes | Instant only |
-  | Horizontal + RTL keys | Yes | Yes (via `on_keydown`) |
+  | Horizontal + RTL keys | Yes | Yes (compiled `JS.exec`) |
   '''
 
   use Phoenix.Component
@@ -76,9 +90,9 @@ defmodule Corex.NativeAccordion do
 
   alias Corex.NativeAccordion.Ids
   alias Corex.NativeAccordion.JS, as: AccordionJS
+  alias Corex.NativeAccordion.Keymap
   alias Corex.NativeAccordion.State
-  alias Corex.Selectors
-  alias Phoenix.LiveView.JS
+  alias Corex.NativeAccordion.Trigger
 
   @doc """
   Apply a controlled toggle from an `on_value_change` push.
@@ -106,31 +120,16 @@ defmodule Corex.NativeAccordion do
   end
 
   @doc """
-  Apply arrow / Home / End focus from an `on_keydown` push.
-
-  Updates `focused_key` on the socket when the key maps to a navigation direction.
-  """
-  @spec handle_keydown(Phoenix.LiveView.Socket.t(), atom(), map()) ::
-          Phoenix.LiveView.Socket.t()
-  def handle_keydown(socket, focused_key, params)
-      when is_atom(focused_key) and is_map(params) do
-    case State.focus_target(params) do
-      nil -> socket
-      next when is_binary(next) -> Phoenix.Component.assign(socket, focused_key, next)
-    end
-  end
-
-  @doc """
   Client helper: uncontrolled `set_value` via JS attribute pipes.
   Pass `all_values:` so closed items are cleared.
   """
-  @spec set_value(String.t(), term(), keyword()) :: JS.t()
+  @spec set_value(String.t(), term(), keyword()) :: Phoenix.LiveView.JS.t()
   defdelegate set_value(accordion_id, value, opts \\ []), to: AccordionJS
 
   @doc """
   Uncontrolled toggle JS for one item.
   """
-  @spec toggle_item(String.t(), String.t(), keyword()) :: JS.t()
+  @spec toggle_item(String.t(), String.t(), keyword()) :: Phoenix.LiveView.JS.t()
   defdelegate toggle_item(accordion_id, item_value, opts \\ []), to: AccordionJS
 
   attr(:id, :string,
@@ -151,8 +150,8 @@ defmodule Corex.NativeAccordion do
   attr(:compound, :boolean, default: false, doc: "Enable compound mode with `:let={ctx}`.")
 
   attr(:controlled, :boolean,
-    default: true,
-    doc: "When true (default), LiveView owns open state via `value` + `on_value_change`."
+    default: false,
+    doc: "When true, LiveView owns open state via `value` + `on_value_change`."
   )
 
   attr(:collapsible, :boolean, default: true, doc: "Whether an open item can be closed.")
@@ -179,23 +178,12 @@ defmodule Corex.NativeAccordion do
     doc: "LiveView event for controlled toggles. Required when `controlled`."
   )
 
-  attr(:on_keydown, :string,
-    default: nil,
-    doc:
-      "LiveView event for arrow / Home / End focus. Pass `focused_value` and handle with `handle_keydown/3`."
-  )
-
-  attr(:focused_value, :string,
-    default: nil,
-    doc: "Roving-tabindex focus value (defaults to first enabled item)."
-  )
-
   attr(:rest, :global)
 
   slot(:inner_block,
     required: false,
     doc:
-      "Compound mode content. `ctx` keys: `id`, `values`, `orientation`, `dir`, `item_values`, `disabled_values`, `controlled`, `multiple`, `collapsible`, `on_value_change`, `on_keydown`, `focused_value`."
+      "Compound mode content. `ctx` keys: `id`, `values`, `orientation`, `dir`, `item_values`, `disabled_values`, `controlled`, `multiple`, `collapsible`, `on_value_change`, `keymap`."
   )
 
   slot :indicator, required: false do
@@ -245,8 +233,7 @@ defmodule Corex.NativeAccordion do
       multiple: assigns.multiple,
       collapsible: assigns.collapsible,
       on_value_change: assigns.on_value_change,
-      on_keydown: assigns.on_keydown,
-      focused_value: assigns.focused_value
+      keymap: assigns.keymap
     }
 
     assigns = assign(assigns, :ctx, ctx)
@@ -264,6 +251,7 @@ defmodule Corex.NativeAccordion do
       {dir_attrs(@dir)}
       {@rest}
     >
+      <.native_accordion_nav_keys id={@id} keymap={@keymap} />
       {if @compound, do: render_slot(@inner_block, @ctx)}
 
       <div
@@ -340,6 +328,15 @@ defmodule Corex.NativeAccordion do
   def native_accordion_item(assigns) do
     expanded = assigns.value in assigns.ctx.values
 
+    nav =
+      Trigger.new(
+        assigns.ctx.id,
+        assigns.value,
+        assigns.ctx.item_values,
+        assigns.ctx.disabled_values,
+        open?: expanded
+      )
+
     item = %{
       id: assigns.ctx.id,
       value: assigns.value,
@@ -355,12 +352,7 @@ defmodule Corex.NativeAccordion do
       multiple: assigns.ctx.multiple,
       collapsible: assigns.ctx.collapsible,
       on_value_change: assigns.ctx.on_value_change,
-      on_keydown: assigns.ctx.on_keydown,
-      focused_value: assigns.ctx.focused_value,
-      prev_value: neighbor(assigns.ctx, assigns.value, :prev),
-      next_value: neighbor(assigns.ctx, assigns.value, :next),
-      first_value: neighbor(assigns.ctx, assigns.value, :first),
-      last_value: neighbor(assigns.ctx, assigns.value, :last)
+      trigger: nav
     }
 
     assigns = assign(assigns, :item, item)
@@ -389,25 +381,17 @@ defmodule Corex.NativeAccordion do
 
   def native_accordion_trigger(assigns) do
     item = assigns.item
+    nav = item.trigger
     click_js = trigger_click_js(item)
-    keydown_js = trigger_keydown_js(item)
-
-    tab =
-      if item.focused_value == item.value or
-           (is_nil(item.focused_value) and item.value == item.first_value),
-         do: "0",
-         else: "-1"
-
-    focused? = item.focused_value == item.value
 
     assigns =
       assigns
       |> assign(:click_js, click_js)
-      |> assign(:keydown_js, keydown_js)
-      |> assign(:tabindex, tab)
-      |> assign(:focused?, focused?)
       |> assign(:trigger_dom_id, Ids.trigger_id(item.id, item.value))
-      |> assign(:trigger_sel, Selectors.css_id(Ids.trigger_id(item.id, item.value)))
+      |> assign(:nav_next, nav_focus_js(nav, :next))
+      |> assign(:nav_prev, nav_focus_js(nav, :prev))
+      |> assign(:nav_first, nav_focus_js(nav, :first))
+      |> assign(:nav_last, nav_focus_js(nav, :last))
 
     ~H"""
     <h3>
@@ -420,13 +404,15 @@ defmodule Corex.NativeAccordion do
         data-state={if(@item.expanded, do: "open", else: "closed")}
         data-controls={Ids.content_id(@item.id, @item.value)}
         data-ownedby={Ids.root_id(@item.id)}
+        data-nav-next={@nav_next}
+        data-nav-prev={@nav_prev}
+        data-nav-first={@nav_first}
+        data-nav-last={@nav_last}
         aria-expanded={if(@item.expanded, do: "true", else: "false")}
         aria-controls={Ids.content_id(@item.id, @item.value)}
         aria-disabled={if(@item.disabled, do: "true", else: "false")}
         disabled={@item.disabled}
-        tabindex={@tabindex}
         phx-click={@click_js}
-        phx-keydown={@keydown_js}
         {dir_attrs(@item.dir)}
         {@rest}
       >
@@ -435,13 +421,6 @@ defmodule Corex.NativeAccordion do
         </span>
         {render_slot(@indicator)}
       </button>
-      <span
-        :if={@focused?}
-        id={"#{@trigger_dom_id}-focus-pin"}
-        phx-mounted={JS.focus(to: @trigger_sel)}
-        hidden
-      >
-      </span>
     </h3>
     """
   end
@@ -473,6 +452,14 @@ defmodule Corex.NativeAccordion do
   slot(:inner_block, required: true)
 
   def native_accordion_content(assigns) do
+    trigger_id = Ids.trigger_id(assigns.item.id, assigns.item.value)
+    region_label_id = Ids.region_label_id(assigns.item.id, assigns.item.value)
+
+    assigns =
+      assigns
+      |> assign(:trigger_id, trigger_id)
+      |> assign(:region_label_id, region_label_id)
+
     ~H"""
     <div
       id={Ids.content_id(@item.id, @item.value)}
@@ -483,24 +470,43 @@ defmodule Corex.NativeAccordion do
       data-state={if(@item.expanded, do: "open", else: "closed")}
       data-disabled={presence_attr(@item.disabled)}
       data-orientation={@item.orientation}
-      aria-labelledby={Ids.trigger_id(@item.id, @item.value)}
+      aria-labelledby={"#{@trigger_id} #{@region_label_id}"}
       hidden={if(@item.expanded, do: nil, else: true)}
       {dir_attrs(@item.dir)}
       {@rest}
     >
+      <span id={@region_label_id} hidden>{@item.id}:{@item.value}</span>
       {render_slot(@inner_block)}
     </div>
     """
   end
 
-  defp trigger_click_js(%{disabled: true}), do: %JS{}
+  attr(:id, :string, required: true)
+  attr(:keymap, :any, required: true)
+
+  defp native_accordion_nav_keys(assigns) do
+    assigns = assign(assigns, :bindings, Keymap.bindings(assigns.keymap))
+
+    ~H"""
+    <span
+      :for={{key, direction} <- @bindings}
+      id={"#{Ids.root_id(@id)}-nav-#{key}"}
+      hidden
+      phx-window-keydown={AccordionJS.exec_nav(direction, @id)}
+      phx-key={key}
+    >
+    </span>
+    """
+  end
+
+  defp trigger_click_js(%{disabled: true}), do: %Phoenix.LiveView.JS{}
 
   defp trigger_click_js(%{controlled: true, on_value_change: event} = item)
        when is_binary(event) and event != "" do
     AccordionJS.push_toggle(event, item.id, item.value)
   end
 
-  defp trigger_click_js(%{controlled: true}), do: %JS{}
+  defp trigger_click_js(%{controlled: true}), do: %Phoenix.LiveView.JS{}
 
   defp trigger_click_js(item) do
     AccordionJS.toggle_item(item.id, item.value,
@@ -509,30 +515,18 @@ defmodule Corex.NativeAccordion do
     )
   end
 
-  defp trigger_keydown_js(%{disabled: true}), do: %JS{}
+  defp nav_focus_js(%Trigger{disabled?: true}, _direction), do: nil
 
-  defp trigger_keydown_js(%{on_keydown: event} = item)
-       when is_binary(event) and event != "" do
-    JS.push(event,
-      value: %{
-        id: item.id,
-        item: item.value,
-        orientation: item.orientation,
-        dir: item.dir,
-        item_values: item.item_values,
-        disabled_values: item.disabled_values,
-        next: item.next_value,
-        prev: item.prev_value,
-        first: item.first_value,
-        last: item.last_value
-      }
-    )
-  end
+  defp nav_focus_js(%Trigger{} = nav, direction) do
+    target =
+      case direction do
+        :next -> nav.next
+        :prev -> nav.prev
+        :first -> nav.first
+        :last -> nav.last
+      end
 
-  defp trigger_keydown_js(_item), do: %JS{}
-
-  defp neighbor(ctx, current, direction) do
-    State.next_item(ctx.item_values, current, ctx.disabled_values, direction) || current
+    AccordionJS.focus_item(nav.id, target)
   end
 
   defp dir_attrs(dir) when dir in ["ltr", "rtl"], do: %{"dir" => dir, "data-dir" => dir}
@@ -630,20 +624,26 @@ defmodule Corex.NativeAccordion do
   end
 
   defp assign_navigation(assigns) do
-    item_values = Enum.map(assigns.panels, & &1.value)
-    disabled_values = for p <- assigns.panels, p.disabled, do: p.value
-
-    focused =
-      if is_binary(assigns.focused_value) and assigns.focused_value in item_values do
-        assigns.focused_value
-      else
-        State.next_item(item_values, List.first(item_values) || "", disabled_values, :first)
-      end
+    {item_values, disabled_values} = navigation_values(assigns)
 
     assigns
     |> assign(:item_values, item_values)
     |> assign(:disabled_values, disabled_values)
-    |> assign(:focused_value, focused)
+    |> assign(:keymap, Keymap.new(assigns.orientation, assigns.dir))
+  end
+
+  defp navigation_values(%{panels: [_ | _] = panels}) do
+    {
+      Enum.map(panels, & &1.value),
+      for(p <- panels, p.disabled, do: p.value)
+    }
+  end
+
+  defp navigation_values(%{items: items}) when is_list(items) do
+    {
+      Enum.map(items, fn entry -> entry.value end),
+      for(entry <- items, entry.disabled, do: entry.value)
+    }
   end
 
   defp stringify_keys(map) do
