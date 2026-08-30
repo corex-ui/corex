@@ -78,24 +78,6 @@ defmodule Corex.NativeAccordion.JS do
     JS.focus(to: Selectors.css_id(Ids.trigger_id(accordion_id, item_value)))
   end
 
-  @doc """
-  Execute the compiled `data-nav-*` JS.focus stored on this accordion's focused trigger.
-
-  The selector matches only this accordion's focused trigger so a missing attr
-  cannot throw (`JS.exec` no-ops when `to:` matches nothing).
-  """
-  @spec exec_nav(atom(), String.t()) :: JS.t()
-  def exec_nav(direction, accordion_id)
-      when direction in [:next, :prev, :first, :last] and is_binary(accordion_id) do
-    JS.exec("data-nav-#{direction}", to: focused_trigger_selector(accordion_id))
-  end
-
-  defp focused_trigger_selector(accordion_id) do
-    ownedby = Ids.root_id(accordion_id)
-
-    "[data-scope='accordion'][data-part='item-trigger'][data-ownedby='#{ownedby}']:focus"
-  end
-
   defp maybe_close_siblings(js, _accordion_id, _sibling_values, _item_value, true), do: js
 
   defp maybe_close_siblings(js, accordion_id, sibling_values, item_value, false) do

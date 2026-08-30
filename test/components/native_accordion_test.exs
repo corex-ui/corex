@@ -4,9 +4,7 @@ defmodule Corex.NativeAccordionTest do
 
   alias Corex.NativeAccordion
   alias Corex.NativeAccordion.Ids
-  alias Corex.NativeAccordion.Keymap
   alias Corex.NativeAccordion.State
-  alias Corex.NativeAccordion.Trigger
 
   describe "State.toggle/3" do
     test "multiple collapsible opens and closes" do
@@ -47,37 +45,6 @@ defmodule Corex.NativeAccordionTest do
     end
   end
 
-  describe "Keymap.bindings/1" do
-    test "vertical compiles down/up plus home/end" do
-      assert Keymap.bindings(Keymap.new("vertical", nil)) == [
-               {"ArrowDown", :next},
-               {"ArrowUp", :prev},
-               {"Home", :first},
-               {"End", :last}
-             ]
-    end
-
-    test "horizontal rtl swaps left/right" do
-      assert Keymap.bindings(Keymap.new("horizontal", "rtl")) == [
-               {"ArrowLeft", :next},
-               {"ArrowRight", :prev},
-               {"Home", :first},
-               {"End", :last}
-             ]
-    end
-  end
-
-  describe "Trigger.new/5" do
-    test "skips disabled neighbors" do
-      nav = Trigger.new("faq", "a", ~W(a b c), ["b"])
-      assert nav.next == "c"
-      assert nav.prev == "c"
-      assert nav.first == "a"
-      assert nav.last == "c"
-      refute nav.disabled?
-    end
-  end
-
   describe "State.next_item/4" do
     test "wraps next and prev among enabled items" do
       values = ~W(a b c)
@@ -89,7 +56,11 @@ defmodule Corex.NativeAccordionTest do
     end
 
     test "skips disabled" do
-      assert State.next_item(~W(a b c), "a", ["b"], :next) == "c"
+      values = ~W(a b c)
+      assert State.next_item(values, "a", ["b"], :next) == "c"
+      assert State.next_item(values, "a", ["b"], :prev) == "c"
+      assert State.next_item(values, "a", ["b"], :first) == "a"
+      assert State.next_item(values, "a", ["b"], :last) == "c"
     end
   end
 
@@ -113,9 +84,14 @@ defmodule Corex.NativeAccordionTest do
       refute html =~ "phx-hook"
       assert html =~ ~S(aria-expanded="true")
       refute html =~ "phx-keydown="
+      refute html =~ "<script"
       assert html =~ "phx-window-keydown"
       assert html =~ ~S(phx-key="ArrowDown")
       assert html =~ "data-nav-next"
+      assert html =~ ~S(:focus[data-nav-next])
+      assert html =~ ~S(:focus[data-nav-prev])
+      assert html =~ ~S(:focus[data-nav-first])
+      assert html =~ ~S(:focus[data-nav-last])
       refute html =~ "focus-pin"
     end
 
