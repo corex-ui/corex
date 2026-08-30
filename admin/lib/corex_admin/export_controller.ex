@@ -30,7 +30,7 @@ defmodule CorexAdmin.ExportController do
       records = load_records(spec, payload)
 
       conn
-      |> put_resp_content_type(Export.content_type(format))
+      |> put_export_content_type(format)
       |> put_resp_header(
         "content-disposition",
         ~s(attachment; filename="#{Export.filename(spec, format)}")
@@ -44,6 +44,14 @@ defmodule CorexAdmin.ExportController do
         |> json(%{error: "export_denied"})
     end
   end
+
+  # Literals keep Sobelow's XSS.ContentType check happy; format is already
+  # narrowed to :csv | :json by Export.parse_format/1.
+  defp put_export_content_type(conn, :json),
+    do: put_resp_content_type(conn, "application/json; charset=utf-8")
+
+  defp put_export_content_type(conn, _format),
+    do: put_resp_content_type(conn, "text/csv; charset=utf-8")
 
   defp require_export_auth(conn, _opts) do
     case verify_token(conn, conn.params["token"]) do
