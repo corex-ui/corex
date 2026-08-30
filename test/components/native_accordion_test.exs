@@ -50,7 +50,7 @@ defmodule Corex.NativeAccordionTest do
         "item" => "lorem",
         "key" => "ArrowDown",
         "orientation" => "vertical",
-        "item_values" => ~w(lorem duis donec),
+        "item_values" => ~W(lorem duis donec),
         "disabled_values" => []
       }
 
@@ -62,7 +62,7 @@ defmodule Corex.NativeAccordionTest do
         "item" => "duis",
         "key" => "ArrowUp",
         "orientation" => "vertical",
-        "item_values" => ~w(lorem duis donec),
+        "item_values" => ~W(lorem duis donec),
         "disabled_values" => []
       }
 
@@ -75,7 +75,7 @@ defmodule Corex.NativeAccordionTest do
         "key" => "ArrowRight",
         "orientation" => "horizontal",
         "dir" => "ltr",
-        "item_values" => ~w(lorem duis),
+        "item_values" => ~W(lorem duis),
         "disabled_values" => []
       }
 
@@ -85,7 +85,7 @@ defmodule Corex.NativeAccordionTest do
 
   describe "State.next_item/4" do
     test "wraps next and prev among enabled items" do
-      values = ~w(a b c)
+      values = ~W(a b c)
       assert State.next_item(values, "a", [], :next) == "b"
       assert State.next_item(values, "c", [], :next) == "a"
       assert State.next_item(values, "a", [], :prev) == "c"
@@ -94,7 +94,7 @@ defmodule Corex.NativeAccordionTest do
     end
 
     test "skips disabled" do
-      assert State.next_item(~w(a b c), "a", ["b"], :next) == "c"
+      assert State.next_item(~W(a b c), "a", ["b"], :next) == "c"
     end
   end
 
@@ -112,14 +112,14 @@ defmodule Corex.NativeAccordionTest do
           on_keydown: "keydown"
         )
 
-      assert html =~ ~s(data-scope="accordion")
-      assert html =~ ~s(data-part="root")
-      assert html =~ ~s(data-part="item-trigger")
-      assert html =~ ~s(data-native="")
+      assert html =~ ~S(data-scope="accordion")
+      assert html =~ ~S(data-part="root")
+      assert html =~ ~S(data-part="item-trigger")
+      assert html =~ ~S(data-native="")
       refute html =~ "phx-hook"
-      assert html =~ ~s(aria-expanded="true")
+      assert html =~ ~S(aria-expanded="true")
       assert html =~ "phx-keydown"
-      refute html =~ ~s(phx-key="ArrowDown")
+      refute html =~ ~S(phx-key="ArrowDown")
     end
 
     test "closed item is hidden" do
@@ -138,9 +138,9 @@ defmodule Corex.NativeAccordionTest do
           on_value_change: "toggle"
         )
 
-      assert html =~ ~s(id="accordion:faq:trigger:a")
-      assert html =~ ~s(aria-expanded="true")
-      assert html =~ ~s(aria-expanded="false")
+      assert html =~ ~S(id="accordion:faq:trigger:a")
+      assert html =~ ~S(aria-expanded="true")
+      assert html =~ ~S(aria-expanded="false")
       assert html =~ "hidden"
     end
 
@@ -176,8 +176,8 @@ defmodule Corex.NativeAccordionTest do
           focused_value: "b"
         )
 
-      assert html =~ ~s(id="accordion:faq:trigger:b-focus-pin")
-      refute html =~ ~s(id="accordion:faq:trigger:a-focus-pin")
+      assert html =~ ~S(id="accordion:faq:trigger:b-focus-pin")
+      refute html =~ ~S(id="accordion:faq:trigger:a-focus-pin")
     end
 
     test "renders indicator and dir" do
@@ -202,10 +202,10 @@ defmodule Corex.NativeAccordionTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-part="item-indicator")
-      assert html =~ ~s(dir="rtl")
-      assert html =~ ~s(data-orientation="horizontal")
-      assert html =~ ~s(data-test="ind")
+      assert html =~ ~S(data-part="item-indicator")
+      assert html =~ ~S(dir="rtl")
+      assert html =~ ~S(data-orientation="horizontal")
+      assert html =~ ~S(data-test="ind")
     end
   end
 end

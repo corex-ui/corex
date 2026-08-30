@@ -89,7 +89,7 @@ defmodule Corex.NativeAccordion do
           Phoenix.LiveView.Socket.t()
   def handle_toggle(socket, assign_key, params, opts \\ [])
       when is_atom(assign_key) and is_map(params) and is_list(opts) do
-    item = params["item"] || params[:item]
+    item = params |> stringify_keys() |> Map.get("item")
     multiple? = Keyword.get(opts, :multiple, true)
     collapsible? = Keyword.get(opts, :collapsible, true)
 
@@ -634,18 +634,23 @@ defmodule Corex.NativeAccordion do
     disabled_values = for p <- assigns.panels, p.disabled, do: p.value
 
     focused =
-      cond do
-        is_binary(assigns.focused_value) and assigns.focused_value in item_values ->
-          assigns.focused_value
-
-        true ->
-          State.next_item(item_values, List.first(item_values) || "", disabled_values, :first)
+      if is_binary(assigns.focused_value) and assigns.focused_value in item_values do
+        assigns.focused_value
+      else
+        State.next_item(item_values, List.first(item_values) || "", disabled_values, :first)
       end
 
     assigns
     |> assign(:item_values, item_values)
     |> assign(:disabled_values, disabled_values)
     |> assign(:focused_value, focused)
+  end
+
+  defp stringify_keys(map) do
+    Map.new(map, fn
+      {key, value} when is_atom(key) -> {Atom.to_string(key), value}
+      pair -> pair
+    end)
   end
 
   defp panel_has_indicator?(%{source: :slots, indicator_slot: slot}, _top), do: !!slot

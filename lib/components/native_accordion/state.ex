@@ -12,26 +12,26 @@ defmodule Corex.NativeAccordion.State do
   def toggle(values, item, opts \\ []) when is_list(values) and is_binary(item) do
     multiple? = Keyword.get(opts, :multiple, true)
     collapsible? = Keyword.get(opts, :collapsible, true)
+    do_toggle(values, item, multiple?, collapsible?)
+  end
+
+  defp do_toggle(values, item, true, collapsible?) do
     open? = item in values
 
     cond do
-      multiple? and open? and collapsible? ->
-        List.delete(values, item)
+      open? and collapsible? -> List.delete(values, item)
+      open? -> values
+      true -> values ++ [item]
+    end
+  end
 
-      multiple? and open? and not collapsible? ->
-        values
+  defp do_toggle(values, item, false, collapsible?) do
+    open? = item in values
 
-      multiple? ->
-        values ++ [item]
-
-      open? and collapsible? ->
-        []
-
-      open? and not collapsible? ->
-        values
-
-      true ->
-        [item]
+    cond do
+      open? and collapsible? -> []
+      open? -> values
+      true -> [item]
     end
   end
 
@@ -57,14 +57,25 @@ defmodule Corex.NativeAccordion.State do
         List.first(enabled)
 
       idx ->
-        case direction do
-          :next -> Enum.at(enabled, rem(idx + 1, length(enabled)))
-          :prev -> Enum.at(enabled, rem(idx - 1 + length(enabled), length(enabled)))
-          :first -> List.first(enabled)
-          :last -> List.last(enabled)
-        end
+        step_item(enabled, idx, direction)
     end
   end
+
+  defp step_item(enabled, idx, :next), do: Enum.at(enabled, rem(idx + 1, length(enabled)))
+
+  defp step_item(enabled, idx, :prev),
+    do: Enum.at(enabled, rem(idx - 1 + length(enabled), length(enabled)))
+
+  defp step_item(enabled, _idx, :first), do: List.first(enabled)
+
+  defp step_item(enabled, _idx, :last) do
+    case enabled do
+      [] -> nil
+      list -> Enum.at(list, -1)
+    end
+  end
+
+  defp step_item(_enabled, _idx, _direction), do: nil
 
   @doc """
   Map a keyboard event to a navigation direction.
@@ -77,18 +88,20 @@ defmodule Corex.NativeAccordion.State do
           :next | :prev | :first | :last | nil
   def key_direction(key, orientation, dir \\ nil)
       when is_binary(key) and is_binary(orientation) do
-    rtl? = dir == "rtl"
-
-    case {orientation, key} do
-      {_, "Home"} -> :first
-      {_, "End"} -> :last
-      {"vertical", "ArrowDown"} -> :next
-      {"vertical", "ArrowUp"} -> :prev
-      {"horizontal", "ArrowRight"} -> if(rtl?, do: :prev, else: :next)
-      {"horizontal", "ArrowLeft"} -> if(rtl?, do: :next, else: :prev)
-      _ -> nil
+    case key do
+      "Home" -> :first
+      "End" -> :last
+      _ -> arrow_direction(key, orientation, dir == "rtl")
     end
   end
+
+  defp arrow_direction("ArrowDown", "vertical", _rtl?), do: :next
+  defp arrow_direction("ArrowUp", "vertical", _rtl?), do: :prev
+  defp arrow_direction("ArrowRight", "horizontal", false), do: :next
+  defp arrow_direction("ArrowRight", "horizontal", true), do: :prev
+  defp arrow_direction("ArrowLeft", "horizontal", false), do: :prev
+  defp arrow_direction("ArrowLeft", "horizontal", true), do: :next
+  defp arrow_direction(_key, _orientation, _rtl?), do: nil
 
   @doc """
   Resolve the next focused item from a keydown payload.
@@ -97,20 +110,31 @@ defmodule Corex.NativeAccordion.State do
   """
   @spec focus_target(map()) :: String.t() | nil
   def focus_target(params) when is_map(params) do
-    item = params["item"] || params[:item]
-    key = params["key"] || params[:key]
-    orientation = params["orientation"] || params[:orientation] || "vertical"
-    dir = params["dir"] || params[:dir]
-    item_values = List.wrap(params["item_values"] || params[:item_values] || [])
-    disabled = List.wrap(params["disabled_values"] || params[:disabled_values] || [])
+    params = stringify_keys(params)
+    item = params["item"]
+    key = params["key"]
+    orientation = params["orientation"] || "vertical"
+    dir = params["dir"]
+    item_values = List.wrap(params["item_values"] || [])
+    disabled = List.wrap(params["disabled_values"] || [])
 
-    if is_binary(item) and is_binary(key) do
-      case key_direction(key, orientation, dir) do
-        nil -> nil
-        direction -> next_item(item_values, item, disabled, direction)
-      end
-    else
-      nil
+    navigate_focus(item, key, orientation, dir, item_values, disabled)
+  end
+
+  defp navigate_focus(item, key, orientation, dir, item_values, disabled)
+       when is_binary(item) and is_binary(key) do
+    case key_direction(key, orientation, dir) do
+      nil -> nil
+      direction -> next_item(item_values, item, disabled, direction)
     end
+  end
+
+  defp navigate_focus(_item, _key, _orientation, _dir, _item_values, _disabled), do: nil
+
+  defp stringify_keys(map) do
+    Map.new(map, fn
+      {key, value} when is_atom(key) -> {Atom.to_string(key), value}
+      pair -> pair
+    end)
   end
 end

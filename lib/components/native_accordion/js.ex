@@ -2,6 +2,7 @@ defmodule Corex.NativeAccordion.JS do
   @moduledoc false
 
   alias Corex.NativeAccordion.Ids
+  alias Corex.NativeAccordion.State
   alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
@@ -35,18 +36,9 @@ defmodule Corex.NativeAccordion.JS do
     sibling_values = Keyword.get(opts, :sibling_values, [])
     multiple? = Keyword.get(opts, :multiple, true)
 
-    js = %JS{}
-
-    js =
-      if multiple? do
-        js
-      else
-        Enum.reduce(sibling_values, js, fn v, acc ->
-          if v == item_value, do: acc, else: apply_close(acc, accordion_id, v)
-        end)
-      end
-
-    apply_toggle(js, accordion_id, item_value)
+    %JS{}
+    |> maybe_close_siblings(accordion_id, sibling_values, item_value, multiple?)
+    |> apply_toggle(accordion_id, item_value)
   end
 
   @doc """
@@ -65,7 +57,7 @@ defmodule Corex.NativeAccordion.JS do
   def set_value(accordion_id, value, opts \\ [])
       when is_binary(accordion_id) and is_list(opts) do
     all_values = Keyword.get(opts, :all_values, [])
-    open_values = Corex.NativeAccordion.State.value_list(value)
+    open_values = State.value_list(value)
 
     js =
       Enum.reduce(all_values, %JS{}, fn v, acc ->
@@ -84,6 +76,15 @@ defmodule Corex.NativeAccordion.JS do
   def focus_item(accordion_id, item_value)
       when is_binary(accordion_id) and is_binary(item_value) do
     JS.focus(to: Selectors.css_id(Ids.trigger_id(accordion_id, item_value)))
+  end
+
+  defp maybe_close_siblings(js, _accordion_id, _sibling_values, _item_value, true), do: js
+
+  defp maybe_close_siblings(js, accordion_id, sibling_values, item_value, false) do
+    Enum.reduce(sibling_values, js, fn
+      ^item_value, acc -> acc
+      v, acc -> apply_close(acc, accordion_id, v)
+    end)
   end
 
   defp apply_open(js, accordion_id, item_value) do
