@@ -492,6 +492,7 @@ defmodule Corex.Design.ComponentsTest do
       assert Components.fetch_css_id("navigate") == {:ok, "link"}
       assert Components.fetch_css_id("heroicon") == {:ok, "icon"}
       assert Components.fetch_css_id("file_upload_live") == {:ok, "file-upload"}
+      assert Components.fetch_css_id("native_accordion") == {:ok, "accordion"}
     end
 
     test "dashes underscored component ids" do

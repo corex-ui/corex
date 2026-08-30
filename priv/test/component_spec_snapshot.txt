@@ -23,6 +23,7 @@ layout_heading:layout_heading
 listbox:listbox
 marquee:marquee
 menu:menu
+native_accordion:native_accordion,native_accordion_content,native_accordion_indicator,native_accordion_item,native_accordion_root,native_accordion_trigger
 native_input:native_input
 navigate:navigate
 number_input:number_input
