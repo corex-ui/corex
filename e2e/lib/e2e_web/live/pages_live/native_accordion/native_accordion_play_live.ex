@@ -59,6 +59,7 @@ defmodule E2eWeb.NativeAccordionPlayLive do
      |> assign(:controls, controls)
      |> assign(:disabled_select_items, disabled_select_items())
      |> assign(:items, accordion_items(controls))
+     |> assign(:value, playground_accordion_reset_value(controls))
      |> assign(:accordion_id, @accordion_id)}
   end
 
@@ -95,22 +96,46 @@ defmodule E2eWeb.NativeAccordionPlayLive do
   defp update_control(socket, "dir", value),
     do: update(socket, :controls, &%{&1 | dir: value})
 
-  defp update_control(socket, "collapsible", true),
-    do: update(socket, :controls, &%{&1 | collapsible: true})
+  defp update_control(socket, "collapsible", true) do
+    socket
+    |> update(:controls, &%{&1 | collapsible: true})
+    |> reset_playground_value()
+  end
 
-  defp update_control(socket, "collapsible", false),
-    do: update(socket, :controls, &%{&1 | collapsible: false, multiple: false})
+  defp update_control(socket, "collapsible", false) do
+    socket
+    |> update(:controls, &%{&1 | collapsible: false, multiple: false})
+    |> reset_playground_value()
+  end
 
-  defp update_control(socket, "multiple", true),
-    do: update(socket, :controls, &%{&1 | multiple: true, collapsible: true})
+  defp update_control(socket, "multiple", true) do
+    socket
+    |> update(:controls, &%{&1 | multiple: true, collapsible: true})
+    |> reset_playground_value()
+  end
 
-  defp update_control(socket, "multiple", false),
-    do: update(socket, :controls, &%{&1 | multiple: false})
+  defp update_control(socket, "multiple", false) do
+    socket
+    |> update(:controls, &%{&1 | multiple: false})
+    |> reset_playground_value()
+  end
 
   defp update_control(socket, _, _), do: socket
 
   defp sync_items(socket) do
     assign(socket, :items, accordion_items(socket.assigns.controls))
+  end
+
+  defp reset_playground_value(socket) do
+    assign(socket, :value, playground_accordion_reset_value(socket.assigns.controls))
+  end
+
+  defp playground_accordion_reset_value(controls) do
+    if controls.multiple do
+      item_values()
+    else
+      [hd(item_values())]
+    end
   end
 
   defp control_bool(v) when v in [true, "true"], do: true
@@ -200,7 +225,7 @@ defmodule E2eWeb.NativeAccordionPlayLive do
               id={@accordion_id}
               class="accordion"
               controlled={false}
-              value={item_values()}
+              value={@value}
               items={@items}
               collapsible={@controls.multiple or @controls.collapsible}
               multiple={@controls.multiple}

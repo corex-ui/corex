@@ -510,6 +510,7 @@ defmodule Corex.NativeAccordion do
   defp trigger_click_js(item) do
     AccordionJS.toggle_item(item.id, item.value,
       multiple: item.multiple,
+      collapsible: item.collapsible,
       sibling_values: item.item_values
     )
   end

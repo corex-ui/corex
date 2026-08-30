@@ -40,6 +40,31 @@ defmodule E2eWeb.NativeAccordionLiveTest do
     assert has_element?(view, nav_down <> ~S([phx-key="ArrowDown"]))
   end
 
+  test "playground collapsible off forces single open and non-toggle click", %{conn: conn} do
+    {view, html} = live_ok!(conn, ~p"/native-accordion/playground")
+
+    lorem = trigger_sel(@playground_id, "lorem")
+    duis = trigger_sel(@playground_id, "duis")
+
+    assert html =~ ~S(data-collapsible="")
+    assert html =~ ~S(data-multiple="")
+    assert has_element?(view, lorem <> "[aria-expanded=true]")
+    assert has_element?(view, duis <> "[aria-expanded=true]")
+
+    render_click(view, "control_changed", %{
+      "id" => "playground-collapsible-true",
+      "checked" => false
+    })
+
+    html = render(view)
+    assert has_element?(view, "##{@playground_id}:not([data-collapsible])")
+    assert has_element?(view, "##{@playground_id}:not([data-multiple])")
+    assert has_element?(view, lorem <> "[aria-expanded=true]")
+    assert has_element?(view, duis <> "[aria-expanded=false]")
+    refute html =~ "toggle_attr"
+    assert html =~ "set_attr"
+  end
+
   test "patterns controlled toggle updates open assign", %{conn: conn} do
     {view, html} = live_ok!(conn, ~p"/native-accordion/patterns")
 

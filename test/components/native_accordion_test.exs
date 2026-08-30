@@ -110,6 +110,40 @@ defmodule Corex.NativeAccordionTest do
       assert html =~ "phx-click"
     end
 
+    test "uncontrolled collapsible click uses toggle_attr" do
+      items = Corex.Content.new([%{value: "lorem", label: "Lorem", content: "Body"}])
+
+      html =
+        render_component(&NativeAccordion.native_accordion/1,
+          id: "faq",
+          items: items,
+          value: ["lorem"],
+          multiple: false,
+          collapsible: true
+        )
+
+      assert html =~ ~S(data-collapsible="")
+      assert html =~ "toggle_attr"
+    end
+
+    test "uncontrolled non-collapsible click opens without toggle_attr" do
+      items = Corex.Content.new([%{value: "lorem", label: "Lorem", content: "Body"}])
+
+      html =
+        render_component(&NativeAccordion.native_accordion/1,
+          id: "faq",
+          items: items,
+          value: ["lorem"],
+          multiple: false,
+          collapsible: false
+        )
+
+      refute html =~ ~S(data-collapsible="")
+      refute html =~ "toggle_attr"
+      assert html =~ "set_attr"
+      assert html =~ ~S("open")
+    end
+
     test "closed item is hidden" do
       items =
         Corex.Content.new([

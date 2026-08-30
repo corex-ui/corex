@@ -27,18 +27,20 @@ defmodule Corex.NativeAccordion.JS do
   @doc """
   Uncontrolled toggle for one item.
 
-  When `multiple: false`, siblings are closed first; then the clicked item is
-  toggled (so collapsible single-mode can close the open item).
+  When `multiple: false`, siblings are closed first. When `collapsible: true`,
+  the clicked item is toggled; when `collapsible: false`, it is only opened
+  (so an already-open item cannot close).
   """
   @spec toggle_item(String.t(), String.t(), keyword()) :: JS.t()
   def toggle_item(accordion_id, item_value, opts \\ [])
       when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
     sibling_values = Keyword.get(opts, :sibling_values, [])
     multiple? = Keyword.get(opts, :multiple, true)
+    collapsible? = Keyword.get(opts, :collapsible, true)
 
     %JS{}
     |> maybe_close_siblings(accordion_id, sibling_values, item_value, multiple?)
-    |> apply_toggle(accordion_id, item_value)
+    |> maybe_toggle_or_open(accordion_id, item_value, collapsible?)
   end
 
   @doc """
@@ -85,6 +87,14 @@ defmodule Corex.NativeAccordion.JS do
       ^item_value, acc -> acc
       v, acc -> apply_close(acc, accordion_id, v)
     end)
+  end
+
+  defp maybe_toggle_or_open(js, accordion_id, item_value, true) do
+    apply_toggle(js, accordion_id, item_value)
+  end
+
+  defp maybe_toggle_or_open(js, accordion_id, item_value, false) do
+    apply_open(js, accordion_id, item_value)
   end
 
   defp apply_open(js, accordion_id, item_value) do
