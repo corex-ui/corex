@@ -358,16 +358,36 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
     <.native_accordion class="accordion" controlled={false} value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
-    <.native_accordion class="accordion ui-accent" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      class="accordion ui-accent"
+      controlled={false}
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
-    <.native_accordion class="accordion ui-brand" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      class="accordion ui-brand"
+      controlled={false}
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
-    <.native_accordion class="accordion ui-alert" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      class="accordion ui-alert"
+      controlled={false}
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
-    <.native_accordion class="accordion ui-success" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      class="accordion ui-success"
+      controlled={false}
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     """
@@ -379,13 +399,23 @@ defmodule E2eWeb.Demos.NativeAccordionDemo do
     _ = assigns
 
     ~H"""
-    <.native_accordion class="accordion ui-size-sm" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      class="accordion ui-size-sm"
+      controlled={false}
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     <.native_accordion class="accordion" controlled={false} value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
-    <.native_accordion class="accordion ui-size-lg" controlled={false} value="item-1" items={styling_items()}>
+    <.native_accordion
+      class="accordion ui-size-lg"
+      controlled={false}
+      value="item-1"
+      items={styling_items()}
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.native_accordion>
     """
