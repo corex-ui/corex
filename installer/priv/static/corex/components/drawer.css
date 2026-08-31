@@ -24,9 +24,19 @@
     animation: fadeIn calc(var(--drawer-swipe-strength, 1) * 0.4s) ease-out;
   }
 
-  .drawer [data-scope="drawer"][data-part="backdrop"][data-state="closed"] {
+  .drawer [data-scope="drawer"][data-part="backdrop"][data-state="closed"]:not([hidden]) {
     animation: fadeOut calc(var(--drawer-swipe-strength, 1) * 0.3s) ease-in;
     opacity: 0;
+  }
+
+  .drawer[data-loading] [data-scope="drawer"][data-part="backdrop"],
+  .drawer[data-loading] [data-scope="drawer"][data-part="content"],
+  .drawer [data-scope="drawer"][data-part="backdrop"][hidden],
+  .drawer [data-scope="drawer"][data-part="content"][hidden] {
+    animation: none !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .drawer [data-scope="drawer"][data-part="positioner"] {
@@ -59,8 +69,10 @@
 
   .drawer [data-scope="drawer"][data-part="content"] {
     pointer-events: auto;
-    width: min(100%, var(--container-md));
-    max-height: 92vh;
+    width: 100%;
+    max-width: none;
+    max-height: 96vh;
+    min-height: 42vh;
     padding: var(--spacing-space-lg);
     display: flex;
     flex-direction: column;
@@ -88,15 +100,27 @@
   .drawer [data-scope="drawer"][data-part="grabber"] {
     display: flex;
     justify-content: center;
-    padding-block: var(--spacing-space-xs);
+    padding-block: var(--spacing-space-sm);
     width: 100%;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .drawer [data-scope="drawer"][data-part="content"][data-dragging] [data-scope="drawer"][data-part="grabber"],
+  .drawer [data-scope="drawer"][data-part="grabber"]:active {
+    cursor: grabbing;
   }
 
   .drawer [data-scope="drawer"][data-part="grabber-indicator"] {
     width: var(--spacing-space-3xl);
-    height: var(--spacing-space-xs);
+    height: 0.375rem;
     border-radius: var(--radius-full);
     background: var(--ctl-bd, var(--color-border));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ctl-bd, var(--color-border)) 18%, transparent);
+  }
+
+  .drawer [data-scope="drawer"][data-part="content"][data-dragging] [data-scope="drawer"][data-part="grabber-indicator"] {
+    background: var(--ctl-fill, var(--color-ink));
   }
 
   .drawer [data-scope="drawer"][data-part="header"] {

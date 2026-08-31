@@ -17,10 +17,16 @@ defmodule E2eWeb.Demos.PresenceDemo do
     ~H"""
     <div class="flex flex-col gap-space items-center">
       <div class="flex gap-space-sm">
-        <.action phx-click={Corex.Presence.set_present("presence-anatomy-minimal", true)} class="button ui-size-sm">
+        <.action
+          phx-click={Corex.Presence.set_present("presence-anatomy-minimal", true)}
+          class="button ui-size-sm"
+        >
           Show
         </.action>
-        <.action phx-click={Corex.Presence.set_present("presence-anatomy-minimal", false)} class="button ui-size-sm">
+        <.action
+          phx-click={Corex.Presence.set_present("presence-anatomy-minimal", false)}
+          class="button ui-size-sm"
+        >
           Hide
         </.action>
       </div>

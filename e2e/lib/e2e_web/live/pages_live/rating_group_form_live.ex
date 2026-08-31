@@ -33,7 +33,12 @@ defmodule E2eWeb.RatingGroupFormLive do
       <.demo_page path={@path} id="rating-group-live-form-page" title="Rating group · Live Form">
         <.demo_section id="rating-group-live-form" title="Phoenix Form">
           <:preview>
-            <.form for={@form} id="rating-group-live-form" phx-submit="save" class="flex flex-col gap-space">
+            <.form
+              for={@form}
+              id="rating-group-live-form"
+              phx-submit="save"
+              class="flex flex-col gap-space"
+            >
               <.rating_group class="rating-group" name="rating[score]" allow_half />
               <.action type="submit" class="button ui-size-sm">Submit</.action>
             </.form>

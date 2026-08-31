@@ -15,7 +15,9 @@ defmodule E2eWeb.Demos.TourDemo do
 
     ~H"""
     <div class="flex flex-col gap-space items-center">
-      <.action phx-click={Corex.Tour.start("tour-anatomy-minimal")} class="button">Start tour</.action>
+      <.action phx-click={Corex.Tour.start("tour-anatomy-minimal")} class="button">
+        Start tour
+      </.action>
       <div class="flex gap-space-sm">
         <button id="tour-target-nav" type="button" class="button ui-size-sm">Docs</button>
         <button id="tour-target-playground" type="button" class="button ui-size-sm">Playground</button>

@@ -45,6 +45,9 @@
     --handle-size: calc(var(--ctl-size, var(--spacing-size)) * 0.4);
     width: var(--handle-size);
     height: var(--handle-size);
+    background: var(--color-root);
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: 1px;
   }
 
   .image-cropper [data-scope="image-cropper"][data-part="handle"][data-position="n"],

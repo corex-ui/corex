@@ -7,7 +7,8 @@ defmodule E2eWeb.ImageCropperEventsLive do
 
   @impl true
   def handle_event("image_cropper_changed", payload, socket) do
-    {:noreply, stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
+    {:noreply,
+     stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
   end
 
   defp log(event, dom_id, value) do
@@ -24,16 +25,31 @@ defmodule E2eWeb.ImageCropperEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="image-cropper-events-page" title="ImageCropper · Events" subtitle="Value change events.">
+      <.demo_page
+        path={@path}
+        id="image-cropper-events-page"
+        title="ImageCropper · Events"
+        subtitle="Value change events."
+      >
         <.demo_section id="image-cropper-events-section" title="On value change">
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">
-              <.image_cropper id="image-cropper-events" class="image-cropper" on_value_change="image_cropper_changed" />
-              <.data_table id="image-cropper-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
+              <.image_cropper
+                id="image-cropper-events"
+                class="image-cropper"
+                on_value_change="image_cropper_changed"
+              />
+              <.data_table
+                id="image-cropper-events-log"
+                class="data-table max-w-3xl"
+                rows={@streams.logs}
+              >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
-                <:empty><p>No event yet.</p></:empty>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
               </.data_table>
             </div>
           </:preview>

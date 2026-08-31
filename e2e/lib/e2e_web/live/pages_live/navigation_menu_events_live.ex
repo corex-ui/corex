@@ -7,7 +7,8 @@ defmodule E2eWeb.NavigationMenuEventsLive do
 
   @impl true
   def handle_event("navigation_menu_changed", payload, socket) do
-    {:noreply, stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
+    {:noreply,
+     stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
   end
 
   defp log(event, dom_id, value) do
@@ -24,16 +25,31 @@ defmodule E2eWeb.NavigationMenuEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="navigation-menu-events-page" title="NavigationMenu · Events" subtitle="Value change events.">
+      <.demo_page
+        path={@path}
+        id="navigation-menu-events-page"
+        title="NavigationMenu · Events"
+        subtitle="Value change events."
+      >
         <.demo_section id="navigation-menu-events-section" title="On value change">
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">
-              <.navigation_menu id="navigation-menu-events" class="navigation-menu" on_value_change="navigation_menu_changed" />
-              <.data_table id="navigation-menu-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
+              <.navigation_menu
+                id="navigation-menu-events"
+                class="navigation-menu"
+                on_value_change="navigation_menu_changed"
+              />
+              <.data_table
+                id="navigation-menu-events-log"
+                class="data-table max-w-3xl"
+                rows={@streams.logs}
+              >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
-                <:empty><p>No event yet.</p></:empty>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
               </.data_table>
             </div>
           </:preview>

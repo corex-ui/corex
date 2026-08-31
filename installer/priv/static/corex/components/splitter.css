@@ -13,6 +13,7 @@
   .splitter [data-scope="splitter"][data-part="root"] {
     display: flex;
     width: 100%;
+    flex-wrap: nowrap;
     min-height: calc(var(--ctl-size, var(--spacing-size)) * 6);
     overflow: hidden;
     border: var(--border-width) solid var(--ctl-bd, var(--color-border));

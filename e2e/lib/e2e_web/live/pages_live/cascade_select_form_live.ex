@@ -33,7 +33,12 @@ defmodule E2eWeb.CascadeSelectFormLive do
       <.demo_page path={@path} id="cascade-select-live-form-page" title="Cascade select · Live Form">
         <.demo_section id="cascade-select-live-form" title="Phoenix Form">
           <:preview>
-            <.form for={@form} id="cascade-select-live-form" phx-submit="save" class="flex flex-col gap-space">
+            <.form
+              for={@form}
+              id="cascade-select-live-form"
+              phx-submit="save"
+              class="flex flex-col gap-space"
+            >
               <.cascade_select class="cascade-select" name="cascade[category]">
                 <:label>Category</:label>
                 <:indicator>▾</:indicator>

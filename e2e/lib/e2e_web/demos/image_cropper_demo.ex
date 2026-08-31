@@ -11,7 +11,11 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
     _ = assigns
 
     ~H"""
-    <.image_cropper id="image-cropper-anatomy-minimal" class="image-cropper" src="/images/cropper-demo.png" />
+    <.image_cropper
+      id="image-cropper-anatomy-minimal"
+      class="image-cropper"
+      src="/images/cropper-demo.png"
+    />
     """
   end
 

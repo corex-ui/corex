@@ -3,8 +3,34 @@ defmodule E2eWeb.DrawerEventsLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  @code_heex ~S"""
+  <.drawer class="drawer" on_open_change="drawer_open_changed" on_open_change_client="drawer-open-changed">
+    <:trigger>Open</:trigger>
+    <:content>Sheet content</:content>
+  </.drawer>
+  """
+  @code_elixir ~S"""
+  def handle_event("drawer_open_changed", %{"open" => open, "id" => id}, socket) do
+    {:noreply, socket}
+  end
+  """
+  @code_js ~S"""
+  const el = document.getElementById("drawer-events");
+  el?.addEventListener("drawer-open-changed", (event) => {
+    console.log(event.detail);
+  });
+  """
+
+
   @impl true
-  def mount(_params, _session, socket), do: {:ok, stream(socket, :logs, [])}
+  def mount(_params, _session, socket) do
+    {:ok,
+     socket
+     |> assign(:code_heex, @code_heex)
+     |> assign(:code_elixir, @code_elixir)
+     |> assign(:code_js, @code_js)
+     |> stream(:logs, [])}
+  end
 
   @impl true
   def handle_event("drawer_open_changed", %{"open" => open, "id" => id}, socket) do
@@ -30,43 +56,19 @@ defmodule E2eWeb.DrawerEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="drawer-events-page" title="Drawer · Events" subtitle="Open change events (server + client).">
+      <.demo_page
+        path={@path}
+        id="drawer-events-page"
+        title="Drawer · Events"
+        subtitle="Open change events (server + client)."
+      >
         <.demo_section
           id="drawer-events-section"
           title="On open change (Server and client)"
           code_tabs={[
-            %{
-              value: "heex",
-              label: "Heex",
-              language: :heex,
-              code: ~S"""
-              <.drawer class="drawer" on_open_change="drawer_open_changed" on_open_change_client="drawer-open-changed">
-                <:trigger>Open</:trigger>
-                <:content>Sheet content</:content>
-              </.drawer>
-              """
-            },
-            %{
-              value: "elixir",
-              label: "Elixir",
-              language: :elixir,
-              code: ~S"""
-              def handle_event("drawer_open_changed", %{"open" => open, "id" => id}, socket) do
-                {:noreply, socket}
-              end
-              """
-            },
-            %{
-              value: "js",
-              label: "JS",
-              language: :js,
-              code: ~S"""
-              const el = document.getElementById("drawer-events");
-              el?.addEventListener("drawer-open-changed", (event) => {
-                console.log(event.detail);
-              });
-              """
-            }
+            %{value: "heex", label: "Heex", language: :heex, code: @code_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @code_elixir},
+            %{value: "js", label: "JS", language: :js, code: @code_js}
           ]}
         >
           <:preview>
@@ -96,7 +98,9 @@ defmodule E2eWeb.DrawerEventsLive do
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
-                <:empty><p>No event yet.</p></:empty>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
               </.data_table>
             </div>
           </:preview>

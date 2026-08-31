@@ -81,7 +81,8 @@ defmodule Corex.Tour do
       "id" => "welcome",
       "type" => "dialog",
       "title" => "Welcome to Corex",
-      "description" => "This overlay stays closed on the server. Start it after JavaScript hydrates.",
+      "description" =>
+        "This overlay stays closed on the server. Start it after JavaScript hydrates.",
       "actions" => [%{"label" => "Next", "action" => "next"}]
     },
     %{

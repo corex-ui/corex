@@ -1,6 +1,15 @@
 <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="date-input-anatomy-page" title={~t"Date input · Anatomy"} subtitle={~t"Segmented date field with stable widths."}>
-    <.demo_section id="date-input-anatomy-minimal" title={~t"Basic"} code={E2eWeb.Demos.DateInputDemo.anatomy_minimal_code()}>
+  <.demo_page
+    path={@path}
+    id="date-input-anatomy-page"
+    title={~t"Date input · Anatomy"}
+    subtitle={~t"Segmented date field with stable widths."}
+  >
+    <.demo_section
+      id="date-input-anatomy-minimal"
+      title={~t"Basic"}
+      code={E2eWeb.Demos.DateInputDemo.anatomy_minimal_code()}
+    >
       <:preview><E2eWeb.Demos.DateInputDemo.anatomy_minimal_example /></:preview>
     </.demo_section>
   </.demo_page>

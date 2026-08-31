@@ -58,9 +58,33 @@
 
   .date-input [data-scope="date-input"][data-part="segment"] {
     font-variant-numeric: tabular-nums;
-    text-align: end;
+    text-align: center;
     border-radius: var(--radius-sm);
-    padding-inline: 1px;
+    padding-inline: var(--spacing-space-xs);
+    padding-block: var(--spacing-space-2xs, 0.125rem);
+    min-width: 2.25ch;
+    box-sizing: content-box;
+  }
+
+  .date-input [data-scope="date-input"][data-part="segment"][data-type="day"],
+  .date-input [data-scope="date-input"][data-part="segment"][data-type="month"] {
+    min-width: 2.5ch;
+  }
+
+  .date-input [data-scope="date-input"][data-part="segment"][data-type="year"] {
+    min-width: 4.5ch;
+  }
+
+  .date-input [data-scope="date-input"][data-part="skeleton"] {
+    display: none;
+  }
+
+  .date-input[data-loading] [data-scope="date-input"][data-part="skeleton"] {
+    display: block;
+    width: 9rem;
+    height: 1em;
+    border-radius: var(--radius-sm);
+    @apply ui-loading;
   }
 
   .date-input [data-scope="date-input"][data-part="segment"]::selection {

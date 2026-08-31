@@ -18,11 +18,25 @@ defmodule E2eWeb.RatingGroupApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="rating-group-api-page" title="Rating group · API" subtitle="Set value from client bindings, client JS, or a server event.">
-        <.demo_section id="rating-group-api-set-value-binding" title="Set value (Client binding)" code={@codes.set_value_client_binding}>
+      <.demo_page
+        path={@path}
+        id="rating-group-api-page"
+        title="Rating group · API"
+        subtitle="Set value from client bindings, client JS, or a server event."
+      >
+        <.demo_section
+          id="rating-group-api-set-value-binding"
+          title="Set value (Client binding)"
+          code={@codes.set_value_client_binding}
+        >
           <:preview>
             <div class="flex flex-col gap-space items-center">
-              <.action phx-click={Corex.RatingGroup.set_value("rating-group-api-cb", 4)} class="button ui-size-sm">Set 4</.action>
+              <.action
+                phx-click={Corex.RatingGroup.set_value("rating-group-api-cb", 4)}
+                class="button ui-size-sm"
+              >
+                Set 4
+              </.action>
               <.rating_group id="rating-group-api-cb" class="rating-group" />
             </div>
           </:preview>
@@ -38,7 +52,11 @@ defmodule E2eWeb.RatingGroupApiLive do
         >
           <:preview>
             <div class="flex flex-col gap-space items-center">
-              <button type="button" class="button ui-size-sm" onclick="document.getElementById('rating-group-api-cjs')?.dispatchEvent(new CustomEvent('corex:rating-group:set-value', {bubbles: false, detail: { value: 3 }}))">Set 3</button>
+              <button
+                type="button"
+                class="button ui-size-sm"
+                onclick="document.getElementById('rating-group-api-cjs')?.dispatchEvent(new CustomEvent('corex:rating-group:set-value', {bubbles: false, detail: { value: 3 }}))"
+              >Set 3</button>
               <.rating_group id="rating-group-api-cjs" class="rating-group" />
             </div>
           </:preview>
@@ -48,7 +66,12 @@ defmodule E2eWeb.RatingGroupApiLive do
           title="Set value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.set_value_server_elixir}
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: @codes.set_value_server_elixir
+            }
           ]}
         >
           <:preview>

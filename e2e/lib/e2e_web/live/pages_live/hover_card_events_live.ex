@@ -3,8 +3,33 @@ defmodule E2eWeb.HoverCardEventsLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  @code_heex ~S"""
+  <.hover_card class="hover-card" on_open_change="hover_card_open_changed" on_open_change_client="hover-card-open-changed">
+    <:trigger>Hover me</:trigger>
+    <:content>Preview content</:content>
+  </.hover_card>
+  """
+  @code_elixir ~S"""
+  def handle_event("hover_card_open_changed", %{"open" => open, "id" => id}, socket) do
+    {:noreply, socket}
+  end
+  """
+  @code_js ~S"""
+  const el = document.getElementById("hover-card-events");
+  el?.addEventListener("hover-card-open-changed", (event) => {
+    console.log(event.detail);
+  });
+  """
+
   @impl true
-  def mount(_params, _session, socket), do: {:ok, stream(socket, :logs, [])}
+  def mount(_params, _session, socket) do
+    {:ok,
+     socket
+     |> assign(:code_heex, @code_heex)
+     |> assign(:code_elixir, @code_elixir)
+     |> assign(:code_js, @code_js)
+     |> stream(:logs, [])}
+  end
 
   @impl true
   def handle_event("hover_card_open_changed", %{"open" => open, "id" => id}, socket) do
@@ -35,38 +60,9 @@ defmodule E2eWeb.HoverCardEventsLive do
           id="hover-card-events-section"
           title="On open change (Server and client)"
           code_tabs={[
-            %{
-              value: "heex",
-              label: "Heex",
-              language: :heex,
-              code: ~S"""
-              <.hover_card class="hover-card" on_open_change="hover_card_open_changed" on_open_change_client="hover-card-open-changed">
-                <:trigger>Hover me</:trigger>
-                <:content>Preview content</:content>
-              </.hover_card>
-              """
-            },
-            %{
-              value: "elixir",
-              label: "Elixir",
-              language: :elixir,
-              code: ~S"""
-              def handle_event("hover_card_open_changed", %{"open" => open, "id" => id}, socket) do
-                {:noreply, socket}
-              end
-              """
-            },
-            %{
-              value: "js",
-              label: "JS",
-              language: :js,
-              code: ~S"""
-              const el = document.getElementById("hover-card-events");
-              el?.addEventListener("hover-card-open-changed", (event) => {
-                console.log(event.detail);
-              });
-              """
-            }
+            %{value: "heex", label: "Heex", language: :heex, code: @code_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @code_elixir},
+            %{value: "js", label: "JS", language: :js, code: @code_js}
           ]}
         >
           <:preview>

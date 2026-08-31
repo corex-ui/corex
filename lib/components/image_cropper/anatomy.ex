@@ -5,6 +5,7 @@ defmodule Corex.ImageCropper.Anatomy do
     @moduledoc false
     @enforce_keys [:id]
     defstruct [:id, dir: "ltr", src: nil, on_value_change: nil, on_value_change_client: nil]
+
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),

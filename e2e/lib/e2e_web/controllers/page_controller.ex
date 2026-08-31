@@ -1999,7 +1999,6 @@ defmodule E2eWeb.PageController do
     render(conn, :drawer_styling_page)
   end
 
-
   def progress_page(conn, _params) do
     render(conn, :progress_page)
   end
@@ -2118,7 +2117,10 @@ defmodule E2eWeb.PageController do
 
   def date_input_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"born_on" => ""}, as: :date_phoenix, id: "date-input-form-phoenix")
+      Phoenix.Component.to_form(%{"born_on" => ""},
+        as: :date_phoenix,
+        id: "date-input-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.DateInputForm{}
@@ -2189,7 +2191,10 @@ defmodule E2eWeb.PageController do
 
   def rating_group_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"score" => ""}, as: :rating_phoenix, id: "rating-group-form-phoenix")
+      Phoenix.Component.to_form(%{"score" => ""},
+        as: :rating_phoenix,
+        id: "rating-group-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.RatingGroupForm{}

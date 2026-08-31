@@ -9,7 +9,12 @@ defmodule E2eWeb.ScrollAreaApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="scroll-area-api-page" title="ScrollArea · API" subtitle="Host API.">
+      <.demo_page
+        path={@path}
+        id="scroll-area-api-page"
+        title="ScrollArea · API"
+        subtitle="Host API."
+      >
         <.demo_section id="scroll-area-api-minimal" title="Host">
           <:preview><.scroll_area id="scroll-area-api" class="scroll-area" /></:preview>
         </.demo_section>

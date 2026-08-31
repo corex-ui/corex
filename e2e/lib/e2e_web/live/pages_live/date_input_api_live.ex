@@ -18,11 +18,25 @@ defmodule E2eWeb.DateInputApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="date-input-api-page" title="Date input · API" subtitle="Set value from client bindings, client JS, or a server event.">
-        <.demo_section id="date-input-api-set-value-binding" title="Set value (Client binding)" code={@codes.set_value_client_binding}>
+      <.demo_page
+        path={@path}
+        id="date-input-api-page"
+        title="Date input · API"
+        subtitle="Set value from client bindings, client JS, or a server event."
+      >
+        <.demo_section
+          id="date-input-api-set-value-binding"
+          title="Set value (Client binding)"
+          code={@codes.set_value_client_binding}
+        >
           <:preview>
             <div class="flex flex-col gap-space items-center">
-              <.action phx-click={Corex.DateInput.set_value("date-input-api-cb", "2026-08-31")} class="button ui-size-sm">Set date</.action>
+              <.action
+                phx-click={Corex.DateInput.set_value("date-input-api-cb", "2026-08-31")}
+                class="button ui-size-sm"
+              >
+                Set date
+              </.action>
               <.date_input id="date-input-api-cb" class="date-input" />
             </div>
           </:preview>
@@ -38,7 +52,11 @@ defmodule E2eWeb.DateInputApiLive do
         >
           <:preview>
             <div class="flex flex-col gap-space items-center">
-              <button type="button" class="button ui-size-sm" onclick="document.getElementById('date-input-api-cjs')?.dispatchEvent(new CustomEvent('corex:date-input:set-value', {bubbles: false, detail: { value: '2026-01-15' }}))">Set date</button>
+              <button
+                type="button"
+                class="button ui-size-sm"
+                onclick="document.getElementById('date-input-api-cjs')?.dispatchEvent(new CustomEvent('corex:date-input:set-value', {bubbles: false, detail: { value: '2026-01-15' }}))"
+              >Set date</button>
               <.date_input id="date-input-api-cjs" class="date-input" />
             </div>
           </:preview>
@@ -48,7 +66,12 @@ defmodule E2eWeb.DateInputApiLive do
           title="Set value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.set_value_server_elixir}
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: @codes.set_value_server_elixir
+            }
           ]}
         >
           <:preview>

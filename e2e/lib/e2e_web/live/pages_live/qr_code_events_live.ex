@@ -7,7 +7,8 @@ defmodule E2eWeb.QrCodeEventsLive do
 
   @impl true
   def handle_event("qr_code_changed", payload, socket) do
-    {:noreply, stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
+    {:noreply,
+     stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
   end
 
   defp log(event, dom_id, value) do
@@ -24,7 +25,12 @@ defmodule E2eWeb.QrCodeEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="qr-code-events-page" title="QrCode · Events" subtitle="Value change events.">
+      <.demo_page
+        path={@path}
+        id="qr-code-events-page"
+        title="QrCode · Events"
+        subtitle="Value change events."
+      >
         <.demo_section id="qr-code-events-section" title="On value change">
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">
@@ -33,7 +39,9 @@ defmodule E2eWeb.QrCodeEventsLive do
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
-                <:empty><p>No event yet.</p></:empty>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
               </.data_table>
             </div>
           </:preview>

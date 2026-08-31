@@ -1,7 +1,7 @@
 defmodule Corex.ImageCropper do
   @moduledoc ~S'''
   ImageCropper for Phoenix LiveView. Behavior follows [Zag.js](https://zagjs.com/components/react/image-cropper).
-  
+
   ## Anatomy
 
   <!-- tabs-open -->

@@ -11,7 +11,11 @@ defmodule E2eWeb.Demos.CascadeSelectDemo do
     _ = assigns
 
     ~H"""
-    <.cascade_select id="cascade-select-anatomy-minimal" class="cascade-select" show_indicator={false} />
+    <.cascade_select
+      id="cascade-select-anatomy-minimal"
+      class="cascade-select"
+      show_indicator={false}
+    />
     """
   end
 
@@ -67,7 +71,10 @@ defmodule E2eWeb.Demos.CascadeSelectDemo do
 
     ~H"""
     <div class="flex flex-col gap-space items-center">
-      <.action phx-click={Corex.CascadeSelect.set_open("cascade-select-api-cb", true)} class="button ui-size-sm">
+      <.action
+        phx-click={Corex.CascadeSelect.set_open("cascade-select-api-cb", true)}
+        class="button ui-size-sm"
+      >
         Open
       </.action>
       <.cascade_select id="cascade-select-api-cb" class="cascade-select">

@@ -25,7 +25,12 @@ defmodule E2eWeb.PopoverEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="popover-events-page" title="Popover · Events" subtitle="Open change events.">
+      <.demo_page
+        path={@path}
+        id="popover-events-page"
+        title="Popover · Events"
+        subtitle="Open change events."
+      >
         <.demo_section id="popover-events-section" title="On open change">
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">

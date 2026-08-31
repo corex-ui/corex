@@ -25,7 +25,12 @@ defmodule E2eWeb.PresenceEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="presence-events-page" title="Presence · Events" subtitle="Value change events.">
+      <.demo_page
+        path={@path}
+        id="presence-events-page"
+        title="Presence · Events"
+        subtitle="Value change events."
+      >
         <.demo_section id="presence-events-section" title="On value change">
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">
@@ -34,7 +39,9 @@ defmodule E2eWeb.PresenceEventsLive do
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
-                <:empty><p>No event yet.</p></:empty>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
               </.data_table>
             </div>
           </:preview>

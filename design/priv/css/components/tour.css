@@ -99,6 +99,8 @@
     gap: var(--spacing-space-sm);
     margin-top: var(--spacing-space);
   }
+
+  .tour [data-scope="tour"][data-part="close-trigger"] {
     position: absolute;
     top: var(--spacing-space-sm);
     inset-inline-end: var(--spacing-space-sm);

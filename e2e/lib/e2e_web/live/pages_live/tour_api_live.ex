@@ -14,11 +14,18 @@ defmodule E2eWeb.TourApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="tour-api-page" title="Tour · API" subtitle="Start the tour after JS is available. Overlay stays closed on the server.">
+      <.demo_page
+        path={@path}
+        id="tour-api-page"
+        title="Tour · API"
+        subtitle="Start the tour after JS is available. Overlay stays closed on the server."
+      >
         <.demo_section id="tour-api-client-binding" title="Start (Client binding)">
           <:preview>
             <div class="flex flex-col gap-space items-center">
-              <.action phx-click={Corex.Tour.start("tour-api-cb")} class="button ui-size-sm">Start</.action>
+              <.action phx-click={Corex.Tour.start("tour-api-cb")} class="button ui-size-sm">
+                Start
+              </.action>
               <.tour id="tour-api-cb" class="tour" />
             </div>
           </:preview>
@@ -26,7 +33,11 @@ defmodule E2eWeb.TourApiLive do
         <.demo_section id="tour-api-client-js" title="Start (Client JS)">
           <:preview>
             <div class="flex flex-col gap-space items-center">
-              <button type="button" class="button ui-size-sm" onclick="document.getElementById('tour-api-cjs')?.dispatchEvent(new CustomEvent('corex:tour:start', {bubbles: false, detail: {}}))">Start</button>
+              <button
+                type="button"
+                class="button ui-size-sm"
+                onclick="document.getElementById('tour-api-cjs')?.dispatchEvent(new CustomEvent('corex:tour:start', {bubbles: false, detail: {}}))"
+              >Start</button>
               <.tour id="tour-api-cjs" class="tour" />
             </div>
           </:preview>

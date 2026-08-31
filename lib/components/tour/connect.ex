@@ -28,7 +28,10 @@ defmodule Corex.Tour.Connect do
       "id" => assigns.id,
       "data-steps" => steps_json
     }
-    |> maybe_put("data-on-step-change", Map.get(assigns, :on_step_change) || Map.get(assigns, :on_value_change))
+    |> maybe_put(
+      "data-on-step-change",
+      Map.get(assigns, :on_step_change) || Map.get(assigns, :on_value_change)
+    )
     |> maybe_put(
       "data-on-step-change-client",
       Map.get(assigns, :on_step_change_client) || Map.get(assigns, :on_value_change_client)

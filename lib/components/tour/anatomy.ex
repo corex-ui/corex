@@ -5,7 +5,14 @@ defmodule Corex.Tour.Anatomy do
     @moduledoc false
     @enforce_keys [:id]
 
-    defstruct [:id, dir: "ltr", steps: nil, steps_json: nil, on_step_change: nil, on_step_change_client: nil]
+    defstruct [
+      :id,
+      dir: "ltr",
+      steps: nil,
+      steps_json: nil,
+      on_step_change: nil,
+      on_step_change_client: nil
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),

@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.StepsDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def anatomy_minimal_code do
     ~S"""
     <.steps class="steps" />

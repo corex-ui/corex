@@ -73,7 +73,22 @@
     opacity: 0.6;
   }
 
-  .cascade-select [data-scope="cascade-select"][data-part="item-text"] {
-    margin-inline-end: auto;
+  .cascade-select [data-scope="cascade-select"][data-part="indicator"] {
+    margin-inline-start: auto;
+  }
+
+  .cascade-select [data-scope="cascade-select"][data-part="item"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-space-xs);
+    width: 100%;
+  }
+
+  .cascade-select [data-scope="cascade-select"][data-part="item-indicator"] {
+    opacity: 0;
+  }
+
+  .cascade-select [data-scope="cascade-select"][data-part="item"][data-selected] [data-part="item-indicator"] {
+    opacity: 1;
   }
 }

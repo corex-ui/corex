@@ -3,6 +3,27 @@
 @layer components {
   .qr-code {
     width: fit-content;
+    position: relative;
+  }
+
+  .qr-code[data-loading] [data-scope="qr-code"][data-part="skeleton"] {
+    display: block;
+  }
+
+  .qr-code [data-scope="qr-code"][data-part="skeleton"] {
+    display: none;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--ctl-radius, var(--radius-md));
+    background: linear-gradient(
+      90deg,
+      var(--color-ui-muted) 0%,
+      var(--color-border) 50%,
+      var(--color-ui-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: avatar-skeleton-loading 1.2s ease-in-out infinite;
+    z-index: 2;
   }
 
   .qr-code[data-loading] > * {
@@ -30,13 +51,40 @@
   }
 
   .qr-code [data-scope="qr-code"][data-part="overlay"] {
-    width: 25%;
-    height: 25%;
+    position: absolute;
+    inset: 50%;
+    translate: -50% -50%;
+    width: 22%;
+    height: 22%;
+    display: grid;
+    place-items: center;
+    background: var(--color-root, var(--ctl-bg, white));
     outline: calc(var(--border-width) * 2) solid var(--color-root);
+    border-radius: var(--ctl-radius, var(--radius-sm));
+    overflow: hidden;
+  }
+
+  .qr-code [data-scope="qr-code"][data-part="overlay-mark"] {
+    font-size: 0.65em;
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--ctl-ink, var(--color-ink));
+  }
+
+  .qr-code [data-scope="qr-code"][data-part="root"] {
+    position: relative;
   }
 
   .qr-code [data-scope="qr-code"][data-part="overlay"] img {
     width: 100%;
     height: 100%;
+  }
+}
+
+@keyframes avatar-skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

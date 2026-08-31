@@ -17,7 +17,12 @@ defmodule E2eWeb.PopoverApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="popover-api-page" title="Popover · API" subtitle="Set open from bindings or the server.">
+      <.demo_page
+        path={@path}
+        id="popover-api-page"
+        title="Popover · API"
+        subtitle="Set open from bindings or the server."
+      >
         <.demo_section id="popover-api-set-open-client-binding" title="Set open (Client binding)">
           <:preview><Demo.api_set_open_client_binding_example /></:preview>
         </.demo_section>

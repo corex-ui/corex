@@ -19,8 +19,17 @@ defmodule E2eWeb.CascadeSelectApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="cascade-select-api-page" title="Cascade select · API" subtitle="Open from client bindings, client JS, or a server event after JS is available.">
-        <.demo_section id="cascade-select-api-set-open-client-binding" title="Set open (Client binding)" code={@codes.set_open_client_binding}>
+      <.demo_page
+        path={@path}
+        id="cascade-select-api-page"
+        title="Cascade select · API"
+        subtitle="Open from client bindings, client JS, or a server event after JS is available."
+      >
+        <.demo_section
+          id="cascade-select-api-set-open-client-binding"
+          title="Set open (Client binding)"
+          code={@codes.set_open_client_binding}
+        >
           <:preview><Demo.api_set_open_client_binding_example /></:preview>
         </.demo_section>
         <.demo_section
@@ -39,7 +48,12 @@ defmodule E2eWeb.CascadeSelectApiLive do
           title="Set open (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_open_server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.set_open_server_elixir}
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: @codes.set_open_server_elixir
+            }
           ]}
         >
           <:preview><Demo.api_set_open_server_example /></:preview>

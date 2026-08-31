@@ -27,7 +27,11 @@ defmodule E2eWeb.DateInputFormLive do
        |> assign(:form, to_form(changeset, as: :date_input, id: "date-input-live-form"))}
     else
       {:noreply,
-       assign(socket, :form, to_form(changeset, action: :insert, as: :date_input, id: "date-input-live-form"))}
+       assign(
+         socket,
+         :form,
+         to_form(changeset, action: :insert, as: :date_input, id: "date-input-live-form")
+       )}
     end
   end
 
@@ -38,7 +42,12 @@ defmodule E2eWeb.DateInputFormLive do
       <.demo_page path={@path} id="date-input-live-form-page" title="Date input · Live Form">
         <.demo_section id="date-input-live-form" title="Phoenix Form">
           <:preview>
-            <.form for={@form} id="date-input-live-form" phx-submit="save" class="flex flex-col gap-space">
+            <.form
+              for={@form}
+              id="date-input-live-form"
+              phx-submit="save"
+              class="flex flex-col gap-space"
+            >
               <.date_input class="date-input" name="date_input[born_on]" />
               <.action type="submit" class="button ui-size-sm">Submit</.action>
             </.form>

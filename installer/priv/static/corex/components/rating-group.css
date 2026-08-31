@@ -21,31 +21,54 @@
     padding: 0;
     min-height: 0;
     width: auto;
-    gap: var(--spacing-space-xs);
+    gap: 0.125rem;
   }
 
   .rating-group [data-scope="rating-group"][data-part="item"] {
-    width: auto;
+    position: relative;
+    display: inline-flex;
+    width: var(--ctl-size, var(--spacing-size));
+    height: var(--ctl-size, var(--spacing-size));
     min-width: var(--ctl-size, var(--spacing-size));
     min-height: var(--ctl-size, var(--spacing-size));
-    padding: var(--spacing-space-2xs, 0.125rem);
+    padding: 0;
+    margin: 0;
     background: transparent;
     border: none;
-    border-radius: var(--ctl-radius, var(--radius-sm));
+    box-shadow: none;
     color: var(--color-ink-muted);
-    font-size: calc(var(--ctl-size, var(--spacing-size)) * 0.7);
-    line-height: 1;
-    justify-content: center;
     cursor: pointer;
+    appearance: none;
   }
 
-  .rating-group [data-scope="rating-group"][data-part="item"][data-highlighted] {
+  .rating-group [data-scope="rating-group"][data-part="item-preview"] {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="star-bg"],
+  .rating-group [data-scope="rating-group"][data-part="star-fg"] {
+    fill: currentColor;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="star-fg"] {
     color: var(--ctl-fill, var(--color-accent));
-    background: transparent;
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"][data-highlighted] [data-part="star-fg"],
+  .rating-group [data-scope="rating-group"][data-part="item"][data-checked] [data-part="star-fg"] {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"][data-half] [data-part="star-fg"] {
+    clip-path: inset(0 50% 0 0);
   }
 
   .rating-group [data-scope="rating-group"][data-part="item"]:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 var(--ring-width) var(--ctl-ring, var(--color-focus));
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 var(--ring-width) var(--ctl-ring, var(--color-focus));
   }
 }

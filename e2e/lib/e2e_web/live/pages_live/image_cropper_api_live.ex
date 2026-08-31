@@ -9,7 +9,12 @@ defmodule E2eWeb.ImageCropperApiLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="image-cropper-api-page" title="ImageCropper · API" subtitle="Host API.">
+      <.demo_page
+        path={@path}
+        id="image-cropper-api-page"
+        title="ImageCropper · API"
+        subtitle="Host API."
+      >
         <.demo_section id="image-cropper-api-minimal" title="Host">
           <:preview><.image_cropper id="image-cropper-api" class="image-cropper" /></:preview>
         </.demo_section>
