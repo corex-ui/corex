@@ -13,8 +13,9 @@
   .splitter [data-scope="splitter"][data-part="root"] {
     display: flex;
     width: 100%;
+    height: calc(var(--ctl-size, var(--spacing-size)) * 8);
     flex-wrap: nowrap;
-    min-height: calc(var(--ctl-size, var(--spacing-size)) * 6);
+    min-height: calc(var(--ctl-size, var(--spacing-size)) * 8);
     overflow: hidden;
     border: var(--border-width) solid var(--ctl-bd, var(--color-border));
     border-radius: var(--ctl-radius, var(--radius-md));
@@ -53,12 +54,12 @@
   }
 
   .splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="horizontal"] {
-    width: 0.5rem;
+    width: 0.75rem;
     cursor: col-resize;
   }
 
   .splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="vertical"] {
-    height: 0.5rem;
+    height: 0.75rem;
     width: 100%;
     cursor: row-resize;
   }

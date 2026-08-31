@@ -32,6 +32,7 @@ defmodule Corex.Progress.Anatomy do
   defmodule Root do
     @moduledoc false
     defstruct [:id, :dir, value: 40, min: 0, max: 100]
+
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
@@ -54,6 +55,7 @@ defmodule Corex.Progress.Anatomy do
   defmodule Range do
     @moduledoc false
     defstruct [:id, :dir, value: 40, min: 0, max: 100]
+
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),

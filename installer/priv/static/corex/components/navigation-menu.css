@@ -11,7 +11,6 @@
 
   .navigation-menu [data-scope="navigation-menu"][data-part="root"] {
     --arrow-size: var(--spacing-space);
-    --indicator-size: 0.625rem;
     color: var(--ctl-ink, var(--color-ink));
     position: relative;
   }
@@ -52,13 +51,28 @@
   .navigation-menu [data-scope="navigation-menu"][data-part="content"] {
     position: absolute;
     top: 100%;
-    width: min(100vw - 2rem, var(--container-sm));
+    width: min(100vw - 2rem, var(--viewport-width, var(--container-sm)));
     left: 0;
     margin-top: var(--spacing-space-xs);
     z-index: var(--z-overlay, 1100);
     padding: var(--spacing-space);
     display: grid;
     gap: var(--spacing-space-xs);
+    background-color: var(--ctl-bg, var(--color-ui));
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    box-shadow: var(--shadow-ui);
+  }
+
+  .navigation-menu [data-scope="navigation-menu"][data-part="content"] a {
+    color: var(--ctl-ink, var(--color-ink));
+    text-decoration: none;
+    padding-block: var(--spacing-space-xs);
+  }
+
+  .navigation-menu [data-scope="navigation-menu"][data-part="content"] a:hover {
+    background: var(--ctl-bg-hover, var(--color-ui-hover));
   }
 
   .navigation-menu [data-scope="navigation-menu"][data-part="content"][hidden] {
@@ -81,24 +95,6 @@
 
   .navigation-menu [data-scope="navigation-menu"][data-part="content"][data-state="closed"] {
     animation: scaleFadeOut var(--duration-fast) ease-in;
-  }
-
-  .navigation-menu [data-scope="navigation-menu"][data-part="indicator"] {
-    display: flex;
-    justify-content: center;
-    height: var(--indicator-size);
-    z-index: 1;
-    transition:
-      translate 250ms ease,
-      width 250ms ease;
-    overflow: hidden;
-  }
-
-  .navigation-menu [data-scope="navigation-menu"][data-part="indicator"][data-orientation="horizontal"] {
-    left: 0;
-    translate: var(--trigger-x) 0;
-    top: calc(var(--indicator-size) * -1);
-    width: var(--trigger-width);
   }
 
   .navigation-menu [data-scope="navigation-menu"][data-part="arrow"] {

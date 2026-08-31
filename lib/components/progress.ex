@@ -101,6 +101,7 @@ defmodule Corex.Progress do
     Track,
     ValueText
   }
+
   alias Corex.Progress.Connect
   alias Corex.Selectors
   alias Phoenix.LiveView

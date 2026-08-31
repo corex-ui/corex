@@ -19,3 +19,5 @@ defmodule Corex.DateInputTest do
     assert html =~ ~S(data-scope="date-input")
     assert html =~ ~S(data-part="segment")
     assert html =~ ~S(data-part="skeleton")
+  end
+end

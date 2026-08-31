@@ -60,7 +60,8 @@ defmodule Corex.Splitter.Connect do
       "data-part" => "resize-trigger",
       "dir" => Map.get(assigns, :dir),
       "data-id" => assigns.trigger_id,
-      "id" => "splitter:" <> assigns.id <> ":resize:" <> String.replace(assigns.trigger_id, ":", "-")
+      "id" =>
+        "splitter:" <> assigns.id <> ":resize:" <> String.replace(assigns.trigger_id, ":", "-")
     }
   end
 
