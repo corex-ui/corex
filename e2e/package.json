@@ -4,6 +4,6 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
-    "motion": "^12.38.0"
+    "motion": "^13.1.1"
   }
 }
