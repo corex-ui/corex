@@ -360,6 +360,7 @@ var Steps = class extends Component {
       this.spreadProps(list, this.api.getListProps());
       list.removeAttribute("role");
       list.removeAttribute("aria-owns");
+      list.removeAttribute("aria-orientation");
     }
     this.el.querySelectorAll('[data-scope="steps"][data-part="item"]').forEach((item) => {
       this.spreadProps(item, this.api.getItemProps({ index: Number(item.dataset.index) }));

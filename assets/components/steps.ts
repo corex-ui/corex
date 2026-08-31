@@ -25,6 +25,7 @@ export class Steps extends Component<Props, Api, Schema> {
       // around tab buttons. Drop tablist so axe does not require tab children.
       list.removeAttribute("role");
       list.removeAttribute("aria-owns");
+      list.removeAttribute("aria-orientation");
     }
 
     this.el.querySelectorAll<HTMLElement>('[data-scope="steps"][data-part="item"]').forEach((item) => {

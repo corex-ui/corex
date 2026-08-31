@@ -9,6 +9,7 @@ describe("Steps", () => {
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
     expect(el.querySelector('[data-part="list"]')?.getAttribute("role")).not.toBe("tablist");
+    expect(el.querySelector('[data-part="list"]')?.hasAttribute("aria-orientation")).toBe(false);
     c.destroy();
   });
 });
