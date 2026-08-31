@@ -327,7 +327,6 @@ defmodule Corex.MixProject do
         Corex.Collapsible,
         Corex.ColorPicker,
         Corex.Combobox,
-        Corex.DataList,
         Corex.DataTable,
         Corex.DatePicker,
         Corex.Dialog,

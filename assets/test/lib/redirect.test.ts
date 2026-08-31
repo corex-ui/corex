@@ -26,6 +26,11 @@ describe("isAllowedRedirectDestination", () => {
     ["\x01//evil.example", false],
     ["\x01/items", true],
     [" /safe", true],
+    ["mailto:hello@example.com\nBcc:evil@example.com", false],
+    ["https://example.com/path\nLocation: https://evil.example", false],
+    ["https://example.com/path\r\nLocation: https://evil.example", false],
+    ["/items\0hidden", false],
+    ["tel:+15551212", false],
   ])("%j -> %s", (destination, allowed) => {
     expect(isAllowedRedirectDestination(destination)).toBe(allowed);
   });

@@ -18,6 +18,14 @@ defmodule Corex.UrlTest do
       assert Url.allowed_href?("tel:+15551212")
     end
 
+    test "rejects destinations that still contain NUL, CR, or LF" do
+      refute Url.allowed_href?("mailto:hello@example.com\nBcc:evil@example.com")
+      refute Url.allowed_href?("mailto:hello@example.com\rBcc:evil@example.com")
+      refute Url.allowed_href?("https://example.com/path\nLocation: https://evil.example")
+      refute Url.allowed_href?("/items\0hidden")
+      refute Url.allowed_href?("tel:+15551212\nX-Ignore: 1")
+    end
+
     test "rejects empty, protocol-relative, and dangerous schemes" do
       refute Url.allowed_href?("")
       refute Url.allowed_href?("   ")
@@ -59,6 +67,13 @@ defmodule Corex.UrlTest do
              }
 
       assert Url.put_data_to(%{"id" => "x"}, " /safe") == %{"id" => "x", "data-to" => "/safe"}
+    end
+
+    test "leaves map unchanged when href contains NUL, CR, or LF" do
+      assert Url.put_data_to(%{"id" => "x"}, "mailto:hello@example.com\nBcc:evil@example.com") ==
+               %{"id" => "x"}
+
+      assert Url.put_data_to(%{"id" => "x"}, "/items\0hidden") == %{"id" => "x"}
     end
 
     test "leaves map unchanged when href is disallowed" do

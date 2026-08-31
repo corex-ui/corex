@@ -8,9 +8,9 @@ import {
 import "./chunks/chunk-TDOE7VOH.mjs";
 import {
   redirectCollectionItem
-} from "./chunks/chunk-VYVBSZPE.mjs";
+} from "./chunks/chunk-JKQTBVVH.mjs";
 import "./chunks/chunk-6M2TQLRV.mjs";
-import "./chunks/chunk-NOJQTYIE.mjs";
+import "./chunks/chunk-RJJNFNHH.mjs";
 import {
   getPlacement,
   getPlacementSide,

@@ -9956,7 +9956,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-NOJQTYIE.mjs
+  // ../priv/static/chunks/chunk-RJJNFNHH.mjs
   function stripLeadingC0AndSpace(destination) {
     let i2 = 0;
     while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
@@ -9964,9 +9964,13 @@ var Corex = (() => {
     }
     return destination.slice(i2);
   }
+  function containsNulOrNewline(destination) {
+    return /[\0\r\n]/.test(destination);
+  }
   function sanitizeRedirectDestination(destination) {
     const trimmed = stripLeadingC0AndSpace(destination);
     if (!trimmed) return null;
+    if (containsNulOrNewline(trimmed)) return null;
     if (trimmed.startsWith("//")) return null;
     const schemeMatch = SCHEME_PREFIX.exec(trimmed);
     if (schemeMatch) {
@@ -10016,8 +10020,8 @@ var Corex = (() => {
     return true;
   }
   var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_NOJQTYIE = __esm({
-    "../priv/static/chunks/chunk-NOJQTYIE.mjs"() {
+  var init_chunk_RJJNFNHH = __esm({
+    "../priv/static/chunks/chunk-RJJNFNHH.mjs"() {
       "use strict";
       init_chunk_R62PCG6O();
       REDIRECT_MODES = ["href", "patch", "navigate"];
@@ -10025,7 +10029,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-VYVBSZPE.mjs
+  // ../priv/static/chunks/chunk-JKQTBVVH.mjs
   function connect8(service, normalize2) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -10492,11 +10496,11 @@ var Corex = (() => {
     return result;
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_VYVBSZPE = __esm({
-    "../priv/static/chunks/chunk-VYVBSZPE.mjs"() {
+  var init_chunk_JKQTBVVH = __esm({
+    "../priv/static/chunks/chunk-JKQTBVVH.mjs"() {
       "use strict";
       init_chunk_6M2TQLRV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_2NCIS2R3();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
@@ -14377,9 +14381,9 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_VYVBSZPE();
+      init_chunk_JKQTBVVH();
       init_chunk_6M2TQLRV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_OWAL5LKS();
       init_chunk_NUOTFVKH();
       init_chunk_7DTCDTRW();
@@ -31247,9 +31251,9 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_VYVBSZPE();
+      init_chunk_JKQTBVVH();
       init_chunk_6M2TQLRV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_2NCIS2R3();
       init_chunk_2TVI6WVN();
       init_chunk_EAQ6WQNO();
@@ -32805,9 +32809,9 @@ ${err}`);
       init_chunk_BEC4QQ5D();
       init_chunk_OEFPAAAI();
       init_chunk_TDOE7VOH();
-      init_chunk_VYVBSZPE();
+      init_chunk_JKQTBVVH();
       init_chunk_6M2TQLRV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_7DTCDTRW();
       init_chunk_4ATAXYH3();
       init_chunk_AVGG6QG4();
@@ -36004,7 +36008,7 @@ ${err}`);
     "../priv/static/pagination.mjs"() {
       "use strict";
       init_chunk_G4YHNHIV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
@@ -39496,9 +39500,9 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_VYVBSZPE();
+      init_chunk_JKQTBVVH();
       init_chunk_6M2TQLRV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_7DTCDTRW();
       init_chunk_4ATAXYH3();
       init_chunk_AVGG6QG4();
@@ -62863,7 +62867,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_YBHOREUC();
       init_chunk_6M2TQLRV();
-      init_chunk_NOJQTYIE();
+      init_chunk_RJJNFNHH();
       init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();

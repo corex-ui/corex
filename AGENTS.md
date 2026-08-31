@@ -17,8 +17,9 @@ below only capture non-obvious, durable caveats for this environment.
 
 ### PostgreSQL (required for e2e + integration tests)
 
-- PostgreSQL 16 is installed locally with role `postgres` / password `postgres` on
-  `localhost:5432` (matches `e2e/config/*.exs`). It is NOT auto-started on a fresh VM.
+- PostgreSQL **15+** is required (CI uses 15). This environment installs PostgreSQL 16
+  with role `postgres` / password `postgres` on `localhost:5432` (matches
+  `e2e/config/*.exs`). It is NOT auto-started on a fresh VM.
 - Start it before running the e2e app or any DB-backed tests:
   `sudo pg_ctlcluster 16 main start`
 
@@ -36,12 +37,9 @@ below only capture non-obvious, durable caveats for this environment.
 - Root `mix assets.build` (and `mix setup`) end by shelling into `design/`
   (`mix corex.design.build`). The `design/` project's deps must be fetched first
   (`cd design && mix deps.get`) or it fails with a `MatchError` in `sync_no_design_corex_export/1`.
-- JS lint/typecheck (`pnpm run typecheck`, `lint:js`, `check`) invoke `tsc`, but `typescript`
-  is only a transitive (peer) dependency, so pnpm does not link `tsc` into `node_modules/.bin`
-  and you get `tsc: not found`. Run those with the hoisted bin on `PATH`:
-  `PATH="$PWD/node_modules/.pnpm/node_modules/.bin:$PATH" pnpm run check`.
-  Plain `pnpm test` (Vitest) needs no workaround. (CI resolves `tsc` on GitHub runners, so this
-  only affects local/cloud runs.)
+- JS lint/typecheck (`pnpm run typecheck`, `lint:js`, `check`) invoke `tsc`. `typescript`
+  is a root `devDependency`, so `pnpm run typecheck` resolves `tsc` after `pnpm install`.
+  Plain `pnpm test` (Vitest) is separate from typecheck.
 - The e2e browser tests use Wallaby + headless Chrome and require `chromedriver` on `PATH`
   matching the installed Google Chrome (148). It is installed at `/usr/local/bin/chromedriver`.
   Without it, the entire e2e suite fails to boot (Wallaby raises at application start), not just
