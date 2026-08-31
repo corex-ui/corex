@@ -12625,7 +12625,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-IPIIGVFP.mjs
+  // ../priv/static/chunks/chunk-5CUB6Y47.mjs
   function stripLeadingC0AndSpace(destination) {
     let i2 = 0;
     while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
@@ -12633,9 +12633,13 @@ var Corex = (() => {
     }
     return destination.slice(i2);
   }
+  function containsNulOrNewline(destination) {
+    return /[\0\r\n]/.test(destination);
+  }
   function sanitizeRedirectDestination(destination) {
     const trimmed = stripLeadingC0AndSpace(destination);
     if (!trimmed) return null;
+    if (containsNulOrNewline(trimmed)) return null;
     if (trimmed.startsWith("//")) return null;
     const schemeMatch = SCHEME_PREFIX.exec(trimmed);
     if (schemeMatch) {
@@ -12685,8 +12689,8 @@ var Corex = (() => {
     return true;
   }
   var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_IPIIGVFP = __esm({
-    "../priv/static/chunks/chunk-IPIIGVFP.mjs"() {
+  var init_chunk_5CUB6Y47 = __esm({
+    "../priv/static/chunks/chunk-5CUB6Y47.mjs"() {
       "use strict";
       init_chunk_JPQZXVRQ();
       REDIRECT_MODES = ["href", "patch", "navigate"];
@@ -12694,7 +12698,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-L27QKFAY.mjs
+  // ../priv/static/chunks/chunk-CDLVLVGW.mjs
   function connect8(service, normalize2) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -13161,11 +13165,11 @@ var Corex = (() => {
     return result;
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_L27QKFAY = __esm({
-    "../priv/static/chunks/chunk-L27QKFAY.mjs"() {
+  var init_chunk_CDLVLVGW = __esm({
+    "../priv/static/chunks/chunk-CDLVLVGW.mjs"() {
       "use strict";
       init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_CPYFNSV2();
       init_chunk_JPQZXVRQ();
       anatomy8 = createAnatomy("listbox").parts(
@@ -14232,9 +14236,9 @@ var Corex = (() => {
       init_chunk_CKZ5NOMG();
       init_chunk_KNSNFBRP();
       init_chunk_4JF6I36R();
-      init_chunk_L27QKFAY();
+      init_chunk_CDLVLVGW();
       init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_CPYFNSV2();
       init_chunk_F6YUZM6O();
       init_chunk_I5HWU3ET();
@@ -28316,9 +28320,9 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_L27QKFAY();
+      init_chunk_CDLVLVGW();
       init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_CPYFNSV2();
       init_chunk_I5HWU3ET();
       init_chunk_EAQ6WQNO();
@@ -29830,9 +29834,9 @@ ${err}`);
       init_chunk_CKZ5NOMG();
       init_chunk_KNSNFBRP();
       init_chunk_4JF6I36R();
-      init_chunk_L27QKFAY();
+      init_chunk_CDLVLVGW();
       init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_CPYFNSV2();
       init_chunk_EAQ6WQNO();
       init_chunk_JPQZXVRQ();
@@ -33050,7 +33054,7 @@ ${err}`);
     "../priv/static/pagination.mjs"() {
       "use strict";
       init_chunk_HWUNIC34();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_EAQ6WQNO();
       init_chunk_JPQZXVRQ();
       anatomy19 = createAnatomy("pagination").parts(
@@ -35918,9 +35922,9 @@ ${err}`);
       init_chunk_CKZ5NOMG();
       init_chunk_KNSNFBRP();
       init_chunk_4JF6I36R();
-      init_chunk_L27QKFAY();
+      init_chunk_CDLVLVGW();
       init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_CPYFNSV2();
       init_chunk_F6YUZM6O();
       init_chunk_I5HWU3ET();
@@ -46085,7 +46089,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_BF7VYAZN();
       init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_5CUB6Y47();
       init_chunk_EAQ6WQNO();
       init_chunk_JPQZXVRQ();
       anatomy34 = createAnatomy("tree-view").parts(

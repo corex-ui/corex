@@ -12,9 +12,13 @@ function stripLeadingC0AndSpace(destination) {
   }
   return destination.slice(i);
 }
+function containsNulOrNewline(destination) {
+  return /[\0\r\n]/.test(destination);
+}
 function sanitizeRedirectDestination(destination) {
   const trimmed = stripLeadingC0AndSpace(destination);
   if (!trimmed) return null;
+  if (containsNulOrNewline(trimmed)) return null;
   if (trimmed.startsWith("//")) return null;
   const schemeMatch = SCHEME_PREFIX.exec(trimmed);
   if (schemeMatch) {

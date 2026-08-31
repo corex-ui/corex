@@ -22,9 +22,13 @@ defmodule Corex.Url do
   # before scheme detection. Align allowlisting with that so prefixed
   # `javascript:` / `data:` cannot bypass as a "relative" path.
   defp sanitize_href(destination) do
-    case strip_leading_c0_and_space(destination) do
-      "" -> :error
-      trimmed -> if allowed_uri?(URI.parse(trimmed)), do: {:ok, trimmed}, else: :error
+    trimmed = strip_leading_c0_and_space(destination)
+
+    cond do
+      trimmed == "" -> :error
+      contains_nul_or_newline?(trimmed) -> :error
+      allowed_uri?(URI.parse(trimmed)) -> {:ok, trimmed}
+      true -> :error
     end
   end
 
@@ -32,6 +36,10 @@ defmodule Corex.Url do
     do: strip_leading_c0_and_space(rest)
 
   defp strip_leading_c0_and_space(rest), do: rest
+
+  defp contains_nul_or_newline?(binary) do
+    String.contains?(binary, ["\0", "\r", "\n"])
+  end
 
   defp allowed_uri?(%URI{scheme: nil, host: nil}), do: true
 

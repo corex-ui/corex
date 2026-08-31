@@ -18,14 +18,14 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-L27QKFAY.mjs";
+} from "./chunks/chunk-CDLVLVGW.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
 } from "./chunks/chunk-R3ADGBXU.mjs";
-import "./chunks/chunk-IPIIGVFP.mjs";
+import "./chunks/chunk-5CUB6Y47.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
