@@ -1,0 +1,90 @@
+@import "../main.css";
+
+@layer components {
+  .rating-group {
+    width: fit-content;
+  }
+
+  .rating-group[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="root"] {
+    color: var(--ctl-ink, var(--color-ink));
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="control"] {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    min-height: 0;
+    width: auto;
+    gap: 0.125rem;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"] {
+    position: relative;
+    display: inline-flex;
+    width: var(--ctl-size, var(--spacing-size));
+    height: var(--ctl-size, var(--spacing-size));
+    min-width: var(--ctl-size, var(--spacing-size));
+    min-height: var(--ctl-size, var(--spacing-size));
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item-preview"] {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="star-bg"] {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    color: var(--color-ink-muted);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="star-fg"] {
+    fill: currentColor;
+    stroke: none;
+    color: var(--ctl-fill, var(--color-accent));
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"][data-highlighted] [data-part="star-bg"],
+  .rating-group [data-scope="rating-group"][data-part="item"][data-checked] [data-part="star-bg"] {
+    color: var(--ctl-fill, var(--color-accent));
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"][data-highlighted] [data-part="star-fg"],
+  .rating-group [data-scope="rating-group"][data-part="item"][data-checked] [data-part="star-fg"] {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"][data-half] [data-part="star-fg"] {
+    clip-path: inset(0 50% 0 0);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"]:focus,
+  .rating-group [data-scope="rating-group"][data-part="item"][data-focus] {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"]:focus-visible,
+  .rating-group [data-scope="rating-group"][data-part="item"][data-focus-visible] {
+    outline: none;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 var(--ring-width) var(--ctl-ring, var(--color-focus));
+  }
+}

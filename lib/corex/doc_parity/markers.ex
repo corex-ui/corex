@@ -8,15 +8,78 @@ defmodule Corex.DocParity.Markers do
       "minimal" => ["anatomy_minimal_code"],
       "with triggers" => ["anatomy_with_triggers_code"]
     },
+    "progress" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "circular" => ["anatomy_circular_code"],
+      "loading" => ["anatomy_loading_code"]
+    },
+    "rating_group" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "half stars" => ["anatomy_half_code"],
+      "smileys" => ["anatomy_smileys_code"]
+    },
+    "steps" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "qr_code" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "presence" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "splitter" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "scroll_area" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "toc" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "date_input" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "image_cropper" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "preview" => ["anatomy_preview_code"]
+    },
+    "navigation_menu" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "custom slots" => ["anatomy_mega_menu_code"]
+    },
+    "cascade_select" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "with indicator" => ["anatomy_indicator_code"],
+      "with label" => ["anatomy_label_code"]
+    },
+    "tour" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
     "tooltip" => %{
       "minimal" => ["anatomy_minimal_code"],
       "placement" => ["anatomy_placement_code"],
       "with arrow" => ["anatomy_with_arrow_code"]
     },
+    "hover_card" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "placement" => ["anatomy_placement_code"],
+      "preview" => ["anatomy_preview_code"],
+      "with arrow" => ["anatomy_with_arrow_code"]
+    },
+    "popover" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "placement" => ["anatomy_placement_code"],
+      "with title" => ["anatomy_with_title_code"]
+    },
     "pin_input" => %{"basic" => ["minimal_code"]},
     "password_input" => %{
       "custom error" => ["invalid_code"],
       "minimal" => ["minimal_code"]
+    },
+    "drawer" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "snap points" => ["anatomy_snap_points_code"],
+      "with title" => ["anatomy_with_title_code"]
     },
     "dialog" => %{
       "actions in content" => ["actions_code"],

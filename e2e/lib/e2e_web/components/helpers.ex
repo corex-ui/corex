@@ -348,6 +348,17 @@ defmodule E2eWeb.Helpers do
           ]
         },
         %{
+          label: ~t"Drawer",
+          id: "drawer",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/drawer/anatomy",
+          api_to: ~p"/drawer/api",
+          events_to: ~p"/drawer/events",
+          style_to: ~p"/drawer/style"
+        },
+        %{
           label: ~t"Dialog",
           id: "dialog",
           anatomy_to: ~p"/dialog/anatomy",
@@ -359,6 +370,17 @@ defmodule E2eWeb.Helpers do
           animation_to: ~p"/dialog/animation",
           style: true,
           style_to: ~p"/dialog/style"
+        },
+        %{
+          label: ~t"Hover card",
+          id: "hover-card",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/hover-card/anatomy",
+          api_to: ~p"/hover-card/api",
+          events_to: ~p"/hover-card/events",
+          style_to: ~p"/hover-card/style"
         },
         %{
           label: ~t"Editable",
@@ -681,6 +703,173 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/toggle-group/style"
         },
         %{
+          label: ~t"Popover",
+          id: "popover",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/popover/anatomy",
+          api_to: ~p"/popover/api",
+          events_to: ~p"/popover/events",
+          style_to: ~p"/popover/style"
+        },
+        %{
+          label: ~t"Progress",
+          id: "progress",
+          style: true,
+          playground: false,
+          pattern: true,
+          anatomy_to: ~p"/progress/anatomy",
+          api_to: ~p"/progress/api",
+          events_to: ~p"/progress/events",
+          patterns_to: ~p"/progress/patterns",
+          style_to: ~p"/progress/style"
+        },
+        %{
+          label: ~t"Rating group",
+          id: "rating-group",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/rating-group/anatomy",
+          api_to: ~p"/rating-group/api",
+          events_to: ~p"/rating-group/events",
+          style_to: ~p"/rating-group/style",
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/rating-group/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/rating-group/live-form")
+          ]
+        },
+        %{
+          label: ~t"Steps",
+          id: "steps",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/steps/anatomy",
+          api_to: ~p"/steps/api",
+          events_to: ~p"/steps/events",
+          style_to: ~p"/steps/style"
+        },
+        %{
+          label: ~t"QR code",
+          id: "qr-code",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/qr-code/anatomy",
+          api_to: ~p"/qr-code/api",
+          events_to: ~p"/qr-code/events",
+          style_to: ~p"/qr-code/style"
+        },
+        %{
+          label: ~t"Presence",
+          id: "presence",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/presence/anatomy",
+          api_to: ~p"/presence/api",
+          events_to: ~p"/presence/events",
+          style_to: ~p"/presence/style"
+        },
+        %{
+          label: ~t"Splitter",
+          id: "splitter",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/splitter/anatomy",
+          api_to: ~p"/splitter/api",
+          events_to: ~p"/splitter/events",
+          style_to: ~p"/splitter/style"
+        },
+        %{
+          label: ~t"Scroll area",
+          id: "scroll-area",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/scroll-area/anatomy",
+          api_to: ~p"/scroll-area/api",
+          events_to: ~p"/scroll-area/events",
+          style_to: ~p"/scroll-area/style"
+        },
+        %{
+          label: ~t"Table of contents",
+          id: "toc",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/toc/anatomy",
+          api_to: ~p"/toc/api",
+          events_to: ~p"/toc/events",
+          style_to: ~p"/toc/style"
+        },
+        %{
+          label: ~t"Date input",
+          id: "date-input",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/date-input/anatomy",
+          api_to: ~p"/date-input/api",
+          events_to: ~p"/date-input/events",
+          style_to: ~p"/date-input/style",
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/date-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/date-input/live-form")
+          ]
+        },
+        %{
+          label: ~t"Image cropper",
+          id: "image-cropper",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/image-cropper/anatomy",
+          api_to: ~p"/image-cropper/api",
+          events_to: ~p"/image-cropper/events",
+          style_to: ~p"/image-cropper/style"
+        },
+        %{
+          label: ~t"Navigation menu",
+          id: "navigation-menu",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/navigation-menu/anatomy",
+          api_to: ~p"/navigation-menu/api",
+          events_to: ~p"/navigation-menu/events",
+          style_to: ~p"/navigation-menu/style"
+        },
+        %{
+          label: ~t"Cascade select",
+          id: "cascade-select",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/cascade-select/anatomy",
+          api_to: ~p"/cascade-select/api",
+          events_to: ~p"/cascade-select/events",
+          style_to: ~p"/cascade-select/style",
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/cascade-select/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/cascade-select/live-form")
+          ]
+        },
+        %{
+          label: ~t"Tour",
+          id: "tour",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/tour/anatomy",
+          api_to: ~p"/tour/api",
+          events_to: ~p"/tour/events",
+          style_to: ~p"/tour/style"
+        },
+        %{
           label: ~t"Tooltip",
           id: "tooltip",
           style: true,
@@ -709,6 +898,9 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/tree-view/style"
         }
       ]
+      # Zag beta hosts (cascade-select, date-input, drawer) stay in the library
+      # but are hidden from docs until those machines are ready.
+      |> Enum.reject(&(&1.id in ~w(cascade-select date-input drawer)))
       |> Enum.sort_by(& &1.label)
 
     Corex.Tree.new(Enum.map(components, &components_docs_node/1))

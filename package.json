@@ -62,6 +62,10 @@
       "types": "./priv/static/types/hooks/dialog.d.ts",
       "import": "./priv/static/dialog.mjs"
     },
+    "./drawer": {
+      "types": "./priv/static/types/hooks/drawer.d.ts",
+      "import": "./priv/static/drawer.mjs"
+    },
     "./editable": {
       "types": "./priv/static/types/hooks/editable.d.ts",
       "import": "./priv/static/editable.mjs"
@@ -69,6 +73,10 @@
     "./file-upload": {
       "types": "./priv/static/types/hooks/file-upload.d.ts",
       "import": "./priv/static/file-upload.mjs"
+    },
+    "./hover-card": {
+      "types": "./priv/static/types/hooks/hover-card.d.ts",
+      "import": "./priv/static/hover-card.mjs"
     },
     "./floating-panel": {
       "types": "./priv/static/types/hooks/floating-panel.d.ts",
@@ -101,6 +109,10 @@
     "./pin-input": {
       "types": "./priv/static/types/hooks/pin-input.d.ts",
       "import": "./priv/static/pin-input.mjs"
+    },
+    "./popover": {
+      "types": "./priv/static/types/hooks/popover.d.ts",
+      "import": "./priv/static/popover.mjs"
     },
     "./radio-group": {
       "types": "./priv/static/types/hooks/radio-group.d.ts",
@@ -150,6 +162,58 @@
       "types": "./priv/static/types/hooks/toggle-group.d.ts",
       "import": "./priv/static/toggle-group.mjs"
     },
+    "./progress": {
+      "types": "./priv/static/types/hooks/progress.d.ts",
+      "import": "./priv/static/progress.mjs"
+    },
+    "./rating-group": {
+      "types": "./priv/static/types/hooks/rating-group.d.ts",
+      "import": "./priv/static/rating-group.mjs"
+    },
+    "./steps": {
+      "types": "./priv/static/types/hooks/steps.d.ts",
+      "import": "./priv/static/steps.mjs"
+    },
+    "./qr-code": {
+      "types": "./priv/static/types/hooks/qr-code.d.ts",
+      "import": "./priv/static/qr-code.mjs"
+    },
+    "./presence": {
+      "types": "./priv/static/types/hooks/presence.d.ts",
+      "import": "./priv/static/presence.mjs"
+    },
+    "./splitter": {
+      "types": "./priv/static/types/hooks/splitter.d.ts",
+      "import": "./priv/static/splitter.mjs"
+    },
+    "./scroll-area": {
+      "types": "./priv/static/types/hooks/scroll-area.d.ts",
+      "import": "./priv/static/scroll-area.mjs"
+    },
+    "./toc": {
+      "types": "./priv/static/types/hooks/toc.d.ts",
+      "import": "./priv/static/toc.mjs"
+    },
+    "./date-input": {
+      "types": "./priv/static/types/hooks/date-input.d.ts",
+      "import": "./priv/static/date-input.mjs"
+    },
+    "./image-cropper": {
+      "types": "./priv/static/types/hooks/image-cropper.d.ts",
+      "import": "./priv/static/image-cropper.mjs"
+    },
+    "./navigation-menu": {
+      "types": "./priv/static/types/hooks/navigation-menu.d.ts",
+      "import": "./priv/static/navigation-menu.mjs"
+    },
+    "./cascade-select": {
+      "types": "./priv/static/types/hooks/cascade-select.d.ts",
+      "import": "./priv/static/cascade-select.mjs"
+    },
+    "./tour": {
+      "types": "./priv/static/types/hooks/tour.d.ts",
+      "import": "./priv/static/tour.mjs"
+    },
     "./tree-view": {
       "types": "./priv/static/types/hooks/tree-view.d.ts",
       "import": "./priv/static/tree-view.mjs"
@@ -191,6 +255,7 @@
     "@zag-js/angle-slider": "^1.43.3",
     "@zag-js/avatar": "^1.43.3",
     "@zag-js/carousel": "^1.43.3",
+    "@zag-js/cascade-select": "^1.43.3",
     "@zag-js/checkbox": "^1.43.3",
     "@zag-js/clipboard": "^1.43.3",
     "@zag-js/collapsible": "^1.43.3",
@@ -198,31 +263,46 @@
     "@zag-js/color-picker": "^1.43.3",
     "@zag-js/combobox": "^1.43.3",
     "@zag-js/core": "^1.43.3",
+    "@zag-js/date-input": "^1.43.3",
     "@zag-js/date-picker": "^1.43.3",
     "@zag-js/dialog": "^1.43.3",
+    "@zag-js/drawer": "^1.43.3",
     "@zag-js/editable": "^1.43.3",
     "@zag-js/file-upload": "^1.43.3",
     "@zag-js/floating-panel": "^1.43.3",
+    "@zag-js/hover-card": "^1.43.3",
+    "@zag-js/image-cropper": "^1.43.3",
     "@zag-js/listbox": "^1.43.3",
     "@zag-js/marquee": "^1.43.3",
     "@zag-js/menu": "^1.43.3",
+    "@zag-js/navigation-menu": "^1.43.3",
     "@zag-js/number-input": "^1.43.3",
     "@zag-js/pagination": "^1.43.3",
     "@zag-js/password-input": "^1.43.3",
     "@zag-js/pin-input": "^1.43.3",
+    "@zag-js/popover": "^1.43.3",
     "@zag-js/popper": "^1.43.3",
+    "@zag-js/presence": "^1.43.3",
+    "@zag-js/progress": "^1.43.3",
+    "@zag-js/qr-code": "^1.43.3",
     "@zag-js/radio-group": "^1.43.3",
+    "@zag-js/rating-group": "^1.43.3",
+    "@zag-js/scroll-area": "^1.43.3",
     "@zag-js/select": "^1.43.3",
     "@zag-js/signature-pad": "^1.43.3",
     "@zag-js/slider": "^1.43.3",
+    "@zag-js/splitter": "^1.43.3",
+    "@zag-js/steps": "^1.43.3",
     "@zag-js/switch": "^1.43.3",
     "@zag-js/tabs": "^1.43.3",
     "@zag-js/tags-input": "^1.43.3",
     "@zag-js/timer": "^1.43.3",
     "@zag-js/toast": "^1.43.3",
+    "@zag-js/toc": "^1.43.3",
     "@zag-js/toggle": "^1.43.3",
     "@zag-js/toggle-group": "^1.43.3",
     "@zag-js/tooltip": "^1.43.3",
+    "@zag-js/tour": "^1.43.3",
     "@zag-js/tree-view": "^1.43.3",
     "@zag-js/types": "^1.43.3",
     "@zag-js/vanilla": "^1.43.3",

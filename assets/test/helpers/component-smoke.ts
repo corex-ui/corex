@@ -315,6 +315,57 @@ export function toggleGroupTree(): HTMLElement {
   );
 }
 
+export function popoverTree(): HTMLElement {
+  return withId(
+    scopeTree("popover", [
+      {
+        part: "root",
+        children: [
+          { part: "trigger" },
+          { part: "positioner", children: [{ part: "content" }] },
+        ],
+      },
+    ])
+  );
+}
+
+export function hoverCardTree(): HTMLElement {
+  return withId(
+    scopeTree("hover-card", [
+      {
+        part: "root",
+        children: [
+          { part: "trigger" },
+          { part: "positioner", children: [{ part: "content" }] },
+        ],
+      },
+    ])
+  );
+}
+
+export function drawerTree(): HTMLElement {
+  return withId(
+    scopeTree("drawer", [
+      {
+        part: "root",
+        children: [
+          { part: "trigger" },
+          { part: "backdrop" },
+          {
+            part: "positioner",
+            children: [
+              {
+                part: "content",
+                children: [{ part: "grabber" }, { part: "title" }],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+  );
+}
+
 export function tooltipTree(): HTMLElement {
   return withId(
     scopeTree("tooltip", [
@@ -542,3 +593,257 @@ export const sampleTreeRoot: TreeNode = {
   name: "Root",
   children: [{ value: "child", name: "Child" }],
 };
+
+export function progressTree(): HTMLElement {
+  return withId(
+    scopeTree("progress", [
+      {
+        part: "root",
+        children: [
+          { part: "track", children: [{ part: "range" }] },
+          { part: "value-text" },
+        ],
+      },
+    ])
+  );
+}
+
+export function ratinggroupTree(): HTMLElement {
+  return withId(
+    scopeTree("rating-group", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "control",
+            children: [
+              { part: "item", attrs: { "data-index": "1" } },
+              { part: "item", attrs: { "data-index": "2" } },
+            ],
+          },
+          { part: "hidden-input" },
+        ],
+      },
+    ])
+  );
+}
+
+export function stepsTree(): HTMLElement {
+  return withId(
+    scopeTree("steps", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "list",
+            children: [
+              {
+                part: "item",
+                attrs: { "data-index": "0" },
+                children: [{ part: "trigger", attrs: { "data-index": "0" } }],
+              },
+            ],
+          },
+          { part: "content", attrs: { "data-index": "0" } },
+          { part: "next-trigger" },
+          { part: "prev-trigger" },
+        ],
+      },
+    ])
+  );
+}
+
+export function qrcodeTree(): HTMLElement {
+  return withId(
+    scopeTree("qr-code", [
+      { part: "root", children: [{ part: "frame", children: [{ part: "pattern" }] }] },
+    ])
+  );
+}
+
+export function presenceTree(): HTMLElement {
+  return withId(scopeTree("presence", [{ part: "root" }]));
+}
+
+export function splitterTree(): HTMLElement {
+  return withId(
+    scopeTree("splitter", [
+      {
+        part: "root",
+        children: [
+          { part: "panel", attrs: { "data-id": "a" } },
+          { part: "resize-trigger", attrs: { "data-id": "a:b" } },
+          { part: "panel", attrs: { "data-id": "b" } },
+        ],
+      },
+    ])
+  );
+}
+
+export function scrollareaTree(): HTMLElement {
+  return withId(
+    scopeTree("scroll-area", [
+      {
+        part: "root",
+        children: [
+          { part: "viewport", children: [{ part: "content" }] },
+          { part: "scrollbar", children: [{ part: "thumb" }] },
+        ],
+      },
+    ])
+  );
+}
+
+export function tocTree(): HTMLElement {
+  return withId(
+    scopeTree("toc", [
+      {
+        part: "root",
+        children: [
+          { part: "title" },
+          { part: "indicator" },
+          {
+            part: "list",
+            tag: "ul",
+            children: [
+              {
+                part: "item",
+                tag: "li",
+                attrs: { "data-value": "intro", "data-depth": "2" },
+                children: [
+                  {
+                    part: "link",
+                    tag: "a",
+                    attrs: { "data-value": "intro", "data-depth": "2", href: "#intro" },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+  );
+}
+
+export function dateinputTree(): HTMLElement {
+  return withId(
+    scopeTree("date-input", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "control",
+            children: [
+              { part: "segment-group", children: [
+                { part: "skeleton" },
+                { part: "segment", tag: "span", attrs: { "data-type": "month" } },
+                { part: "segment", tag: "span", attrs: { "data-type": "day" } },
+                { part: "segment", tag: "span", attrs: { "data-type": "year" } },
+              ] },
+              { part: "hidden-input", tag: "input", attrs: { type: "hidden" } },
+            ],
+          },
+        ],
+      },
+    ])
+  );
+}
+
+export function imagecropperTree(): HTMLElement {
+  return withId(
+    scopeTree("image-cropper", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "viewport",
+            children: [
+              { part: "image", tag: "img", attrs: { src: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" } },
+              {
+                part: "selection",
+                children: ["n", "e", "s", "w", "ne", "se", "sw", "nw"].map((position) => ({
+                  part: "handle",
+                  attrs: { "data-position": position },
+                  children: [{ part: "handle-inner", tag: "span" }],
+                })),
+              },
+            ],
+          },
+        ],
+      },
+    ])
+  );
+}
+
+export function navigationmenuTree(): HTMLElement {
+  return withId(
+    scopeTree("navigation-menu", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "list",
+            tag: "ul",
+            children: [
+              {
+                part: "item",
+                tag: "li",
+                attrs: { "data-value": "product" },
+                children: [{ part: "trigger", tag: "button", attrs: { "data-value": "product" } }],
+              },
+            ],
+          },
+          { part: "content", attrs: { "data-value": "product" } },
+        ],
+      },
+    ])
+  );
+}
+
+export function cascadeselectTree(): HTMLElement {
+  return withId(
+    scopeTree("cascade-select", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "control",
+            children: [{ part: "trigger", tag: "button" }, { part: "value-text" }],
+          },
+          { part: "positioner", children: [{ part: "content" }] },
+          { part: "hidden-input", tag: "input", attrs: { type: "hidden" } },
+        ],
+      },
+    ])
+  );
+}
+
+export function tourTree(): HTMLElement {
+  return withId(
+    scopeTree("tour", [
+      {
+        part: "root",
+        children: [
+          { part: "backdrop" },
+          { part: "spotlight" },
+          {
+            part: "positioner",
+            children: [
+              {
+                part: "content",
+                children: [
+                  { part: "title" },
+                  { part: "description" },
+                  { part: "progress-text" },
+                  { part: "actions" },
+                  { part: "close-trigger", tag: "button" },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+  );
+}

@@ -6,16 +6,18 @@ import {
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
-  createAnatomy,
   createMachine,
   createZagLiveHook,
   getString,
   observeAttributes,
   observeChildren
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.43.3/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");

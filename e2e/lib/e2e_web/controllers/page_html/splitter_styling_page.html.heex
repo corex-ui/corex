@@ -1,0 +1,93 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="splitter-styling-page"
+    title={~t"Splitter · Style"}
+    subtitle={
+      ~t"Semantic colors, visual variants, density, corner radius, and width utilities via modifier classes on the host."
+    }
+  >
+    <.demo_section
+      id="splitter-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.SplitterDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="splitter" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SplitterDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="splitter-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.SplitterDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="splitter" axis={:variant} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SplitterDemo.styling_variant_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="splitter-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.SplitterDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="splitter" />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SplitterDemo.styling_variant_matrix_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="splitter-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.SplitterDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="splitter" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SplitterDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="splitter-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.SplitterDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="splitter" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SplitterDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="splitter-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.SplitterDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="splitter" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SplitterDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

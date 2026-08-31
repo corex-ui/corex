@@ -6,25 +6,27 @@ import {
   addPoints,
   createRect,
   subtractPoints
-} from "./chunks/chunk-UZJUBX5G.mjs";
+} from "./chunks/chunk-TDOE7VOH.mjs";
 import {
   clampValue,
   toPx
 } from "./chunks/chunk-AJX2XHOK.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-4JF6I36R.mjs";
+} from "./chunks/chunk-55YTGZEH.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   addDomEvent,
   canPushEvent,
-  createAnatomy,
   createGuards,
   createMachine,
   createZagLiveHook,
@@ -45,7 +47,7 @@ import {
   raf,
   resizeObserverBorderBox,
   trackPointerMove
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+floating-panel@1.43.3/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(

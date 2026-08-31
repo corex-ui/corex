@@ -1,0 +1,23 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="toc-anatomy-page"
+    title={~t"Table of contents · Anatomy"}
+    subtitle={~t"Sticky nav beside scrollable article headings."}
+  >
+    <.demo_section
+      id="toc-anatomy-minimal"
+      title={~t"Basic"}
+      code={E2eWeb.Demos.TocDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.TocDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="toc-anatomy-article"
+      title={~t"Sticky with article"}
+      code={E2eWeb.Demos.TocDemo.anatomy_article_code()}
+    >
+      <:preview><E2eWeb.Demos.TocDemo.anatomy_article_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

@@ -6,14 +6,14 @@ import {
   prepareJsHeightInitialState,
   runHeightOpenTransition,
   stripHiddenFromProps
-} from "./chunks/chunk-BF7VYAZN.mjs";
+} from "./chunks/chunk-YBHOREUC.mjs";
 import {
   TreeCollection
-} from "./chunks/chunk-R3ADGBXU.mjs";
+} from "./chunks/chunk-6M2TQLRV.mjs";
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunks/chunk-5CUB6Y47.mjs";
+} from "./chunks/chunk-RJJNFNHH.mjs";
 import {
   createValueEmitter,
   idMatches,
@@ -22,13 +22,15 @@ import {
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   add,
   addOrRemove,
   ariaAttr,
   canPushEvent,
-  createAnatomy,
   createGuards,
   createMachine,
   createZagLiveHook,
@@ -59,7 +61,7 @@ import {
   setElementValue,
   toArray,
   uniq
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tree-view@1.43.3/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
 var anatomy = createAnatomy("tree-view").parts(

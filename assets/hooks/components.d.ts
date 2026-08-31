@@ -15,6 +15,9 @@ declare module "corex/avatar" {
 declare module "corex/carousel" {
   export const Carousel: CorexHook;
 }
+declare module "corex/cascade-select" {
+  export const CascadeSelect: CorexHook;
+}
 declare module "corex/checkbox" {
   export const Checkbox: CorexHook;
 }
@@ -30,11 +33,17 @@ declare module "corex/color-picker" {
 declare module "corex/combobox" {
   export const Combobox: CorexHook;
 }
+declare module "corex/date-input" {
+  export const DateInput: CorexHook;
+}
 declare module "corex/date-picker" {
   export const DatePicker: CorexHook;
 }
 declare module "corex/dialog" {
   export const Dialog: CorexHook;
+}
+declare module "corex/drawer" {
+  export const Drawer: CorexHook;
 }
 declare module "corex/editable" {
   export const Editable: CorexHook;
@@ -45,6 +54,12 @@ declare module "corex/file-upload" {
 declare module "corex/floating-panel" {
   export const FloatingPanel: CorexHook;
 }
+declare module "corex/hover-card" {
+  export const HoverCard: CorexHook;
+}
+declare module "corex/image-cropper" {
+  export const ImageCropper: CorexHook;
+}
 declare module "corex/listbox" {
   export const Listbox: CorexHook;
 }
@@ -53,6 +68,9 @@ declare module "corex/marquee" {
 }
 declare module "corex/menu" {
   export const Menu: CorexHook;
+}
+declare module "corex/navigation-menu" {
+  export const NavigationMenu: CorexHook;
 }
 declare module "corex/number-input" {
   export const NumberInput: CorexHook;
@@ -66,8 +84,26 @@ declare module "corex/password-input" {
 declare module "corex/pin-input" {
   export const PinInput: CorexHook;
 }
+declare module "corex/popover" {
+  export const Popover: CorexHook;
+}
+declare module "corex/presence" {
+  export const Presence: CorexHook;
+}
+declare module "corex/progress" {
+  export const Progress: CorexHook;
+}
+declare module "corex/qr-code" {
+  export const QrCode: CorexHook;
+}
 declare module "corex/radio-group" {
   export const RadioGroup: CorexHook;
+}
+declare module "corex/rating-group" {
+  export const RatingGroup: CorexHook;
+}
+declare module "corex/scroll-area" {
+  export const ScrollArea: CorexHook;
 }
 declare module "corex/select" {
   export const Select: CorexHook;
@@ -77,6 +113,12 @@ declare module "corex/signature-pad" {
 }
 declare module "corex/slider" {
   export const Slider: CorexHook;
+}
+declare module "corex/splitter" {
+  export const Splitter: CorexHook;
+}
+declare module "corex/steps" {
+  export const Steps: CorexHook;
 }
 declare module "corex/switch" {
   export const Switch: CorexHook;
@@ -93,6 +135,9 @@ declare module "corex/timer" {
 declare module "corex/toast" {
   export const Toast: CorexHook;
 }
+declare module "corex/toc" {
+  export const Toc: CorexHook;
+}
 declare module "corex/toggle" {
   export const Toggle: CorexHook;
 }
@@ -101,6 +146,9 @@ declare module "corex/toggle-group" {
 }
 declare module "corex/tooltip" {
   export const Tooltip: CorexHook;
+}
+declare module "corex/tour" {
+  export const Tour: CorexHook;
 }
 declare module "corex/tree-view" {
   export const TreeView: CorexHook;

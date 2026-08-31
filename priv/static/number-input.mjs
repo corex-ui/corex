@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-HWUNIC34.mjs";
+} from "./chunks/chunk-G4YHNHIV.mjs";
 import {
   clampValue,
   decrementValue,
@@ -16,14 +16,14 @@ import {
   markUsed,
   syncFormInput,
   syncHiddenInputValue
-} from "./chunks/chunk-F6YUZM6O.mjs";
+} from "./chunks/chunk-6Q56QPKD.mjs";
 import {
   formatDisplayValue,
   mergeFormatOptions,
   mountNumberBinding,
   readUpdatedServerNumber,
   resolveNumberInputSubmitValue
-} from "./chunks/chunk-I5HWU3ET.mjs";
+} from "./chunks/chunk-2TVI6WVN.mjs";
 import {
   emitResponse,
   idMatches,
@@ -32,6 +32,9 @@ import {
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   MAX_Z_INDEX,
   VanillaMachine,
@@ -39,7 +42,6 @@ import {
   ariaAttr,
   callAll,
   canPushEvent,
-  createAnatomy,
   createZagLiveHook,
   dataAttr,
   getBoolean,
@@ -62,7 +64,7 @@ import {
   setup,
   syncInputFormAssociation,
   trackFormControl
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+number-input@1.43.3/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(

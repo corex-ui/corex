@@ -10,6 +10,9 @@ import { ColorPicker, parse as parseColor } from "../../components/color-picker"
 import { Combobox } from "../../components/combobox";
 import { DatePicker } from "../../components/date-picker";
 import { Dialog } from "../../components/dialog";
+import { Drawer } from "../../components/drawer";
+import { HoverCard } from "../../components/hover-card";
+import { Popover } from "../../components/popover";
 import { Editable } from "../../components/editable";
 import { FileUpload } from "../../components/file-upload";
 import { FloatingPanel } from "../../components/floating-panel";
@@ -35,6 +38,19 @@ import { Toggle } from "../../components/toggle";
 import { Tooltip } from "../../components/tooltip";
 import type { Props as ToggleProps } from "@zag-js/toggle";
 import { TreeView } from "../../components/tree-view";
+import { Progress } from "../../components/progress";
+import { RatingGroup } from "../../components/rating-group";
+import { Steps } from "../../components/steps";
+import { QrCode } from "../../components/qr-code";
+import { Presence } from "../../components/presence";
+import { Splitter } from "../../components/splitter";
+import { ScrollArea } from "../../components/scroll-area";
+import { Toc } from "../../components/toc";
+import { DateInput } from "../../components/date-input";
+import { ImageCropper } from "../../components/image-cropper";
+import { NavigationMenu } from "../../components/navigation-menu";
+import { CascadeSelect } from "../../components/cascade-select";
+import { Tour } from "../../components/tour";
 import { collection } from "@zag-js/listbox";
 import { zagListCollectionConfig, type ValueLabelItem } from "../../lib/list-collection";
 import {
@@ -47,7 +63,9 @@ import {
   colorPickerTree,
   comboboxTree,
   dialogTree,
+  drawerTree,
   editableTree,
+  hoverCardTree,
   fileUploadTree,
   floatingPanelTree,
   listboxTree,
@@ -57,6 +75,7 @@ import {
   paginationTree,
   passwordInputTree,
   pinInputTree,
+  popoverTree,
   radioGroupTree,
   sampleTreeRoot,
   selectTree,
@@ -72,6 +91,19 @@ import {
   tooltipTree,
   treeViewTree,
   withId,
+  progressTree,
+  ratinggroupTree,
+  stepsTree,
+  qrcodeTree,
+  presenceTree,
+  splitterTree,
+  scrollareaTree,
+  tocTree,
+  dateinputTree,
+  imagecropperTree,
+  navigationmenuTree,
+  cascadeselectTree,
+  tourTree,
 } from "../helpers/component-smoke";
 
 function smoke(
@@ -153,6 +185,21 @@ describe("component render smoke", () => {
       id: smokeId,
       selectionMode: "single",
     });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Drawer", () => {
+    const c = new Drawer(drawerTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("HoverCard", () => {
+    const c = new HoverCard(hoverCardTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Popover", () => {
+    const c = new Popover(popoverTree(), { id: smokeId });
     return { render: () => c.render(), destroy: () => c.destroy() };
   });
 
@@ -293,6 +340,87 @@ describe("component render smoke", () => {
 
   smoke("TreeView", () => {
     const c = new TreeView(treeViewTree(), { id: smokeId, rootNode: sampleTreeRoot });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Progress", () => {
+    const c = new Progress(progressTree(), { id: smokeId, defaultValue: 40 });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("RatingGroup", () => {
+    const c = new RatingGroup(ratinggroupTree(), { id: smokeId, count: 5 });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Steps", () => {
+    const c = new Steps(stepsTree(), { id: smokeId, count: 3 });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("QrCode", () => {
+    const c = new QrCode(qrcodeTree(), { id: smokeId, defaultValue: "https://zagjs.com" });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Presence", () => {
+    const c = new Presence(presenceTree(), { present: true });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Splitter", () => {
+    const c = new Splitter(splitterTree(), {
+      id: smokeId,
+      panels: [{ id: "a" }, { id: "b" }],
+      defaultSize: [50, 50],
+    });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("ScrollArea", () => {
+    const c = new ScrollArea(scrollareaTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Toc", () => {
+    const c = new Toc(tocTree(), {
+      id: smokeId,
+      items: [
+        { value: "intro", depth: 2 },
+        { value: "usage", depth: 2 },
+      ],
+    });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("DateInput", () => {
+    const c = new DateInput(dateinputTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("ImageCropper", () => {
+    const c = new ImageCropper(imagecropperTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("NavigationMenu", () => {
+    const c = new NavigationMenu(navigationmenuTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("CascadeSelect", () => {
+    const c = new CascadeSelect(cascadeselectTree(), {
+      id: smokeId,
+      rootNode: { value: "root", label: "root", children: [{ value: "a", label: "A" }] },
+    });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Tour", () => {
+    const c = new Tour(tourTree(), {
+      id: smokeId,
+      steps: [{ id: "start", type: "dialog", title: "Hi", description: "There" }],
+    });
     return { render: () => c.render(), destroy: () => c.destroy() };
   });
 });

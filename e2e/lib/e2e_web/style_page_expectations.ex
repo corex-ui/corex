@@ -18,6 +18,8 @@ defmodule E2eWeb.StylePageExpectations do
     {"data_list_styling_page.html.heex", "data-list"},
     {"date_picker_styling_page.html.heex", "date-picker"},
     {"dialog_styling_page.html.heex", "dialog"},
+    {"drawer_styling_page.html.heex", "drawer"},
+    {"hover_card_styling_page.html.heex", "hover-card"},
     {"editable_styling_page.html.heex", "editable"},
     {"file_upload_styling_page.html.heex", "file-upload"},
     {"file_upload_live_styling_page.html.heex", "file-upload"},
@@ -32,6 +34,7 @@ defmodule E2eWeb.StylePageExpectations do
     {"pagination_styling_page.html.heex", "pagination"},
     {"password_input_styling_page.html.heex", "password-input"},
     {"pin_input_styling_page.html.heex", "pin-input"},
+    {"popover_styling_page.html.heex", "popover"},
     {"radio_group_styling_page.html.heex", "radio-group"},
     {"select_styling_page.html.heex", "select"},
     {"signature_styling_page.html.heex", "signature-pad"},
@@ -42,6 +45,19 @@ defmodule E2eWeb.StylePageExpectations do
     {"timer_styling_page.html.heex", "timer"},
     {"toggle_styling_page.html.heex", "toggle"},
     {"toggle_group_styling_page.html.heex", "toggle-group"},
+    {"progress_styling_page.html.heex", "progress"},
+    {"rating_group_styling_page.html.heex", "rating-group"},
+    {"steps_styling_page.html.heex", "steps"},
+    {"qr_code_styling_page.html.heex", "qr-code"},
+    {"presence_styling_page.html.heex", "presence"},
+    {"splitter_styling_page.html.heex", "splitter"},
+    {"scroll_area_styling_page.html.heex", "scroll-area"},
+    {"toc_styling_page.html.heex", "toc"},
+    {"date_input_styling_page.html.heex", "date-input"},
+    {"image_cropper_styling_page.html.heex", "image-cropper"},
+    {"navigation_menu_styling_page.html.heex", "navigation-menu"},
+    {"cascade_select_styling_page.html.heex", "cascade-select"},
+    {"tour_styling_page.html.heex", "tour"},
     {"tooltip_styling_page.html.heex", "tooltip"},
     {"tree_view/tree_view_styling_page.html.heex", "tree-view"}
   ]
@@ -70,7 +86,7 @@ defmodule E2eWeb.StylePageExpectations do
     pagination
   )
 
-  @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel)
+  @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel popover hover-card drawer tour)
   @skip_max_width_only ~W(pin-input)
 
   @fit_max_width_block_demo ~W(button switch toggle timer clipboard color-picker date-picker)

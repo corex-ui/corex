@@ -1,0 +1,23 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="steps-anatomy-page"
+    title={~t"Steps · Anatomy"}
+    subtitle={~t"Realistic copy, current pane only, and a locked next step."}
+  >
+    <.demo_section
+      id="steps-anatomy-minimal"
+      title={~t"Basic"}
+      code={E2eWeb.Demos.StepsDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.StepsDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="steps-anatomy-locked"
+      title={~t"Locked next"}
+      code={E2eWeb.Demos.StepsDemo.anatomy_locked_code()}
+    >
+      <:preview><E2eWeb.Demos.StepsDemo.anatomy_locked_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

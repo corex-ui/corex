@@ -1,22 +1,4 @@
 import {
-  stripZagSubmitNames
-} from "./chunks/chunk-56433QZX.mjs";
-import {
-  createLiveRegion
-} from "./chunks/chunk-NUOTFVKH.mjs";
-import {
-  getPlacement,
-  getPlacementSide,
-  getPlacementStyles
-} from "./chunks/chunk-YKCP6S4O.mjs";
-import {
-  trackDismissableElement
-} from "./chunks/chunk-CKZ5NOMG.mjs";
-import "./chunks/chunk-KNSNFBRP.mjs";
-import {
-  readPositioningOptions
-} from "./chunks/chunk-4JF6I36R.mjs";
-import {
   firstSelectedValue,
   initCollectionItems,
   itemValue,
@@ -25,33 +7,54 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-CDLVLVGW.mjs";
+} from "./chunks/chunk-JKQTBVVH.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-R3ADGBXU.mjs";
-import "./chunks/chunk-5CUB6Y47.mjs";
+} from "./chunks/chunk-6M2TQLRV.mjs";
+import "./chunks/chunk-RJJNFNHH.mjs";
+import {
+  stripZagSubmitNames
+} from "./chunks/chunk-OWAL5LKS.mjs";
+import {
+  createLiveRegion
+} from "./chunks/chunk-NUOTFVKH.mjs";
+import {
+  getPlacement,
+  getPlacementSide,
+  getPlacementStyles
+} from "./chunks/chunk-7DTCDTRW.mjs";
+import {
+  trackDismissableElement
+} from "./chunks/chunk-4ATAXYH3.mjs";
+import "./chunks/chunk-AVGG6QG4.mjs";
+import {
+  readPositioningOptions
+} from "./chunks/chunk-55YTGZEH.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-CPYFNSV2.mjs";
+} from "./chunks/chunk-2NCIS2R3.mjs";
 import {
   markUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-F6YUZM6O.mjs";
+} from "./chunks/chunk-6Q56QPKD.mjs";
 import {
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-I5HWU3ET.mjs";
+} from "./chunks/chunk-2TVI6WVN.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
 import {
   Component,
   VanillaMachine,
@@ -59,7 +62,6 @@ import {
   ariaAttr,
   canPushEvent,
   clickIfLink,
-  createAnatomy,
   createZagLiveHook,
   dataAttr,
   ensure,
@@ -90,7 +92,7 @@ import {
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+combobox@1.43.3/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(

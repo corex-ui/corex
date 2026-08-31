@@ -18,6 +18,8 @@ defmodule Corex.MCP.Tools.Components do
     "listbox" => ["Corex.List.new/1"],
     "menu" => ["Corex.Tree.new/1"],
     "tree_view" => ["Corex.Tree.new/1"],
+    "cascade_select" => ["Corex.Tree.new/1"],
+    "toc" => ["Corex.Content.new/1"],
     "carousel" => ["Corex.Image.new/2"]
   }
 

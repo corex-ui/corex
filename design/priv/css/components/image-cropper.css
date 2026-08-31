@@ -1,0 +1,102 @@
+@import "../main.css";
+
+@layer components {
+  .image-cropper {
+    width: 100%;
+    max-width: var(--container-sm);
+  }
+
+  .image-cropper[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="root"] {
+    color: var(--ctl-ink, var(--color-ink));
+    width: 100%;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="viewport"] {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--ctl-radius, var(--radius-md));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    background: var(--color-surface-muted, var(--color-ui-muted));
+    min-height: calc(var(--ctl-size, var(--spacing-size)) * 12);
+    aspect-ratio: 16 / 10;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="image"] {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(var(--image-offset-x, 0px), var(--image-offset-y, 0px))
+      scale(var(--image-zoom, 1)) rotate(var(--image-rotation, 0deg));
+    transform-origin: center center;
+  }
+
+  .image-cropper[data-loading] [data-scope="image-cropper"][data-part="selection"],
+  .image-cropper[data-loading] [data-scope="image-cropper"][data-part="handle"] {
+    display: none;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="selection"] {
+    position: absolute;
+    top: var(--crop-y);
+    left: var(--crop-x);
+    width: var(--crop-width);
+    height: var(--crop-height);
+    box-shadow: 0 0 0 9999px color-mix(in srgb, var(--color-ink) 50%, transparent);
+    border: var(--border-width) solid color-mix(in srgb, var(--color-root) 70%, transparent);
+    cursor: move;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="selection"][data-shape="circle"] {
+    border-radius: 50%;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="handle"] {
+    --handle-size: calc(var(--ctl-size, var(--spacing-size)) * 0.4);
+    width: var(--handle-size);
+    height: var(--handle-size);
+    background: var(--color-root);
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: 1px;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="handle"][data-position="n"],
+  .image-cropper [data-scope="image-cropper"][data-part="handle"][data-position="s"] {
+    height: calc(var(--handle-size) / 2);
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="handle"][data-position="e"],
+  .image-cropper [data-scope="image-cropper"][data-part="handle"][data-position="w"] {
+    width: calc(var(--handle-size) / 2);
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="handle"] > span,
+  .image-cropper [data-scope="image-cropper"][data-part="handle"] > div {
+    width: calc(var(--handle-size) / 2);
+    height: calc(var(--handle-size) / 2);
+    background: var(--color-root);
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="grid"] {
+    --grid-color: color-mix(in srgb, var(--color-root) 70%, transparent);
+    --grid-line-width: 1px;
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="grid"][data-axis="vertical"] {
+    border-inline: var(--grid-line-width) solid var(--grid-color);
+  }
+
+  .image-cropper [data-scope="image-cropper"][data-part="grid"][data-axis="horizontal"] {
+    border-block: var(--grid-line-width) solid var(--grid-color);
+  }
+}

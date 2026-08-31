@@ -1,0 +1,16 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="scroll-area-anatomy-page"
+    title={~t"Scroll area · Anatomy"}
+    subtitle={~t"Viewport, overflowing content, and a thumb."}
+  >
+    <.demo_section
+      id="scroll-area-anatomy-minimal"
+      title={~t"Basic"}
+      code={E2eWeb.Demos.ScrollAreaDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.ScrollAreaDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

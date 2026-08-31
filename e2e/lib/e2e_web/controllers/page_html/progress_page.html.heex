@@ -1,0 +1,30 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="progress-anatomy-page"
+    title={~t"Progress · Anatomy"}
+    subtitle={~t"Linear and circular variants."}
+  >
+    <.demo_section
+      id="progress-anatomy-linear"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.ProgressDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.ProgressDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="progress-anatomy-circular"
+      title={~t"Circular"}
+      code={E2eWeb.Demos.ProgressDemo.anatomy_circular_code()}
+    >
+      <:preview><E2eWeb.Demos.ProgressDemo.anatomy_circular_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="progress-anatomy-loading"
+      title={~t"Loading"}
+      code={E2eWeb.Demos.ProgressDemo.anatomy_loading_code()}
+    >
+      <:preview><E2eWeb.Demos.ProgressDemo.anatomy_loading_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

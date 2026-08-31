@@ -1,0 +1,87 @@
+@import "../main.css";
+
+@layer components {
+  .splitter {
+    width: 100%;
+    max-width: var(--container-sm);
+  }
+
+  .splitter[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .splitter [data-scope="splitter"][data-part="root"] {
+    display: flex;
+    width: 100%;
+    height: calc(var(--ctl-size, var(--spacing-size)) * 8);
+    flex-wrap: nowrap;
+    min-height: calc(var(--ctl-size, var(--spacing-size)) * 8);
+    overflow: hidden;
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    background: var(--ctl-bg, var(--color-ui));
+    color: var(--ctl-ink, var(--color-ink));
+  }
+
+  .splitter [data-scope="splitter"][data-part="root"][data-orientation="vertical"] {
+    flex-direction: column;
+    min-height: calc(var(--ctl-size, var(--spacing-size)) * 12);
+  }
+
+  .splitter [data-scope="splitter"][data-part="panel"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    padding: var(--ctl-space, var(--spacing-space));
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-muted, var(--color-ui-muted));
+    color: var(--ctl-ink, var(--color-ink));
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    padding: 0;
+    outline: 0;
+    flex-shrink: 0;
+    touch-action: none;
+    user-select: none;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+    transition: background-color var(--duration-normal) ease;
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="horizontal"] {
+    width: 0.75rem;
+    cursor: col-resize;
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="vertical"] {
+    height: 0.75rem;
+    width: 100%;
+    cursor: row-resize;
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"][data-focus],
+  .splitter [data-scope="splitter"][data-part="resize-trigger"]:focus-visible {
+    background: var(--ctl-fill, var(--color-ink));
+    color: var(--ctl-fill-ink, var(--color-root));
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"]:active {
+    background: var(--ctl-fill-active, var(--color-ink));
+    color: var(--ctl-fill-ink, var(--color-root));
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

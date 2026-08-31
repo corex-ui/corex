@@ -1,0 +1,34 @@
+@import "../main.css";
+
+@layer components {
+  .presence {
+    width: fit-content;
+  }
+
+  .presence[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .presence [data-scope="presence"][data-part="root"] {
+    transform-origin: left top;
+    color: var(--ctl-ink, var(--color-ink));
+    background-color: var(--ctl-bg, var(--color-ui));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    padding: var(--ctl-space, var(--spacing-space));
+    min-width: var(--container-5xs);
+  }
+
+  .presence [data-scope="presence"][data-part="root"][data-state="open"] {
+    animation: scaleFadeIn var(--duration-fast, 0.15s) ease-out;
+  }
+
+  .presence [data-scope="presence"][data-part="root"][data-state="closed"] {
+    animation: scaleFadeOut var(--duration-fast, 0.1s) ease-in;
+  }
+
+  .presence [data-scope="presence"][data-part="root"][hidden] {
+    display: none !important;
+    animation: none !important;
+  }
+}

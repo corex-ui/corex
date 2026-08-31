@@ -7,6 +7,14 @@
 - Reject NUL, CR, and LF in the URL allowlist helper and the JS redirect helper after leading C0/space stripping, so embedded newlines (for example `mailto:` header injection) cannot pass the allowlist.
 - Document private reporting via [GitHub Security Advisories](https://github.com/corex-ui/corex/security/advisories/new), trusted HTML sinks, MCP, and the LiveView 1.1 Hex pin versus the upstream CVE floor. See [SECURITY.md](https://github.com/corex-ui/corex/blob/main/SECURITY.md).
 
+### Components
+
+- **Popover**, **Hover card**, and **Drawer** (Zag.js beta) — overlay hosts with Connect, hooks, Design CSS, and e2e docs.
+- **Progress**, **Rating group**, **Steps**, **QR code**, and **Presence** — status hosts.
+- **Splitter**, **Scroll area**, and **TOC** — layout hosts.
+- **Date input** (Zag.js beta) and **Image cropper** — form / pointer hosts.
+- **Navigation menu**, **Cascade select** (Zag.js beta), and **Tour** — compound hosts.
+
 ### Documentation
 
 - Clarify that `e2e/` is a published showcase, not a starter. Copy examples from component docs and `mix corex.gen.*`.

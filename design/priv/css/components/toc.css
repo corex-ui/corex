@@ -1,0 +1,89 @@
+@import "../main.css";
+
+@layer components {
+  .toc {
+    width: fit-content;
+    max-width: var(--container-4xs);
+  }
+
+  .toc[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .toc [data-scope="toc"][data-part="root"] {
+    position: relative;
+    max-height: var(--container-xs);
+    overflow-y: auto;
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    padding: var(--ctl-space, var(--spacing-space));
+    background: var(--ctl-bg, var(--color-ui));
+    color: var(--ctl-ink, var(--color-ink));
+  }
+
+  .toc [data-scope="toc"][data-part="title"] {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold, 600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-muted);
+    margin: 0 0 var(--spacing-space-xs);
+    padding-inline: var(--spacing-space-xs);
+  }
+
+  .toc [data-scope="toc"][data-part="list"] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc [data-scope="toc"][data-part="item"] {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    padding-inline-start: calc(var(--depth, 2) * 0.75rem - 1rem);
+  }
+
+  .toc [data-scope="toc"][data-part="link"] {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    padding: var(--spacing-space-xs) var(--spacing-space-sm);
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    font-size: var(--ctl-text, var(--text-sm));
+    border-radius: var(--ctl-radius, var(--radius-sm));
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .toc [data-scope="toc"][data-part="link"]:hover {
+    color: var(--ctl-ink, var(--color-ink));
+    background-color: var(--color-ui-hover);
+  }
+
+  .toc [data-scope="toc"][data-part="link"][data-active] {
+    color: var(--ctl-fill, var(--color-ink));
+    font-weight: var(--font-weight-medium);
+    background: transparent;
+  }
+
+  .toc [data-scope="toc"][data-part="indicator"] {
+    width: 2px;
+    background-color: var(--ctl-fill, var(--color-ink));
+    position: absolute;
+    inset-inline-start: 0;
+    top: var(--top);
+    height: var(--height);
+    transition-property: top, height;
+    transition-duration: var(--duration-fast, 0.15s);
+  }
+}

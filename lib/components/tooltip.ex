@@ -26,10 +26,24 @@ defmodule Corex.Tooltip do
   ### Placement
 
   ```heex
-  <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
-    <:trigger>Bottom</:trigger>
-    <:content>Tooltip below</:content>
-  </.tooltip>
+    <div class="flex flex-wrap items-center gap-space">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+        <:trigger>Bottom</:trigger>
+        <:content>Tooltip below</:content>
+      </.tooltip>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top"}}>
+        <:trigger>Top</:trigger>
+        <:content>Tooltip above</:content>
+      </.tooltip>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "left"}}>
+        <:trigger>Left</:trigger>
+        <:content>Tooltip on the left</:content>
+      </.tooltip>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "right"}}>
+        <:trigger>Right</:trigger>
+        <:content>Tooltip on the right</:content>
+      </.tooltip>
+    </div>
   ```
 
   <!-- tabs-close -->

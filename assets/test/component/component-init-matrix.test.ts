@@ -12,6 +12,9 @@ import { ColorPicker, parse as parseColor } from "../../components/color-picker"
 import { Combobox } from "../../components/combobox";
 import { DatePicker } from "../../components/date-picker";
 import { Dialog } from "../../components/dialog";
+import { Drawer } from "../../components/drawer";
+import { HoverCard } from "../../components/hover-card";
+import { Popover } from "../../components/popover";
 import { Editable } from "../../components/editable";
 import { FileUpload } from "../../components/file-upload";
 import { FloatingPanel } from "../../components/floating-panel";
@@ -36,6 +39,19 @@ import { Toggle } from "../../components/toggle";
 import { Tooltip } from "../../components/tooltip";
 import type { Props as ToggleProps } from "@zag-js/toggle";
 import { TreeView } from "../../components/tree-view";
+import { Progress } from "../../components/progress";
+import { RatingGroup } from "../../components/rating-group";
+import { Steps } from "../../components/steps";
+import { QrCode } from "../../components/qr-code";
+import { Presence } from "../../components/presence";
+import { Splitter } from "../../components/splitter";
+import { ScrollArea } from "../../components/scroll-area";
+import { Toc } from "../../components/toc";
+import { DateInput } from "../../components/date-input";
+import { ImageCropper } from "../../components/image-cropper";
+import { NavigationMenu } from "../../components/navigation-menu";
+import { CascadeSelect } from "../../components/cascade-select";
+import { Tour } from "../../components/tour";
 import { zagListCollectionConfig, type ValueLabelItem } from "../../lib/list-collection";
 import {
   accordionTree,
@@ -47,7 +63,9 @@ import {
   colorPickerTree,
   comboboxTree,
   dialogTree,
+  drawerTree,
   editableTree,
+  hoverCardTree,
   fileUploadTree,
   floatingPanelTree,
   listboxTree,
@@ -56,6 +74,7 @@ import {
   paginationTree,
   passwordInputTree,
   pinInputTree,
+  popoverTree,
   radioGroupTree,
   sampleTreeRoot,
   selectTree,
@@ -69,6 +88,19 @@ import {
   toggleTree,
   tooltipTree,
   treeViewTree,
+  progressTree,
+  ratinggroupTree,
+  stepsTree,
+  qrcodeTree,
+  presenceTree,
+  splitterTree,
+  scrollareaTree,
+  tocTree,
+  dateinputTree,
+  imagecropperTree,
+  navigationmenuTree,
+  cascadeselectTree,
+  tourTree,
 } from "../helpers/component-smoke";
 import { runInitDestroy } from "../helpers/component-runner";
 
@@ -204,6 +236,30 @@ const cases: [string, Factory][] = [
     () => {
       const el = dialogTree();
       const c = new Dialog(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Drawer",
+    () => {
+      const el = drawerTree();
+      const c = new Drawer(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "HoverCard",
+    () => {
+      const el = hoverCardTree();
+      const c = new HoverCard(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Popover",
+    () => {
+      const el = popoverTree();
+      const c = new Popover(el, { id: el.id });
       return { init: () => c.init(), destroy: () => c.destroy() };
     },
   ],
@@ -400,6 +456,131 @@ const cases: [string, Factory][] = [
     () => {
       const el = treeViewTree();
       const c = new TreeView(el, { id: el.id, rootNode: sampleTreeRoot });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Progress",
+    () => {
+      const el = progressTree();
+      const c = new Progress(el, { id: el.id, defaultValue: 40 });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "RatingGroup",
+    () => {
+      const el = ratinggroupTree();
+      const c = new RatingGroup(el, { id: el.id, count: 5 });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Steps",
+    () => {
+      const el = stepsTree();
+      const c = new Steps(el, { id: el.id, count: 3 });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "QrCode",
+    () => {
+      const el = qrcodeTree();
+      const c = new QrCode(el, { id: el.id, defaultValue: "https://zagjs.com" });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Presence",
+    () => {
+      const el = presenceTree();
+      const c = new Presence(el, { present: true });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Splitter",
+    () => {
+      const el = splitterTree();
+      const c = new Splitter(el, {
+        id: el.id,
+        panels: [{ id: "a" }, { id: "b" }],
+        defaultSize: [50, 50],
+      });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "ScrollArea",
+    () => {
+      const el = scrollareaTree();
+      const c = new ScrollArea(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Toc",
+    () => {
+      const el = tocTree();
+      const c = new Toc(el, { id: el.id, items: [{ value: "intro", depth: 2 }] });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "DateInput",
+    () => {
+      const el = dateinputTree();
+      const c = new DateInput(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "ImageCropper",
+    () => {
+      const el = imagecropperTree();
+      const c = new ImageCropper(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "NavigationMenu",
+    () => {
+      const el = navigationmenuTree();
+      const c = new NavigationMenu(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "CascadeSelect",
+    () => {
+      const el = cascadeselectTree();
+      const c = new CascadeSelect(el, {
+        id: el.id,
+        rootNode: { value: "root", label: "root", children: [{ value: "a", label: "A" }] },
+      });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Tour",
+    () => {
+      Object.defineProperty(window, "visualViewport", {
+        configurable: true,
+        value: {
+          width: 1024,
+          height: 768,
+          offsetLeft: 0,
+          offsetTop: 0,
+          addEventListener() {},
+          removeEventListener() {},
+        },
+      });
+      const el = tourTree();
+      const c = new Tour(el, {
+        id: el.id,
+        steps: [{ id: "start", type: "dialog", title: "Hi", description: "There" }],
+      });
       return { init: () => c.init(), destroy: () => c.destroy() };
     },
   ],

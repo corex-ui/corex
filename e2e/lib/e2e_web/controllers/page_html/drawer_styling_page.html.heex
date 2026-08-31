@@ -1,0 +1,80 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="drawer-styling-page"
+    title={~t"Drawer · Style"}
+    subtitle={
+      ~t"Semantic colors, visual variants, size, and corner radius via modifier classes on the host."
+    }
+  >
+    <.demo_section
+      id="drawer-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.DrawerDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="drawer" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DrawerDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="drawer-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.DrawerDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="drawer" axis={:variant} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DrawerDemo.styling_variant_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="drawer-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.DrawerDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="drawer" />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DrawerDemo.styling_variant_matrix_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="drawer-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.DrawerDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="drawer" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DrawerDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="drawer-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.DrawerDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="drawer" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DrawerDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>
