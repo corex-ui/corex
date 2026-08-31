@@ -26,6 +26,7 @@ describe("Tour", () => {
     });
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
+    expect(el.querySelector('[data-part="spotlight"]')).toBeTruthy();
     c.destroy();
   });
 

@@ -5,7 +5,7 @@ defmodule E2eWeb.Demos.RatingGroupDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.rating_group class="rating-group" />
+    <.rating_group class="rating-group" value={3} />
     """
   end
 
@@ -13,7 +13,7 @@ defmodule E2eWeb.Demos.RatingGroupDemo do
     _ = assigns
 
     ~H"""
-    <.rating_group id="rating-group-anatomy-minimal" class="rating-group" />
+    <.rating_group id="rating-group-anatomy-minimal" class="rating-group" value={3} />
     """
   end
 

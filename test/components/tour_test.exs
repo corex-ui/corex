@@ -20,6 +20,7 @@ defmodule Corex.TourTest do
     assert html =~ ~S(phx-hook="Tour")
     assert html =~ ~S(data-scope="tour")
     assert html =~ ~S(data-part="backdrop")
+    assert html =~ ~S(data-part="spotlight")
     assert html =~ ~S(data-part="content")
     assert html =~ "translate3d(0, -100vh, 0)"
     assert html =~ ~S(hidden)

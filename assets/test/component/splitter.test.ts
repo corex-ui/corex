@@ -12,6 +12,7 @@ describe("Splitter", () => {
     });
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
+    expect(el.querySelector('[data-part="resize-trigger"]')).toBeTruthy();
     c.destroy();
   });
 });

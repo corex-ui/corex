@@ -17,5 +17,5 @@ defmodule Corex.DateInputTest do
 
     assert html =~ ~S(phx-hook="DateInput")
     assert html =~ ~S(data-scope="date-input")
-  end
-end
+    assert html =~ ~S(data-part="segment")
+    assert html =~ ~S(data-part="skeleton")

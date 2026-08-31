@@ -23,7 +23,19 @@ defmodule E2eWeb.Demos.TocDemo do
       <article class="flex flex-col gap-space-lg">
         <h2 id="intro">Introduction</h2>
         <p>Long-form content so the sticky TOC can track headings.</p>
-        ...
+        <p>Corex is a Phoenix LiveView component library with Zag.js behavior.</p>
+        <h2 id="install">Install</h2>
+        <p>Add the Hex package, run the installer, and include Design CSS.</p>
+        <p>Keep the host id stable so hooks hydrate the same node after patch.</p>
+        <h3 id="usage">Usage</h3>
+        <p>Render hosts with a stable id. Hooks hydrate Zag machines after JS loads.</p>
+        <p>Open Anatomy, API, Events, and Style from the docs sidebar.</p>
+        <h2 id="api">API</h2>
+        <p>Client bindings dispatch CustomEvents. Server handlers push LiveView events.</p>
+        <p>Use set helpers from buttons instead of remounting the host.</p>
+        <h2 id="a11y">Accessibility</h2>
+        <p>Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.</p>
+        <p>Overflow regions that scroll should remain keyboard reachable.</p>
       </article>
       <div class="sticky top-space">
         <.toc class="toc" />
@@ -43,29 +55,39 @@ defmodule E2eWeb.Demos.TocDemo do
           <p>
             Corex is a Phoenix LiveView component library. This article is long enough to scroll so the table of contents can highlight the active section.
           </p>
-          <p :for={_ <- 1..4}>
+          <p :for={_ <- 1..6}>
             Keep scrolling. Each heading below maps to a TOC link.
           </p>
         </section>
         <section>
           <h2 id="install">Install</h2>
           <p>Add the Hex package, run the installer, and include Design CSS.</p>
-          <p :for={_ <- 1..4}>Installation notes continue here.</p>
+          <p :for={_ <- 1..6}>Installation notes continue here.</p>
         </section>
         <section>
           <h3 id="usage">Usage</h3>
           <p>Render hosts with a stable id. Hooks hydrate Zag machines after JS loads.</p>
-          <p :for={_ <- 1..4}>Usage details continue here.</p>
+          <p :for={_ <- 1..6}>Usage details continue here.</p>
         </section>
         <section>
           <h2 id="api">API</h2>
           <p>Client bindings dispatch CustomEvents. Server handlers push LiveView events.</p>
-          <p :for={_ <- 1..4}>API notes continue here.</p>
+          <p :for={_ <- 1..6}>API notes continue here.</p>
         </section>
         <section>
           <h2 id="a11y">Accessibility</h2>
           <p>Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.</p>
-          <p :for={_ <- 1..4}>Accessibility notes continue here.</p>
+          <p :for={_ <- 1..6}>Accessibility notes continue here.</p>
+        </section>
+        <section>
+          <h2 id="tokens">Tokens</h2>
+          <p>Design CSS maps semantic axes onto control tokens without extra wrappers.</p>
+          <p :for={_ <- 1..6}>Token notes continue here.</p>
+        </section>
+        <section>
+          <h2 id="patterns">Patterns</h2>
+          <p>Clone Select overlay SSR, avatar loading, and dialog surfaces instead of inventing new models.</p>
+          <p :for={_ <- 1..6}>Pattern notes continue here.</p>
         </section>
       </article>
       <div class="sticky top-space">

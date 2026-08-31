@@ -74,7 +74,7 @@ defmodule Corex.Splitter do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Splitter.Anatomy.{Props, Root}
+  alias Corex.Splitter.Anatomy.{Panel, Props, ResizeTrigger, Root}
   alias Corex.Splitter.Connect
 
   attr(:id, :string, required: false)
@@ -104,29 +104,21 @@ defmodule Corex.Splitter do
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
         <div
-          data-scope="splitter"
-          data-part="panel"
-          data-id="a"
+          {Connect.mounted_panel(%Panel{id: @id, dir: @dir, panel_id: "a"})}
           data-orientation={@orientation}
-          style="flex: 1 1 0%; min-width: 0; min-height: 0;"
         >
-          A
+          Sidebar. Drag the handle to resize this pane against the editor.
         </div>
         <div
-          data-scope="splitter"
-          data-part="resize-trigger"
-          data-id="a:b"
+          {Connect.mounted_resize_trigger(%ResizeTrigger{id: @id, dir: @dir, trigger_id: "a:b"})}
           data-orientation={@orientation}
         >
         </div>
         <div
-          data-scope="splitter"
-          data-part="panel"
-          data-id="b"
+          {Connect.mounted_panel(%Panel{id: @id, dir: @dir, panel_id: "b"})}
           data-orientation={@orientation}
-          style="flex: 1 1 0%; min-width: 0; min-height: 0;"
         >
-          B
+          Editor. Panel sizes come from Zag flex percentages after the hook hydrates.
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ defmodule Corex.CascadeSelectTest do
   test "Connect.content stamps hidden closed attributes" do
     result = Connect.content(%{id: "cs", dir: "ltr"})
     assert result["hidden"] == true
-    assert result["aria-hidden"] == "true"
+    refute Map.has_key?(result, "aria-hidden")
     refute Map.has_key?(result, "style")
   end
 end

@@ -14,7 +14,12 @@ defmodule Corex.Drawer do
     <.drawer class="drawer">
       <:trigger>Open</:trigger>
       <:content>
-        <p>Sheet content.</p>
+        <p>Review filters, then apply them to the list behind this sheet.</p>
+        <ul>
+          <li>Unread only</li>
+          <li>Assigned to me</li>
+          <li>Due this week</li>
+        </ul>
       </:content>
     </.drawer>
     ```
@@ -24,9 +29,22 @@ defmodule Corex.Drawer do
     ```heex
     <.drawer class="drawer">
       <:trigger>Open</:trigger>
-      <:title>Details</:title>
+      <:title>Add contact</:title>
+      <:description>Save a person to this workspace. Fields stay in the sheet.</:description>
+      <:close_trigger>×</:close_trigger>
       <:content>
-        <p>Sheet content.</p>
+        <label class="flex flex-col gap-space-xs">
+          Name
+          <input type="text" class="input" name="name" />
+        </label>
+        <label class="flex flex-col gap-space-xs">
+          Email
+          <input type="email" class="input" name="email" />
+        </label>
+        <div class="flex gap-space-sm">
+          <button type="button" class="button">Save</button>
+          <button type="button" class="button">Cancel</button>
+        </div>
       </:content>
     </.drawer>
     ```
@@ -36,8 +54,10 @@ defmodule Corex.Drawer do
     ```heex
     <.drawer class="drawer" snap_points="0.45,0.75,1" default_snap_point="0.75">
       <:trigger>Open</:trigger>
+      <:title>Inbox</:title>
       <:content>
-        <p>Drag between snap points.</p>
+        <p>Drag the grabber to 45%, 75%, or full height.</p>
+        <p :for={n <- 1..6}>Message {n}. Preview stays in the sheet while you snap.</p>
       </:content>
     </.drawer>
     ```

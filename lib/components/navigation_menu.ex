@@ -18,7 +18,11 @@ defmodule Corex.NavigationMenu do
     <.navigation_menu class="navigation-menu">
       <:item value="product" type="trigger">Product</:item>
       <:content value="product">
-        <p>Feature overview</p>
+        <p data-scope="navigation-menu" data-part="heading">Product</p>
+        <a href="#">Components</a>
+        <a href="#">Playground</a>
+        <a href="#">Design tokens</a>
+        <a href="#">Installer</a>
       </:content>
       <:item value="docs" href="#">Docs</:item>
     </.navigation_menu>
@@ -60,7 +64,7 @@ defmodule Corex.NavigationMenu do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.NavigationMenu.Anatomy.{Props, Root}
+  alias Corex.NavigationMenu.Anatomy.{Content, List, Props, Root, Trigger}
   alias Corex.NavigationMenu.Connect
 
   attr(:id, :string, required: false)
@@ -97,15 +101,15 @@ defmodule Corex.NavigationMenu do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
-        <ul data-scope="navigation-menu" data-part="list">
+        <ul {Connect.mounted_list(%List{id: @id, dir: @dir})}>
           <%= if @use_default? do %>
             <li data-scope="navigation-menu" data-part="item" data-value="product">
-              <button type="button" data-scope="navigation-menu" data-part="trigger" data-value="product">
+              <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, value: "product"})}>
                 Product
               </button>
             </li>
             <li data-scope="navigation-menu" data-part="item" data-value="docs">
-              <button type="button" data-scope="navigation-menu" data-part="trigger" data-value="docs">
+              <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, value: "docs"})}>
                 Docs
               </button>
             </li>
@@ -128,10 +132,7 @@ defmodule Corex.NavigationMenu do
               </a>
               <button
                 :if={!item[:href]}
-                type="button"
-                data-scope="navigation-menu"
-                data-part="trigger"
-                data-value={item.value}
+                {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, value: item.value})}
               >
                 {render_slot(item)}
               </button>
@@ -140,7 +141,7 @@ defmodule Corex.NavigationMenu do
         </ul>
 
         <%= if @use_default? do %>
-          <div data-scope="navigation-menu" data-part="content" data-value="product" hidden>
+          <div {Connect.mounted_content(%Content{id: @id, dir: @dir, value: "product"})}>
             <div data-scope="navigation-menu" data-part="viewport-inner">
               <p data-scope="navigation-menu" data-part="heading">Build with Corex</p>
               <p>Phoenix LiveView components with Zag.js behavior, Design tokens, and an installer.</p>
@@ -149,7 +150,7 @@ defmodule Corex.NavigationMenu do
               <a href="#">Design</a>
             </div>
           </div>
-          <div data-scope="navigation-menu" data-part="content" data-value="docs" hidden>
+          <div {Connect.mounted_content(%Content{id: @id, dir: @dir, value: "docs"})}>
             <div data-scope="navigation-menu" data-part="viewport-inner">
               <p data-scope="navigation-menu" data-part="heading">Documentation</p>
               <a href="#">Getting started</a>
@@ -161,10 +162,7 @@ defmodule Corex.NavigationMenu do
         <% else %>
           <div
             :for={panel <- @content}
-            data-scope="navigation-menu"
-            data-part="content"
-            data-value={panel.value}
-            hidden
+            {Connect.mounted_content(%Content{id: @id, dir: @dir, value: panel.value})}
           >
             {render_slot(panel)}
           </div>

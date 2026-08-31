@@ -3,7 +3,7 @@ defmodule Corex.DateInput.Connect do
   use Corex.Connect.Mounted
   use Corex.Component, :connect
 
-  alias Corex.DateInput.Anatomy.{Props, Root}
+  alias Corex.DateInput.Anatomy.{Control, HiddenInput, Props, Root, Segment, SegmentGroup}
   alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
@@ -32,6 +32,72 @@ defmodule Corex.DateInput.Connect do
   def ignore_root(assigns) do
     JS.ignore_attributes(Root.ignored_attrs(),
       to: Selectors.css_id("date-input:" <> assigns.id <> ":root")
+    )
+  end
+
+  @spec control(Control.t()) :: map()
+  def control(assigns) do
+    %{
+      "data-scope" => "date-input",
+      "data-part" => "control",
+      "dir" => Map.get(assigns, :dir),
+      "id" => "date-input:" <> assigns.id <> ":control"
+    }
+  end
+
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("date-input:" <> assigns.id <> ":control")
+    )
+  end
+
+  @spec segment_group(SegmentGroup.t()) :: map()
+  def segment_group(assigns) do
+    %{
+      "data-scope" => "date-input",
+      "data-part" => "segment-group",
+      "dir" => Map.get(assigns, :dir),
+      "id" => "date-input:" <> assigns.id <> ":segment-group"
+    }
+  end
+
+  def ignore_segment_group(assigns) do
+    JS.ignore_attributes(SegmentGroup.ignored_attrs(),
+      to: Selectors.css_id("date-input:" <> assigns.id <> ":segment-group")
+    )
+  end
+
+  @spec hidden_input(HiddenInput.t()) :: map()
+  def hidden_input(assigns) do
+    %{
+      "data-scope" => "date-input",
+      "data-part" => "hidden-input",
+      "dir" => Map.get(assigns, :dir),
+      "id" => "date-input:" <> assigns.id <> ":hidden-input",
+      "type" => "hidden"
+    }
+  end
+
+  def ignore_hidden_input(assigns) do
+    JS.ignore_attributes(HiddenInput.ignored_attrs(),
+      to: Selectors.css_id("date-input:" <> assigns.id <> ":hidden-input")
+    )
+  end
+
+  @spec segment(Segment.t()) :: map()
+  def segment(assigns) do
+    %{
+      "data-scope" => "date-input",
+      "data-part" => "segment",
+      "dir" => Map.get(assigns, :dir),
+      "data-type" => assigns.type,
+      "id" => "date-input:" <> assigns.id <> ":segment:" <> assigns.type
+    }
+  end
+
+  def ignore_segment(assigns) do
+    JS.ignore_attributes(Segment.ignored_attrs(),
+      to: Selectors.css_id("date-input:" <> assigns.id <> ":segment:" <> assigns.type)
     )
   end
 end

@@ -29,9 +29,17 @@
     display: block;
     width: 100%;
     max-width: 100%;
+    transform: translate(var(--image-offset-x, 0px), var(--image-offset-y, 0px))
+      scale(var(--image-zoom, 1)) rotate(var(--image-rotation, 0deg));
+    transform-origin: center center;
   }
 
   .image-cropper [data-scope="image-cropper"][data-part="selection"] {
+    position: absolute;
+    top: var(--crop-y);
+    left: var(--crop-x);
+    width: var(--crop-width);
+    height: var(--crop-height);
     box-shadow: 0 0 0 9999px color-mix(in srgb, var(--color-ink) 50%, transparent);
     border: var(--border-width) solid color-mix(in srgb, var(--color-root) 70%, transparent);
     cursor: move;
@@ -60,6 +68,7 @@
     width: calc(var(--handle-size) / 2);
   }
 
+  .image-cropper [data-scope="image-cropper"][data-part="handle"] > span,
   .image-cropper [data-scope="image-cropper"][data-part="handle"] > div {
     width: calc(var(--handle-size) / 2);
     height: calc(var(--handle-size) / 2);

@@ -42,7 +42,15 @@
   }
 
   .tour [data-scope="tour"][data-part="spotlight"] {
+    position: fixed;
+    left: var(--spotlight-x);
+    top: var(--spotlight-y);
+    width: var(--spotlight-width);
+    height: var(--spotlight-height);
+    pointer-events: none;
     border: calc(var(--border-width) * 2) solid var(--ctl-fill, var(--color-accent));
+    box-shadow: 0 0 0 9999px color-mix(in srgb, var(--color-ink) 45%, transparent);
+    border-radius: var(--radius-sm);
     transition:
       left var(--duration-normal) ease,
       top var(--duration-normal) ease,
@@ -96,8 +104,23 @@
 
   .tour [data-scope="tour"][data-part="actions"] {
     display: flex;
+    justify-content: end;
     gap: var(--spacing-space-sm);
     margin-top: var(--spacing-space);
+  }
+
+  .tour [data-scope="tour"][data-part="action-trigger"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--ctl-size, var(--spacing-size));
+    padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 1.25);
+    border-radius: var(--ctl-radius, var(--radius-md));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    background: var(--ctl-fill, var(--color-ink));
+    color: var(--ctl-fill-ink, var(--color-root));
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
   }
 
   .tour [data-scope="tour"][data-part="close-trigger"] {

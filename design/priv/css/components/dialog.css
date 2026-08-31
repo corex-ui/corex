@@ -107,7 +107,7 @@
  flex-direction: column;
  gap: 0;
  width: 100%;
- max-width: var(--container-3xs);
+ max-width: var(--container-xs);
  padding: 0;
  border-radius: var(--radius-none);
  border: 0;

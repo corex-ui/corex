@@ -74,7 +74,7 @@ defmodule Corex.ImageCropper do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.ImageCropper.Anatomy.{Props, Root}
+  alias Corex.ImageCropper.Anatomy.{Handle, Image, Props, Root, Selection, Viewport}
   alias Corex.ImageCropper.Connect
 
   attr(:id, :string, required: false)
@@ -103,9 +103,16 @@ defmodule Corex.ImageCropper do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
-        <div data-scope="image-cropper" data-part="viewport">
-          <img data-scope="image-cropper" data-part="image" src={@src} alt="" />
-          <div data-scope="image-cropper" data-part="selection"></div>
+        <div {Connect.mounted_viewport(%Viewport{id: @id, dir: @dir})}>
+          <img {Connect.mounted_image(%Image{id: @id, dir: @dir})} src={@src} alt="" />
+          <div {Connect.mounted_selection(%Selection{id: @id, dir: @dir})}>
+            <div
+              :for={pos <- ~w(n e s w ne se sw nw)}
+              {Connect.mounted_handle(%Handle{id: @id, dir: @dir, position: pos})}
+            >
+              <span></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -34,4 +34,28 @@ defmodule Corex.Steps.Anatomy do
     @ignored_attrs ["dir", "id", "data-state", "style"]
     def ignored_attrs, do: @ignored_attrs
   end
+
+  defmodule List do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "data-orientation", "role"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Trigger do
+    @moduledoc false
+    defstruct [:id, :dir, :index]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), index: integer()}
+    @ignored_attrs ["dir", "id", "data-state", "data-complete", "data-current", "aria-current"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Content do
+    @moduledoc false
+    defstruct [:id, :dir, :index]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), index: integer()}
+    @ignored_attrs ["dir", "id", "hidden", "data-state"]
+    def ignored_attrs, do: @ignored_attrs
+  end
 end

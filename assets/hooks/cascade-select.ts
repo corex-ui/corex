@@ -2,6 +2,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { CascadeSelect, type CascadeNode } from "../components/cascade-select";
 import type { Props as CascadeSelectProps } from "@zag-js/cascade-select";
 import { getString, getBoolean, getDir, canPushEvent, safeParseJson } from "../lib/util";
+import { readPositioningOptions } from "../lib/positioning";
 import { idMatches, readPayloadId } from "../lib/respond-to";
 import { createZagLiveHook } from "../lib/zag-live-hook";
 
@@ -101,6 +102,7 @@ function cascadeSelectProps(
     rootNode: safeParseJson<CascadeNode>(el.dataset.tree, DEFAULT_ROOT),
     disabled: getBoolean(el, "disabled"),
     name: getString(el, "name"),
+    positioning: readPositioningOptions(el) ?? { strategy: "fixed", placement: "bottom-start" },
     onValueChange,
   };
 }

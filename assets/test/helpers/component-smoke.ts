@@ -683,7 +683,13 @@ export function splitterTree(): HTMLElement {
 export function scrollareaTree(): HTMLElement {
   return withId(
     scopeTree("scroll-area", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          { part: "viewport", children: [{ part: "content" }] },
+          { part: "scrollbar", children: [{ part: "thumb" }] },
+        ],
+      },
     ])
   );
 }
@@ -691,7 +697,31 @@ export function scrollareaTree(): HTMLElement {
 export function tocTree(): HTMLElement {
   return withId(
     scopeTree("toc", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          { part: "title" },
+          { part: "indicator" },
+          {
+            part: "list",
+            tag: "ul",
+            children: [
+              {
+                part: "item",
+                tag: "li",
+                attrs: { "data-value": "intro", "data-depth": "2" },
+                children: [
+                  {
+                    part: "link",
+                    tag: "a",
+                    attrs: { "data-value": "intro", "data-depth": "2", href: "#intro" },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   );
 }
@@ -699,7 +729,23 @@ export function tocTree(): HTMLElement {
 export function dateinputTree(): HTMLElement {
   return withId(
     scopeTree("date-input", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          {
+            part: "control",
+            children: [
+              { part: "segment-group", children: [
+                { part: "skeleton" },
+                { part: "segment", tag: "span", attrs: { "data-type": "month" } },
+                { part: "segment", tag: "span", attrs: { "data-type": "day" } },
+                { part: "segment", tag: "span", attrs: { "data-type": "year" } },
+              ] },
+              { part: "hidden-input", tag: "input", attrs: { type: "hidden" } },
+            ],
+          },
+        ],
+      },
     ])
   );
 }
@@ -707,7 +753,25 @@ export function dateinputTree(): HTMLElement {
 export function imagecropperTree(): HTMLElement {
   return withId(
     scopeTree("image-cropper", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          {
+            part: "viewport",
+            children: [
+              { part: "image", tag: "img", attrs: { src: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" } },
+              {
+                part: "selection",
+                children: ["n", "e", "s", "w", "ne", "se", "sw", "nw"].map((position) => ({
+                  part: "handle",
+                  attrs: { "data-position": position },
+                  children: [{ part: "handle-inner", tag: "span" }],
+                })),
+              },
+            ],
+          },
+        ],
+      },
     ])
   );
 }
@@ -715,7 +779,24 @@ export function imagecropperTree(): HTMLElement {
 export function navigationmenuTree(): HTMLElement {
   return withId(
     scopeTree("navigation-menu", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          {
+            part: "list",
+            tag: "ul",
+            children: [
+              {
+                part: "item",
+                tag: "li",
+                attrs: { "data-value": "product" },
+                children: [{ part: "trigger", tag: "button", attrs: { "data-value": "product" } }],
+              },
+            ],
+          },
+          { part: "content", attrs: { "data-value": "product" } },
+        ],
+      },
     ])
   );
 }
@@ -723,7 +804,17 @@ export function navigationmenuTree(): HTMLElement {
 export function cascadeselectTree(): HTMLElement {
   return withId(
     scopeTree("cascade-select", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          {
+            part: "control",
+            children: [{ part: "trigger", tag: "button" }, { part: "value-text" }],
+          },
+          { part: "positioner", children: [{ part: "content" }] },
+          { part: "hidden-input", tag: "input", attrs: { type: "hidden" } },
+        ],
+      },
     ])
   );
 }
@@ -731,7 +822,28 @@ export function cascadeselectTree(): HTMLElement {
 export function tourTree(): HTMLElement {
   return withId(
     scopeTree("tour", [
-      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+      {
+        part: "root",
+        children: [
+          { part: "backdrop" },
+          { part: "spotlight" },
+          {
+            part: "positioner",
+            children: [
+              {
+                part: "content",
+                children: [
+                  { part: "title" },
+                  { part: "description" },
+                  { part: "progress-text" },
+                  { part: "actions" },
+                  { part: "close-trigger", tag: "button" },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   );
 }

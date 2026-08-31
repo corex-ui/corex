@@ -11,8 +11,10 @@ defmodule Corex.Tour.Connect do
     Content,
     Description,
     Positioner,
+    ProgressText,
     Props,
     Root,
+    Spotlight,
     Title
   }
 
@@ -52,6 +54,25 @@ defmodule Corex.Tour.Connect do
   def ignore_root(assigns) do
     JS.ignore_attributes(Root.ignored_attrs(),
       to: Selectors.css_id("tour:" <> assigns.id <> ":root")
+    )
+  end
+
+  @spec spotlight(Spotlight.t()) :: map()
+  def spotlight(assigns) do
+    %{
+      "data-scope" => "tour",
+      "data-part" => "spotlight",
+      "dir" => Map.get(assigns, :dir),
+      "id" => "tour:" <> assigns.id <> ":spotlight",
+      "data-state" => "closed",
+      "hidden" => true,
+      "aria-hidden" => "true"
+    }
+  end
+
+  def ignore_spotlight(assigns) do
+    JS.ignore_attributes(Spotlight.ignored_attrs(),
+      to: Selectors.css_id("tour:" <> assigns.id <> ":spotlight")
     )
   end
 
@@ -158,6 +179,22 @@ defmodule Corex.Tour.Connect do
   def ignore_close_trigger(assigns) do
     JS.ignore_attributes(CloseTrigger.ignored_attrs(),
       to: Selectors.css_id("tour:" <> assigns.id <> ":close-trigger")
+    )
+  end
+
+  @spec progress_text(ProgressText.t()) :: map()
+  def progress_text(assigns) do
+    %{
+      "data-scope" => "tour",
+      "data-part" => "progress-text",
+      "dir" => Map.get(assigns, :dir),
+      "id" => "tour:" <> assigns.id <> ":progress-text"
+    }
+  end
+
+  def ignore_progress_text(assigns) do
+    JS.ignore_attributes(ProgressText.ignored_attrs(),
+      to: Selectors.css_id("tour:" <> assigns.id <> ":progress-text")
     )
   end
 end

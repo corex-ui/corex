@@ -29,6 +29,20 @@ defmodule E2eWeb.Demos.ProgressDemo do
     """
   end
 
+  def anatomy_loading_code do
+    ~S"""
+    <.progress class="progress" value={nil} />
+    """
+  end
+
+  def anatomy_loading_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.progress id="progress-anatomy-loading" class="progress" value={nil} />
+    """
+  end
+
   alias E2eWeb.DemoScales
 
   def styling_color_code do

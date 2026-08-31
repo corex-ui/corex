@@ -9,7 +9,9 @@ defmodule Corex.ScrollArea do
   ### Minimal
 
     ```heex
-    <.scroll_area class="scroll-area" />
+    <.scroll_area class="scroll-area">
+      <p>Scrollable paragraph. Corex ships LiveView hosts with Zag.js behavior so overlays, lists, and fields stay accessible.</p>
+    </.scroll_area>
     ```
 
   <!-- tabs-close -->

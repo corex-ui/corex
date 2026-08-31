@@ -19,7 +19,7 @@ defmodule Corex.Progress.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            value: integer() | nil,
+            value: number() | nil,
             min: integer(),
             max: integer(),
             variant: String.t(),
@@ -31,9 +31,78 @@ defmodule Corex.Progress.Anatomy do
 
   defmodule Root do
     @moduledoc false
+    defstruct [:id, :dir, value: 40, min: 0, max: 100]
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            value: number() | nil,
+            min: integer(),
+            max: integer()
+          }
+    @ignored_attrs ["dir", "id", "data-state", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Track do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "data-state"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Range do
+    @moduledoc false
+    defstruct [:id, :dir, value: 40, min: 0, max: 100]
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            value: number() | nil,
+            min: integer(),
+            max: integer()
+          }
+    @ignored_attrs ["dir", "id", "data-state", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Circle do
+    @moduledoc false
     defstruct [:id, :dir]
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
     @ignored_attrs ["dir", "id", "data-state", "style"]
     def ignored_attrs, do: @ignored_attrs
   end
+
+  defmodule CircleTrack do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule CircleRange do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "data-state", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ValueText do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  @spec percent(number() | nil, number(), number()) :: float() | nil
+  def percent(nil, _min, _max), do: nil
+
+  def percent(value, min, max) when max > min do
+    (value - min) / (max - min) * 100
+  end
+
+  def percent(_value, _min, _max), do: 0.0
 end

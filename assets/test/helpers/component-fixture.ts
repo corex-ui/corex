@@ -1,5 +1,6 @@
 export type PartSpec = {
   part: string;
+  tag?: string;
   attrs?: Record<string, string>;
   children?: PartSpec[];
   text?: string;
@@ -10,7 +11,7 @@ export function scopeTree(scope: string, parts: PartSpec[]): HTMLElement {
   root.dataset.scope = scope;
 
   const append = (parent: HTMLElement, spec: PartSpec) => {
-    const el = document.createElement("div");
+    const el = document.createElement(spec.tag ?? "div");
     el.dataset.scope = scope;
     el.dataset.part = spec.part;
     if (spec.attrs) {

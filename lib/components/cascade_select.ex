@@ -210,6 +210,7 @@ defmodule Corex.CascadeSelect do
   attr(:name, :string, default: nil)
   attr(:placeholder, :string, default: "Select")
   attr(:show_indicator, :boolean, default: true)
+  attr(:positioning, Corex.Positioning, default: %Corex.Positioning{placement: "bottom-start"})
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
   attr(:rest, :global)
@@ -234,6 +235,7 @@ defmodule Corex.CascadeSelect do
         disabled: @disabled,
         name: @name,
         placeholder: @placeholder,
+        positioning: @positioning,
         on_value_change: @on_value_change,
         on_value_change_client: @on_value_change_client
       })}

@@ -74,6 +74,7 @@
     max-height: 96vh;
     min-height: 42vh;
     padding: var(--spacing-space-lg);
+    padding-top: var(--spacing-space-md);
     display: flex;
     flex-direction: column;
     gap: var(--spacing-space-md);
@@ -83,6 +84,11 @@
     border-radius: var(--ctl-radius, var(--radius-lg)) var(--ctl-radius, var(--radius-lg)) 0 0;
     box-shadow: var(--shadow-ui);
     position: relative;
+    transform: translate3d(
+      var(--drawer-translate-x, 0px),
+      var(--drawer-translate-y, 0px),
+      0
+    );
   }
 
   .drawer [data-scope="drawer"][data-part="content"][data-swipe-direction="left"],
@@ -100,7 +106,8 @@
   .drawer [data-scope="drawer"][data-part="grabber"] {
     display: flex;
     justify-content: center;
-    padding-block: var(--spacing-space-sm);
+    padding-block: var(--spacing-space-xs);
+    margin-top: calc(var(--spacing-space-md) * -0.5);
     width: 100%;
     cursor: grab;
     touch-action: none;
@@ -115,8 +122,9 @@
     width: var(--spacing-space-3xl);
     height: 0.375rem;
     border-radius: var(--radius-full);
-    background: var(--ctl-bd, var(--color-border));
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ctl-bd, var(--color-border)) 18%, transparent);
+    background: var(--ctl-ink, var(--color-ink));
+    opacity: 0.45;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ctl-ink, var(--color-ink)) 12%, transparent);
   }
 
   .drawer [data-scope="drawer"][data-part="content"][data-dragging] [data-scope="drawer"][data-part="grabber-indicator"] {

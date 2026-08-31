@@ -4,19 +4,8 @@ defmodule E2eWeb.Demos.HoverCardDemo do
   def anatomy_minimal_code do
     ~S"""
     <.hover_card class="hover-card" show_arrow={false}>
-      <:trigger>corex-ui</:trigger>
-      <:content>
-        <div class="flex gap-space items-start">
-          <.avatar class="avatar ui-size-lg">
-            <:fallback>Cx</:fallback>
-          </.avatar>
-          <div>
-            <p class="font-semibold">corex-ui/corex</p>
-            <p>Phoenix LiveView components with Zag.js behavior.</p>
-            <p>Elixir · TypeScript · 1.2k stars</p>
-          </div>
-        </div>
-      </:content>
+      <:trigger>Hover me</:trigger>
+      <:content>Preview content</:content>
     </.hover_card>
     """
   end
@@ -26,19 +15,8 @@ defmodule E2eWeb.Demos.HoverCardDemo do
 
     ~H"""
     <.hover_card id="hover-card-anatomy-minimal" class="hover-card" show_arrow={false}>
-      <:trigger>corex-ui</:trigger>
-      <:content>
-        <div class="flex gap-space items-start">
-          <.avatar class="avatar ui-size-lg">
-            <:fallback>Cx</:fallback>
-          </.avatar>
-          <div>
-            <p class="font-semibold">corex-ui/corex</p>
-            <p>Phoenix LiveView components with Zag.js behavior.</p>
-            <p>Elixir · TypeScript · 1.2k stars</p>
-          </div>
-        </div>
-      </:content>
+      <:trigger>Hover me</:trigger>
+      <:content>Preview content</:content>
     </.hover_card>
     """
   end
@@ -59,6 +37,48 @@ defmodule E2eWeb.Demos.HoverCardDemo do
     <.hover_card id="hover-card-anatomy-arrow" class="hover-card">
       <:trigger>Hover me</:trigger>
       <:content>Preview content</:content>
+    </.hover_card>
+    """
+  end
+
+  def anatomy_preview_code do
+    ~S"""
+    <.hover_card class="hover-card" show_arrow={false}>
+      <:trigger>corex-ui</:trigger>
+      <:content>
+        <div class="flex gap-space items-start">
+          <.avatar class="avatar ui-size-lg">
+            <:fallback>Cx</:fallback>
+          </.avatar>
+          <div>
+            <p class="font-semibold">corex-ui/corex</p>
+            <p>Phoenix LiveView components with Zag.js behavior.</p>
+            <p>Elixir · TypeScript · 1.2k stars</p>
+          </div>
+        </div>
+      </:content>
+    </.hover_card>
+    """
+  end
+
+  def anatomy_preview_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.hover_card id="hover-card-anatomy-preview" class="hover-card" show_arrow={false}>
+      <:trigger>corex-ui</:trigger>
+      <:content>
+        <div class="flex gap-space items-start">
+          <.avatar class="avatar ui-size-lg">
+            <:fallback>Cx</:fallback>
+          </.avatar>
+          <div>
+            <p class="font-semibold">corex-ui/corex</p>
+            <p>Phoenix LiveView components with Zag.js behavior.</p>
+            <p>Elixir · TypeScript · 1.2k stars</p>
+          </div>
+        </div>
+      </:content>
     </.hover_card>
     """
   end

@@ -38,6 +38,11 @@ defmodule Corex.CascadeSelect.Connect do
     |> maybe_put("data-on-value-change", assigns.on_value_change)
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
     |> put_data_dir_attr(Map.get(assigns, :dir))
+    |> Map.merge(
+      Corex.Positioning.to_dataset(
+        Map.get(assigns, :positioning, %Corex.Positioning{placement: "bottom-start"})
+      )
+    )
   end
 
   @spec root(Root.t()) :: map()
@@ -186,7 +191,6 @@ defmodule Corex.CascadeSelect.Connect do
       "dir" => Map.get(assigns, :dir),
       "id" => "cascade-select:" <> assigns.id <> ":content",
       "hidden" => true,
-      "aria-hidden" => "true",
       "tabindex" => -1
     }
   end

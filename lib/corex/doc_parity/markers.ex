@@ -10,7 +10,8 @@ defmodule Corex.DocParity.Markers do
     },
     "progress" => %{
       "minimal" => ["anatomy_minimal_code"],
-      "circular" => ["anatomy_circular_code"]
+      "circular" => ["anatomy_circular_code"],
+      "loading" => ["anatomy_loading_code"]
     },
     "rating_group" => %{
       "minimal" => ["anatomy_minimal_code"]
@@ -59,6 +60,7 @@ defmodule Corex.DocParity.Markers do
     "hover_card" => %{
       "minimal" => ["anatomy_minimal_code"],
       "placement" => ["anatomy_placement_code"],
+      "preview" => ["anatomy_preview_code"],
       "with arrow" => ["anatomy_with_arrow_code"]
     },
     "popover" => %{

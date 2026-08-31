@@ -50,7 +50,7 @@
 
   .cascade-select [data-scope="cascade-select"][data-part="positioner"] {
     width: max-content;
-    z-index: var(--z-overlay, 1100);
+    z-index: var(--z-index, var(--z-overlay, 1100));
   }
 
   .cascade-select [data-scope="cascade-select"][data-part="content"][hidden] {
@@ -60,10 +60,14 @@
   .cascade-select [data-scope="cascade-select"][data-part="content"] {
     @apply scrollbar scrollbar--sm;
     display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: max-content;
     margin-top: var(--spacing-space-xs);
     max-height: min(var(--available-height), var(--container-xs));
     padding: 0;
     overflow: hidden;
+    transform-origin: var(--transform-origin, top);
   }
 
   .cascade-select [data-scope="cascade-select"][data-part="list"] {

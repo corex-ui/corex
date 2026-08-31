@@ -82,7 +82,7 @@ defmodule Corex.DateInput do
 
   import Corex.Api.Doc
 
-  alias Corex.DateInput.Anatomy.{Props, Root}
+  alias Corex.DateInput.Anatomy.{Control, HiddenInput, Props, Root, Segment, SegmentGroup}
   alias Corex.DateInput.Connect
   alias Corex.Selectors
   alias Phoenix.LiveView
@@ -116,11 +116,15 @@ defmodule Corex.DateInput do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
-        <div data-scope="date-input" data-part="control">
-          <div data-scope="date-input" data-part="segment-group">
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir})}>
+          <div {Connect.mounted_segment_group(%SegmentGroup{id: @id, dir: @dir})}>
             <span data-scope="date-input" data-part="skeleton" aria-hidden="true"></span>
+            <span
+              :for={type <- ~w(month day year)}
+              {Connect.mounted_segment(%Segment{id: @id, dir: @dir, type: type})}
+            ></span>
           </div>
-          <input type="hidden" data-scope="date-input" data-part="hidden-input" name={@name} />
+          <input {Connect.mounted_hidden_input(%HiddenInput{id: @id, dir: @dir})} name={@name} />
         </div>
       </div>
     </div>

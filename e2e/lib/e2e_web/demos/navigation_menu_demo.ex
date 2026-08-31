@@ -20,7 +20,11 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
     <.navigation_menu class="navigation-menu">
       <:item value="product" type="trigger">Product</:item>
       <:content value="product">
-        <p>Feature overview</p>
+        <p data-scope="navigation-menu" data-part="heading">Product</p>
+        <a href="#">Components</a>
+        <a href="#">Playground</a>
+        <a href="#">Design tokens</a>
+        <a href="#">Installer</a>
       </:content>
       <:item value="docs" href="#">Docs</:item>
     </.navigation_menu>
@@ -34,7 +38,11 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
     <.navigation_menu id="navigation-menu-anatomy-mega" class="navigation-menu">
       <:item value="product" type="trigger">Product</:item>
       <:content value="product">
-        <p>Feature overview</p>
+        <p data-scope="navigation-menu" data-part="heading">Product</p>
+        <a href="#">Components</a>
+        <a href="#">Playground</a>
+        <a href="#">Design tokens</a>
+        <a href="#">Installer</a>
       </:content>
       <:item value="docs" href="#">Docs</:item>
     </.navigation_menu>

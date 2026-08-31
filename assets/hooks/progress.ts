@@ -18,10 +18,11 @@ function progressProps(el: HTMLElement, hook: HookInterface<HTMLElement>): Progr
       );
     }
   };
+  const indeterminate = el.hasAttribute("data-indeterminate");
   return {
     id: el.id,
     dir: getDir(el),
-    defaultValue: getNumber(el, "value") ?? 50,
+    defaultValue: indeterminate ? null : (getNumber(el, "value") ?? 40),
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
     orientation: getString(el, "orientation", ["horizontal", "vertical"] as const),

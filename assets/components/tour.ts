@@ -19,6 +19,11 @@ export class Tour extends Component<Props, Api, Schema> {
     );
     if (backdrop) this.spreadProps(backdrop, this.api.getBackdropProps());
 
+    const spotlight = this.el.querySelector<HTMLElement>(
+      '[data-scope="tour"][data-part="spotlight"]'
+    );
+    if (spotlight) this.spreadProps(spotlight, this.api.getSpotlightProps());
+
     const positioner = this.el.querySelector<HTMLElement>(
       '[data-scope="tour"][data-part="positioner"]'
     );
@@ -38,6 +43,13 @@ export class Tour extends Component<Props, Api, Schema> {
       if (description) {
         this.spreadProps(description, this.api.getDescriptionProps());
         description.textContent = String(this.api.step?.description ?? "");
+      }
+      const progressText = content.querySelector<HTMLElement>(
+        '[data-scope="tour"][data-part="progress-text"]'
+      );
+      if (progressText) {
+        this.spreadProps(progressText, this.api.getProgressTextProps());
+        progressText.textContent = this.api.getProgressText();
       }
       this.renderActions(content, this.api.step);
     }

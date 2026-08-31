@@ -28,4 +28,20 @@ defmodule Corex.Splitter.Anatomy do
     @ignored_attrs ["dir", "id", "data-state", "style", "data-orientation"]
     def ignored_attrs, do: @ignored_attrs
   end
+
+  defmodule Panel do
+    @moduledoc false
+    defstruct [:id, :dir, :panel_id]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), panel_id: String.t()}
+    @ignored_attrs ["dir", "id", "style", "data-orientation", "data-dragging"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ResizeTrigger do
+    @moduledoc false
+    defstruct [:id, :dir, :trigger_id]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), trigger_id: String.t()}
+    @ignored_attrs ["dir", "id", "style", "data-orientation", "data-focus", "data-dragging"]
+    def ignored_attrs, do: @ignored_attrs
+  end
 end

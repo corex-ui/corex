@@ -17,5 +17,5 @@ defmodule Corex.SplitterTest do
 
     assert html =~ ~S(phx-hook="Splitter")
     assert html =~ ~S(data-scope="splitter")
-  end
-end
+    assert html =~ ~S(data-part="resize-trigger")
+    assert html =~ "Sidebar. Drag the handle"

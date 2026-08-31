@@ -79,16 +79,31 @@
     display: none;
   }
 
+  .date-input[data-loading] [data-scope="date-input"][data-part="segment"] {
+    display: none;
+  }
+
   .date-input[data-loading] [data-scope="date-input"][data-part="skeleton"] {
     display: block;
     width: 9rem;
     height: 1em;
     border-radius: var(--radius-sm);
-    @apply ui-loading;
+    background: linear-gradient(
+      90deg,
+      var(--color-ui-muted) 0%,
+      var(--color-border) 50%,
+      var(--color-ui-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: avatar-skeleton-loading 1.2s ease-in-out infinite;
   }
 
   .date-input [data-scope="date-input"][data-part="segment"]::selection {
     background-color: transparent;
+  }
+
+  .date-input [data-scope="date-input"][data-part="segment"][data-placeholder-shown] {
+    color: var(--color-ink-muted);
   }
 
   .date-input [data-scope="date-input"][data-part="segment"]:focus {
@@ -97,7 +112,8 @@
     outline: none;
   }
 
-  .date-input [data-scope="date-input"][data-part="segment"][data-placeholder-shown] {
-    color: var(--color-ink-muted);
+  .date-input [data-scope="date-input"][data-part="segment"][data-placeholder-shown]:focus {
+    background-color: var(--ctl-fill, var(--color-ink));
+    color: var(--ctl-fill-ink, var(--color-root));
   }
 }

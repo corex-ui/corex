@@ -3,7 +3,9 @@ defmodule E2eWeb.Demos.ScrollAreaDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.scroll_area class="scroll-area" />
+    <.scroll_area class="scroll-area">
+      <p>Scrollable paragraph. Corex ships LiveView hosts with Zag.js behavior so overlays, lists, and fields stay accessible.</p>
+    </.scroll_area>
     """
   end
 
@@ -11,7 +13,9 @@ defmodule E2eWeb.Demos.ScrollAreaDemo do
     _ = assigns
 
     ~H"""
-    <.scroll_area id="scroll-area-anatomy-minimal" class="scroll-area" />
+    <.scroll_area id="scroll-area-anatomy-minimal" class="scroll-area">
+      <p>Scrollable paragraph. Corex ships LiveView hosts with Zag.js behavior so overlays, lists, and fields stay accessible.</p>
+    </.scroll_area>
     """
   end
 

@@ -17,6 +17,7 @@ defmodule Corex.CascadeSelect.Anatomy do
       disabled: false,
       name: nil,
       placeholder: nil,
+      positioning: %Corex.Positioning{placement: "bottom-start"},
       on_value_change: nil,
       on_value_change_client: nil
     ]
@@ -29,6 +30,7 @@ defmodule Corex.CascadeSelect.Anatomy do
             disabled: boolean(),
             name: String.t() | nil,
             placeholder: String.t() | nil,
+            positioning: Corex.Positioning.t(),
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil
           }
@@ -102,7 +104,7 @@ defmodule Corex.CascadeSelect.Anatomy do
     @moduledoc false
     defstruct [:id, :dir]
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
-    @ignored_attrs ["dir", "id", "hidden", "aria-hidden", "style", "data-state", "tabindex"]
+    @ignored_attrs ["dir", "id", "hidden", "style", "data-state", "tabindex"]
     def ignored_attrs, do: @ignored_attrs
   end
 

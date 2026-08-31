@@ -5,7 +5,11 @@ defmodule E2eWeb.Demos.StepsDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.steps class="steps" />
+    <.steps class="steps">
+      <:content index={0}>Create your account. We’ll use this email for billing and product updates.</:content>
+      <:content index={1}>Name your workspace so projects, tokens, and members stay grouped.</:content>
+      <:content index={2}>Review the details, then continue. Invite teammates from settings anytime.</:content>
+    </.steps>
     """
   end
 
@@ -13,7 +17,11 @@ defmodule E2eWeb.Demos.StepsDemo do
     _ = assigns
 
     ~H"""
-    <.steps id="steps-anatomy-minimal" class="steps" />
+    <.steps id="steps-anatomy-minimal" class="steps">
+      <:content index={0}>Create your account. We’ll use this email for billing and product updates.</:content>
+      <:content index={1}>Name your workspace so projects, tokens, and members stay grouped.</:content>
+      <:content index={2}>Review the details, then continue. Invite teammates from settings anytime.</:content>
+    </.steps>
     """
   end
 

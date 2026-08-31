@@ -69,8 +69,10 @@ defmodule Corex.Tour do
     Content,
     Description,
     Positioner,
+    ProgressText,
     Props,
     Root,
+    Spotlight,
     Title
   }
 
@@ -149,10 +151,12 @@ defmodule Corex.Tour do
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div {Connect.mounted_backdrop(%Backdrop{id: @id, dir: @dir})}></div>
+        <div {Connect.mounted_spotlight(%Spotlight{id: @id, dir: @dir})}></div>
         <div {Connect.mounted_positioner(%Positioner{id: @id, dir: @dir})}>
           <div {Connect.mounted_content(%Content{id: @id, dir: @dir})}>
             <h3 {Connect.mounted_title(%Title{id: @id, dir: @dir})}></h3>
             <p {Connect.mounted_description(%Description{id: @id, dir: @dir})}></p>
+            <p {Connect.mounted_progress_text(%ProgressText{id: @id, dir: @dir})}></p>
             <div data-scope="tour" data-part="actions"></div>
             <button {Connect.mounted_close_trigger(%CloseTrigger{id: @id, dir: @dir})} aria-label="Close">
               ×

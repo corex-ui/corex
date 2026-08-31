@@ -9,7 +9,11 @@ defmodule Corex.Steps do
   ### Minimal
 
     ```heex
-    <.steps class="steps" />
+    <.steps class="steps">
+      <:content index={0}>Create your account. We’ll use this email for billing and product updates.</:content>
+      <:content index={1}>Name your workspace so projects, tokens, and members stay grouped.</:content>
+      <:content index={2}>Review the details, then continue. Invite teammates from settings anytime.</:content>
+    </.steps>
     ```
 
   <!-- tabs-close -->
@@ -74,7 +78,7 @@ defmodule Corex.Steps do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Steps.Anatomy.{Props, Root}
+  alias Corex.Steps.Anatomy.{Content, List, Props, Root, Trigger}
   alias Corex.Steps.Connect
 
   attr(:id, :string, required: false)
@@ -115,16 +119,20 @@ defmodule Corex.Steps do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})} data-orientation={@orientation}>
-        <div data-scope="steps" data-part="list">
+        <div {Connect.mounted_list(%List{id: @id, dir: @dir})}>
           <div :for={i <- 0..(@count - 1)} data-scope="steps" data-part="item" data-index={i}>
-            <button type="button" data-scope="steps" data-part="trigger" data-index={i}>
+            <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, index: i})}>
               <span data-scope="steps" data-part="indicator" data-index={i}>{i + 1}</span>
               {step_title(i)}
             </button>
             <div :if={i < @count - 1} data-scope="steps" data-part="separator" data-index={i}></div>
           </div>
         </div>
-        <div :for={i <- 0..(@count - 1)} data-scope="steps" data-part="content" data-index={i} hidden={i != @step}>
+        <div
+          :for={i <- 0..(@count - 1)}
+          {Connect.mounted_content(%Content{id: @id, dir: @dir, index: i})}
+          hidden={i != @step}
+        >
           <%= if slot = @content_by_index[i] do %>
             {render_slot(slot)}
           <% else %>

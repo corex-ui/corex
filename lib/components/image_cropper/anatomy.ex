@@ -22,4 +22,36 @@ defmodule Corex.ImageCropper.Anatomy do
     @ignored_attrs ["dir", "id", "data-state", "style"]
     def ignored_attrs, do: @ignored_attrs
   end
+
+  defmodule Viewport do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Image do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "style", "data-ready"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Selection do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "style", "data-state", "data-measured", "hidden"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Handle do
+    @moduledoc false
+    defstruct [:id, :dir, :position]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), position: String.t()}
+    @ignored_attrs ["dir", "id", "style", "data-position"]
+    def ignored_attrs, do: @ignored_attrs
+  end
 end

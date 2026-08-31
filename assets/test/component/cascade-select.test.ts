@@ -78,6 +78,11 @@ describe("CascadeSelect", () => {
     expect(content?.hidden).toBe(false);
     expect(content?.style.display).not.toBe("none");
     expect(el.textContent).toContain("Electronics");
+    const lists = el.querySelectorAll('[data-part="list"]');
+    expect(lists.length).toBeGreaterThanOrEqual(1);
+    lists.forEach((list) => {
+      expect(list.parentElement?.getAttribute("data-part")).toBe("content");
+    });
     c.destroy();
     el.remove();
   });

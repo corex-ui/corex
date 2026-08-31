@@ -47,8 +47,25 @@ export class ImageCropper extends Component<Props, Api, Schema> {
           handle.dataset.position = position;
           selection.appendChild(handle);
         }
+        if (!handle.querySelector("span, div")) {
+          handle.appendChild(document.createElement("span"));
+        }
         this.spreadProps(handle, this.api.getHandleProps({ position }));
       }
+    }
+
+    this.syncImageSize();
+  }
+
+  private syncImageSize(): void {
+    if (this.api.naturalSize.width > 0 && this.api.naturalSize.height > 0) return;
+    const image = this.el.querySelector<HTMLImageElement>(
+      '[data-scope="image-cropper"][data-part="image"]'
+    );
+    if (!image?.complete) return;
+    const { naturalWidth: width, naturalHeight: height } = image;
+    if (width > 0 && height > 0) {
+      this.machine.send({ type: "SET_NATURAL_SIZE", src: "ssr", size: { width, height } });
     }
   }
 }

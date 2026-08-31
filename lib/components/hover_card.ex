@@ -9,6 +9,24 @@ defmodule Corex.HoverCard do
 
     ```heex
     <.hover_card class="hover-card" show_arrow={false}>
+      <:trigger>Hover me</:trigger>
+      <:content>Preview content</:content>
+    </.hover_card>
+    ```
+
+  ### With arrow
+
+    ```heex
+    <.hover_card class="hover-card">
+      <:trigger>Hover me</:trigger>
+      <:content>Preview content</:content>
+    </.hover_card>
+    ```
+
+  ### Preview
+
+    ```heex
+    <.hover_card class="hover-card" show_arrow={false}>
       <:trigger>corex-ui</:trigger>
       <:content>
         <div class="flex gap-space items-start">
@@ -22,15 +40,6 @@ defmodule Corex.HoverCard do
           </div>
         </div>
       </:content>
-    </.hover_card>
-    ```
-
-  ### With arrow
-
-    ```heex
-    <.hover_card class="hover-card">
-      <:trigger>Hover me</:trigger>
-      <:content>Preview content</:content>
     </.hover_card>
     ```
 

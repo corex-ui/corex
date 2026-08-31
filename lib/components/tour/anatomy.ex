@@ -32,6 +32,14 @@ defmodule Corex.Tour.Anatomy do
     def ignored_attrs, do: @ignored_attrs
   end
 
+  defmodule Spotlight do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id", "data-state", "hidden", "aria-hidden", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
   defmodule Backdrop do
     @moduledoc false
     defstruct [:id, :dir]
@@ -77,6 +85,14 @@ defmodule Corex.Tour.Anatomy do
     defstruct [:id, :dir]
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
     @ignored_attrs ["dir", "id", "type"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ProgressText do
+    @moduledoc false
+    defstruct [:id, :dir]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @ignored_attrs ["dir", "id"]
     def ignored_attrs, do: @ignored_attrs
   end
 end

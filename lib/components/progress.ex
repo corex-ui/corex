@@ -19,6 +19,12 @@ defmodule Corex.Progress do
     <.progress class="progress" variant="circular" value={65} />
     ```
 
+  ### Loading
+
+    ```heex
+    <.progress class="progress" value={nil} />
+    ```
+
   <!-- tabs-close -->
 
   ## API
@@ -83,7 +89,18 @@ defmodule Corex.Progress do
 
   import Corex.Api.Doc
 
-  alias Corex.Progress.Anatomy.{Props, Root}
+  alias Corex.Progress.Anatomy
+
+  alias Corex.Progress.Anatomy.{
+    Circle,
+    CircleRange,
+    CircleTrack,
+    Props,
+    Range,
+    Root,
+    Track,
+    ValueText
+  }
   alias Corex.Progress.Connect
   alias Corex.Selectors
   alias Phoenix.LiveView
@@ -93,7 +110,7 @@ defmodule Corex.Progress do
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-  attr(:value, :integer, default: 40)
+  attr(:value, :any, default: 40)
   attr(:min, :integer, default: 0)
   attr(:max, :integer, default: 100)
   attr(:variant, :string, default: "linear", values: ["linear", "circular"])
@@ -122,15 +139,17 @@ defmodule Corex.Progress do
         on_value_change_client: @on_value_change_client
       })}
     >
-      <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
-        <div :if={@variant == "linear"} data-scope="progress" data-part="track">
-          <div data-scope="progress" data-part="range"></div>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, value: @value, min: @min, max: @max})}>
+        <div :if={@variant == "linear"} {Connect.mounted_track(%Track{id: @id, dir: @dir})}>
+          <div {Connect.mounted_range(%Range{id: @id, dir: @dir, value: @value, min: @min, max: @max})}></div>
         </div>
-        <svg :if={@variant == "circular"} data-scope="progress" data-part="circle" viewBox="0 0 44 44">
-          <circle data-scope="progress" data-part="circle-track" cx="22" cy="22" r="20" fill="none" />
-          <circle data-scope="progress" data-part="circle-range" cx="22" cy="22" r="20" fill="none" />
+        <svg :if={@variant == "circular"} {Connect.mounted_circle(%Circle{id: @id, dir: @dir})}>
+          <circle {Connect.mounted_circle_track(%CircleTrack{id: @id, dir: @dir})} fill="none" />
+          <circle {Connect.mounted_circle_range(%CircleRange{id: @id, dir: @dir})} fill="none" />
         </svg>
-        <span data-scope="progress" data-part="value-text"></span>
+        <span {Connect.mounted_value_text(%ValueText{id: @id, dir: @dir})}>
+          {progress_value_text(@value, @min, @max)}
+        </span>
       </div>
     </div>
     """
@@ -158,5 +177,12 @@ defmodule Corex.Progress do
   def set_value(socket, progress_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(progress_id) do
     LiveView.push_event(socket, "progress_set_value", %{id: progress_id, value: value})
+  end
+
+  defp progress_value_text(nil, _min, _max), do: ""
+
+  defp progress_value_text(value, min, max) do
+    percent = Anatomy.percent(value, min, max)
+    "#{trunc(percent)}%"
   end
 end
