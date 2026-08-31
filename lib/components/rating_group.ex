@@ -9,7 +9,7 @@ defmodule Corex.RatingGroup do
   ### Minimal
 
     ```heex
-    <.rating_group class="rating-group" value={3} />
+    <.rating_group class="rating-group" value={3.0} />
     ```
 
   <!-- tabs-close -->
