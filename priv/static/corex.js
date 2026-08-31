@@ -62515,7 +62515,14 @@ ${err}`);
           const spotlight = this.part("spotlight");
           if (spotlight) this.spreadProps(spotlight, this.api.getSpotlightProps());
           const positioner = this.part("positioner");
-          if (positioner) this.spreadProps(positioner, this.api.getPositionerProps());
+          if (positioner) {
+            this.spreadProps(positioner, this.api.getPositionerProps());
+            positioner.hidden = !this.api.open;
+            if (this.api.open) {
+              positioner.style.removeProperty("transform");
+              positioner.removeAttribute("aria-hidden");
+            }
+          }
           const content = this.part("content");
           if (content) {
             this.spreadProps(content, this.api.getContentProps());

@@ -47,6 +47,11 @@ describe("Tour", () => {
     c.api.start();
     await vi.waitFor(() => expect(c.api.open).toBe(true));
     expect(c.api.step?.title).toBe("Hi");
+    const positioner =
+      document.body.querySelector<HTMLElement>('[data-scope="tour"][data-part="positioner"]') ??
+      el.querySelector<HTMLElement>('[data-part="positioner"]');
+    expect(positioner?.hidden).toBe(false);
+    expect(positioner?.style.transform ?? "").not.toContain("-100vh");
     c.unportal();
     c.destroy();
     el.remove();
