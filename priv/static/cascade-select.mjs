@@ -1581,7 +1581,10 @@ var CascadeSelect = class extends Component {
     const trigger = this.el.querySelector(
       '[data-scope="cascade-select"][data-part="trigger"]'
     );
-    if (trigger) this.spreadProps(trigger, this.api.getTriggerProps());
+    if (trigger) {
+      this.spreadProps(trigger, this.api.getTriggerProps());
+      this.ensureTriggerName(trigger);
+    }
     const indicator = this.el.querySelector(
       '[data-scope="cascade-select"][data-part="indicator"]'
     );
@@ -1666,6 +1669,14 @@ var CascadeSelect = class extends Component {
       }
     };
     walk(col.rootNode, [], []);
+  }
+  ensureTriggerName(trigger) {
+    const labelledBy = trigger.getAttribute("aria-labelledby");
+    const labelEl = labelledBy ? document.getElementById(labelledBy) : null;
+    if (labelEl?.textContent?.trim()) return;
+    trigger.removeAttribute("aria-labelledby");
+    const name = this.api.valueAsString || this.el.dataset.placeholder || "Select";
+    trigger.setAttribute("aria-label", name);
   }
 };
 

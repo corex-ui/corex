@@ -61096,7 +61096,10 @@ ${err}`);
           const trigger = this.el.querySelector(
             '[data-scope="cascade-select"][data-part="trigger"]'
           );
-          if (trigger) this.spreadProps(trigger, this.api.getTriggerProps());
+          if (trigger) {
+            this.spreadProps(trigger, this.api.getTriggerProps());
+            this.ensureTriggerName(trigger);
+          }
           const indicator = this.el.querySelector(
             '[data-scope="cascade-select"][data-part="indicator"]'
           );
@@ -61183,6 +61186,15 @@ ${err}`);
             }
           };
           walk(col.rootNode, [], []);
+        }
+        ensureTriggerName(trigger) {
+          var _a4;
+          const labelledBy = trigger.getAttribute("aria-labelledby");
+          const labelEl = labelledBy ? document.getElementById(labelledBy) : null;
+          if ((_a4 = labelEl == null ? void 0 : labelEl.textContent) == null ? void 0 : _a4.trim()) return;
+          trigger.removeAttribute("aria-labelledby");
+          const name = this.api.valueAsString || this.el.dataset.placeholder || "Select";
+          trigger.setAttribute("aria-label", name);
         }
       };
       DEFAULT_ROOT = {

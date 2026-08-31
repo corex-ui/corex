@@ -63,7 +63,10 @@ export class CascadeSelect extends Component<Props<CascadeNode>, Api, Schema> {
     const trigger = this.el.querySelector<HTMLElement>(
       '[data-scope="cascade-select"][data-part="trigger"]'
     );
-    if (trigger) this.spreadProps(trigger, this.api.getTriggerProps());
+    if (trigger) {
+      this.spreadProps(trigger, this.api.getTriggerProps());
+      this.ensureTriggerName(trigger);
+    }
 
     const indicator = this.el.querySelector<HTMLElement>(
       '[data-scope="cascade-select"][data-part="indicator"]'
@@ -165,5 +168,15 @@ export class CascadeSelect extends Component<Props<CascadeNode>, Api, Schema> {
     };
 
     walk(col.rootNode, [], []);
+  }
+
+  private ensureTriggerName(trigger: HTMLElement): void {
+    const labelledBy = trigger.getAttribute("aria-labelledby");
+    const labelEl = labelledBy ? document.getElementById(labelledBy) : null;
+    if (labelEl?.textContent?.trim()) return;
+
+    trigger.removeAttribute("aria-labelledby");
+    const name = this.api.valueAsString || this.el.dataset.placeholder || "Select";
+    trigger.setAttribute("aria-label", name);
   }
 }

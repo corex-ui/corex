@@ -25,10 +25,21 @@
   }
 
   .cascade-select [data-scope="cascade-select"][data-part="trigger"] {
+    display: inline-flex;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
     min-width: 0;
     max-width: 100%;
+  }
+
+  .cascade-select [data-scope="cascade-select"][data-part="value-text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: start;
   }
 
   .cascade-select [data-scope="cascade-select"][data-part="clear-trigger"] {
