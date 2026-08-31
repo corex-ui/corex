@@ -19,7 +19,13 @@ export class Steps extends Component<Props, Api, Schema> {
     this.spreadProps(root, this.api.getRootProps());
 
     const list = this.el.querySelector<HTMLElement>('[data-scope="steps"][data-part="list"]');
-    if (list) this.spreadProps(list, this.api.getListProps());
+    if (list) {
+      this.spreadProps(list, this.api.getListProps());
+      // Zag marks the list as a tablist, but items are step wrappers (aria-current)
+      // around tab buttons. Drop tablist so axe does not require tab children.
+      list.removeAttribute("role");
+      list.removeAttribute("aria-owns");
+    }
 
     this.el.querySelectorAll<HTMLElement>('[data-scope="steps"][data-part="item"]').forEach((item) => {
       this.spreadProps(item, this.api.getItemProps({ index: Number(item.dataset.index) }));
@@ -28,6 +34,8 @@ export class Steps extends Component<Props, Api, Schema> {
       .querySelectorAll<HTMLElement>('[data-scope="steps"][data-part="trigger"]')
       .forEach((el) => {
         this.spreadProps(el, this.api.getTriggerProps({ index: Number(el.dataset.index) }));
+        el.removeAttribute("role");
+        el.removeAttribute("aria-selected");
       });
     this.el
       .querySelectorAll<HTMLElement>('[data-scope="steps"][data-part="indicator"]')
@@ -43,6 +51,7 @@ export class Steps extends Component<Props, Api, Schema> {
       .querySelectorAll<HTMLElement>('[data-scope="steps"][data-part="content"]')
       .forEach((el) => {
         this.spreadProps(el, this.api.getContentProps({ index: Number(el.dataset.index) }));
+        el.removeAttribute("role");
       });
 
     const next = this.el.querySelector<HTMLElement>('[data-scope="steps"][data-part="next-trigger"]');

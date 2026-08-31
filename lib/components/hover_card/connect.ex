@@ -4,8 +4,8 @@ defmodule Corex.HoverCard.Connect do
 
   use Corex.Component, :connect
 
-  alias Corex.Selectors
   alias Corex.HoverCard.Anatomy.{Arrow, ArrowTip, Content, Positioner, Props, Trigger}
+  alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()

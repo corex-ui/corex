@@ -17,6 +17,7 @@ export class Toc extends Component<Props, Api, Schema> {
     const root =
       this.el.querySelector<HTMLElement>('[data-scope="toc"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
+    root.setAttribute("aria-label", `Table of contents ${this.el.id}`);
 
     const list = this.el.querySelector<HTMLElement>('[data-scope="toc"][data-part="list"]');
     if (list) this.spreadProps(list, this.api.getListProps());

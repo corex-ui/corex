@@ -3,7 +3,7 @@ defmodule Corex.CascadeSelect.Connect do
   use Corex.Connect.Mounted
   use Corex.Component, :connect
 
-  alias Corex.Selectors
+  alias Corex.CascadeSelect.Anatomy
 
   alias Corex.CascadeSelect.Anatomy.{
     ClearTrigger,
@@ -19,6 +19,7 @@ defmodule Corex.CascadeSelect.Connect do
     ValueText
   }
 
+  alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
@@ -167,7 +168,7 @@ defmodule Corex.CascadeSelect.Connect do
       "data-part" => "positioner",
       "dir" => Map.get(assigns, :dir),
       "id" => "cascade-select:" <> assigns.id <> ":positioner",
-      "style" => Corex.CascadeSelect.Anatomy.closed_positioner_style()
+      "style" => Anatomy.closed_positioner_style()
     }
   end
 

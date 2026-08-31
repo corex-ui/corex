@@ -143,10 +143,10 @@ defmodule Corex.HoverCard do
 
   import Corex.Api.Doc
 
-  alias Corex.Positioning
-  alias Corex.Selectors
   alias Corex.HoverCard.Anatomy.{Arrow, ArrowTip, Content, Positioner, Props, Trigger}
   alias Corex.HoverCard.Connect
+  alias Corex.Positioning
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 

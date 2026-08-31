@@ -8,6 +8,7 @@ describe("Steps", () => {
     const c = new Steps(el, { id: el.id } as never);
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
+    expect(el.querySelector('[data-part="list"]')?.getAttribute("role")).not.toBe("tablist");
     c.destroy();
   });
 });

@@ -23,7 +23,8 @@ defmodule Corex.Toc.Connect do
       "data-scope" => "toc",
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
-      "id" => "toc:" <> assigns.id <> ":root"
+      "id" => "toc:" <> assigns.id <> ":root",
+      "aria-label" => "Table of contents " <> assigns.id
     }
   end
 

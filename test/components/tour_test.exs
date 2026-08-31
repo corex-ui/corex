@@ -23,7 +23,7 @@ defmodule Corex.TourTest do
     assert html =~ ~S(data-part="content")
     assert html =~ "translate3d(0, -100vh, 0)"
     assert html =~ ~S(hidden)
-    refute html =~ ~s(data-state="open")
+    refute html =~ ~S(data-state="open")
   end
 
   test "Connect stamps closed backdrop and content" do

@@ -356,12 +356,18 @@ var Steps = class extends Component {
     const root = this.el.querySelector('[data-scope="steps"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
     const list = this.el.querySelector('[data-scope="steps"][data-part="list"]');
-    if (list) this.spreadProps(list, this.api.getListProps());
+    if (list) {
+      this.spreadProps(list, this.api.getListProps());
+      list.removeAttribute("role");
+      list.removeAttribute("aria-owns");
+    }
     this.el.querySelectorAll('[data-scope="steps"][data-part="item"]').forEach((item) => {
       this.spreadProps(item, this.api.getItemProps({ index: Number(item.dataset.index) }));
     });
     this.el.querySelectorAll('[data-scope="steps"][data-part="trigger"]').forEach((el) => {
       this.spreadProps(el, this.api.getTriggerProps({ index: Number(el.dataset.index) }));
+      el.removeAttribute("role");
+      el.removeAttribute("aria-selected");
     });
     this.el.querySelectorAll('[data-scope="steps"][data-part="indicator"]').forEach((el) => {
       this.spreadProps(el, this.api.getIndicatorProps({ index: Number(el.dataset.index) }));
@@ -371,6 +377,7 @@ var Steps = class extends Component {
     });
     this.el.querySelectorAll('[data-scope="steps"][data-part="content"]').forEach((el) => {
       this.spreadProps(el, this.api.getContentProps({ index: Number(el.dataset.index) }));
+      el.removeAttribute("role");
     });
     const next = this.el.querySelector('[data-scope="steps"][data-part="next-trigger"]');
     if (next) this.spreadProps(next, this.api.getNextTriggerProps());

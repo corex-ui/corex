@@ -37,7 +37,7 @@ defmodule E2eWeb.Demos.TocDemo do
 
     ~H"""
     <div class="grid w-full grid-cols-1 md:grid-cols-[minmax(0,1fr)_12rem] gap-space items-start">
-      <article class="flex flex-col gap-space-lg max-h-96 overflow-auto pr-space">
+      <article class="flex flex-col gap-space-lg max-h-96 overflow-auto pr-space" tabindex="0">
         <section>
           <h2 id="intro">Introduction</h2>
           <p>

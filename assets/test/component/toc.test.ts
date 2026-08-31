@@ -8,6 +8,9 @@ describe("Toc", () => {
     const c = new Toc(el, { id: el.id } as never);
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
+    expect(el.querySelector('[data-part="root"]')?.getAttribute("aria-label")).toContain(
+      "Table of contents"
+    );
     c.destroy();
   });
 });

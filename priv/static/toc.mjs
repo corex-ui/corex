@@ -380,6 +380,7 @@ var Toc = class extends Component {
   render() {
     const root = this.el.querySelector('[data-scope="toc"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
+    root.setAttribute("aria-label", `Table of contents ${this.el.id}`);
     const list = this.el.querySelector('[data-scope="toc"][data-part="list"]');
     if (list) this.spreadProps(list, this.api.getListProps());
     this.el.querySelectorAll('[data-scope="toc"][data-part="item"]').forEach((el) => {

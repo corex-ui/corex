@@ -3,8 +3,8 @@ defmodule Corex.DateInput.Connect do
   use Corex.Connect.Mounted
   use Corex.Component, :connect
 
-  alias Corex.Selectors
   alias Corex.DateInput.Anatomy.{Props, Root}
+  alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()

@@ -50301,12 +50301,18 @@ ${err}`);
           const root = (_a4 = this.el.querySelector('[data-scope="steps"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(root, this.api.getRootProps());
           const list = this.el.querySelector('[data-scope="steps"][data-part="list"]');
-          if (list) this.spreadProps(list, this.api.getListProps());
+          if (list) {
+            this.spreadProps(list, this.api.getListProps());
+            list.removeAttribute("role");
+            list.removeAttribute("aria-owns");
+          }
           this.el.querySelectorAll('[data-scope="steps"][data-part="item"]').forEach((item) => {
             this.spreadProps(item, this.api.getItemProps({ index: Number(item.dataset.index) }));
           });
           this.el.querySelectorAll('[data-scope="steps"][data-part="trigger"]').forEach((el) => {
             this.spreadProps(el, this.api.getTriggerProps({ index: Number(el.dataset.index) }));
+            el.removeAttribute("role");
+            el.removeAttribute("aria-selected");
           });
           this.el.querySelectorAll('[data-scope="steps"][data-part="indicator"]').forEach((el) => {
             this.spreadProps(el, this.api.getIndicatorProps({ index: Number(el.dataset.index) }));
@@ -50316,6 +50322,7 @@ ${err}`);
           });
           this.el.querySelectorAll('[data-scope="steps"][data-part="content"]').forEach((el) => {
             this.spreadProps(el, this.api.getContentProps({ index: Number(el.dataset.index) }));
+            el.removeAttribute("role");
           });
           const next2 = this.el.querySelector('[data-scope="steps"][data-part="next-trigger"]');
           if (next2) this.spreadProps(next2, this.api.getNextTriggerProps());
@@ -54484,6 +54491,7 @@ ${err}`);
           var _a4;
           const root = (_a4 = this.el.querySelector('[data-scope="toc"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(root, this.api.getRootProps());
+          root.setAttribute("aria-label", `Table of contents ${this.el.id}`);
           const list = this.el.querySelector('[data-scope="toc"][data-part="list"]');
           if (list) this.spreadProps(list, this.api.getListProps());
           this.el.querySelectorAll('[data-scope="toc"][data-part="item"]').forEach((el) => {
