@@ -54,10 +54,27 @@
   .navigation-menu [data-scope="navigation-menu"][data-part="content"] {
     position: absolute;
     top: 100%;
-    width: max-content;
+    width: min(100vw - 2rem, var(--container-sm));
     left: 0;
     margin-top: var(--spacing-space-xs);
     z-index: var(--z-overlay, 1100);
+    padding: var(--spacing-space);
+    display: grid;
+    gap: var(--spacing-space-xs);
+  }
+
+  .navigation-menu [data-scope="navigation-menu"][data-part="content"][hidden] {
+    display: none;
+  }
+
+  .navigation-menu [data-scope="navigation-menu"][data-part="heading"] {
+    font-weight: var(--font-weight-semibold, 600);
+    margin: 0 0 var(--spacing-space-xs);
+  }
+
+  .navigation-menu [data-scope="navigation-menu"][data-part="viewport-inner"] {
+    display: grid;
+    gap: var(--spacing-space-xs);
   }
 
   .navigation-menu [data-scope="navigation-menu"][data-part="content"][data-state="open"] {

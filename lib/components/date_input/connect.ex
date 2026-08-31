@@ -12,6 +12,8 @@ defmodule Corex.DateInput.Connect do
     %{
       "id" => assigns.id,
       "data-dir" => Map.get(assigns, :dir),
+      "data-name" => Map.get(assigns, :name),
+      "data-disabled" => presence_attr(Map.get(assigns, :disabled)),
       "data-on-value-change" => Map.get(assigns, :on_value_change),
       "data-on-value-change-client" => Map.get(assigns, :on_value_change_client)
     }

@@ -10,6 +10,11 @@ defmodule E2eWeb.ProgressEventsLive do
     {:noreply, stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
   end
 
+  @impl true
+  def handle_event("progress_client_changed", payload, socket) do
+    {:noreply, stream_insert(socket, :logs, log("client_changed", payload["id"], inspect(payload)), at: 0)}
+  end
+
   defp log(event, dom_id, value) do
     %{
       id: "#{System.unique_integer([:positive])}",
@@ -25,10 +30,45 @@ defmodule E2eWeb.ProgressEventsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page path={@path} id="progress-events-page" title="Progress · Events" subtitle="Value change events.">
-        <.demo_section id="progress-events-section" title="On value change">
+        <.demo_section
+          id="progress-events-section"
+          title="On value change (Server and client)"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: ~S"""
+            <.progress class="progress" on_value_change="progress_changed" on_value_change_client="progress-changed" />
+            """},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: ~S"""
+            def handle_event("progress_changed", payload, socket) do
+              {:noreply, socket}
+            end
+            """},
+            %{value: "js", label: "JS", language: :js, code: ~S"""
+            const el = document.getElementById("progress-events");
+            el?.addEventListener("progress-changed", (event) => {
+              console.log(event.detail);
+            });
+            """}
+          ]}
+        >
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">
-              <.progress id="progress-events" class="progress" on_value_change="progress_changed" />
+              <.progress
+                id="progress-events"
+                class="progress"
+                on_value_change="progress_changed"
+                on_value_change_client="progress-changed"
+              />
+              <script :type={Phoenix.LiveView.ColocatedHook} name=".ProgressEventsClient">
+                export default {
+                  mounted() {
+                    const el = document.getElementById("progress-events");
+                    if(!el) return;
+                    el.addEventListener("progress-changed", (event) => {
+                      this.pushEvent("progress_client_changed", event.detail ?? {});
+                    });
+                  }
+                }
+              </script>
               <.data_table id="progress-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>

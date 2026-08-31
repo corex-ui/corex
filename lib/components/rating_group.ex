@@ -18,6 +18,11 @@ defmodule Corex.RatingGroup do
 
   Requires a stable `id` on `<.rating_group>`.
 
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set value (server) | `socket` |
+
   ## Events
 
   ### Server events
@@ -74,15 +79,21 @@ defmodule Corex.RatingGroup do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.RatingGroup.Anatomy.{Props, Root}
   alias Corex.RatingGroup.Connect
+  alias Corex.Selectors
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
+  attr(:name, :string, default: nil)
   attr(:count, :integer, default: 5)
-  attr(:value, :integer, default: 0)
+  attr(:value, :float, default: 0.0)
   attr(:allow_half, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
@@ -101,6 +112,7 @@ defmodule Corex.RatingGroup do
       {Connect.props(%Props{
         id: @id,
         dir: @dir,
+        name: @name,
         count: @count,
         value: @value,
         allow_half: @allow_half,
@@ -112,11 +124,57 @@ defmodule Corex.RatingGroup do
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div data-scope="rating-group" data-part="control">
-          <span :for={i <- 1..@count} data-scope="rating-group" data-part="item" data-index={i}>★</span>
+          <span :for={i <- 1..@count} data-scope="rating-group" data-part="item" data-index={i}>
+            <svg
+              data-scope="rating-group"
+              data-part="item-preview"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                data-scope="rating-group"
+                data-part="star-bg"
+                d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77 6.19 20.38l1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
+              />
+              <path
+                data-scope="rating-group"
+                data-part="star-fg"
+                d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77 6.19 20.38l1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
+              />
+            </svg>
+          </span>
         </div>
-        <input type="hidden" data-scope="rating-group" data-part="hidden-input" />
+        <input type="hidden" data-scope="rating-group" data-part="hidden-input" name={@name} />
       </div>
     </div>
     """
+  end
+
+  api_doc(~S"""
+  Set the rating from a control (`phx-click`).
+  """)
+
+  @spec set_value(String.t(), number()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), number()) ::
+          Phoenix.LiveView.Socket.t()
+  def set_value(rating_group_id, value) when is_binary(rating_group_id) and is_number(value) do
+    JS.dispatch("corex:rating-group:set-value",
+      to: Selectors.css_id(rating_group_id),
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Set the rating from `handle_event`.
+  """)
+
+  def set_value(socket, rating_group_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(rating_group_id) and
+             is_number(value) do
+    LiveView.push_event(socket, "rating_group_set_value", %{
+      id: rating_group_id,
+      value: value
+    })
   end
 end

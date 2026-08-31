@@ -1,8 +1,21 @@
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { DateInput } from "../components/date-input";
+import * as dateInput from "@zag-js/date-input";
 import type { Props as DateInputProps } from "@zag-js/date-input";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { idMatches, readPayloadId } from "../lib/respond-to";
 import { createZagLiveHook } from "../lib/zag-live-hook";
+
+function parseIsoList(raw: string | string[] | undefined) {
+  const values = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  if (values.length === 0) return [];
+  try {
+    const parsed = dateInput.parse(values);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return [];
+  }
+}
 
 function dateInputProps(el: HTMLElement, hook: HookInterface<HTMLElement>): DateInputProps {
   const onValueChange = (details: { valueAsString: string[] }) => {
@@ -36,8 +49,21 @@ function dateInputProps(el: HTMLElement, hook: HookInterface<HTMLElement>): Date
 
 const DateInputHook = createZagLiveHook({
   key: "date-input",
-  mount(hook) {
-    return new DateInput(hook.el, dateInputProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const inst = new DateInput(hook.el, dateInputProps(hook.el, hook));
+
+    dom.add<CustomEvent<{ value: string | string[] }>>("corex:date-input:set-value", (event) => {
+      const parsed = parseIsoList(event.detail.value);
+      if (parsed.length > 0) inst.api.setValue(parsed);
+    });
+
+    server.add("date_input_set_value", (payload: { id?: string; value: string | string[] }) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      const parsed = parseIsoList(payload.value);
+      if (parsed.length > 0) inst.api.setValue(parsed);
+    });
+
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(dateInputProps(hook.el, hook));

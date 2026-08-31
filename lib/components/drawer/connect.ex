@@ -60,7 +60,7 @@ defmodule Corex.Drawer.Connect do
       "data-part" => "trigger",
       "type" => "button",
       "dir" => Map.get(assigns, :dir),
-      "data-state" => data_state(assigns.open, "open", "closed"),
+      "data-state" => "closed",
       "id" => trigger_id(assigns.id, value)
     }
     |> maybe_put("data-value", value)
@@ -78,8 +78,10 @@ defmodule Corex.Drawer.Connect do
       "data-scope" => "drawer",
       "data-part" => "backdrop",
       "dir" => Map.get(assigns, :dir),
-      "data-state" => data_state(assigns.open, "open", "closed"),
-      "id" => "drawer:#{assigns.id}:backdrop"
+      "data-state" => "closed",
+      "id" => "drawer:#{assigns.id}:backdrop",
+      "hidden" => true,
+      "aria-hidden" => "true"
     }
   end
 
@@ -95,8 +97,10 @@ defmodule Corex.Drawer.Connect do
       "data-scope" => "drawer",
       "data-part" => "positioner",
       "dir" => Map.get(assigns, :dir),
-      "data-state" => data_state(assigns.open, "open", "closed"),
-      "id" => "drawer:#{assigns.id}:positioner"
+      "data-state" => "closed",
+      "id" => "drawer:#{assigns.id}:positioner",
+      "style" =>
+        "position:fixed;isolation:isolate;pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);"
     }
   end
 
@@ -112,8 +116,11 @@ defmodule Corex.Drawer.Connect do
       "data-scope" => "drawer",
       "data-part" => "content",
       "dir" => Map.get(assigns, :dir),
-      "data-state" => data_state(assigns.open, "open", "closed"),
-      "id" => "drawer:#{assigns.id}:content"
+      "data-state" => "closed",
+      "id" => "drawer:#{assigns.id}:content",
+      "hidden" => true,
+      "aria-hidden" => "true",
+      "style" => "display:none;pointer-events:none"
     }
   end
 

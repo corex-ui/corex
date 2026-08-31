@@ -3,7 +3,10 @@ defmodule E2eWeb.Demos.TourDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.tour class="tour" />
+    <.action phx-click={Corex.Tour.start("tour-anatomy-minimal")} class="button">Start tour</.action>
+    <button id="tour-target-nav" type="button" class="button ui-size-sm">Docs</button>
+    <button id="tour-target-playground" type="button" class="button ui-size-sm">Playground</button>
+    <.tour id="tour-anatomy-minimal" class="tour" />
     """
   end
 
@@ -11,7 +14,14 @@ defmodule E2eWeb.Demos.TourDemo do
     _ = assigns
 
     ~H"""
-    <.tour id="tour-anatomy-minimal" class="tour" />
+    <div class="flex flex-col gap-space items-center">
+      <.action phx-click={Corex.Tour.start("tour-anatomy-minimal")} class="button">Start tour</.action>
+      <div class="flex gap-space-sm">
+        <button id="tour-target-nav" type="button" class="button ui-size-sm">Docs</button>
+        <button id="tour-target-playground" type="button" class="button ui-size-sm">Playground</button>
+      </div>
+      <.tour id="tour-anatomy-minimal" class="tour" />
+    </div>
     """
   end
 

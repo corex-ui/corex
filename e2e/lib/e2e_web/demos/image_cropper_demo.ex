@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.image_cropper class="image-cropper" />
+    <.image_cropper class="image-cropper" src="/images/cropper-demo.png" />
     """
   end
 
@@ -11,7 +11,7 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
     _ = assigns
 
     ~H"""
-    <.image_cropper id="image-cropper-anatomy-minimal" class="image-cropper" />
+    <.image_cropper id="image-cropper-anatomy-minimal" class="image-cropper" src="/images/cropper-demo.png" />
     """
   end
 
@@ -20,12 +20,12 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
   def styling_color_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.image_cropper class="image-cropper" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-accent" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-brand" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-alert" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-success" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-info" src="/images/tech/elixir.svg" />
+    <.image_cropper class="image-cropper" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-accent" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-brand" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-alert" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-success" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-info" src="/images/cropper-demo.png" />
     </div>
     """
   end
@@ -38,32 +38,32 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       <.image_cropper
         id="image-cropper-style-default"
         class="image-cropper"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-accent"
         class="image-cropper ui-accent"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-brand"
         class="image-cropper ui-brand"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-alert"
         class="image-cropper ui-alert"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-success"
         class="image-cropper ui-success"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-info"
         class="image-cropper ui-info"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
     </div>
     """
@@ -72,8 +72,8 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
   def styling_variant_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.image_cropper class="image-cropper" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-solid" src="/images/tech/elixir.svg" />
+    <.image_cropper class="image-cropper" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-solid" src="/images/cropper-demo.png" />
     </div>
     """
   end
@@ -86,12 +86,12 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       <.image_cropper
         id="image-cropper-style-subtle"
         class="image-cropper"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-solid"
         class="image-cropper ui-solid"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
     </div>
     """
@@ -103,7 +103,7 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       class =
         DemoScales.join_matrix_modifiers("image-cropper", semantic.modifier, variant.modifier)
 
-      ~s(<.image_cropper class="#{class}" src="/images/tech/elixir.svg">)
+      ~s(<.image_cropper class="#{class}" src="/images/cropper-demo.png">)
     end
     |> DemoScales.join_code()
   end
@@ -124,7 +124,7 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
             class={
               DemoScales.join_matrix_modifiers("image-cropper", semantic.modifier, variant.modifier)
             }
-            src="/images/tech/elixir.svg"
+            src="/images/cropper-demo.png"
           />
         </div>
       </div>
@@ -135,10 +135,10 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
   def styling_size_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.image_cropper class="image-cropper ui-size-sm" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-size-md" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-size-lg" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-size-xl" src="/images/tech/elixir.svg" />
+    <.image_cropper class="image-cropper ui-size-sm" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-size-md" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-size-lg" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-size-xl" src="/images/cropper-demo.png" />
     </div>
     """
   end
@@ -151,22 +151,22 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       <.image_cropper
         id="image-cropper-style-size-sm"
         class="image-cropper ui-size-sm"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-size-md"
         class="image-cropper ui-size-md"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-size-lg"
         class="image-cropper ui-size-lg"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-size-xl"
         class="image-cropper ui-size-xl"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
     </div>
     """
@@ -175,12 +175,12 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
   def styling_rounded_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.image_cropper class="image-cropper ui-rounded-none" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-rounded-sm" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-rounded-md" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-rounded-lg" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-rounded-xl" src="/images/tech/elixir.svg" />
-    <.image_cropper class="image-cropper ui-rounded-full" src="/images/tech/elixir.svg" />
+    <.image_cropper class="image-cropper ui-rounded-none" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-rounded-sm" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-rounded-md" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-rounded-lg" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-rounded-xl" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper ui-rounded-full" src="/images/cropper-demo.png" />
     </div>
     """
   end
@@ -193,32 +193,32 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       <.image_cropper
         id="image-cropper-style-r-none"
         class="image-cropper ui-rounded-none"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-r-sm"
         class="image-cropper ui-rounded-sm"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-r-md"
         class="image-cropper ui-rounded-md"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-r-lg"
         class="image-cropper ui-rounded-lg"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-r-xl"
         class="image-cropper ui-rounded-xl"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
       <.image_cropper
         id="image-cropper-style-r-full"
         class="image-cropper ui-rounded-full"
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
     </div>
     """
@@ -229,7 +229,7 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
     |> Enum.take(4)
     |> Enum.map(fn %{id: _id, modifier: modifier} ->
       class = DemoScales.join_modifiers("image-cropper", modifier)
-      ~s(<.image_cropper class="#{class}" src="/images/tech/elixir.svg" />)
+      ~s(<.image_cropper class="#{class}" src="/images/cropper-demo.png" />)
     end)
     |> DemoScales.join_code()
   end
@@ -247,7 +247,7 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       <.image_cropper
         :for={step <- @max_width_variants}
         class={DemoScales.join_modifiers("image-cropper", step.modifier)}
-        src="/images/tech/elixir.svg"
+        src="/images/cropper-demo.png"
       />
     </div>
     """

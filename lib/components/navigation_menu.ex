@@ -1,7 +1,7 @@
 defmodule Corex.NavigationMenu do
   @moduledoc ~S'''
-  NavigationMenu for Phoenix LiveView. Behavior follows [Zag.js](https://zagjs.com/components/react/navigation-menu).
-  
+  Navigation menu for Phoenix LiveView. Behavior follows [Zag.js Navigation Menu](https://zagjs.com/components/react/navigation-menu).
+
   ## Anatomy
 
   <!-- tabs-open -->
@@ -10,6 +10,18 @@ defmodule Corex.NavigationMenu do
 
     ```heex
     <.navigation_menu class="navigation-menu" />
+    ```
+
+  ### Mega menu
+
+    ```heex
+    <.navigation_menu class="navigation-menu">
+      <:item value="product" type="trigger">Product</:item>
+      <:content value="product">
+        <p>Feature overview</p>
+      </:content>
+      <:item value="docs" href="#">Docs</:item>
+    </.navigation_menu>
     ```
 
   <!-- tabs-close -->
@@ -24,29 +36,13 @@ defmodule Corex.NavigationMenu do
 
   | Event | When | Payload |
   | ----- | ---- | ------- |
-  | `on_value_change="navigation_menu_changed"` | Value changes | `%{"id" => id, "value" => value}` |
-
-  <!-- tabs-open -->
-
-  ### on_value_change
-
-    ```heex
-    <.navigation_menu class="navigation-menu" />
-    ```
-
-    ```elixir
-    def handle_event("navigation_menu_changed", payload, socket) do
-      {:noreply, socket}
-    end
-    ```
-
-  <!-- tabs-close -->
+  | `on_value_change="navigation_menu_changed"` | Active item changes | `%{"id" => id, "value" => value}` |
 
   ### Client events
 
   | Event | When | `event.detail` |
   | ----- | ---- | -------------- |
-  | `on_value_change_client="navigation-menu-changed"` | Value changes | `id`, `value` |
+  | `on_value_change_client="navigation-menu-changed"` | Active item changes | `id`, `value` |
 
   ## Style
 
@@ -54,20 +50,10 @@ defmodule Corex.NavigationMenu do
 
     ```css
     [data-scope="navigation-menu"][data-part="root"] {}
+    [data-scope="navigation-menu"][data-part="content"] {}
     ```
 
   Axes: **Semantic**, **Variant** (`ui-solid`), **Size**, **Radius**. See the [modifier guide](modifiers.html).
-
-  <!-- tabs-open -->
-
-  ### Semantic
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Default | `navigation-menu` |
-  | Accent | `navigation-menu ui-accent` |
-
-  <!-- tabs-close -->
 
   '''
 
@@ -81,11 +67,21 @@ defmodule Corex.NavigationMenu do
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-
   attr(:rest, :global)
+
+  slot :item, required: false do
+    attr(:value, :string, required: true)
+    attr(:href, :string, required: false)
+    attr(:type, :string, required: false)
+  end
+
+  slot :content, required: false do
+    attr(:value, :string, required: true)
+  end
 
   def navigation_menu(assigns) do
     assigns = Corex.FormField.assign_stable_id(assigns, "navigation-menu")
+    assigns = assign(assigns, :use_default?, assigns.item == [])
 
     ~H"""
     <div
@@ -101,11 +97,78 @@ defmodule Corex.NavigationMenu do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
-        <div data-scope="navigation-menu" data-part="list">
-          <div data-scope="navigation-menu" data-part="item" data-value="home">
-            <a data-scope="navigation-menu" data-part="link" data-value="home" href="#">Home</a>
+        <ul data-scope="navigation-menu" data-part="list">
+          <%= if @use_default? do %>
+            <li data-scope="navigation-menu" data-part="item" data-value="product">
+              <button type="button" data-scope="navigation-menu" data-part="trigger" data-value="product">
+                Product
+              </button>
+            </li>
+            <li data-scope="navigation-menu" data-part="item" data-value="docs">
+              <button type="button" data-scope="navigation-menu" data-part="trigger" data-value="docs">
+                Docs
+              </button>
+            </li>
+            <li data-scope="navigation-menu" data-part="item" data-value="blog">
+              <a data-scope="navigation-menu" data-part="link" data-value="blog" href="#">Blog</a>
+            </li>
+            <li data-scope="navigation-menu" data-part="item" data-value="pricing">
+              <a data-scope="navigation-menu" data-part="link" data-value="pricing" href="#">Pricing</a>
+            </li>
+          <% else %>
+            <li :for={item <- @item} data-scope="navigation-menu" data-part="item" data-value={item.value}>
+              <a
+                :if={item[:href]}
+                data-scope="navigation-menu"
+                data-part="link"
+                data-value={item.value}
+                href={item[:href]}
+              >
+                {render_slot(item)}
+              </a>
+              <button
+                :if={!item[:href]}
+                type="button"
+                data-scope="navigation-menu"
+                data-part="trigger"
+                data-value={item.value}
+              >
+                {render_slot(item)}
+              </button>
+            </li>
+          <% end %>
+        </ul>
+
+        <%= if @use_default? do %>
+          <div data-scope="navigation-menu" data-part="content" data-value="product" hidden>
+            <div data-scope="navigation-menu" data-part="viewport-inner">
+              <p data-scope="navigation-menu" data-part="heading">Build with Corex</p>
+              <p>Phoenix LiveView components with Zag.js behavior, Design tokens, and an installer.</p>
+              <a href="#">Components</a>
+              <a href="#">Playground</a>
+              <a href="#">Design</a>
+            </div>
           </div>
-        </div>
+          <div data-scope="navigation-menu" data-part="content" data-value="docs" hidden>
+            <div data-scope="navigation-menu" data-part="viewport-inner">
+              <p data-scope="navigation-menu" data-part="heading">Documentation</p>
+              <a href="#">Getting started</a>
+              <a href="#">Anatomy</a>
+              <a href="#">Forms</a>
+              <a href="#">Accessibility</a>
+            </div>
+          </div>
+        <% else %>
+          <div
+            :for={panel <- @content}
+            data-scope="navigation-menu"
+            data-part="content"
+            data-value={panel.value}
+            hidden
+          >
+            {render_slot(panel)}
+          </div>
+        <% end %>
       </div>
     </div>
     """

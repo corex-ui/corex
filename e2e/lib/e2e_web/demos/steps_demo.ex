@@ -15,7 +15,32 @@ defmodule E2eWeb.Demos.StepsDemo do
     """
   end
 
-  alias E2eWeb.DemoScales
+  def anatomy_locked_code do
+    ~S"""
+    <.steps class="steps" linear>
+      <:content index={0}>
+        <label class="flex gap-space-sm items-center">
+          <input type="checkbox" data-step-gate />
+          I agree to the terms
+        </label>
+      </:content>
+    </.steps>
+    """
+  end
+
+  def anatomy_locked_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.steps id="steps-anatomy-locked" class="steps" linear>
+      <:content index={0}>
+        <label class="flex gap-space-sm items-center">
+          <input type="checkbox" data-step-gate /> I agree to the terms before continuing
+        </label>
+      </:content>
+    </.steps>
+    """
+  end
 
   def styling_color_code do
     ~S"""

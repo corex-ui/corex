@@ -83,6 +83,7 @@ defmodule Corex.QrCode do
   attr(:on_value_change_client, :string, default: nil)
   attr(:value, :string, default: "https://zagjs.com")
   attr(:pixel_size, :integer, default: 4)
+  slot(:overlay, required: false)
 
   attr(:rest, :global)
 
@@ -108,6 +109,14 @@ defmodule Corex.QrCode do
         <svg data-scope="qr-code" data-part="frame">
           <path data-scope="qr-code" data-part="pattern"></path>
         </svg>
+        <div data-scope="qr-code" data-part="overlay">
+          <%= if @overlay != [] do %>
+            {render_slot(Enum.at(@overlay, 0))}
+          <% else %>
+            <span data-scope="qr-code" data-part="overlay-mark">Cx</span>
+          <% end %>
+        </div>
+        <span data-scope="qr-code" data-part="skeleton" aria-hidden="true"></span>
       </div>
     </div>
     """

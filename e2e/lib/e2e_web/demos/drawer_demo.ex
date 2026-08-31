@@ -53,7 +53,7 @@ defmodule E2eWeb.Demos.DrawerDemo do
 
   def anatomy_snap_points_code do
     ~S"""
-    <.drawer class="drawer" snap_points="0.3,0.6,1" default_snap_point="0.6">
+    <.drawer class="drawer" snap_points="0.45,0.75,1" default_snap_point="0.75">
       <:trigger>Open</:trigger>
       <:content>
         <p>Drag between snap points.</p>
@@ -69,8 +69,8 @@ defmodule E2eWeb.Demos.DrawerDemo do
     <.drawer
       id="drawer-anatomy-snap"
       class="drawer"
-      snap_points="0.3,0.6,1"
-      default_snap_point="0.6"
+      snap_points="0.45,0.75,1"
+      default_snap_point="0.75"
     >
       <:trigger>Open</:trigger>
       <:content>
@@ -108,6 +108,67 @@ defmodule E2eWeb.Demos.DrawerDemo do
       </.drawer>
     </div>
     """
+  end
+
+  def api_set_open_client_js_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap items-center gap-space-sm">
+      <button
+        type="button"
+        class="button ui-size-sm"
+        onclick="document.getElementById('drawer-api-cjs')?.dispatchEvent(new CustomEvent('corex:drawer:set-open', {bubbles: false, detail: { open: true } }))"
+      >
+        Open
+      </button>
+      <.drawer id="drawer-api-cjs" class="drawer">
+        <:trigger>Target</:trigger>
+        <:content>Opened from client JS</:content>
+      </.drawer>
+    </div>
+    """
+  end
+
+  def api_codes do
+    %{
+      set_open_client_binding: ~S"""
+      <.action phx-click={Corex.Drawer.set_open("drawer-api-cb", true)} class="button ui-size-sm">Open</.action>
+      <.drawer id="drawer-api-cb" class="drawer">
+        <:trigger>Target</:trigger>
+        <:content>Opened from binding</:content>
+      </.drawer>
+      """,
+      set_open_client_js_heex: ~S"""
+      <button type="button" class="button ui-size-sm" onclick="document.getElementById('drawer-api-cjs')?.dispatchEvent(new CustomEvent('corex:drawer:set-open', {bubbles: false, detail: { open: true } }))">Open</button>
+      <.drawer id="drawer-api-cjs" class="drawer">
+        <:trigger>Target</:trigger>
+        <:content>Opened from client JS</:content>
+      </.drawer>
+      """,
+      set_open_client_js: ~S"""
+      document.getElementById("drawer-api-cjs")?.dispatchEvent(
+        new CustomEvent("corex:drawer:set-open", { bubbles: false, detail: { open: true } })
+      );
+      """,
+      set_open_client_ts: ~S"""
+      document.getElementById("drawer-api-cjs")?.dispatchEvent(
+        new CustomEvent("corex:drawer:set-open", { bubbles: false, detail: { open: true } })
+      );
+      """,
+      set_open_server_heex: ~S"""
+      <.action phx-click="drawer_api_open" class="button ui-size-sm">Open</.action>
+      <.drawer id="drawer-api-srv" class="drawer">
+        <:trigger>Target</:trigger>
+        <:content>Opened from server</:content>
+      </.drawer>
+      """,
+      set_open_server_elixir: ~S"""
+      def handle_event("drawer_api_open", _params, socket) do
+        {:noreply, Corex.Drawer.set_open(socket, "drawer-api-srv", true)}
+      end
+      """
+    }
   end
 
   alias E2eWeb.DemoScales

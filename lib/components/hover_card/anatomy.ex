@@ -72,7 +72,16 @@ defmodule Corex.HoverCard.Anatomy do
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), open: boolean() | nil}
 
-    @ignored_attrs ["dir", "data-state", "id", "data-placement", "data-side", "style", "hidden"]
+    @ignored_attrs [
+      "dir",
+      "data-state",
+      "id",
+      "data-placement",
+      "data-side",
+      "style",
+      "hidden",
+      "aria-hidden"
+    ]
     def ignored_attrs, do: @ignored_attrs
   end
 

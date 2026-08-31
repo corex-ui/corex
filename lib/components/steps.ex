@@ -86,10 +86,16 @@ defmodule Corex.Steps do
   attr(:linear, :boolean, default: false)
   attr(:orientation, :string, default: "horizontal", values: ["horizontal", "vertical"])
 
+  slot :content, required: false do
+    attr(:index, :integer, required: false)
+  end
+
   attr(:rest, :global)
 
   def steps(assigns) do
     assigns = Corex.FormField.assign_stable_id(assigns, "steps")
+    contents = Map.new(assigns.content, fn s -> {s[:index], s} end)
+    assigns = assign(assigns, :content_by_index, contents)
 
     ~H"""
     <div
@@ -108,23 +114,45 @@ defmodule Corex.Steps do
         on_step_change_client: @on_step_change_client
       })}
     >
-      <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir})} data-orientation={@orientation}>
         <div data-scope="steps" data-part="list">
           <div :for={i <- 0..(@count - 1)} data-scope="steps" data-part="item" data-index={i}>
             <button type="button" data-scope="steps" data-part="trigger" data-index={i}>
               <span data-scope="steps" data-part="indicator" data-index={i}>{i + 1}</span>
-              Step {i + 1}
+              {step_title(i)}
             </button>
             <div :if={i < @count - 1} data-scope="steps" data-part="separator" data-index={i}></div>
           </div>
         </div>
-        <div :for={i <- 0..(@count - 1)} data-scope="steps" data-part="content" data-index={i}>
-          Step {i + 1}
+        <div :for={i <- 0..(@count - 1)} data-scope="steps" data-part="content" data-index={i} hidden={i != @step}>
+          <%= if slot = @content_by_index[i] do %>
+            {render_slot(slot)}
+          <% else %>
+            {step_copy(i)}
+          <% end %>
         </div>
-        <button data-scope="steps" data-part="prev-trigger" type="button">Back</button>
-        <button data-scope="steps" data-part="next-trigger" type="button">Next</button>
+        <div data-scope="steps" data-part="actions">
+          <button data-scope="steps" data-part="prev-trigger" type="button">Back</button>
+          <button data-scope="steps" data-part="next-trigger" type="button">Continue</button>
+        </div>
       </div>
     </div>
     """
   end
+
+  defp step_title(0), do: "Account"
+  defp step_title(1), do: "Workspace"
+  defp step_title(2), do: "Review"
+  defp step_title(i), do: "Step #{i + 1}"
+
+  defp step_copy(0),
+    do: "Create your account. We’ll use this email for billing and product updates."
+
+  defp step_copy(1),
+    do: "Name your workspace so projects, tokens, and members stay grouped."
+
+  defp step_copy(2),
+    do: "Review the details, then continue. Invite teammates from settings anytime."
+
+  defp step_copy(i), do: "Step #{i + 1}"
 end

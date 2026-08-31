@@ -725,7 +725,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/progress/style"
         },
         %{
-          label: ~t"RatingGroup",
+          label: ~t"Rating group",
           id: "rating-group",
           style: true,
           playground: false,
@@ -733,7 +733,11 @@ defmodule E2eWeb.Helpers do
           anatomy_to: ~p"/rating-group/anatomy",
           api_to: ~p"/rating-group/api",
           events_to: ~p"/rating-group/events",
-          style_to: ~p"/rating-group/style"
+          style_to: ~p"/rating-group/style",
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/rating-group/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/rating-group/live-form")
+          ]
         },
         %{
           label: ~t"Steps",
@@ -747,7 +751,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/steps/style"
         },
         %{
-          label: ~t"QrCode",
+          label: ~t"QR code",
           id: "qr-code",
           style: true,
           playground: false,
@@ -780,7 +784,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/splitter/style"
         },
         %{
-          label: ~t"ScrollArea",
+          label: ~t"Scroll area",
           id: "scroll-area",
           style: true,
           playground: false,
@@ -791,7 +795,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/scroll-area/style"
         },
         %{
-          label: ~t"Toc",
+          label: ~t"Table of contents",
           id: "toc",
           style: true,
           playground: false,
@@ -802,7 +806,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/toc/style"
         },
         %{
-          label: ~t"DateInput",
+          label: ~t"Date input",
           id: "date-input",
           style: true,
           playground: false,
@@ -810,10 +814,14 @@ defmodule E2eWeb.Helpers do
           anatomy_to: ~p"/date-input/anatomy",
           api_to: ~p"/date-input/api",
           events_to: ~p"/date-input/events",
-          style_to: ~p"/date-input/style"
+          style_to: ~p"/date-input/style",
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/date-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/date-input/live-form")
+          ]
         },
         %{
-          label: ~t"ImageCropper",
+          label: ~t"Image cropper",
           id: "image-cropper",
           style: true,
           playground: false,
@@ -824,7 +832,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/image-cropper/style"
         },
         %{
-          label: ~t"NavigationMenu",
+          label: ~t"Navigation menu",
           id: "navigation-menu",
           style: true,
           playground: false,
@@ -835,7 +843,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/navigation-menu/style"
         },
         %{
-          label: ~t"CascadeSelect",
+          label: ~t"Cascade select",
           id: "cascade-select",
           style: true,
           playground: false,
@@ -843,7 +851,11 @@ defmodule E2eWeb.Helpers do
           anatomy_to: ~p"/cascade-select/anatomy",
           api_to: ~p"/cascade-select/api",
           events_to: ~p"/cascade-select/events",
-          style_to: ~p"/cascade-select/style"
+          style_to: ~p"/cascade-select/style",
+          forms: [
+            doc_form_menu_item(~t"Controller Form", ~p"/cascade-select/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/cascade-select/live-form")
+          ]
         },
         %{
           label: ~t"Tour",

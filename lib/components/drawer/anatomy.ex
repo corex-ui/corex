@@ -75,7 +75,7 @@ defmodule Corex.Drawer.Anatomy do
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), open: boolean() | nil}
 
-    @ignored_attrs ["dir", "data-state", "id", "hidden", "style"]
+    @ignored_attrs ["dir", "data-state", "id", "hidden", "aria-hidden", "style"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -101,6 +101,7 @@ defmodule Corex.Drawer.Anatomy do
       "id",
       "role",
       "hidden",
+      "aria-hidden",
       "style",
       "data-expanded",
       "data-dragging"

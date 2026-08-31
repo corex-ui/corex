@@ -4,10 +4,20 @@ defmodule Corex.DateInput.Anatomy do
   defmodule Props do
     @moduledoc false
     @enforce_keys [:id]
-    defstruct [:id, dir: "ltr", on_value_change: nil, on_value_change_client: nil]
+    defstruct [
+      :id,
+      dir: "ltr",
+      name: nil,
+      disabled: false,
+      on_value_change: nil,
+      on_value_change_client: nil
+    ]
+
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
+            name: String.t() | nil,
+            disabled: boolean(),
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil
           }

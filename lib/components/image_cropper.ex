@@ -81,7 +81,7 @@ defmodule Corex.ImageCropper do
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-  attr(:src, :string, default: "")
+  attr(:src, :string, default: "/images/cropper-demo.png")
 
   attr(:rest, :global)
 
@@ -97,6 +97,7 @@ defmodule Corex.ImageCropper do
       {Connect.props(%Props{
         id: @id,
         dir: @dir,
+        src: @src,
         on_value_change: @on_value_change,
         on_value_change_client: @on_value_change_client
       })}

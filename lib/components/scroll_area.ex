@@ -105,7 +105,13 @@ defmodule Corex.ScrollArea do
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div data-scope="scroll-area" data-part="viewport">
-          <div data-scope="scroll-area" data-part="content">{render_slot(@inner_block)}</div>
+          <div data-scope="scroll-area" data-part="content">
+            <%= if @inner_block != [] do %>
+              {render_slot(@inner_block)}
+            <% else %>
+              <p :for={n <- 1..12}>Scrollable paragraph {n}. Corex ships LiveView hosts with Zag.js behavior so overlays, lists, and fields stay accessible.</p>
+            <% end %>
+          </div>
         </div>
         <div data-scope="scroll-area" data-part="scrollbar">
           <div data-scope="scroll-area" data-part="thumb"></div>

@@ -75,8 +75,13 @@ defmodule Corex.Progress do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Progress.Anatomy.{Props, Root}
   alias Corex.Progress.Connect
+  alias Corex.Selectors
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
@@ -123,5 +128,29 @@ defmodule Corex.Progress do
       </div>
     </div>
     """
+  end
+
+  api_doc(~S"""
+  Set progress value from a control (`phx-click`).
+  """)
+
+  @spec set_value(String.t(), number() | nil) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), number() | nil) ::
+          Phoenix.LiveView.Socket.t()
+  def set_value(progress_id, value) when is_binary(progress_id) do
+    JS.dispatch("corex:progress:set-value",
+      to: Selectors.css_id(progress_id),
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Set progress value from `handle_event`.
+  """)
+
+  def set_value(socket, progress_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(progress_id) do
+    LiveView.push_event(socket, "progress_set_value", %{id: progress_id, value: value})
   end
 end

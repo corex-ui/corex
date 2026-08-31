@@ -3,7 +3,11 @@ defmodule E2eWeb.Demos.QrCodeDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.qr_code class="qr-code" />
+    <.qr_code class="qr-code" value="https://github.com/corex-ui/corex">
+      <:overlay>
+        <img src="/images/tech/elixir.svg" alt="Corex" />
+      </:overlay>
+    </.qr_code>
     """
   end
 
@@ -11,7 +15,11 @@ defmodule E2eWeb.Demos.QrCodeDemo do
     _ = assigns
 
     ~H"""
-    <.qr_code id="qr-code-anatomy-minimal" class="qr-code" />
+    <.qr_code id="qr-code-anatomy-minimal" class="qr-code" value="https://github.com/corex-ui/corex">
+      <:overlay>
+        <img src="/images/tech/elixir.svg" alt="Corex" />
+      </:overlay>
+    </.qr_code>
     """
   end
 

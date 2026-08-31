@@ -7,6 +7,7 @@ defmodule Corex.RatingGroup.Anatomy do
     defstruct [
       :id,
       dir: "ltr",
+      name: nil,
       count: 5,
       value: 0,
       allow_half: false,
@@ -19,8 +20,9 @@ defmodule Corex.RatingGroup.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
+            name: String.t() | nil,
             count: integer(),
-            value: integer(),
+            value: number(),
             allow_half: boolean(),
             disabled: boolean(),
             read_only: boolean(),

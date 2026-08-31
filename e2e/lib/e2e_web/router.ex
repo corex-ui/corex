@@ -272,6 +272,10 @@ defmodule E2eWeb.Router do
 
       live("/date-input/api", DateInputApiLive)
       live("/date-input/events", DateInputEventsLive)
+      live("/date-input/live-form", DateInputFormLive)
+
+      live("/rating-group/live-form", RatingGroupFormLive)
+      live("/cascade-select/live-form", CascadeSelectFormLive)
 
       live("/toc/api", TocApiLive)
       live("/toc/events", TocEventsLive)
@@ -453,6 +457,14 @@ defmodule E2eWeb.Router do
 
     get("/date-input/anatomy", PageController, :date_input_page)
     get("/date-input/style", PageController, :date_input_styling_page)
+    get("/date-input/form", PageController, :date_input_form_page)
+    post("/date-input/form", PageController, :date_input_form_submit)
+
+    get("/rating-group/form", PageController, :rating_group_form_page)
+    post("/rating-group/form", PageController, :rating_group_form_submit)
+
+    get("/cascade-select/form", PageController, :cascade_select_form_page)
+    post("/cascade-select/form", PageController, :cascade_select_form_submit)
 
     get("/toc/anatomy", PageController, :toc_page)
     get("/toc/style", PageController, :toc_styling_page)

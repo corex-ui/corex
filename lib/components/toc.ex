@@ -101,12 +101,23 @@ defmodule Corex.Toc do
       })}
     >
       <nav {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
+        <p data-scope="toc" data-part="title">On this page</p>
+        <div data-scope="toc" data-part="indicator"></div>
         <ul data-scope="toc" data-part="list">
           <li data-scope="toc" data-part="item" data-value="intro" data-depth="2">
-            <a data-scope="toc" data-part="link" data-value="intro" data-depth="2" href="#intro">Intro</a>
+            <a data-scope="toc" data-part="link" data-value="intro" data-depth="2" href="#intro">Introduction</a>
           </li>
-          <li data-scope="toc" data-part="item" data-value="usage" data-depth="2">
-            <a data-scope="toc" data-part="link" data-value="usage" data-depth="2" href="#usage">Usage</a>
+          <li data-scope="toc" data-part="item" data-value="install" data-depth="2">
+            <a data-scope="toc" data-part="link" data-value="install" data-depth="2" href="#install">Install</a>
+          </li>
+          <li data-scope="toc" data-part="item" data-value="usage" data-depth="3">
+            <a data-scope="toc" data-part="link" data-value="usage" data-depth="3" href="#usage">Usage</a>
+          </li>
+          <li data-scope="toc" data-part="item" data-value="api" data-depth="2">
+            <a data-scope="toc" data-part="link" data-value="api" data-depth="2" href="#api">API</a>
+          </li>
+          <li data-scope="toc" data-part="item" data-value="a11y" data-depth="2">
+            <a data-scope="toc" data-part="link" data-value="a11y" data-depth="2" href="#a11y">Accessibility</a>
           </li>
         </ul>
       </nav>

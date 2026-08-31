@@ -10,6 +10,11 @@ defmodule E2eWeb.RatingGroupEventsLive do
     {:noreply, stream_insert(socket, :logs, log("changed", payload["id"], inspect(payload)), at: 0)}
   end
 
+  @impl true
+  def handle_event("rating_group_client_changed", payload, socket) do
+    {:noreply, stream_insert(socket, :logs, log("client_changed", payload["id"], inspect(payload)), at: 0)}
+  end
+
   defp log(event, dom_id, value) do
     %{
       id: "#{System.unique_integer([:positive])}",
@@ -24,11 +29,61 @@ defmodule E2eWeb.RatingGroupEventsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="rating-group-events-page" title="RatingGroup · Events" subtitle="Value change events.">
-        <.demo_section id="rating-group-events-section" title="On value change">
+      <.demo_page path={@path} id="rating-group-events-page" title="Rating group · Events" subtitle="Value change events (server + client).">
+        <.demo_section
+          id="rating-group-events-section"
+          title="On value change (Server and client)"
+          code_tabs={[
+            %{
+              value: "heex",
+              label: "Heex",
+              language: :heex,
+              code: ~S"""
+              <.rating_group class="rating-group" on_value_change="rating_group_changed" on_value_change_client="rating-group-changed" />
+              """
+            },
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: ~S"""
+              def handle_event("rating_group_changed", payload, socket) do
+                {:noreply, socket}
+              end
+              """
+            },
+            %{
+              value: "js",
+              label: "JS",
+              language: :js,
+              code: ~S"""
+              const el = document.getElementById("rating-group-events");
+              el?.addEventListener("rating-group-changed", (event) => {
+                console.log(event.detail);
+              });
+              """
+            }
+          ]}
+        >
           <:preview>
             <div class="flex flex-col gap-space-lg items-center w-full">
-              <.rating_group id="rating-group-events" class="rating-group" on_value_change="rating_group_changed" />
+              <.rating_group
+                id="rating-group-events"
+                class="rating-group"
+                on_value_change="rating_group_changed"
+                on_value_change_client="rating-group-changed"
+              />
+              <script :type={Phoenix.LiveView.ColocatedHook} name=".RatingGroupEventsClient">
+                export default {
+                  mounted() {
+                    const el = document.getElementById("rating-group-events");
+                    if(!el) return;
+                    el.addEventListener("rating-group-changed", (event) => {
+                      this.pushEvent("rating_group_client_changed", event.detail ?? {});
+                    });
+                  }
+                }
+              </script>
               <.data_table id="rating-group-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>

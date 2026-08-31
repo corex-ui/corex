@@ -23,9 +23,9 @@ defmodule Corex.Splitter.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
-    @ignored_attrs ["dir", "id", "data-state", "style"]
+    defstruct [:id, :dir, orientation: "horizontal"]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+    @ignored_attrs ["dir", "id", "data-state", "style", "data-orientation"]
     def ignored_attrs, do: @ignored_attrs
   end
 end

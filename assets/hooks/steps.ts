@@ -24,6 +24,15 @@ function stepsProps(el: HTMLElement, hook: HookInterface<HTMLElement>): StepsPro
     defaultStep: getNumber(el, "step"),
     linear: getBoolean(el, "linear"),
     orientation: getString(el, "orientation", ["horizontal", "vertical"] as const),
+    isStepValid: (index: number) => {
+      const content = el.querySelector<HTMLElement>(
+        `[data-scope="steps"][data-part="content"][data-index="${index}"]`
+      );
+      const gate = content?.querySelector<HTMLInputElement>("[data-step-gate]");
+      if (!gate) return true;
+      if (gate.type === "checkbox" || gate.type === "radio") return gate.checked;
+      return gate.value.trim().length > 0;
+    },
     onStepChange,
   };
 }
@@ -31,7 +40,11 @@ function stepsProps(el: HTMLElement, hook: HookInterface<HTMLElement>): StepsPro
 const StepsHook = createZagLiveHook({
   key: "steps",
   mount(hook) {
-    return new Steps(hook.el, stepsProps(hook.el, hook));
+    const inst = new Steps(hook.el, stepsProps(hook.el, hook));
+    const refresh = () => inst.render();
+    hook.el.addEventListener("input", refresh);
+    hook.el.addEventListener("change", refresh);
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(stepsProps(hook.el, hook));

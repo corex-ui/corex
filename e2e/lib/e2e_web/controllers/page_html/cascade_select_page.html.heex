@@ -1,7 +1,13 @@
 <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="cascade-select-anatomy-page" title={~t"CascadeSelect · Anatomy"} subtitle={~t"Minimal host."}>
-    <.demo_section id="cascade-select-anatomy-minimal" title={~t"Minimal"} code={E2eWeb.Demos.CascadeSelectDemo.anatomy_minimal_code()}>
+  <.demo_page path={@path} id="cascade-select-anatomy-page" title={~t"Cascade select · Anatomy"} subtitle={~t"Closed overlay on the server, three-level tree, optional trigger indicator."}>
+    <.demo_section id="cascade-select-anatomy-minimal" title={~t"Basic"} code={E2eWeb.Demos.CascadeSelectDemo.anatomy_minimal_code()}>
       <:preview><E2eWeb.Demos.CascadeSelectDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section id="cascade-select-anatomy-indicator" title={~t"With indicator"} code={E2eWeb.Demos.CascadeSelectDemo.anatomy_indicator_code()}>
+      <:preview><E2eWeb.Demos.CascadeSelectDemo.anatomy_indicator_example /></:preview>
+    </.demo_section>
+    <.demo_section id="cascade-select-anatomy-label" title={~t"With label"} code={E2eWeb.Demos.CascadeSelectDemo.anatomy_label_code()}>
+      <:preview><E2eWeb.Demos.CascadeSelectDemo.anatomy_label_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

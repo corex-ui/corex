@@ -1,4 +1,4 @@
-import { connect, machine, type Props, type Api } from "@zag-js/tour";
+import { connect, machine, type Props, type Api, type StepDetails } from "@zag-js/tour";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component, type SchemaOf } from "../lib/core";
 
@@ -30,22 +30,43 @@ export class Tour extends Component<Props, Api, Schema> {
       const title = content.querySelector<HTMLElement>('[data-scope="tour"][data-part="title"]');
       if (title) {
         this.spreadProps(title, this.api.getTitleProps());
-        const step = this.api.step;
-        if (step) title.textContent = String(step.title ?? "");
+        title.textContent = String(this.api.step?.title ?? "");
       }
       const description = content.querySelector<HTMLElement>(
         '[data-scope="tour"][data-part="description"]'
       );
       if (description) {
         this.spreadProps(description, this.api.getDescriptionProps());
-        const step = this.api.step;
-        if (step) description.textContent = String(step.description ?? "");
+        description.textContent = String(this.api.step?.description ?? "");
       }
+      this.renderActions(content, this.api.step);
     }
 
     const close = this.el.querySelector<HTMLElement>(
       '[data-scope="tour"][data-part="close-trigger"]'
     );
     if (close) this.spreadProps(close, this.api.getCloseTriggerProps());
+  }
+
+  private renderActions(content: HTMLElement, step: StepDetails | null): void {
+    const host =
+      content.querySelector<HTMLElement>('[data-scope="tour"][data-part="actions"]') ??
+      (() => {
+        const el = document.createElement("div");
+        el.dataset.scope = "tour";
+        el.dataset.part = "actions";
+        content.appendChild(el);
+        return el;
+      })();
+    host.replaceChildren();
+    for (const action of step?.actions ?? []) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.scope = "tour";
+      button.dataset.part = "action-trigger";
+      this.spreadProps(button, this.api.getActionTriggerProps({ action }));
+      button.textContent = action.label;
+      host.appendChild(button);
+    }
   }
 }

@@ -2103,6 +2103,223 @@ defmodule E2eWeb.PageController do
   def tour_styling_page(conn, _params) do
     render(conn, :tour_styling_page)
   end
+
+  defp assign_date_input_form_docs(conn, scroll_to) do
+    conn
+    |> assign(:scroll_to, scroll_to)
+    |> assign(:form_ecto, E2eWeb.Demos.DateInputDemo.form_ecto())
+    |> assign(:phoenix_heex, E2eWeb.Demos.DateInputDemo.form_phoenix_heex())
+    |> assign(:phoenix_elixir, E2eWeb.Demos.DateInputDemo.form_phoenix_elixir())
+    |> assign(:ecto_heex, E2eWeb.Demos.DateInputDemo.form_ecto_heex())
+    |> assign(:ecto_elixir, E2eWeb.Demos.DateInputDemo.form_ecto_elixir())
+    |> assign(:native_heex, E2eWeb.Demos.DateInputDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.DateInputDemo.form_native_elixir())
+  end
+
+  def date_input_form_page(conn, _params) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"born_on" => ""}, as: :date_phoenix, id: "date-input-form-phoenix")
+
+    ecto_form =
+      %E2e.Form.DateInputForm{}
+      |> E2e.Form.DateInputForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :date_ecto, id: "date-input-form-ecto")
+
+    conn
+    |> assign_date_input_form_docs(nil)
+    |> render(:date_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+  end
+
+  def date_input_form_submit(conn, %{"date_phoenix" => %{"born_on" => born_on}}) do
+    conn
+    |> put_flash(:info, "Submitted: born_on=#{inspect(born_on)}")
+    |> redirect(to: ~p"/date-input/form#date-input-form-phoenix")
+  end
+
+  def date_input_form_submit(conn, %{"date_ecto" => params}) do
+    changeset = E2e.Form.DateInputForm.changeset(%E2e.Form.DateInputForm{}, params)
+
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
+
+      conn
+      |> put_flash(:info, "Submitted: born_on=#{inspect(data.born_on)}")
+      |> redirect(to: ~p"/date-input/form#date-input-form-ecto")
+    else
+      phoenix_form =
+        Phoenix.Component.to_form(%{"born_on" => ""},
+          as: :date_phoenix,
+          id: "date-input-form-phoenix"
+        )
+
+      ecto_form =
+        changeset
+        |> Map.put(:action, :insert)
+        |> Phoenix.Component.to_form(as: :date_ecto, id: "date-input-form-ecto")
+
+      conn
+      |> assign_date_input_form_docs("date-input-form-ecto")
+      |> render(:date_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+    end
+  end
+
+  def date_input_form_submit(conn, %{"user" => %{"born_on" => born_on}}) do
+    conn
+    |> put_flash(:info, "Submitted: born_on=#{inspect(born_on)}")
+    |> redirect(to: ~p"/date-input/form#date-input-form-native")
+  end
+
+  def date_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: born_on=#{inspect("")}")
+    |> redirect(to: ~p"/date-input/form#date-input-form-native")
+  end
+
+  defp assign_rating_group_form_docs(conn, scroll_to) do
+    conn
+    |> assign(:scroll_to, scroll_to)
+    |> assign(:form_ecto, E2eWeb.Demos.RatingGroupDemo.form_ecto())
+    |> assign(:phoenix_heex, E2eWeb.Demos.RatingGroupDemo.form_phoenix_heex())
+    |> assign(:phoenix_elixir, E2eWeb.Demos.RatingGroupDemo.form_phoenix_elixir())
+    |> assign(:ecto_heex, E2eWeb.Demos.RatingGroupDemo.form_ecto_heex())
+    |> assign(:ecto_elixir, E2eWeb.Demos.RatingGroupDemo.form_ecto_elixir())
+    |> assign(:native_heex, E2eWeb.Demos.RatingGroupDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.RatingGroupDemo.form_native_elixir())
+  end
+
+  def rating_group_form_page(conn, _params) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"score" => ""}, as: :rating_phoenix, id: "rating-group-form-phoenix")
+
+    ecto_form =
+      %E2e.Form.RatingGroupForm{}
+      |> E2e.Form.RatingGroupForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :rating_ecto, id: "rating-group-form-ecto")
+
+    conn
+    |> assign_rating_group_form_docs(nil)
+    |> render(:rating_group_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+  end
+
+  def rating_group_form_submit(conn, %{"rating_phoenix" => %{"score" => score}}) do
+    conn
+    |> put_flash(:info, "Submitted: score=#{inspect(score)}")
+    |> redirect(to: ~p"/rating-group/form#rating-group-form-phoenix")
+  end
+
+  def rating_group_form_submit(conn, %{"rating_ecto" => params}) do
+    changeset = E2e.Form.RatingGroupForm.changeset(%E2e.Form.RatingGroupForm{}, params)
+
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
+
+      conn
+      |> put_flash(:info, "Submitted: score=#{inspect(data.score)}")
+      |> redirect(to: ~p"/rating-group/form#rating-group-form-ecto")
+    else
+      phoenix_form =
+        Phoenix.Component.to_form(%{"score" => ""},
+          as: :rating_phoenix,
+          id: "rating-group-form-phoenix"
+        )
+
+      ecto_form =
+        changeset
+        |> Map.put(:action, :insert)
+        |> Phoenix.Component.to_form(as: :rating_ecto, id: "rating-group-form-ecto")
+
+      conn
+      |> assign_rating_group_form_docs("rating-group-form-ecto")
+      |> render(:rating_group_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+    end
+  end
+
+  def rating_group_form_submit(conn, %{"user" => %{"score" => score}}) do
+    conn
+    |> put_flash(:info, "Submitted: score=#{inspect(score)}")
+    |> redirect(to: ~p"/rating-group/form#rating-group-form-native")
+  end
+
+  def rating_group_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: score=#{inspect("")}")
+    |> redirect(to: ~p"/rating-group/form#rating-group-form-native")
+  end
+
+  defp assign_cascade_select_form_docs(conn, scroll_to) do
+    conn
+    |> assign(:scroll_to, scroll_to)
+    |> assign(:form_ecto, E2eWeb.Demos.CascadeSelectDemo.form_ecto())
+    |> assign(:phoenix_heex, E2eWeb.Demos.CascadeSelectDemo.form_phoenix_heex())
+    |> assign(:phoenix_elixir, E2eWeb.Demos.CascadeSelectDemo.form_phoenix_elixir())
+    |> assign(:ecto_heex, E2eWeb.Demos.CascadeSelectDemo.form_ecto_heex())
+    |> assign(:ecto_elixir, E2eWeb.Demos.CascadeSelectDemo.form_ecto_elixir())
+    |> assign(:native_heex, E2eWeb.Demos.CascadeSelectDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.CascadeSelectDemo.form_native_elixir())
+  end
+
+  def cascade_select_form_page(conn, _params) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"category" => ""},
+        as: :cascade_phoenix,
+        id: "cascade-select-form-phoenix"
+      )
+
+    ecto_form =
+      %E2e.Form.CascadeSelectForm{}
+      |> E2e.Form.CascadeSelectForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :cascade_ecto, id: "cascade-select-form-ecto")
+
+    conn
+    |> assign_cascade_select_form_docs(nil)
+    |> render(:cascade_select_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+  end
+
+  def cascade_select_form_submit(conn, %{"cascade_phoenix" => %{"category" => category}}) do
+    conn
+    |> put_flash(:info, "Submitted: category=#{inspect(category)}")
+    |> redirect(to: ~p"/cascade-select/form#cascade-select-form-phoenix")
+  end
+
+  def cascade_select_form_submit(conn, %{"cascade_ecto" => params}) do
+    changeset = E2e.Form.CascadeSelectForm.changeset(%E2e.Form.CascadeSelectForm{}, params)
+
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
+
+      conn
+      |> put_flash(:info, "Submitted: category=#{inspect(data.category)}")
+      |> redirect(to: ~p"/cascade-select/form#cascade-select-form-ecto")
+    else
+      phoenix_form =
+        Phoenix.Component.to_form(%{"category" => ""},
+          as: :cascade_phoenix,
+          id: "cascade-select-form-phoenix"
+        )
+
+      ecto_form =
+        changeset
+        |> Map.put(:action, :insert)
+        |> Phoenix.Component.to_form(as: :cascade_ecto, id: "cascade-select-form-ecto")
+
+      conn
+      |> assign_cascade_select_form_docs("cascade-select-form-ecto")
+      |> render(:cascade_select_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+    end
+  end
+
+  def cascade_select_form_submit(conn, %{"user" => %{"category" => category}}) do
+    conn
+    |> put_flash(:info, "Submitted: category=#{inspect(category)}")
+    |> redirect(to: ~p"/cascade-select/form#cascade-select-form-native")
+  end
+
+  def cascade_select_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: category=#{inspect("")}")
+    |> redirect(to: ~p"/cascade-select/form#cascade-select-form-native")
+  end
+
   def templates_page(conn, _params) do
     template_carousel_items = [
       Corex.Image.new("/images/templates/soonex/preview-hero.png",

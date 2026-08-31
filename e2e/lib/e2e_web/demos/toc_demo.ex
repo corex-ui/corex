@@ -15,7 +15,63 @@ defmodule E2eWeb.Demos.TocDemo do
     """
   end
 
-  alias E2eWeb.DemoScales
+  def anatomy_article_code do
+    ~S"""
+    <div class="grid grid-cols-[minmax(0,1fr)_12rem] gap-space items-start">
+      <article class="flex flex-col gap-space-lg">
+        <h2 id="intro">Introduction</h2>
+        <p>Long-form content so the sticky TOC can track headings.</p>
+        ...
+      </article>
+      <div class="sticky top-space">
+        <.toc class="toc" />
+      </div>
+    </div>
+    """
+  end
+
+  def anatomy_article_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="grid w-full grid-cols-1 md:grid-cols-[minmax(0,1fr)_12rem] gap-space items-start">
+      <article class="flex flex-col gap-space-lg max-h-96 overflow-auto pr-space">
+        <section>
+          <h2 id="intro">Introduction</h2>
+          <p>
+            Corex is a Phoenix LiveView component library. This article is long enough to scroll so the table of contents can highlight the active section.
+          </p>
+          <p :for={_ <- 1..4}>
+            Keep scrolling. Each heading below maps to a TOC link.
+          </p>
+        </section>
+        <section>
+          <h2 id="install">Install</h2>
+          <p>Add the Hex package, run the installer, and include Design CSS.</p>
+          <p :for={_ <- 1..4}>Installation notes continue here.</p>
+        </section>
+        <section>
+          <h3 id="usage">Usage</h3>
+          <p>Render hosts with a stable id. Hooks hydrate Zag machines after JS loads.</p>
+          <p :for={_ <- 1..4}>Usage details continue here.</p>
+        </section>
+        <section>
+          <h2 id="api">API</h2>
+          <p>Client bindings dispatch CustomEvents. Server handlers push LiveView events.</p>
+          <p :for={_ <- 1..4}>API notes continue here.</p>
+        </section>
+        <section>
+          <h2 id="a11y">Accessibility</h2>
+          <p>Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.</p>
+          <p :for={_ <- 1..4}>Accessibility notes continue here.</p>
+        </section>
+      </article>
+      <div class="sticky top-space">
+        <.toc id="toc-anatomy-article" class="toc" />
+      </div>
+    </div>
+    """
+  end
 
   def styling_color_code do
     ~S"""

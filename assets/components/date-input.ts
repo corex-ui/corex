@@ -51,6 +51,7 @@ export class DateInput extends Component<Props, Api, Schema> {
         this.spreadProps(node, this.api.getSegmentProps({ segment, index: 0 }));
       });
       existing.slice(segments.length).forEach((node) => node.remove());
+      group.querySelectorAll('[data-part="skeleton"]').forEach((node) => node.remove());
     }
 
     const hidden = this.el.querySelector<HTMLElement>(

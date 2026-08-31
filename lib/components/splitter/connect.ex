@@ -24,6 +24,7 @@ defmodule Corex.Splitter.Connect do
       "data-scope" => "splitter",
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
+      "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "splitter:" <> assigns.id <> ":root"
     }
   end

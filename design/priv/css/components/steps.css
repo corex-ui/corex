@@ -123,7 +123,13 @@
     background-color: var(--ctl-fill, var(--color-ink));
   }
 
-  .steps [data-scope="steps"][data-part="content"] {
-    padding: var(--ctl-space, var(--spacing-space));
+  .steps [data-scope="steps"][data-part="content"][hidden] {
+    display: none;
+  }
+
+  .steps [data-scope="steps"][data-part="actions"] {
+    display: flex;
+    gap: var(--spacing-space-sm);
+    justify-content: flex-end;
   }
 }

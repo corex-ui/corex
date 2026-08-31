@@ -12,6 +12,7 @@ defmodule Corex.RatingGroup.Connect do
     %{
       "id" => assigns.id,
       "data-dir" => Map.get(assigns, :dir),
+      "data-name" => Map.get(assigns, :name),
       "data-count" => Map.get(assigns, :count),
       "data-value" => Map.get(assigns, :value),
       "data-allow-half" => presence_attr(Map.get(assigns, :allow_half)),

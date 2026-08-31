@@ -4,8 +4,19 @@ defmodule E2eWeb.Demos.HoverCardDemo do
   def anatomy_minimal_code do
     ~S"""
     <.hover_card class="hover-card" show_arrow={false}>
-      <:trigger>Hover me</:trigger>
-      <:content>Preview content</:content>
+      <:trigger>corex-ui</:trigger>
+      <:content>
+        <div class="flex gap-space items-start">
+          <.avatar class="avatar ui-size-lg">
+            <:fallback>Cx</:fallback>
+          </.avatar>
+          <div>
+            <p class="font-semibold">corex-ui/corex</p>
+            <p>Phoenix LiveView components with Zag.js behavior.</p>
+            <p>Elixir · TypeScript · 1.2k stars</p>
+          </div>
+        </div>
+      </:content>
     </.hover_card>
     """
   end
@@ -15,8 +26,19 @@ defmodule E2eWeb.Demos.HoverCardDemo do
 
     ~H"""
     <.hover_card id="hover-card-anatomy-minimal" class="hover-card" show_arrow={false}>
-      <:trigger>Hover me</:trigger>
-      <:content>Preview content</:content>
+      <:trigger>corex-ui</:trigger>
+      <:content>
+        <div class="flex gap-space items-start">
+          <.avatar class="avatar ui-size-lg">
+            <:fallback>Cx</:fallback>
+          </.avatar>
+          <div>
+            <p class="font-semibold">corex-ui/corex</p>
+            <p>Phoenix LiveView components with Zag.js behavior.</p>
+            <p>Elixir · TypeScript · 1.2k stars</p>
+          </div>
+        </div>
+      </:content>
     </.hover_card>
     """
   end
@@ -65,6 +87,16 @@ defmodule E2eWeb.Demos.HoverCardDemo do
     """
   end
 
+  def api_set_open_client_binding_heex do
+    ~S"""
+    <.action phx-click={Corex.HoverCard.set_open("hover-card-api-cb", true)} class="button ui-size-sm">Open</.action>
+    <.hover_card id="hover-card-api-cb" class="hover-card">
+      <:trigger>Target</:trigger>
+      <:content>Opened from binding</:content>
+    </.hover_card>
+    """
+  end
+
   def api_set_open_client_binding_example(assigns) do
     _ = assigns
 
@@ -84,6 +116,64 @@ defmodule E2eWeb.Demos.HoverCardDemo do
     """
   end
 
+  def api_set_open_client_js_heex do
+    ~S"""
+    <button type="button" class="button ui-size-sm" onclick="document.getElementById('hover-card-api-cjs')?.dispatchEvent(new CustomEvent('corex:hover-card:set-open', {bubbles: false, detail: { open: true } }))">Open</button>
+    <.hover_card id="hover-card-api-cjs" class="hover-card">
+      <:trigger>Target</:trigger>
+      <:content>Opened from JS</:content>
+    </.hover_card>
+    """
+  end
+
+  def api_set_open_client_js_js do
+    ~S"""
+    document.getElementById("hover-card-api-cjs")?.dispatchEvent(
+      new CustomEvent("corex:hover-card:set-open", { bubbles: false, detail: { open: true } })
+    );
+    """
+  end
+
+  def api_set_open_client_js_ts, do: api_set_open_client_js_js()
+
+  def api_set_open_client_js_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap items-center gap-space-sm">
+      <button
+        type="button"
+        class="button ui-size-sm"
+        onclick="document.getElementById('hover-card-api-cjs')?.dispatchEvent(new CustomEvent('corex:hover-card:set-open', {bubbles: false, detail: { open: true } }))"
+      >
+        Open
+      </button>
+      <.hover_card id="hover-card-api-cjs" class="hover-card">
+        <:trigger>Target</:trigger>
+        <:content>Opened from JS</:content>
+      </.hover_card>
+    </div>
+    """
+  end
+
+  def api_set_open_server_heex do
+    ~S"""
+    <.action phx-click="hover_card_api_open" class="button ui-size-sm">Open</.action>
+    <.hover_card id="hover-card-api-srv" class="hover-card">
+      <:trigger>Target</:trigger>
+      <:content>Opened from server</:content>
+    </.hover_card>
+    """
+  end
+
+  def api_set_open_server_elixir do
+    ~S"""
+    def handle_event("hover_card_api_open", _params, socket) do
+      {:noreply, Corex.HoverCard.set_open(socket, "hover-card-api-srv", true)}
+    end
+    """
+  end
+
   def api_set_open_server_example(assigns) do
     _ = assigns
 
@@ -96,6 +186,17 @@ defmodule E2eWeb.Demos.HoverCardDemo do
       </.hover_card>
     </div>
     """
+  end
+
+  def api_codes do
+    %{
+      set_open_client_binding: api_set_open_client_binding_heex(),
+      set_open_client_js_heex: api_set_open_client_js_heex(),
+      set_open_client_js: api_set_open_client_js_js(),
+      set_open_client_ts: api_set_open_client_js_ts(),
+      set_open_server_heex: api_set_open_server_heex(),
+      set_open_server_elixir: api_set_open_server_elixir()
+    }
   end
 
   alias E2eWeb.DemoScales

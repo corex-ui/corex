@@ -102,10 +102,32 @@ defmodule Corex.Splitter do
         on_resize_client: @on_resize_client
       })}
     >
-      <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
-        <div data-scope="splitter" data-part="panel" data-id="a">A</div>
-        <div data-scope="splitter" data-part="resize-trigger" data-id="a:b"></div>
-        <div data-scope="splitter" data-part="panel" data-id="b">B</div>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+        <div
+          data-scope="splitter"
+          data-part="panel"
+          data-id="a"
+          data-orientation={@orientation}
+          style="flex: 1 1 0%; min-width: 0; min-height: 0;"
+        >
+          A
+        </div>
+        <div
+          data-scope="splitter"
+          data-part="resize-trigger"
+          data-id="a:b"
+          data-orientation={@orientation}
+        >
+        </div>
+        <div
+          data-scope="splitter"
+          data-part="panel"
+          data-id="b"
+          data-orientation={@orientation}
+          style="flex: 1 1 0%; min-width: 0; min-height: 0;"
+        >
+          B
+        </div>
       </div>
     </div>
     """

@@ -75,8 +75,13 @@ defmodule Corex.Presence do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Presence.Anatomy.{Props, Root}
   alias Corex.Presence.Connect
+  alias Corex.Selectors
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
@@ -105,9 +110,34 @@ defmodule Corex.Presence do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})} data-state={if(@present, do: "open", else: "closed")}>
-        {render_slot(@inner_block)}
+        {if @inner_block != [], do: render_slot(@inner_block), else: "Present"}
       </div>
     </div>
     """
+  end
+
+  api_doc(~S"""
+  Toggle presence from a control (`phx-click`). The trigger lives outside the wrapper.
+  """)
+
+  @spec set_present(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_present(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
+  def set_present(presence_id, present) when is_binary(presence_id) and is_boolean(present) do
+    JS.dispatch("corex:presence:set-present",
+      to: Selectors.css_id(presence_id),
+      detail: %{present: present},
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Set present from `handle_event`.
+  """)
+
+  def set_present(socket, presence_id, present)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(presence_id) and
+             is_boolean(present) do
+    LiveView.push_event(socket, "presence_set_present", %{id: presence_id, present: present})
   end
 end

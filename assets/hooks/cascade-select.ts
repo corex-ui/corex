@@ -2,6 +2,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { CascadeSelect, type CascadeNode } from "../components/cascade-select";
 import type { Props as CascadeSelectProps } from "@zag-js/cascade-select";
 import { getString, getBoolean, getDir, canPushEvent, safeParseJson } from "../lib/util";
+import { idMatches, readPayloadId } from "../lib/respond-to";
 import { createZagLiveHook } from "../lib/zag-live-hook";
 
 const DEFAULT_ROOT: CascadeNode = {
@@ -9,14 +10,72 @@ const DEFAULT_ROOT: CascadeNode = {
   label: "root",
   children: [
     {
-      value: "fruit",
-      label: "Fruit",
+      value: "electronics",
+      label: "Electronics",
       children: [
-        { value: "apple", label: "Apple" },
-        { value: "banana", label: "Banana" },
+        {
+          value: "computers",
+          label: "Computers",
+          children: [
+            { value: "laptops", label: "Laptops" },
+            { value: "desktops", label: "Desktops" },
+            { value: "tablets", label: "Tablets" },
+          ],
+        },
+        {
+          value: "phones",
+          label: "Phones",
+          children: [
+            { value: "android", label: "Android" },
+            { value: "ios", label: "iOS" },
+          ],
+        },
       ],
     },
-    { value: "veg", label: "Vegetable", children: [{ value: "carrot", label: "Carrot" }] },
+    {
+      value: "clothing",
+      label: "Clothing",
+      children: [
+        {
+          value: "men",
+          label: "Men",
+          children: [
+            { value: "shirts", label: "Shirts" },
+            { value: "pants", label: "Pants" },
+          ],
+        },
+        {
+          value: "women",
+          label: "Women",
+          children: [
+            { value: "dresses", label: "Dresses" },
+            { value: "shoes", label: "Shoes" },
+          ],
+        },
+      ],
+    },
+    {
+      value: "home",
+      label: "Home",
+      children: [
+        {
+          value: "kitchen",
+          label: "Kitchen",
+          children: [
+            { value: "cookware", label: "Cookware" },
+            { value: "appliances", label: "Appliances" },
+          ],
+        },
+        {
+          value: "garden",
+          label: "Garden",
+          children: [
+            { value: "plants", label: "Plants" },
+            { value: "tools", label: "Tools" },
+          ],
+        },
+      ],
+    },
   ],
 };
 
@@ -41,14 +100,26 @@ function cascadeSelectProps(
     dir: getDir(el),
     rootNode: safeParseJson<CascadeNode>(el.dataset.tree, DEFAULT_ROOT),
     disabled: getBoolean(el, "disabled"),
+    name: getString(el, "name"),
     onValueChange,
   };
 }
 
 const CascadeSelectHook = createZagLiveHook({
   key: "cascade-select",
-  mount(hook) {
-    return new CascadeSelect(hook.el, cascadeSelectProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const inst = new CascadeSelect(hook.el, cascadeSelectProps(hook.el, hook));
+
+    dom.add<CustomEvent<{ open: boolean }>>("corex:cascade-select:set-open", (event) => {
+      inst.api.setOpen(event.detail.open);
+    });
+
+    server.add("cascade_select_set_open", (payload: { id?: string; open: boolean }) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      inst.api.setOpen(payload.open);
+    });
+
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(cascadeSelectProps(hook.el, hook));

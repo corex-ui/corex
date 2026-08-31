@@ -27,9 +27,18 @@
     animation: fadeIn var(--duration-normal, 0.2s) ease-out;
   }
 
-  .tour [data-scope="tour"][data-part="backdrop"][data-state="closed"],
-  .tour [data-scope="tour"][data-part="spotlight"][data-state="closed"] {
+  .tour [data-scope="tour"][data-part="backdrop"][data-state="closed"]:not([hidden]),
+  .tour [data-scope="tour"][data-part="spotlight"][data-state="closed"]:not([hidden]) {
     animation: fadeOut var(--duration-fast, 0.15s) ease-in;
+  }
+
+  .tour[data-loading] [data-scope="tour"][data-part="backdrop"],
+  .tour[data-loading] [data-scope="tour"][data-part="content"],
+  .tour [data-scope="tour"][data-part="backdrop"][hidden],
+  .tour [data-scope="tour"][data-part="content"][hidden],
+  .tour [data-scope="tour"][data-part="positioner"][hidden] {
+    animation: none !important;
+    display: none;
   }
 
   .tour [data-scope="tour"][data-part="spotlight"] {
@@ -85,7 +94,11 @@
     opacity: 0.72;
   }
 
-  .tour [data-scope="tour"][data-part="close-trigger"] {
+  .tour [data-scope="tour"][data-part="actions"] {
+    display: flex;
+    gap: var(--spacing-space-sm);
+    margin-top: var(--spacing-space);
+  }
     position: absolute;
     top: var(--spacing-space-sm);
     inset-inline-end: var(--spacing-space-sm);

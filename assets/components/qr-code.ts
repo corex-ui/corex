@@ -20,5 +20,7 @@ export class QrCode extends Component<Props, Api, Schema> {
     if (frame) this.spreadProps(frame, this.api.getFrameProps());
     const pattern = this.el.querySelector<HTMLElement>('[data-part="pattern"]');
     if (pattern) this.spreadProps(pattern, this.api.getPatternProps());
+    const overlay = this.el.querySelector<HTMLElement>('[data-part="overlay"]');
+    if (overlay) this.spreadProps(overlay, this.api.getOverlayProps());
   }
 }

@@ -12,6 +12,7 @@ defmodule Corex.ImageCropper.Connect do
     %{
       "id" => assigns.id,
       "data-dir" => Map.get(assigns, :dir),
+      "data-src" => Map.get(assigns, :src),
       "data-on-value-change" => Map.get(assigns, :on_value_change),
       "data-on-value-change-client" => Map.get(assigns, :on_value_change_client)
     }

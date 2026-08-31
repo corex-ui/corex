@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.CascadeSelectDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.cascade_select class="cascade-select" />
+    <.cascade_select class="cascade-select" show_indicator={false} />
     """
   end
 
@@ -11,7 +11,162 @@ defmodule E2eWeb.Demos.CascadeSelectDemo do
     _ = assigns
 
     ~H"""
-    <.cascade_select id="cascade-select-anatomy-minimal" class="cascade-select" />
+    <.cascade_select id="cascade-select-anatomy-minimal" class="cascade-select" show_indicator={false} />
+    """
+  end
+
+  def anatomy_indicator_code do
+    ~S"""
+    <.cascade_select class="cascade-select">
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def anatomy_indicator_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.cascade_select id="cascade-select-anatomy-indicator" class="cascade-select">
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def anatomy_label_code do
+    ~S"""
+    <.cascade_select class="cascade-select">
+      <:label>Category</:label>
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def anatomy_label_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.cascade_select id="cascade-select-anatomy-label" class="cascade-select">
+      <:label>Category</:label>
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def api_set_open_client_binding_heex do
+    ~S"""
+    <.action phx-click={Corex.CascadeSelect.set_open("cascade-select-api-cb", true)} class="button ui-size-sm">Open</.action>
+    <.cascade_select id="cascade-select-api-cb" class="cascade-select">
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def api_set_open_client_binding_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-space items-center">
+      <.action phx-click={Corex.CascadeSelect.set_open("cascade-select-api-cb", true)} class="button ui-size-sm">
+        Open
+      </.action>
+      <.cascade_select id="cascade-select-api-cb" class="cascade-select">
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+    </div>
+    """
+  end
+
+  def api_set_open_client_js_heex do
+    ~S"""
+    <button type="button" class="button ui-size-sm" onclick="document.getElementById('cascade-select-api-cjs')?.dispatchEvent(new CustomEvent('corex:cascade-select:set-open', {bubbles: false, detail: { open: true } }))">Open</button>
+    <.cascade_select id="cascade-select-api-cjs" class="cascade-select">
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def api_set_open_client_js_js do
+    ~S"""
+    document.getElementById("cascade-select-api-cjs")?.dispatchEvent(
+      new CustomEvent("corex:cascade-select:set-open", { bubbles: false, detail: { open: true } })
+    );
+    """
+  end
+
+  def api_set_open_client_js_ts do
+    api_set_open_client_js_js()
+  end
+
+  def api_set_open_client_js_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-space items-center">
+      <button
+        type="button"
+        class="button ui-size-sm"
+        onclick="document.getElementById('cascade-select-api-cjs')?.dispatchEvent(new CustomEvent('corex:cascade-select:set-open', {bubbles: false, detail: { open: true } }))"
+      >
+        Open
+      </button>
+      <.cascade_select id="cascade-select-api-cjs" class="cascade-select">
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+    </div>
+    """
+  end
+
+  def api_set_open_server_heex do
+    ~S"""
+    <.action phx-click="cascade_select_api_open" class="button ui-size-sm">Open</.action>
+    <.cascade_select id="cascade-select-api-srv" class="cascade-select">
+      <:indicator>▾</:indicator>
+    </.cascade_select>
+    """
+  end
+
+  def api_set_open_server_elixir do
+    ~S"""
+    def handle_event("cascade_select_api_open", _params, socket) do
+      {:noreply, Corex.CascadeSelect.set_open(socket, "cascade-select-api-srv", true)}
+    end
+    """
+  end
+
+  def api_set_open_server_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-space items-center">
+      <.action phx-click="cascade_select_api_open" class="button ui-size-sm">Open</.action>
+      <.cascade_select id="cascade-select-api-srv" class="cascade-select">
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+    </div>
+    """
+  end
+
+  def api_codes do
+    %{
+      set_open_client_binding: api_set_open_client_binding_heex(),
+      set_open_client_js_heex: api_set_open_client_js_heex(),
+      set_open_client_js: api_set_open_client_js_js(),
+      set_open_client_ts: api_set_open_client_js_ts(),
+      set_open_server_heex: api_set_open_server_heex(),
+      set_open_server_elixir: api_set_open_server_elixir()
+    }
+  end
+
+  def form_preview_phoenix(assigns) do
+    ~H"""
+    <form id="cascade-select-form-phoenix" method="post" action="#" class="flex flex-col gap-space">
+      <.cascade_select class="cascade-select" name="category">
+        <:label>Category</:label>
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+      <.action type="submit" class="button ui-size-sm">Submit</.action>
+    </form>
     """
   end
 
@@ -176,6 +331,142 @@ defmodule E2eWeb.Demos.CascadeSelectDemo do
         class={DemoScales.join_modifiers("cascade-select", step.modifier)}
       />
     </div>
+    """
+  end
+
+  def form_ecto do
+    ~S"""
+    defmodule MyApp.Forms.CascadeSelectForm do
+      use Ecto.Schema
+      import Ecto.Changeset
+
+      embedded_schema do
+        field :category, :string
+      end
+
+      def changeset(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:category])
+        |> validate_required([:category], message: "can't be blank")
+      end
+    end
+    """
+  end
+
+  def form_phoenix_heex do
+    ~S"""
+    <.form for={@form} action={~p"/cascade-select/form"} method="post" class="flex flex-col gap-space">
+      <.cascade_select class="cascade-select" name="cascade_phoenix[category]">
+        <:label>Category</:label>
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_phoenix_elixir do
+    ~S"""
+    def cascade_select_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"category" => ""}, as: :cascade_phoenix, id: "cascade-select-form-phoenix")
+
+      render(conn, :cascade_select_form_page, phoenix_form: phoenix_form)
+    end
+    """
+  end
+
+  def form_ecto_heex, do: form_phoenix_heex()
+
+  def form_ecto_elixir do
+    ~S"""
+    def cascade_select_form_page(conn, _params) do
+      ecto_form =
+        %MyApp.Forms.CascadeSelectForm{}
+        |> MyApp.Forms.CascadeSelectForm.changeset(%{})
+        |> Phoenix.Component.to_form(as: :cascade_ecto, id: "cascade-select-form-ecto")
+
+      render(conn, :cascade_select_form_page, ecto_form: ecto_form)
+    end
+    """
+  end
+
+  def form_native_heex do
+    ~S"""
+    <form action={~p"/cascade-select/form"} method="post" class="flex flex-col gap-space">
+      <.cascade_select class="cascade-select" name="user[category]">
+        <:label>Category</:label>
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </form>
+    """
+  end
+
+  def form_native_elixir do
+    ~S"""
+    def cascade_select_form_submit(conn, %{"user" => %{"category" => category}}) do
+      conn
+      |> put_flash(:info, "Submitted: category=#{inspect(category)}")
+      |> redirect(to: ~p"/cascade-select/form")
+    end
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/cascade-select/form"}
+      method="post"
+      class="flex flex-col gap-space w-full max-w-xl"
+    >
+      <.cascade_select class="cascade-select" name="cascade_phoenix[category]">
+        <:label>Category</:label>
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_ecto(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/cascade-select/form"}
+      method="post"
+      class="flex flex-col gap-space w-full max-w-xl"
+    >
+      <.cascade_select class="cascade-select" name="cascade_ecto[category]">
+        <:label>Category</:label>
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_native(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form
+      action={~p"/cascade-select/form"}
+      method="post"
+      class="flex flex-col gap-space w-full max-w-xl"
+    >
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.cascade_select class="cascade-select" name="user[category]">
+        <:label>Category</:label>
+        <:indicator>▾</:indicator>
+      </.cascade_select>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </form>
     """
   end
 end

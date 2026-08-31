@@ -42,7 +42,7 @@ defmodule Corex.HoverCard.Connect do
       "data-part" => "trigger",
       "dir" => Map.get(assigns, :dir),
       "data-disabled" => assigns.disabled,
-      "data-state" => data_state(assigns.open, "open", "closed"),
+      "data-state" => "closed",
       "id" => trigger_id(assigns.id, value)
     }
     |> maybe_put("data-value", value)
@@ -60,7 +60,9 @@ defmodule Corex.HoverCard.Connect do
       "data-scope" => "hover-card",
       "data-part" => "positioner",
       "dir" => Map.get(assigns, :dir),
-      "id" => "hover-card:#{assigns.id}:popper"
+      "id" => "hover-card:#{assigns.id}:popper",
+      "style" =>
+        "position:absolute;isolation:isolate;pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);"
     }
   end
 
@@ -72,18 +74,16 @@ defmodule Corex.HoverCard.Connect do
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    closed? = assigns.open != true
-
     %{
       "data-scope" => "hover-card",
       "data-part" => "content",
       "dir" => Map.get(assigns, :dir),
-      "data-state" => data_state(assigns.open, "open", "closed"),
-      "id" => "hover-card:#{assigns.id}:content"
+      "data-state" => "closed",
+      "id" => "hover-card:#{assigns.id}:content",
+      "hidden" => true,
+      "aria-hidden" => "true",
+      "style" => "display:none;pointer-events:none"
     }
-    |> then(fn attrs ->
-      if closed?, do: Map.put(attrs, "hidden", true), else: attrs
-    end)
   end
 
   def ignore_content(assigns) do
