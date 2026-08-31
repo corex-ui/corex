@@ -2,23 +2,25 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-QBBRC35T.mjs";
+} from "./chunks/chunk-7DTCDTRW.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-QFRIDKAW.mjs";
-import "./chunks/chunk-HY5BRBNW.mjs";
+} from "./chunks/chunk-4ATAXYH3.mjs";
+import "./chunks/chunk-AVGG6QG4.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-ZTJV2RYM.mjs";
+} from "./chunks/chunk-55YTGZEH.mjs";
 import {
   idMatches,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
-  createAnatomy,
   createGuards,
   createMachine,
   createZagLiveHook,
@@ -30,7 +32,7 @@ import {
   getString,
   isFunction,
   queryAll
-} from "./chunks/chunk-CLKNJROH.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+hover-card@1.43.3/node_modules/@zag-js/hover-card/dist/hover-card.anatomy.mjs
 var anatomy = createAnatomy("hoverCard").parts("arrow", "arrowTip", "trigger", "positioner", "content");
@@ -559,7 +561,7 @@ function hoverCardProps(el, hook) {
   };
 }
 var HoverCardHook = createZagLiveHook({
-  key: "hover-card",
+  key: "hoverCard",
   mount(hook, { dom, server }) {
     const el = hook.el;
     const hoverCard = new HoverCard(el, hoverCardProps(el, hook));

@@ -1,0 +1,27 @@
+@import "../main.css";
+
+@layer components {
+  .splitter[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .splitter [data-scope="splitter"][data-part="root"] {
+    display: flex;
+    width: min(100%, var(--container-sm));
+    min-height: 8rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .splitter [data-scope="splitter"][data-part="panel"] {
+    padding: var(--spacing-space);
+    min-width: 0;
+  }
+
+  .splitter [data-scope="splitter"][data-part="resize-trigger"] {
+    width: 0.4rem;
+    background: var(--color-line);
+    cursor: col-resize;
+  }
+}

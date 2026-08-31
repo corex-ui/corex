@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+ .tour[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .tour {
+ width: fit-content;
+ }
+
+ .tour [data-scope="tour"][data-part="root"] {
+ color: var(--ctl-ink, var(--color-ink));
+ }
+}

@@ -5,6 +5,10 @@
 ### Components
 
 - **Popover**, **Hover card**, and **Drawer** (Zag.js beta) — overlay hosts with Connect, hooks, Design CSS, and e2e docs.
+- **Progress**, **Rating group**, **Steps**, **QR code**, and **Presence** — status hosts.
+- **Splitter**, **Scroll area**, and **TOC** — layout hosts.
+- **Date input** (Zag.js beta) and **Image cropper** — form / pointer hosts.
+- **Navigation menu**, **Cascade select** (Zag.js beta), and **Tour** — compound hosts.
 
 ## 0.2.2 - 2026-08-29
 

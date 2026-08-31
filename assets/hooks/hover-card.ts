@@ -70,7 +70,7 @@ function hoverCardProps(el: HTMLElement, hook: HookInterface<HTMLElement>): Hove
 }
 
 const HoverCardHook = createZagLiveHook<HoverCardHookState, HoverCard>({
-  key: "hover-card",
+  key: "hoverCard",
   mount(hook, { dom, server }) {
     const el = hook.el;
     const hoverCard = new HoverCard(el, hoverCardProps(el, hook));

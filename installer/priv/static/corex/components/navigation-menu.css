@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+ .navigation-menu[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .navigation-menu {
+ width: fit-content;
+ }
+
+ .navigation-menu [data-scope="navigation-menu"][data-part="root"] {
+ color: var(--ctl-ink, var(--color-ink));
+ }
+}

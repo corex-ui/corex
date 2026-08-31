@@ -46,6 +46,19 @@ defmodule E2eWeb.DocPageMatrix do
     toggle: [:anatomy, :api, :events, :patterns],
     toggle_group: [:anatomy, :api, :events, :patterns],
     tooltip: [:anatomy, :api, :events, :patterns],
+    progress: [:anatomy, :api, :events, :style],
+    rating_group: [:anatomy, :api, :events, :style],
+    steps: [:anatomy, :api, :events, :style],
+    qr_code: [:anatomy, :api, :events, :style],
+    presence: [:anatomy, :api, :events, :style],
+    splitter: [:anatomy, :api, :events, :style],
+    scroll_area: [:anatomy, :api, :events, :style],
+    toc: [:anatomy, :api, :events, :style],
+    date_input: [:anatomy, :api, :events, :style],
+    image_cropper: [:anatomy, :api, :events, :style],
+    navigation_menu: [:anatomy, :api, :events, :style],
+    cascade_select: [:anatomy, :api, :events, :style],
+    tour: [:anatomy, :api, :events, :style],
     tree_view: [:anatomy, :api, :events, :patterns]
   }
 

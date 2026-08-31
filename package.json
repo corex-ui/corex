@@ -162,6 +162,58 @@
       "types": "./priv/static/types/hooks/toggle-group.d.ts",
       "import": "./priv/static/toggle-group.mjs"
     },
+    "./progress": {
+      "types": "./priv/static/types/hooks/progress.d.ts",
+      "import": "./priv/static/progress.mjs"
+    },
+    "./rating-group": {
+      "types": "./priv/static/types/hooks/rating-group.d.ts",
+      "import": "./priv/static/rating-group.mjs"
+    },
+    "./steps": {
+      "types": "./priv/static/types/hooks/steps.d.ts",
+      "import": "./priv/static/steps.mjs"
+    },
+    "./qr-code": {
+      "types": "./priv/static/types/hooks/qr-code.d.ts",
+      "import": "./priv/static/qr-code.mjs"
+    },
+    "./presence": {
+      "types": "./priv/static/types/hooks/presence.d.ts",
+      "import": "./priv/static/presence.mjs"
+    },
+    "./splitter": {
+      "types": "./priv/static/types/hooks/splitter.d.ts",
+      "import": "./priv/static/splitter.mjs"
+    },
+    "./scroll-area": {
+      "types": "./priv/static/types/hooks/scroll-area.d.ts",
+      "import": "./priv/static/scroll-area.mjs"
+    },
+    "./toc": {
+      "types": "./priv/static/types/hooks/toc.d.ts",
+      "import": "./priv/static/toc.mjs"
+    },
+    "./date-input": {
+      "types": "./priv/static/types/hooks/date-input.d.ts",
+      "import": "./priv/static/date-input.mjs"
+    },
+    "./image-cropper": {
+      "types": "./priv/static/types/hooks/image-cropper.d.ts",
+      "import": "./priv/static/image-cropper.mjs"
+    },
+    "./navigation-menu": {
+      "types": "./priv/static/types/hooks/navigation-menu.d.ts",
+      "import": "./priv/static/navigation-menu.mjs"
+    },
+    "./cascade-select": {
+      "types": "./priv/static/types/hooks/cascade-select.d.ts",
+      "import": "./priv/static/cascade-select.mjs"
+    },
+    "./tour": {
+      "types": "./priv/static/types/hooks/tour.d.ts",
+      "import": "./priv/static/tour.mjs"
+    },
     "./tree-view": {
       "types": "./priv/static/types/hooks/tree-view.d.ts",
       "import": "./priv/static/tree-view.mjs"

@@ -593,3 +593,145 @@ export const sampleTreeRoot: TreeNode = {
   name: "Root",
   children: [{ value: "child", name: "Child" }],
 };
+
+export function progressTree(): HTMLElement {
+  return withId(
+    scopeTree("progress", [
+      {
+        part: "root",
+        children: [
+          { part: "track", children: [{ part: "range" }] },
+          { part: "value-text" },
+        ],
+      },
+    ])
+  );
+}
+
+export function ratinggroupTree(): HTMLElement {
+  return withId(
+    scopeTree("rating-group", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "control",
+            children: [
+              { part: "item", attrs: { "data-index": "1" } },
+              { part: "item", attrs: { "data-index": "2" } },
+            ],
+          },
+          { part: "hidden-input" },
+        ],
+      },
+    ])
+  );
+}
+
+export function stepsTree(): HTMLElement {
+  return withId(
+    scopeTree("steps", [
+      {
+        part: "root",
+        children: [
+          {
+            part: "list",
+            children: [
+              {
+                part: "item",
+                attrs: { "data-index": "0" },
+                children: [{ part: "trigger", attrs: { "data-index": "0" } }],
+              },
+            ],
+          },
+          { part: "content", attrs: { "data-index": "0" } },
+          { part: "next-trigger" },
+          { part: "prev-trigger" },
+        ],
+      },
+    ])
+  );
+}
+
+export function qrcodeTree(): HTMLElement {
+  return withId(
+    scopeTree("qr-code", [
+      { part: "root", children: [{ part: "frame", children: [{ part: "pattern" }] }] },
+    ])
+  );
+}
+
+export function presenceTree(): HTMLElement {
+  return withId(scopeTree("presence", [{ part: "root" }]));
+}
+
+export function splitterTree(): HTMLElement {
+  return withId(
+    scopeTree("splitter", [
+      {
+        part: "root",
+        children: [
+          { part: "panel", attrs: { "data-id": "a" } },
+          { part: "resize-trigger", attrs: { "data-id": "a:b" } },
+          { part: "panel", attrs: { "data-id": "b" } },
+        ],
+      },
+    ])
+  );
+}
+
+export function scrollareaTree(): HTMLElement {
+  return withId(
+    scopeTree("scroll-area", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}
+
+export function tocTree(): HTMLElement {
+  return withId(
+    scopeTree("toc", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}
+
+export function dateinputTree(): HTMLElement {
+  return withId(
+    scopeTree("date-input", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}
+
+export function imagecropperTree(): HTMLElement {
+  return withId(
+    scopeTree("image-cropper", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}
+
+export function navigationmenuTree(): HTMLElement {
+  return withId(
+    scopeTree("navigation-menu", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}
+
+export function cascadeselectTree(): HTMLElement {
+  return withId(
+    scopeTree("cascade-select", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}
+
+export function tourTree(): HTMLElement {
+  return withId(
+    scopeTree("tour", [
+      { part: "root", children: [{ part: "track" }, { part: "control" }, { part: "content" }] },
+    ])
+  );
+}

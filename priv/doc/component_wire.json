@@ -45,5 +45,18 @@
   {"id": "toggle", "phx_hook": "Toggle", "connect_module": "Corex.Toggle.Connect"},
   {"id": "toggle_group", "phx_hook": "ToggleGroup", "connect_module": "Corex.ToggleGroup.Connect"},
   {"id": "tooltip", "phx_hook": "Tooltip", "connect_module": "Corex.Tooltip.Connect"},
+  {"id": "progress", "phx_hook": "Progress", "connect_module": "Corex.Progress.Connect"},
+  {"id": "rating_group", "phx_hook": "RatingGroup", "connect_module": "Corex.RatingGroup.Connect"},
+  {"id": "steps", "phx_hook": "Steps", "connect_module": "Corex.Steps.Connect"},
+  {"id": "qr_code", "phx_hook": "QrCode", "connect_module": "Corex.QrCode.Connect"},
+  {"id": "presence", "phx_hook": "Presence", "connect_module": "Corex.Presence.Connect"},
+  {"id": "splitter", "phx_hook": "Splitter", "connect_module": "Corex.Splitter.Connect"},
+  {"id": "scroll_area", "phx_hook": "ScrollArea", "connect_module": "Corex.ScrollArea.Connect"},
+  {"id": "toc", "phx_hook": "Toc", "connect_module": "Corex.Toc.Connect"},
+  {"id": "date_input", "phx_hook": "DateInput", "connect_module": "Corex.DateInput.Connect"},
+  {"id": "image_cropper", "phx_hook": "ImageCropper", "connect_module": "Corex.ImageCropper.Connect"},
+  {"id": "navigation_menu", "phx_hook": "NavigationMenu", "connect_module": "Corex.NavigationMenu.Connect"},
+  {"id": "cascade_select", "phx_hook": "CascadeSelect", "connect_module": "Corex.CascadeSelect.Connect"},
+  {"id": "tour", "phx_hook": "Tour", "connect_module": "Corex.Tour.Connect"},
   {"id": "tree_view", "phx_hook": "TreeView", "connect_module": "Corex.TreeView.Connect"}
 ]

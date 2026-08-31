@@ -4,9 +4,10 @@ import { Component, type SchemaOf } from "../lib/core";
 
 type Schema = SchemaOf<typeof machine>;
 
-export class Drawer extends Component<Props, Api, Schema> {
+// Zag Props allow `defaultSnapPoint: null`; the machine schema does not.
+export class Drawer extends Component<any, Api, Schema> {
   initMachine(props: Props): VanillaMachine<Schema> {
-    return new VanillaMachine(machine, props);
+    return new VanillaMachine(machine, props as never);
   }
 
   initApi(): Api {

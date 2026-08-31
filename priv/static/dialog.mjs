@@ -1,34 +1,38 @@
 import {
   ariaHidden,
-  preventBodyScroll,
+  preventBodyScroll
+} from "./chunks/chunk-V24WO2YM.mjs";
+import {
   trapFocus
-} from "./chunks/chunk-HV2J7H25.mjs";
+} from "./chunks/chunk-VAIEEUKU.mjs";
 import {
   isJsAnimation,
   prepareJsScaleInitialState,
   readScaleAnimationOptions,
   runScaleAnimation,
   stripHiddenFromProps
-} from "./chunks/chunk-SHBNM52E.mjs";
+} from "./chunks/chunk-YBHOREUC.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-QFRIDKAW.mjs";
-import "./chunks/chunk-HY5BRBNW.mjs";
+} from "./chunks/chunk-4ATAXYH3.mjs";
+import "./chunks/chunk-AVGG6QG4.mjs";
 import {
   readBooleanControlledZagProps,
   readControlledOrDefaultBoolean
-} from "./chunks/chunk-PWB4AEF6.mjs";
+} from "./chunks/chunk-2TVI6WVN.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
   compact,
-  createAnatomy,
   createMachine,
   createZagLiveHook,
   dataAttr,
@@ -40,7 +44,7 @@ import {
   isFunction,
   queryAll,
   raf
-} from "./chunks/chunk-CLKNJROH.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+dialog@1.43.3/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
 var anatomy = createAnatomy("dialog").parts(

@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+ .toc[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .toc {
+ width: fit-content;
+ }
+
+ .toc [data-scope="toc"][data-part="root"] {
+ color: var(--ctl-ink, var(--color-ink));
+ }
+}

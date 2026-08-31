@@ -5,24 +5,26 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-QBBRC35T.mjs";
+} from "./chunks/chunk-7DTCDTRW.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-ZTJV2RYM.mjs";
+} from "./chunks/chunk-55YTGZEH.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-RHLZLEPV.mjs";
+} from "./chunks/chunk-2NCIS2R3.mjs";
 import {
   idMatches,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   addDomEvent,
   canPushEvent,
-  createAnatomy,
   createGuards,
   createMachine,
   createZagLiveHook,
@@ -38,7 +40,7 @@ import {
   isFunction,
   isLeftClick,
   queryAll
-} from "./chunks/chunk-CLKNJROH.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tooltip@1.43.3/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
 var anatomy = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");

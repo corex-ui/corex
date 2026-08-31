@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+ .qr-code[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .qr-code {
+ width: fit-content;
+ }
+
+ .qr-code [data-scope="qr-code"][data-part="root"] {
+ color: var(--ctl-ink, var(--color-ink));
+ }
+}

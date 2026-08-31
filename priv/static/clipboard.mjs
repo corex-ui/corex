@@ -1,16 +1,18 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-OWGIU2G5.mjs";
+} from "./chunks/chunk-W2RDEPR5.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
-  createAnatomy,
   createMachine,
   createZagLiveHook,
   dataAttr,
@@ -19,7 +21,7 @@ import {
   getWindow,
   mergeWithDefault,
   setElementValue
-} from "./chunks/chunk-CLKNJROH.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+clipboard@1.43.3/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");

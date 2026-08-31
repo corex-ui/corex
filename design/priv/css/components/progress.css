@@ -1,0 +1,43 @@
+@import "../main.css";
+
+@layer components {
+  .progress[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .progress {
+    width: min(100%, var(--container-3xs));
+    display: flex;
+  }
+
+  .progress [data-scope="progress"][data-part="root"] {
+    color: var(--ctl-ink, var(--color-ink));
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-space);
+  }
+
+  .progress [data-scope="progress"][data-part="track"] {
+    width: 100%;
+    height: calc(var(--ctl-size, var(--spacing-size)) * 0.22);
+    border-radius: var(--radius-full);
+    background: var(--color-surface-muted);
+    overflow: hidden;
+  }
+
+  .progress [data-scope="progress"][data-part="range"] {
+    height: 100%;
+    background: var(--ctl-fill, var(--color-accent));
+  }
+
+  .progress [data-scope="progress"][data-part="circle"] {
+    width: calc(var(--ctl-size, var(--spacing-size)) * 3);
+    height: calc(var(--ctl-size, var(--spacing-size)) * 3);
+  }
+
+  .progress [data-scope="progress"][data-part="value-text"] {
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+}

@@ -8,6 +8,45 @@ defmodule Corex.DocParity.Markers do
       "minimal" => ["anatomy_minimal_code"],
       "with triggers" => ["anatomy_with_triggers_code"]
     },
+    "progress" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "rating_group" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "steps" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "qr_code" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "presence" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "splitter" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "scroll_area" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "toc" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "date_input" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "image_cropper" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "navigation_menu" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "cascade_select" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
+    "tour" => %{
+      "minimal" => ["anatomy_minimal_code"]
+    },
     "tooltip" => %{
       "minimal" => ["anatomy_minimal_code"],
       "placement" => ["anatomy_placement_code"],

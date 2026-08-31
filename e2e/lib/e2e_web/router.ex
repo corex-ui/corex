@@ -258,6 +258,45 @@ defmodule E2eWeb.Router do
       live("/hover-card/events", HoverCardEventsLive)
       live("/drawer/api", DrawerApiLive)
       live("/drawer/events", DrawerEventsLive)
+      live("/tour/api", TourApiLive)
+      live("/tour/events", TourEventsLive)
+
+      live("/cascade-select/api", CascadeSelectApiLive)
+      live("/cascade-select/events", CascadeSelectEventsLive)
+
+      live("/navigation-menu/api", NavigationMenuApiLive)
+      live("/navigation-menu/events", NavigationMenuEventsLive)
+
+      live("/image-cropper/api", ImageCropperApiLive)
+      live("/image-cropper/events", ImageCropperEventsLive)
+
+      live("/date-input/api", DateInputApiLive)
+      live("/date-input/events", DateInputEventsLive)
+
+      live("/toc/api", TocApiLive)
+      live("/toc/events", TocEventsLive)
+
+      live("/scroll-area/api", ScrollAreaApiLive)
+      live("/scroll-area/events", ScrollAreaEventsLive)
+
+      live("/splitter/api", SplitterApiLive)
+      live("/splitter/events", SplitterEventsLive)
+
+      live("/presence/api", PresenceApiLive)
+      live("/presence/events", PresenceEventsLive)
+
+      live("/qr-code/api", QrCodeApiLive)
+      live("/qr-code/events", QrCodeEventsLive)
+
+      live("/steps/api", StepsApiLive)
+      live("/steps/events", StepsEventsLive)
+
+      live("/rating-group/api", RatingGroupApiLive)
+      live("/rating-group/events", RatingGroupEventsLive)
+
+      live("/progress/api", ProgressApiLive)
+      live("/progress/events", ProgressEventsLive)
+
     end
 
     get("/templates", ShowcaseRedirectController, :to_showcases)
@@ -400,6 +439,45 @@ defmodule E2eWeb.Router do
     get("/hover-card/style", PageController, :hover_card_styling_page)
     get("/drawer/anatomy", PageController, :drawer_page)
     get("/drawer/style", PageController, :drawer_styling_page)
+    get("/tour/anatomy", PageController, :tour_page)
+    get("/tour/style", PageController, :tour_styling_page)
+
+    get("/cascade-select/anatomy", PageController, :cascade_select_page)
+    get("/cascade-select/style", PageController, :cascade_select_styling_page)
+
+    get("/navigation-menu/anatomy", PageController, :navigation_menu_page)
+    get("/navigation-menu/style", PageController, :navigation_menu_styling_page)
+
+    get("/image-cropper/anatomy", PageController, :image_cropper_page)
+    get("/image-cropper/style", PageController, :image_cropper_styling_page)
+
+    get("/date-input/anatomy", PageController, :date_input_page)
+    get("/date-input/style", PageController, :date_input_styling_page)
+
+    get("/toc/anatomy", PageController, :toc_page)
+    get("/toc/style", PageController, :toc_styling_page)
+
+    get("/scroll-area/anatomy", PageController, :scroll_area_page)
+    get("/scroll-area/style", PageController, :scroll_area_styling_page)
+
+    get("/splitter/anatomy", PageController, :splitter_page)
+    get("/splitter/style", PageController, :splitter_styling_page)
+
+    get("/presence/anatomy", PageController, :presence_page)
+    get("/presence/style", PageController, :presence_styling_page)
+
+    get("/qr-code/anatomy", PageController, :qr_code_page)
+    get("/qr-code/style", PageController, :qr_code_styling_page)
+
+    get("/steps/anatomy", PageController, :steps_page)
+    get("/steps/style", PageController, :steps_styling_page)
+
+    get("/rating-group/anatomy", PageController, :rating_group_page)
+    get("/rating-group/style", PageController, :rating_group_styling_page)
+
+    get("/progress/anatomy", PageController, :progress_page)
+    get("/progress/style", PageController, :progress_styling_page)
+
     resources("/users", UserController)
   end
 

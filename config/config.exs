@@ -15,7 +15,7 @@ config :phoenix,
 
 if Mix.env() in [:dev, :test] do
   corex_externals =
-    ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog drawer editable file-upload floating-panel hover-card listbox marquee menu number-input pagination password-input pin-input popover radio-group select signature-pad slider switch tabs tags-input timer toast toggle toggle-group tooltip tree-view)
+    ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog drawer editable file-upload floating-panel hover-card listbox marquee menu number-input pagination password-input pin-input popover progress qr-code radio-group rating-group scroll-area select signature-pad slider splitter steps switch tabs tags-input timer toast toc toggle toggle-group tooltip tour tree-view cascade-select date-input image-cropper navigation-menu presence)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)
 
   node_path = [
@@ -78,6 +78,19 @@ if Mix.env() in [:dev, :test] do
       ./hooks/tooltip.ts
       ./hooks/toggle.ts
       ./hooks/toggle-group.ts
+      ./hooks/progress.ts
+      ./hooks/rating-group.ts
+      ./hooks/steps.ts
+      ./hooks/qr-code.ts
+      ./hooks/presence.ts
+      ./hooks/splitter.ts
+      ./hooks/scroll-area.ts
+      ./hooks/toc.ts
+      ./hooks/date-input.ts
+      ./hooks/image-cropper.ts
+      ./hooks/navigation-menu.ts
+      ./hooks/cascade-select.ts
+      ./hooks/tour.ts
       ./hooks/tree-view.ts
     )
 

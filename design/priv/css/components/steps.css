@@ -1,0 +1,42 @@
+@import "../main.css";
+
+@layer components {
+  .steps[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .steps [data-scope="steps"][data-part="root"] {
+    color: var(--ctl-ink, var(--color-ink));
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-space);
+  }
+
+  .steps [data-scope="steps"][data-part="list"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-space);
+  }
+
+  .steps [data-scope="steps"][data-part="item"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-space);
+  }
+
+  .steps [data-scope="steps"][data-part="indicator"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--ctl-size, var(--spacing-size));
+    height: var(--ctl-size, var(--spacing-size));
+    border-radius: var(--radius-full);
+    background: var(--color-surface-muted);
+  }
+
+  .steps [data-scope="steps"][data-part="separator"] {
+    width: var(--spacing-space-lg);
+    height: 1px;
+    background: var(--color-line);
+  }
+}

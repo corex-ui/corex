@@ -1,25 +1,27 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-QE4GGWXJ.mjs";
+} from "./chunks/chunk-OWAL5LKS.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-POHGVU2K.mjs";
+} from "./chunks/chunk-6Q56QPKD.mjs";
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-PWB4AEF6.mjs";
+} from "./chunks/chunk-2TVI6WVN.mjs";
 import {
   idMatches,
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
-  createAnatomy,
   createMachine,
   createZagLiveHook,
   dataAttr,
@@ -35,7 +37,7 @@ import {
   mergeWithDefault,
   query,
   trackPointerMove
-} from "./chunks/chunk-CLKNJROH.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.43.3/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(

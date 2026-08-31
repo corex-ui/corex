@@ -3,10 +3,12 @@ import {
   readPayloadId
 } from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
+  createAnatomy
+} from "./chunks/chunk-YMOPD357.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
-  createAnatomy,
   createMachine,
   createZagLiveHook,
   dataAttr,
@@ -15,7 +17,7 @@ import {
   getNumber,
   getString,
   mergeWithDefault
-} from "./chunks/chunk-CLKNJROH.mjs";
+} from "./chunks/chunk-R62PCG6O.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.43.3/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");

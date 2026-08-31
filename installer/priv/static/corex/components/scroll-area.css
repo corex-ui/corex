@@ -1,0 +1,30 @@
+@import "../main.css";
+
+@layer components {
+  .scroll-area[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="root"] {
+    position: relative;
+    width: min(100%, var(--container-sm));
+    height: 10rem;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="viewport"] {
+    height: 100%;
+    overflow: auto;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"] {
+    position: absolute;
+    inset-block: 0.25rem;
+    inset-inline-end: 0.25rem;
+    width: 0.4rem;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="thumb"] {
+    background: var(--color-ink-muted);
+    border-radius: var(--radius-full);
+  }
+}

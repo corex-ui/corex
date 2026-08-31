@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+ .cascade-select[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .cascade-select {
+ width: fit-content;
+ }
+
+ .cascade-select [data-scope="cascade-select"][data-part="root"] {
+ color: var(--ctl-ink, var(--color-ink));
+ }
+}

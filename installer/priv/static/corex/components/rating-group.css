@@ -1,0 +1,26 @@
+@import "../main.css";
+
+@layer components {
+  .rating-group[data-loading] > * {
+    @apply ui-loading;
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="root"] {
+    color: var(--ctl-ink, var(--color-ink));
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="control"] {
+    display: inline-flex;
+    gap: var(--spacing-space-xs);
+    font-size: calc(var(--ctl-size, var(--spacing-size)) * 1.1);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"] {
+    cursor: pointer;
+    color: var(--color-ink-muted);
+  }
+
+  .rating-group [data-scope="rating-group"][data-part="item"][data-highlighted] {
+    color: var(--ctl-fill, var(--color-accent));
+  }
+}

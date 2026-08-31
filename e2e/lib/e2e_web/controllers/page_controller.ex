@@ -1999,7 +1999,111 @@ defmodule E2eWeb.PageController do
     render(conn, :drawer_styling_page)
   end
 
-  def templates_page(conn, _params) do
+
+  def progress_page(conn, _params) do
+    render(conn, :progress_page)
+  end
+
+  def progress_styling_page(conn, _params) do
+    render(conn, :progress_styling_page)
+  end
+
+  def rating_group_page(conn, _params) do
+    render(conn, :rating_group_page)
+  end
+
+  def rating_group_styling_page(conn, _params) do
+    render(conn, :rating_group_styling_page)
+  end
+
+  def steps_page(conn, _params) do
+    render(conn, :steps_page)
+  end
+
+  def steps_styling_page(conn, _params) do
+    render(conn, :steps_styling_page)
+  end
+
+  def qr_code_page(conn, _params) do
+    render(conn, :qr_code_page)
+  end
+
+  def qr_code_styling_page(conn, _params) do
+    render(conn, :qr_code_styling_page)
+  end
+
+  def presence_page(conn, _params) do
+    render(conn, :presence_page)
+  end
+
+  def presence_styling_page(conn, _params) do
+    render(conn, :presence_styling_page)
+  end
+
+  def splitter_page(conn, _params) do
+    render(conn, :splitter_page)
+  end
+
+  def splitter_styling_page(conn, _params) do
+    render(conn, :splitter_styling_page)
+  end
+
+  def scroll_area_page(conn, _params) do
+    render(conn, :scroll_area_page)
+  end
+
+  def scroll_area_styling_page(conn, _params) do
+    render(conn, :scroll_area_styling_page)
+  end
+
+  def toc_page(conn, _params) do
+    render(conn, :toc_page)
+  end
+
+  def toc_styling_page(conn, _params) do
+    render(conn, :toc_styling_page)
+  end
+
+  def date_input_page(conn, _params) do
+    render(conn, :date_input_page)
+  end
+
+  def date_input_styling_page(conn, _params) do
+    render(conn, :date_input_styling_page)
+  end
+
+  def image_cropper_page(conn, _params) do
+    render(conn, :image_cropper_page)
+  end
+
+  def image_cropper_styling_page(conn, _params) do
+    render(conn, :image_cropper_styling_page)
+  end
+
+  def navigation_menu_page(conn, _params) do
+    render(conn, :navigation_menu_page)
+  end
+
+  def navigation_menu_styling_page(conn, _params) do
+    render(conn, :navigation_menu_styling_page)
+  end
+
+  def cascade_select_page(conn, _params) do
+    render(conn, :cascade_select_page)
+  end
+
+  def cascade_select_styling_page(conn, _params) do
+    render(conn, :cascade_select_styling_page)
+  end
+
+  def tour_page(conn, _params) do
+    render(conn, :tour_page)
+  end
+
+  def tour_styling_page(conn, _params) do
+    render(conn, :tour_styling_page)
+  end
+  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do
     template_carousel_items = [
       Corex.Image.new("/images/templates/soonex/preview-hero.png",
         alt: ~t"Hero section"
