@@ -1,42 +1,129 @@
 @import "../main.css";
 
 @layer components {
+  .steps {
+    width: 100%;
+    max-width: var(--container-sm);
+  }
+
   .steps[data-loading] > * {
     @apply ui-loading;
   }
 
   .steps [data-scope="steps"][data-part="root"] {
+    --steps-gutter: var(--ctl-space, var(--spacing-space));
+    --steps-size: var(--ctl-size, var(--spacing-size));
     color: var(--ctl-ink, var(--color-ink));
     display: flex;
+    gap: var(--ctl-space, var(--spacing-space));
+    width: 100%;
+  }
+
+  .steps [data-scope="steps"][data-part="root"][data-orientation="horizontal"] {
     flex-direction: column;
-    gap: var(--spacing-space);
+  }
+
+  .steps [data-scope="steps"][data-part="root"][data-orientation="vertical"] {
+    flex-direction: row;
   }
 
   .steps [data-scope="steps"][data-part="list"] {
     display: flex;
+    justify-content: space-between;
+  }
+
+  .steps [data-scope="steps"][data-part="list"][data-orientation="horizontal"] {
+    flex-direction: row;
     align-items: center;
-    gap: var(--spacing-space);
+  }
+
+  .steps [data-scope="steps"][data-part="list"][data-orientation="vertical"] {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .steps [data-scope="steps"][data-part="item"] {
+    position: relative;
+    display: flex;
+    flex: 1 0 0;
+  }
+
+  .steps [data-scope="steps"][data-part="item"]:last-of-type {
+    flex: initial;
+  }
+
+  .steps [data-scope="steps"][data-part="item"][data-orientation="horizontal"] {
+    align-items: center;
+  }
+
+  .steps [data-scope="steps"][data-part="item"][data-orientation="vertical"] {
+    align-items: flex-start;
+  }
+
+  .steps [data-scope="steps"][data-part="trigger"] {
     display: flex;
     align-items: center;
-    gap: var(--spacing-space);
+    gap: var(--ctl-space, var(--spacing-space));
+    text-align: start;
+    background: transparent;
+    border: none;
+    padding-inline: 0;
+    min-height: 0;
+    box-shadow: none;
   }
 
   .steps [data-scope="steps"][data-part="indicator"] {
-    display: inline-flex;
-    align-items: center;
+    display: flex;
     justify-content: center;
-    width: var(--ctl-size, var(--spacing-size));
-    height: var(--ctl-size, var(--spacing-size));
+    align-items: center;
+    flex-shrink: 0;
     border-radius: var(--radius-full);
-    background: var(--color-surface-muted);
+    font-weight: var(--font-weight-semibold, 600);
+    width: var(--steps-size);
+    height: var(--steps-size);
+    font-size: var(--ctl-text, var(--text-sm));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    background: var(--color-surface-muted, var(--color-ui-muted));
+    color: var(--ctl-ink, var(--color-ink));
+  }
+
+  .steps [data-scope="steps"][data-part="indicator"][data-current] {
+    border-color: var(--ctl-fill, var(--color-ink));
+    color: var(--ctl-fill, var(--color-ink));
+    background: var(--ctl-bg, var(--color-ui));
+  }
+
+  .steps [data-scope="steps"][data-part="indicator"][data-complete] {
+    background: var(--ctl-fill, var(--color-ink));
+    border-color: transparent;
+    color: var(--ctl-fill-ink, var(--color-root));
   }
 
   .steps [data-scope="steps"][data-part="separator"] {
-    width: var(--spacing-space-lg);
-    height: 1px;
-    background: var(--color-line);
+    flex: 1;
+    background-color: var(--color-line, var(--color-border));
+  }
+
+  .steps [data-scope="steps"][data-part="separator"][data-orientation="horizontal"] {
+    width: 100%;
+    height: 2px;
+    margin-inline: var(--steps-gutter);
+  }
+
+  .steps [data-scope="steps"][data-part="separator"][data-orientation="vertical"] {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    max-height: calc(100% - var(--steps-size) - var(--steps-gutter) * 2);
+    top: calc(var(--steps-size) + var(--steps-gutter));
+    inset-inline-start: calc(var(--steps-size) / 2 - 1px);
+  }
+
+  .steps [data-scope="steps"][data-part="separator"][data-complete] {
+    background-color: var(--ctl-fill, var(--color-ink));
+  }
+
+  .steps [data-scope="steps"][data-part="content"] {
+    padding: var(--ctl-space, var(--spacing-space));
   }
 }

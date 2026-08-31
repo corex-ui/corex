@@ -57,7 +57,7 @@ defmodule Corex.Progress do
     [data-scope="progress"][data-part="root"] {}
     ```
 
-  Axes: **Semantic**, **Variant** (`ui-solid`), **Size**, **Radius**. See the [modifier guide](modifiers.html).
+  Axes: **Semantic**, **Size**, **Radius**. No variant axis. See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
 

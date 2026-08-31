@@ -1,7 +1,81 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="date-input-styling-page" title={~t"DateInput · Style"} subtitle={~t"Semantic modifiers."}>
-    <.demo_section id="date-input-styling-color" title={~t"Semantic"}>
-      <:preview><E2eWeb.Demos.DateInputDemo.styling_color_example /></:preview>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="date-input-styling-page"
+    title={~t"Date Input · Style"}
+    subtitle={
+      ~t"Semantic colors, density, and corner radius via modifier classes on the host. No variant axis."
+    }
+  >
+    <.demo_section
+      id="date-input-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.DateInputDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="date-input" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DateInputDemo.styling_color_example />
+      </:preview>
     </.demo_section>
+
+    <.demo_section
+      id="date-input-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.DateInputDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="date-input" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DateInputDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-input-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.DateInputDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="date-input" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DateInputDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-input-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.DateInputDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="date-input" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DateInputDemo.styling_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-input-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.DateInputDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="date-input" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DateInputDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
   </.demo_page>
 </Layouts.app>

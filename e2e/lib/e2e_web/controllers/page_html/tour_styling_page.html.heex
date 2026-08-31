@@ -1,7 +1,81 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="tour-styling-page" title={~t"Tour · Style"} subtitle={~t"Semantic modifiers."}>
-    <.demo_section id="tour-styling-color" title={~t"Semantic"}>
-      <:preview><E2eWeb.Demos.TourDemo.styling_color_example /></:preview>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="tour-styling-page"
+    title={~t"Tour · Style"}
+    subtitle={
+      ~t"Semantic colors, visual variants, size, and corner radius via modifier classes on the host."
+    }
+  >
+    <.demo_section
+      id="tour-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.TourDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="tour" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.TourDemo.styling_color_example />
+      </:preview>
     </.demo_section>
+
+    <.demo_section
+      id="tour-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.TourDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="tour" axis={:variant} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.TourDemo.styling_variant_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tour-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.TourDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="tour" />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.TourDemo.styling_variant_matrix_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tour-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.TourDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="tour" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.TourDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tour-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.TourDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="tour" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.TourDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
   </.demo_page>
 </Layouts.app>

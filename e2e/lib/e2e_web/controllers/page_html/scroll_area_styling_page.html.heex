@@ -1,7 +1,68 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="scroll-area-styling-page" title={~t"ScrollArea · Style"} subtitle={~t"Semantic modifiers."}>
-    <.demo_section id="scroll-area-styling-color" title={~t"Semantic"}>
-      <:preview><E2eWeb.Demos.ScrollAreaDemo.styling_color_example /></:preview>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="scroll-area-styling-page"
+    title={~t"Scroll Area · Style"}
+    subtitle={
+      ~t"Semantic colors, density, and corner radius via modifier classes on the host. No variant axis."
+    }
+  >
+    <.demo_section
+      id="scroll-area-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.ScrollAreaDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="scroll-area" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ScrollAreaDemo.styling_color_example />
+      </:preview>
     </.demo_section>
+
+    <.demo_section
+      id="scroll-area-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.ScrollAreaDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="scroll-area" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ScrollAreaDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="scroll-area-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.ScrollAreaDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="scroll-area" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ScrollAreaDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="scroll-area-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ScrollAreaDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="scroll-area" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ScrollAreaDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
   </.demo_page>
 </Layouts.app>

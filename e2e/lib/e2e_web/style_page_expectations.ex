@@ -86,7 +86,7 @@ defmodule E2eWeb.StylePageExpectations do
     pagination
   )
 
-  @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel popover hover-card drawer)
+  @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel popover hover-card drawer tour)
   @skip_max_width_only ~W(pin-input)
 
   @fit_max_width_block_demo ~W(button switch toggle timer clipboard color-picker date-picker)

@@ -1,30 +1,93 @@
 @import "../main.css";
 
 @layer components {
+  .scroll-area {
+    width: 100%;
+    max-width: var(--container-xs);
+  }
+
   .scroll-area[data-loading] > * {
     @apply ui-loading;
   }
 
   .scroll-area [data-scope="scroll-area"][data-part="root"] {
+    box-sizing: border-box;
     position: relative;
-    width: min(100%, var(--container-sm));
-    height: 10rem;
+    width: 100%;
+    height: calc(var(--ctl-size, var(--spacing-size)) * 5.5);
+    color: var(--ctl-ink, var(--color-ink));
   }
 
   .scroll-area [data-scope="scroll-area"][data-part="viewport"] {
     height: 100%;
     overflow: auto;
+    border-radius: var(--ctl-radius, var(--radius-md));
+    outline: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    outline-offset: -1px;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    background: var(--ctl-bg, var(--color-ui));
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="viewport"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="viewport"]:focus-visible {
+    outline: calc(var(--ring-width, 2px)) solid var(--ctl-ring, var(--color-focus));
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="content"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ctl-space, var(--spacing-space));
+    padding-block: var(--ctl-space, var(--spacing-space));
+    padding-inline-start: var(--ctl-space, var(--spacing-space));
+    padding-inline-end: calc(var(--ctl-space, var(--spacing-space)) * 1.5);
   }
 
   .scroll-area [data-scope="scroll-area"][data-part="scrollbar"] {
-    position: absolute;
-    inset-block: 0.25rem;
-    inset-inline-end: 0.25rem;
-    width: 0.4rem;
+    position: relative;
+    background-color: var(--color-surface-muted, var(--color-ui-muted));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    margin: var(--spacing-space-xs);
+    opacity: 0;
+    transition: opacity 150ms 300ms;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"][data-hover],
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"][data-scrolling] {
+    opacity: 1;
+    transition-duration: 75ms;
+    transition-delay: 0ms;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"][data-orientation="vertical"] {
+    width: 0.5rem;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"][data-orientation="horizontal"] {
+    height: 0.5rem;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"][data-orientation="vertical"]:not([data-overflow-y]) {
+    display: none;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="scrollbar"][data-orientation="horizontal"]:not([data-overflow-x]) {
+    display: none;
   }
 
   .scroll-area [data-scope="scroll-area"][data-part="thumb"] {
-    background: var(--color-ink-muted);
-    border-radius: var(--radius-full);
+    border-radius: inherit;
+    background-color: var(--ctl-fill, var(--color-ink-muted));
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="thumb"][data-orientation="vertical"] {
+    width: 100%;
+  }
+
+  .scroll-area [data-scope="scroll-area"][data-part="thumb"][data-orientation="horizontal"] {
+    height: 100%;
   }
 }

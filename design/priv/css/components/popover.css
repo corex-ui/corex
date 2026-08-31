@@ -1,77 +1,92 @@
 @import "../main.css";
 
 @layer components {
- .popover {
- position: relative;
- --z-index: var(--z-overlay, 1100);
- }
+  .popover {
+    position: relative;
+    width: fit-content;
+    --z-index: var(--z-overlay, 1100);
+  }
 
- .popover:has([data-scope="popover"][data-part="content"][data-state="open"]) {
- z-index: var(--z-overlay, 1100);
- }
+  .popover:has([data-scope="popover"][data-part="content"][data-state="open"]) {
+    z-index: var(--z-overlay, 1100);
+  }
 
- .popover[data-loading] > * {
- @apply ui-loading;
- }
+  .popover[data-loading] > * {
+    @apply ui-loading;
+  }
 
- .popover [data-scope="popover"][data-part="positioner"] {
- position: absolute;
- left: 0;
- top: 0;
- isolation: isolate;
- z-index: var(--z-overlay, 1100);
- visibility: hidden;
- pointer-events: none;
- }
+  .popover [data-scope="popover"][data-part="positioner"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    isolation: isolate;
+    z-index: var(--z-overlay, 1100);
+    visibility: hidden;
+    pointer-events: none;
+  }
 
- .popover [data-scope="popover"][data-part="positioner"]:has(
- [data-scope="popover"][data-part="content"][data-state="open"]
- ) {
- visibility: visible;
- pointer-events: auto;
- }
+  .popover [data-scope="popover"][data-part="positioner"]:has(
+      [data-scope="popover"][data-part="content"][data-state="open"]
+    ) {
+    visibility: visible;
+    pointer-events: auto;
+  }
 
- .popover [data-scope="popover"][data-part="content"] {
- padding: var(--ctl-space, var(--spacing-space));
- max-width: var(--container-xs);
- position: relative;
- z-index: 1;
- font-size: var(--ctl-text, var(--text-sm));
- color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
- background-color: var(--ctl-bg, var(--color-ui));
- border: var(--border-width) solid var(--ctl-bd, var(--color-border));
- border-radius: var(--ctl-radius, var(--radius-md));
- box-shadow: var(--shadow-ui);
- display: flex;
- flex-direction: column;
- gap: var(--spacing-space-sm);
- }
+  .popover [data-scope="popover"][data-part="content"] {
+    padding: var(--ctl-space, var(--spacing-space));
+    max-width: var(--container-xs);
+    position: relative;
+    z-index: 1;
+    font-size: var(--ctl-text, var(--text-sm));
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+    background-color: var(--ctl-bg, var(--color-ui));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    box-shadow: var(--shadow-ui);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-space-sm);
+    transform-origin: var(--transform-origin);
+  }
 
- .popover [data-scope="popover"][data-part="content"][data-state="closed"] {
- visibility: hidden;
- opacity: 0;
- }
+  .popover [data-scope="popover"][data-part="content"][data-state="open"] {
+    animation: scaleFadeIn var(--duration-fast, 0.15s) ease-out;
+  }
 
- .popover [data-scope="popover"][data-part="header"] {
- display: flex;
- align-items: flex-start;
- gap: var(--spacing-space-sm);
- }
+  .popover [data-scope="popover"][data-part="content"][data-state="closed"] {
+    visibility: hidden;
+    opacity: 0;
+  }
 
- .popover [data-scope="popover"][data-part="close-trigger"] {
- margin-inline-start: auto;
- aspect-ratio: 1 / 1;
- padding: 0;
- @apply ui-size-sm;
- }
+  .popover [data-scope="popover"][data-part="title"] {
+    font-weight: var(--font-weight-semibold, 600);
+    font-size: var(--ctl-text, var(--text-sm));
+  }
 
- .popover [data-scope="popover"][data-part="arrow"] {
- --arrow-size: var(--spacing-space);
- --arrow-background: var(--ctl-bg, var(--color-ui));
- }
+  .popover [data-scope="popover"][data-part="header"] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-space-sm);
+  }
 
- .popover [data-scope="popover"][data-part="arrow-tip"] {
- background: var(--arrow-background);
- border: var(--border-width) solid var(--ctl-bd, var(--color-border));
- }
+  .popover [data-scope="popover"][data-part="close-trigger"] {
+    margin-inline-start: auto;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    @apply ui-size-sm;
+  }
+
+  .popover [data-scope="popover"][data-part="indicator"][data-state="open"] {
+    rotate: 90deg;
+  }
+
+  .popover [data-scope="popover"][data-part="arrow"] {
+    --arrow-size: var(--spacing-space);
+    --arrow-background: var(--ctl-bg, var(--color-ui));
+  }
+
+  .popover [data-scope="popover"][data-part="arrow-tip"] {
+    background: var(--arrow-background);
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+  }
 }

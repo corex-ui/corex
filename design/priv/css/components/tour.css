@@ -1,15 +1,106 @@
 @import "../main.css";
 
 @layer components {
- .tour[data-loading] > * {
- @apply ui-loading;
- }
+  .tour {
+    width: fit-content;
+    --tour-z-index: var(--z-overlay, 1100);
+  }
 
- .tour {
- width: fit-content;
- }
+  .tour[data-loading] > * {
+    @apply ui-loading;
+  }
 
- .tour [data-scope="tour"][data-part="root"] {
- color: var(--ctl-ink, var(--color-ink));
- }
+  .tour [data-scope="tour"][data-part="backdrop"],
+  .tour [data-scope="tour"][data-part="spotlight"],
+  .tour [data-scope="tour"][data-part="positioner"] {
+    z-index: calc(var(--tour-layer, 0) + var(--tour-z-index));
+  }
+
+  .tour [data-scope="tour"][data-part="backdrop"] {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+
+  .tour [data-scope="tour"][data-part="backdrop"][data-state="open"],
+  .tour [data-scope="tour"][data-part="spotlight"][data-state="open"] {
+    animation: fadeIn var(--duration-normal, 0.2s) ease-out;
+  }
+
+  .tour [data-scope="tour"][data-part="backdrop"][data-state="closed"],
+  .tour [data-scope="tour"][data-part="spotlight"][data-state="closed"] {
+    animation: fadeOut var(--duration-fast, 0.15s) ease-in;
+  }
+
+  .tour [data-scope="tour"][data-part="spotlight"] {
+    border: calc(var(--border-width) * 2) solid var(--ctl-fill, var(--color-accent));
+    transition:
+      left var(--duration-normal) ease,
+      top var(--duration-normal) ease,
+      width var(--duration-normal) ease,
+      height var(--duration-normal) ease;
+  }
+
+  .tour [data-scope="tour"][data-part="positioner"][data-type="dialog"] {
+    width: 100%;
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tour [data-scope="tour"][data-part="positioner"][data-type="floating"] {
+    position: absolute;
+  }
+
+  .tour [data-scope="tour"][data-part="content"] {
+    --arrow-size: var(--spacing-space);
+    --arrow-background: var(--ctl-bg, var(--color-ui));
+    position: relative;
+    width: min(100%, var(--container-sm));
+    z-index: calc(var(--tour-layer, 0) + var(--tour-z-index));
+    transform-origin: var(--transform-origin, center);
+  }
+
+  .tour [data-scope="tour"][data-part="content"][data-state="open"] {
+    animation: scaleFadeIn var(--duration-normal, 0.2s) ease-out;
+  }
+
+  .tour [data-scope="tour"][data-part="content"][data-state="closed"] {
+    animation: scaleFadeOut var(--duration-fast, 0.15s) ease-in;
+  }
+
+  .tour [data-scope="tour"][data-part="title"] {
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  .tour [data-scope="tour"][data-part="description"],
+  .tour [data-scope="tour"][data-part="progress-text"] {
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+  }
+
+  .tour [data-scope="tour"][data-part="progress-text"] {
+    opacity: 0.72;
+  }
+
+  .tour [data-scope="tour"][data-part="close-trigger"] {
+    position: absolute;
+    top: var(--spacing-space-sm);
+    inset-inline-end: var(--spacing-space-sm);
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    @apply ui-size-sm;
+  }
+
+  .tour [data-scope="tour"][data-part="arrow"] {
+    --arrow-size: var(--spacing-space);
+    --arrow-background: var(--ctl-bg, var(--color-ui));
+  }
+
+  .tour [data-scope="tour"][data-part="arrow-tip"] {
+    background: var(--arrow-background);
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+  }
 }

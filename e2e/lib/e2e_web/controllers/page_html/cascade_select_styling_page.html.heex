@@ -1,7 +1,94 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="cascade-select-styling-page" title={~t"CascadeSelect · Style"} subtitle={~t"Semantic modifiers."}>
-    <.demo_section id="cascade-select-styling-color" title={~t"Semantic"}>
-      <:preview><E2eWeb.Demos.CascadeSelectDemo.styling_color_example /></:preview>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="cascade-select-styling-page"
+    title={~t"Cascade Select · Style"}
+    subtitle={
+      ~t"Semantic colors, visual variants, density, corner radius, and width utilities via modifier classes on the host."
+    }
+  >
+    <.demo_section
+      id="cascade-select-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.CascadeSelectDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="cascade-select" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CascadeSelectDemo.styling_color_example />
+      </:preview>
     </.demo_section>
+
+    <.demo_section
+      id="cascade-select-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.CascadeSelectDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="cascade-select" axis={:variant} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CascadeSelectDemo.styling_variant_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="cascade-select-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.CascadeSelectDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="cascade-select" />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CascadeSelectDemo.styling_variant_matrix_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="cascade-select-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.CascadeSelectDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="cascade-select" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CascadeSelectDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="cascade-select-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.CascadeSelectDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="cascade-select" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CascadeSelectDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="cascade-select-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.CascadeSelectDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="cascade-select" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CascadeSelectDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
   </.demo_page>
 </Layouts.app>

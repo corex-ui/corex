@@ -1,7 +1,94 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <.demo_page path={@path} id="image-cropper-styling-page" title={~t"ImageCropper · Style"} subtitle={~t"Semantic modifiers."}>
-    <.demo_section id="image-cropper-styling-color" title={~t"Semantic"}>
-      <:preview><E2eWeb.Demos.ImageCropperDemo.styling_color_example /></:preview>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="image-cropper-styling-page"
+    title={~t"Image Cropper · Style"}
+    subtitle={
+      ~t"Semantic colors, visual variants, density, corner radius, and width utilities via modifier classes on the host."
+    }
+  >
+    <.demo_section
+      id="image-cropper-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.ImageCropperDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="image-cropper" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ImageCropperDemo.styling_color_example />
+      </:preview>
     </.demo_section>
+
+    <.demo_section
+      id="image-cropper-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.ImageCropperDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="image-cropper" axis={:variant} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ImageCropperDemo.styling_variant_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="image-cropper-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.ImageCropperDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="image-cropper" />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ImageCropperDemo.styling_variant_matrix_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="image-cropper-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.ImageCropperDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="image-cropper" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ImageCropperDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="image-cropper-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.ImageCropperDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="image-cropper" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ImageCropperDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="image-cropper-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ImageCropperDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="image-cropper" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ImageCropperDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
   </.demo_page>
 </Layouts.app>

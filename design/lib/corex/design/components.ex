@@ -142,6 +142,7 @@ defmodule Corex.Design.Components do
     {"drawer", "trigger", :trigger},
     {"drawer", "close-trigger", :trigger},
     {"drawer", "content", :content},
+    {"hover-card", "trigger", :trigger},
     {"hover-card", "content", :content},
     {"popover", "trigger", :trigger},
     {"popover", "close-trigger", :trigger},
@@ -239,17 +240,33 @@ defmodule Corex.Design.Components do
     {"toggle-group", "item", :trigger},
     {"progress", "root", :root},
     {"rating-group", "root", :root},
+    {"rating-group", "control", :control},
+    {"rating-group", "item", :item},
     {"steps", "root", :root},
+    {"steps", "trigger", :trigger},
+    {"steps", "prev-trigger", :trigger},
+    {"steps", "next-trigger", :trigger},
+    {"steps", "content", :content},
     {"qr-code", "root", :root},
     {"presence", "root", :root},
     {"splitter", "root", :root},
+    {"splitter", "resize-trigger", :trigger},
     {"scroll-area", "root", :root},
     {"toc", "root", :root},
+    {"toc", "item", :item},
+    {"toc", "link", :item},
     {"date-input", "root", :root},
+    {"date-input", "control", :control},
     {"image-cropper", "root", :root},
     {"navigation-menu", "root", :root},
+    {"navigation-menu", "trigger", :trigger},
+    {"navigation-menu", "link", :item},
     {"cascade-select", "root", :root},
-    {"tour", "root", :root},
+    {"cascade-select", "trigger", :trigger},
+    {"cascade-select", "content", :content},
+    {"cascade-select", "item", :item},
+    {"tour", "content", :content},
+    {"tour", "close-trigger", :trigger},
     {"tooltip", "content", :content},
     {"tree-view", "root", :root},
     {"tree-view", "label", :label},
@@ -296,7 +313,7 @@ defmodule Corex.Design.Components do
   @no_radius_hosts ~w(tree-view)
 
   # Floating panels: ghost (transparent fill) is not a useful surface treatment.
-  @no_ghost_hosts ~w(tooltip popover hover-card drawer)
+  @no_ghost_hosts ~w(tooltip popover hover-card drawer tour cascade-select)
 
   @no_variant_families MapSet.new([:selection, :field, :static])
 
