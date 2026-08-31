@@ -98,6 +98,7 @@ defmodule E2eWeb.Demos.PopoverDemo do
   end
 
   alias E2eWeb.DemoScales
+
   def styling_color_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -134,33 +135,34 @@ defmodule E2eWeb.Demos.PopoverDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.popover id="popover-style-default" class="popover">
-      <:trigger>Default</:trigger>
-      <:content>Default</:content>
-    </.popover>
-    <.popover id="popover-style-accent" class="popover ui-accent">
-      <:trigger>Accent</:trigger>
-      <:content>Accent</:content>
-    </.popover>
-    <.popover id="popover-style-brand" class="popover ui-brand">
-      <:trigger>Brand</:trigger>
-      <:content>Brand</:content>
-    </.popover>
-    <.popover id="popover-style-alert" class="popover ui-alert">
-      <:trigger>Alert</:trigger>
-      <:content>Alert</:content>
-    </.popover>
-    <.popover id="popover-style-success" class="popover ui-success">
-      <:trigger>Success</:trigger>
-      <:content>Success</:content>
-    </.popover>
-    <.popover id="popover-style-info" class="popover ui-info">
-      <:trigger>Info</:trigger>
-      <:content>Info</:content>
-    </.popover>
+      <.popover id="popover-style-default" class="popover">
+        <:trigger>Default</:trigger>
+        <:content>Default</:content>
+      </.popover>
+      <.popover id="popover-style-accent" class="popover ui-accent">
+        <:trigger>Accent</:trigger>
+        <:content>Accent</:content>
+      </.popover>
+      <.popover id="popover-style-brand" class="popover ui-brand">
+        <:trigger>Brand</:trigger>
+        <:content>Brand</:content>
+      </.popover>
+      <.popover id="popover-style-alert" class="popover ui-alert">
+        <:trigger>Alert</:trigger>
+        <:content>Alert</:content>
+      </.popover>
+      <.popover id="popover-style-success" class="popover ui-success">
+        <:trigger>Success</:trigger>
+        <:content>Success</:content>
+      </.popover>
+      <.popover id="popover-style-info" class="popover ui-info">
+        <:trigger>Info</:trigger>
+        <:content>Info</:content>
+      </.popover>
     </div>
     """
   end
+
   def styling_variant_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -181,14 +183,14 @@ defmodule E2eWeb.Demos.PopoverDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.popover id="popover-style-subtle" class="popover">
-      <:trigger>Subtle (default)</:trigger>
-      <:content>Subtle (default)</:content>
-    </.popover>
-    <.popover id="popover-style-solid" class="popover ui-solid">
-      <:trigger>Solid</:trigger>
-      <:content>Solid</:content>
-    </.popover>
+      <.popover id="popover-style-subtle" class="popover">
+        <:trigger>Subtle (default)</:trigger>
+        <:content>Subtle (default)</:content>
+      </.popover>
+      <.popover id="popover-style-solid" class="popover ui-solid">
+        <:trigger>Solid</:trigger>
+        <:content>Solid</:content>
+      </.popover>
     </div>
     """
   end
@@ -217,7 +219,6 @@ defmodule E2eWeb.Demos.PopoverDemo do
             :for={variant <- @matrix_variants}
             id={"popover-mx-#{semantic.label}-#{variant.label}"}
             class={DemoScales.join_matrix_modifiers("popover", semantic.modifier, variant.modifier)}
-            
           >
             <:trigger>{semantic.label}</:trigger>
             <:content>{semantic.label}</:content>
@@ -227,6 +228,7 @@ defmodule E2eWeb.Demos.PopoverDemo do
     </div>
     """
   end
+
   def styling_size_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -255,25 +257,26 @@ defmodule E2eWeb.Demos.PopoverDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.popover id="popover-style-size-sm" class="popover ui-size-sm">
-      <:trigger>SM</:trigger>
-      <:content>SM</:content>
-    </.popover>
-    <.popover id="popover-style-size-md" class="popover ui-size-md">
-      <:trigger>MD</:trigger>
-      <:content>MD</:content>
-    </.popover>
-    <.popover id="popover-style-size-lg" class="popover ui-size-lg">
-      <:trigger>LG</:trigger>
-      <:content>LG</:content>
-    </.popover>
-    <.popover id="popover-style-size-xl" class="popover ui-size-xl">
-      <:trigger>XL</:trigger>
-      <:content>XL</:content>
-    </.popover>
+      <.popover id="popover-style-size-sm" class="popover ui-size-sm">
+        <:trigger>SM</:trigger>
+        <:content>SM</:content>
+      </.popover>
+      <.popover id="popover-style-size-md" class="popover ui-size-md">
+        <:trigger>MD</:trigger>
+        <:content>MD</:content>
+      </.popover>
+      <.popover id="popover-style-size-lg" class="popover ui-size-lg">
+        <:trigger>LG</:trigger>
+        <:content>LG</:content>
+      </.popover>
+      <.popover id="popover-style-size-xl" class="popover ui-size-xl">
+        <:trigger>XL</:trigger>
+        <:content>XL</:content>
+      </.popover>
     </div>
     """
   end
+
   def styling_rounded_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -310,32 +313,31 @@ defmodule E2eWeb.Demos.PopoverDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.popover id="popover-style-r-none" class="popover ui-rounded-none">
-      <:trigger>NONE</:trigger>
-      <:content>NONE</:content>
-    </.popover>
-    <.popover id="popover-style-r-sm" class="popover ui-rounded-sm">
-      <:trigger>SM</:trigger>
-      <:content>SM</:content>
-    </.popover>
-    <.popover id="popover-style-r-md" class="popover ui-rounded-md">
-      <:trigger>MD</:trigger>
-      <:content>MD</:content>
-    </.popover>
-    <.popover id="popover-style-r-lg" class="popover ui-rounded-lg">
-      <:trigger>LG</:trigger>
-      <:content>LG</:content>
-    </.popover>
-    <.popover id="popover-style-r-xl" class="popover ui-rounded-xl">
-      <:trigger>XL</:trigger>
-      <:content>XL</:content>
-    </.popover>
-    <.popover id="popover-style-r-full" class="popover ui-rounded-full">
-      <:trigger>FULL</:trigger>
-      <:content>FULL</:content>
-    </.popover>
+      <.popover id="popover-style-r-none" class="popover ui-rounded-none">
+        <:trigger>NONE</:trigger>
+        <:content>NONE</:content>
+      </.popover>
+      <.popover id="popover-style-r-sm" class="popover ui-rounded-sm">
+        <:trigger>SM</:trigger>
+        <:content>SM</:content>
+      </.popover>
+      <.popover id="popover-style-r-md" class="popover ui-rounded-md">
+        <:trigger>MD</:trigger>
+        <:content>MD</:content>
+      </.popover>
+      <.popover id="popover-style-r-lg" class="popover ui-rounded-lg">
+        <:trigger>LG</:trigger>
+        <:content>LG</:content>
+      </.popover>
+      <.popover id="popover-style-r-xl" class="popover ui-rounded-xl">
+        <:trigger>XL</:trigger>
+        <:content>XL</:content>
+      </.popover>
+      <.popover id="popover-style-r-full" class="popover ui-rounded-full">
+        <:trigger>FULL</:trigger>
+        <:content>FULL</:content>
+      </.popover>
     </div>
     """
   end
-
 end

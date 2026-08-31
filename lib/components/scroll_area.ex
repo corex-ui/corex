@@ -1,7 +1,7 @@
 defmodule Corex.ScrollArea do
   @moduledoc ~S'''
   ScrollArea for Phoenix LiveView. Behavior follows [Zag.js](https://zagjs.com/components/react/scroll-area).
-  
+
   ## Anatomy
 
   <!-- tabs-open -->

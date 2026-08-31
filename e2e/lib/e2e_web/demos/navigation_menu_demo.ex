@@ -16,6 +16,7 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
   end
 
   alias E2eWeb.DemoScales
+
   def styling_color_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -34,15 +35,16 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.navigation_menu id="navigation-menu-style-default" class="navigation-menu" />
-    <.navigation_menu id="navigation-menu-style-accent" class="navigation-menu ui-accent" />
-    <.navigation_menu id="navigation-menu-style-brand" class="navigation-menu ui-brand" />
-    <.navigation_menu id="navigation-menu-style-alert" class="navigation-menu ui-alert" />
-    <.navigation_menu id="navigation-menu-style-success" class="navigation-menu ui-success" />
-    <.navigation_menu id="navigation-menu-style-info" class="navigation-menu ui-info" />
+      <.navigation_menu id="navigation-menu-style-default" class="navigation-menu" />
+      <.navigation_menu id="navigation-menu-style-accent" class="navigation-menu ui-accent" />
+      <.navigation_menu id="navigation-menu-style-brand" class="navigation-menu ui-brand" />
+      <.navigation_menu id="navigation-menu-style-alert" class="navigation-menu ui-alert" />
+      <.navigation_menu id="navigation-menu-style-success" class="navigation-menu ui-success" />
+      <.navigation_menu id="navigation-menu-style-info" class="navigation-menu ui-info" />
     </div>
     """
   end
+
   def styling_variant_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -57,8 +59,8 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.navigation_menu id="navigation-menu-style-subtle" class="navigation-menu" />
-    <.navigation_menu id="navigation-menu-style-solid" class="navigation-menu ui-solid" />
+      <.navigation_menu id="navigation-menu-style-subtle" class="navigation-menu" />
+      <.navigation_menu id="navigation-menu-style-solid" class="navigation-menu ui-solid" />
     </div>
     """
   end
@@ -66,7 +68,8 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
   def styling_variant_matrix_code do
     for semantic <- DemoScales.styling_semantic_axis_steps("navigation-menu"),
         variant <- DemoScales.styling_variant_axis_steps("navigation-menu") do
-      class = DemoScales.join_matrix_modifiers("navigation-menu", semantic.modifier, variant.modifier)
+      class =
+        DemoScales.join_matrix_modifiers("navigation-menu", semantic.modifier, variant.modifier)
 
       ~s(<.navigation_menu class="#{class}">)
     end
@@ -86,13 +89,16 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
           <.navigation_menu
             :for={variant <- @matrix_variants}
             id={"navigation-menu-mx-#{semantic.label}-#{variant.label}"}
-            class={DemoScales.join_matrix_modifiers("navigation-menu", semantic.modifier, variant.modifier)}
-      />
+            class={
+              DemoScales.join_matrix_modifiers("navigation-menu", semantic.modifier, variant.modifier)
+            }
+          />
         </div>
       </div>
     </div>
     """
   end
+
   def styling_size_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -109,13 +115,14 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.navigation_menu id="navigation-menu-style-size-sm" class="navigation-menu ui-size-sm" />
-    <.navigation_menu id="navigation-menu-style-size-md" class="navigation-menu ui-size-md" />
-    <.navigation_menu id="navigation-menu-style-size-lg" class="navigation-menu ui-size-lg" />
-    <.navigation_menu id="navigation-menu-style-size-xl" class="navigation-menu ui-size-xl" />
+      <.navigation_menu id="navigation-menu-style-size-sm" class="navigation-menu ui-size-sm" />
+      <.navigation_menu id="navigation-menu-style-size-md" class="navigation-menu ui-size-md" />
+      <.navigation_menu id="navigation-menu-style-size-lg" class="navigation-menu ui-size-lg" />
+      <.navigation_menu id="navigation-menu-style-size-xl" class="navigation-menu ui-size-xl" />
     </div>
     """
   end
+
   def styling_rounded_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -134,15 +141,16 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.navigation_menu id="navigation-menu-style-r-none" class="navigation-menu ui-rounded-none" />
-    <.navigation_menu id="navigation-menu-style-r-sm" class="navigation-menu ui-rounded-sm" />
-    <.navigation_menu id="navigation-menu-style-r-md" class="navigation-menu ui-rounded-md" />
-    <.navigation_menu id="navigation-menu-style-r-lg" class="navigation-menu ui-rounded-lg" />
-    <.navigation_menu id="navigation-menu-style-r-xl" class="navigation-menu ui-rounded-xl" />
-    <.navigation_menu id="navigation-menu-style-r-full" class="navigation-menu ui-rounded-full" />
+      <.navigation_menu id="navigation-menu-style-r-none" class="navigation-menu ui-rounded-none" />
+      <.navigation_menu id="navigation-menu-style-r-sm" class="navigation-menu ui-rounded-sm" />
+      <.navigation_menu id="navigation-menu-style-r-md" class="navigation-menu ui-rounded-md" />
+      <.navigation_menu id="navigation-menu-style-r-lg" class="navigation-menu ui-rounded-lg" />
+      <.navigation_menu id="navigation-menu-style-r-xl" class="navigation-menu ui-rounded-xl" />
+      <.navigation_menu id="navigation-menu-style-r-full" class="navigation-menu ui-rounded-full" />
     </div>
     """
   end
+
   def styling_max_width_code do
     DemoScales.max_width_variants("navigation-menu")
     |> Enum.take(4)
@@ -154,17 +162,20 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
   end
 
   def styling_max_width_example(assigns) do
-    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("navigation-menu") |> Enum.take(4))
+    assigns =
+      assign(
+        assigns,
+        :max_width_variants,
+        DemoScales.max_width_variants("navigation-menu") |> Enum.take(4)
+      )
 
     ~H"""
     <div class="flex flex-col gap-space">
       <.navigation_menu
         :for={step <- @max_width_variants}
-        
         class={DemoScales.join_modifiers("navigation-menu", step.modifier)}
       />
     </div>
     """
   end
-
 end

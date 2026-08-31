@@ -1,7 +1,7 @@
 defmodule Corex.Toc do
   @moduledoc ~S'''
   Toc for Phoenix LiveView. Behavior follows [Zag.js](https://zagjs.com/components/react/tree-view).
-  
+
   ## Anatomy
 
   <!-- tabs-open -->

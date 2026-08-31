@@ -16,6 +16,7 @@ defmodule E2eWeb.Demos.PresenceDemo do
   end
 
   alias E2eWeb.DemoScales
+
   def styling_color_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -46,27 +47,28 @@ defmodule E2eWeb.Demos.PresenceDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.presence id="presence-style-default" class="presence">
-      Present
-    </.presence>
-    <.presence id="presence-style-accent" class="presence ui-accent">
-      Present
-    </.presence>
-    <.presence id="presence-style-brand" class="presence ui-brand">
-      Present
-    </.presence>
-    <.presence id="presence-style-alert" class="presence ui-alert">
-      Present
-    </.presence>
-    <.presence id="presence-style-success" class="presence ui-success">
-      Present
-    </.presence>
-    <.presence id="presence-style-info" class="presence ui-info">
-      Present
-    </.presence>
+      <.presence id="presence-style-default" class="presence">
+        Present
+      </.presence>
+      <.presence id="presence-style-accent" class="presence ui-accent">
+        Present
+      </.presence>
+      <.presence id="presence-style-brand" class="presence ui-brand">
+        Present
+      </.presence>
+      <.presence id="presence-style-alert" class="presence ui-alert">
+        Present
+      </.presence>
+      <.presence id="presence-style-success" class="presence ui-success">
+        Present
+      </.presence>
+      <.presence id="presence-style-info" class="presence ui-info">
+        Present
+      </.presence>
     </div>
     """
   end
+
   def styling_size_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -91,21 +93,22 @@ defmodule E2eWeb.Demos.PresenceDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.presence id="presence-style-size-sm" class="presence ui-size-sm">
-      Present
-    </.presence>
-    <.presence id="presence-style-size-md" class="presence ui-size-md">
-      Present
-    </.presence>
-    <.presence id="presence-style-size-lg" class="presence ui-size-lg">
-      Present
-    </.presence>
-    <.presence id="presence-style-size-xl" class="presence ui-size-xl">
-      Present
-    </.presence>
+      <.presence id="presence-style-size-sm" class="presence ui-size-sm">
+        Present
+      </.presence>
+      <.presence id="presence-style-size-md" class="presence ui-size-md">
+        Present
+      </.presence>
+      <.presence id="presence-style-size-lg" class="presence ui-size-lg">
+        Present
+      </.presence>
+      <.presence id="presence-style-size-xl" class="presence ui-size-xl">
+        Present
+      </.presence>
     </div>
     """
   end
+
   def styling_rounded_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">
@@ -136,27 +139,28 @@ defmodule E2eWeb.Demos.PresenceDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-space-sm items-start">
-    <.presence id="presence-style-r-none" class="presence ui-rounded-none">
-      Present
-    </.presence>
-    <.presence id="presence-style-r-sm" class="presence ui-rounded-sm">
-      Present
-    </.presence>
-    <.presence id="presence-style-r-md" class="presence ui-rounded-md">
-      Present
-    </.presence>
-    <.presence id="presence-style-r-lg" class="presence ui-rounded-lg">
-      Present
-    </.presence>
-    <.presence id="presence-style-r-xl" class="presence ui-rounded-xl">
-      Present
-    </.presence>
-    <.presence id="presence-style-r-full" class="presence ui-rounded-full">
-      Present
-    </.presence>
+      <.presence id="presence-style-r-none" class="presence ui-rounded-none">
+        Present
+      </.presence>
+      <.presence id="presence-style-r-sm" class="presence ui-rounded-sm">
+        Present
+      </.presence>
+      <.presence id="presence-style-r-md" class="presence ui-rounded-md">
+        Present
+      </.presence>
+      <.presence id="presence-style-r-lg" class="presence ui-rounded-lg">
+        Present
+      </.presence>
+      <.presence id="presence-style-r-xl" class="presence ui-rounded-xl">
+        Present
+      </.presence>
+      <.presence id="presence-style-r-full" class="presence ui-rounded-full">
+        Present
+      </.presence>
     </div>
     """
   end
+
   def styling_width_code do
     DemoScales.width_layout_variants("presence")
     |> Enum.map(fn %{id: _id, modifier: modifier} ->
@@ -175,13 +179,13 @@ defmodule E2eWeb.Demos.PresenceDemo do
         :for={step <- @width_variants}
         id={"presence-style-w-#{step.id}"}
         class={DemoScales.join_modifiers("presence", step.modifier)}
-        
       >
-Present
+        Present
       </.presence>
     </div>
     """
   end
+
   def styling_max_width_code do
     DemoScales.max_width_variants("presence")
     |> Enum.take(4)
@@ -193,20 +197,22 @@ Present
   end
 
   def styling_max_width_example(assigns) do
-    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("presence") |> Enum.take(4))
+    assigns =
+      assign(
+        assigns,
+        :max_width_variants,
+        DemoScales.max_width_variants("presence") |> Enum.take(4)
+      )
 
     ~H"""
     <div class="flex flex-col gap-space">
       <.presence
         :for={step <- @max_width_variants}
-        
         class={DemoScales.join_modifiers("presence", step.modifier)}
-        
       >
-Present
+        Present
       </.presence>
     </div>
     """
   end
-
 end
