@@ -47,4 +47,34 @@ defmodule Corex.NavigationMenuTest do
     assert html =~ "hero-chevron-down"
     assert html =~ "Panel"
   end
+
+  test "custom slots receive list items" do
+    html =
+      render_component(
+        fn assigns ->
+          ~H"""
+          <.navigation_menu
+            id="navigation-menu-slots"
+            class="navigation-menu"
+            items={
+              Corex.List.new([
+                %{value: "product", label: "Product", meta: %{icon: "hero-squares-2x2"}},
+                %{value: "docs", label: "Docs", to: "#", meta: %{icon: "hero-book-open"}}
+              ])
+            }
+          >
+            <:trigger :let={item}>trigger-{item.label}</:trigger>
+            <:link :let={item}>link-{item.label}</:link>
+            <:content :let={item} value="product">panel-{item.label}</:content>
+          </.navigation_menu>
+          """
+        end,
+        %{}
+      )
+
+    assert html =~ "trigger-Product"
+    assert html =~ "link-Docs"
+    assert html =~ "panel-Product"
+    refute html =~ "Corex.List.Item"
+  end
 end

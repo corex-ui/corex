@@ -127,8 +127,7 @@
     display: none;
   }
 
-  .steps [data-scope="steps"][data-part="content"][data-state="open"],
-  .steps [data-scope="steps"][data-part="content"]:not([hidden]) {
+  .steps [data-scope="steps"][data-part="content"][data-state="open"] {
     display: block;
   }
 

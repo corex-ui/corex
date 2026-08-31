@@ -255,6 +255,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/progress/anatomy", "#progress-anatomy-page"},
     {"/en/progress/api", "#progress-api-page"},
     {"/en/progress/events", "#progress-events-page"},
+    {"/en/progress/patterns", "#progress-patterns-page"},
     {"/en/progress/style", "#progress-styling-page"},
     {"/en/rating-group/anatomy", "#rating-group-anatomy-page"},
     {"/en/rating-group/api", "#rating-group-api-page"},

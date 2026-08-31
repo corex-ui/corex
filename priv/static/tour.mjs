@@ -1089,9 +1089,30 @@ function executeStepEffect(params, step, idx) {
 }
 
 // components/tour.ts
+var TOUR_Z = "2147483000";
+function ensureVisualViewport() {
+  if (typeof window === "undefined" || window.visualViewport) return;
+  Object.defineProperty(window, "visualViewport", {
+    configurable: true,
+    value: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      offsetLeft: 0,
+      offsetTop: 0,
+      pageLeft: 0,
+      pageTop: 0,
+      scale: 1,
+      addEventListener() {
+      },
+      removeEventListener() {
+      }
+    }
+  });
+}
 var Tour = class extends Component {
   portalled = /* @__PURE__ */ new Set();
   initMachine(props) {
+    ensureVisualViewport();
     return new VanillaMachine(machine, props);
   }
   initApi() {
@@ -1160,6 +1181,7 @@ var Tour = class extends Component {
         document.body.appendChild(node);
         this.portalled.add(node);
       }
+      node.style.setProperty("z-index", TOUR_Z);
     }
   }
   renderActions(content, step) {

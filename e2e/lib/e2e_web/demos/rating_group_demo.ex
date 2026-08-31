@@ -35,7 +35,7 @@ defmodule E2eWeb.Demos.RatingGroupDemo do
     ~S"""
     <.rating_group class="rating-group" value={4.0}>
       <:item :let={item}>
-        <span aria-hidden="true">{Enum.at(~w(😞 🙁 😐 🙂 😀), item.index - 1)}</span>
+        <span aria-hidden="true">{["😞", "🙁", "😐", "🙂", "😀"] |> Enum.at(item.index - 1)}</span>
       </:item>
     </.rating_group>
     """
@@ -47,7 +47,7 @@ defmodule E2eWeb.Demos.RatingGroupDemo do
     ~H"""
     <.rating_group id="rating-group-anatomy-smileys" class="rating-group" value={4.0}>
       <:item :let={item}>
-        <span aria-hidden="true">{Enum.at(~w(😞 🙁 😐 🙂 😀), item.index - 1)}</span>
+        <span aria-hidden="true">{["😞", "🙁", "😐", "🙂", "😀"] |> Enum.at(item.index - 1)}</span>
       </:item>
     </.rating_group>
     """
@@ -101,34 +101,6 @@ defmodule E2eWeb.Demos.RatingGroupDemo do
       <.rating_group id="rating-group-style-size-md" class="rating-group ui-size-md" value={3.0} />
       <.rating_group id="rating-group-style-size-lg" class="rating-group ui-size-lg" value={3.0} />
       <.rating_group id="rating-group-style-size-xl" class="rating-group ui-size-xl" value={3.0} />
-    </div>
-    """
-  end
-
-  def styling_rounded_code do
-    ~S"""
-    <div class="flex flex-wrap gap-space-sm items-start">
-    <.rating_group class="rating-group ui-rounded-none" value={3.0} />
-    <.rating_group class="rating-group ui-rounded-sm" value={3.0} />
-    <.rating_group class="rating-group ui-rounded-md" value={3.0} />
-    <.rating_group class="rating-group ui-rounded-lg" value={3.0} />
-    <.rating_group class="rating-group ui-rounded-xl" value={3.0} />
-    <.rating_group class="rating-group ui-rounded-full" value={3.0} />
-    </div>
-    """
-  end
-
-  def styling_rounded_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-wrap gap-space-sm items-start">
-      <.rating_group id="rating-group-style-r-none" class="rating-group ui-rounded-none" value={3.0} />
-      <.rating_group id="rating-group-style-r-sm" class="rating-group ui-rounded-sm" value={3.0} />
-      <.rating_group id="rating-group-style-r-md" class="rating-group ui-rounded-md" value={3.0} />
-      <.rating_group id="rating-group-style-r-lg" class="rating-group ui-rounded-lg" value={3.0} />
-      <.rating_group id="rating-group-style-r-xl" class="rating-group ui-rounded-xl" value={3.0} />
-      <.rating_group id="rating-group-style-r-full" class="rating-group ui-rounded-full" value={3.0} />
     </div>
     """
   end

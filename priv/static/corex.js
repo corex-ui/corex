@@ -51547,19 +51547,29 @@ ${err}`);
         }
       });
       Presence = class extends Component {
+        constructor() {
+          super(...arguments);
+          __publicField(this, "desiredPresent", true);
+        }
         initMachine(props) {
-          return new VanillaMachine(machine41, props);
+          var _a4;
+          this.desiredPresent = (_a4 = props.present) != null ? _a4 : true;
+          return new VanillaMachine(machine41, __spreadProps(__spreadValues({}, props), { immediate: true }));
         }
         initApi() {
           return this.zagConnect(connect41);
+        }
+        updateProps(props, opts) {
+          if (typeof props.present === "boolean") this.desiredPresent = props.present;
+          return super.updateProps(props, opts);
         }
         render() {
           var _a4;
           const root = (_a4 = this.el.querySelector('[data-scope="presence"][data-part="root"]')) != null ? _a4 : this.el;
           this.api.setNode(root);
+          root.dataset.state = this.desiredPresent ? "open" : "closed";
+          root.dataset.present = this.desiredPresent ? "true" : "false";
           root.hidden = !this.api.present;
-          root.dataset.state = this.api.present ? "open" : "closed";
-          root.dataset.present = this.api.present ? "true" : "false";
         }
       };
       PresenceHook = createZagLiveHook({
@@ -51567,10 +51577,12 @@ ${err}`);
         mount(hook, { dom: dom3, server }) {
           const inst = new Presence(hook.el, presenceProps(hook.el, hook));
           dom3.add("corex:presence:set-present", (event) => {
+            hook.el.dataset.present = event.detail.present ? "true" : "false";
             inst.updateProps(presenceProps(hook.el, hook, event.detail.present), { force: true });
           });
           server.add("presence_set_present", (payload) => {
             if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            hook.el.dataset.present = payload.present ? "true" : "false";
             inst.updateProps(presenceProps(hook.el, hook, payload.present), { force: true });
           });
           return inst;
@@ -61782,6 +61794,25 @@ ${err}`);
       utilities.show();
     }
   }
+  function ensureVisualViewport() {
+    if (typeof window === "undefined" || window.visualViewport) return;
+    Object.defineProperty(window, "visualViewport", {
+      configurable: true,
+      value: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        offsetLeft: 0,
+        offsetTop: 0,
+        pageLeft: 0,
+        pageTop: 0,
+        scale: 1,
+        addEventListener() {
+        },
+        removeEventListener() {
+        }
+      }
+    });
+  }
   function hydrateSteps(steps) {
     return steps.map((step) => {
       const target = step.target;
@@ -61816,7 +61847,7 @@ ${err}`);
       onStepChange
     };
   }
-  var anatomy48, parts48, getPositionerId12, getContentId18, getTitleId7, getDescriptionId5, getArrowId5, getBackdropId3, getContentEl16, getPositionerEl12, isTooltipStep, isDialogStep, isWaitStep, getEffectiveSteps, getProgress, getEffectiveStepIndex, isTooltipPlacement, normalizeStep, findStep, findStepIndex, defaultTranslations23, normalizeEventPoint, and16, machine49, Tour, DEFAULT_STEPS, TourHook;
+  var anatomy48, parts48, getPositionerId12, getContentId18, getTitleId7, getDescriptionId5, getArrowId5, getBackdropId3, getContentEl16, getPositionerEl12, isTooltipStep, isDialogStep, isWaitStep, getEffectiveSteps, getProgress, getEffectiveStepIndex, isTooltipPlacement, normalizeStep, findStep, findStepIndex, defaultTranslations23, normalizeEventPoint, and16, machine49, TOUR_Z, Tour, DEFAULT_STEPS, TourHook;
   var init_tour = __esm({
     "../priv/static/tour.mjs"() {
       "use strict";
@@ -62455,12 +62486,14 @@ ${err}`);
           }
         }
       });
+      TOUR_Z = "2147483000";
       Tour = class extends Component {
         constructor() {
           super(...arguments);
           __publicField(this, "portalled", /* @__PURE__ */ new Set());
         }
         initMachine(props) {
+          ensureVisualViewport();
           return new VanillaMachine(machine49, props);
         }
         initApi() {
@@ -62532,6 +62565,7 @@ ${err}`);
               document.body.appendChild(node);
               this.portalled.add(node);
             }
+            node.style.setProperty("z-index", TOUR_Z);
           }
         }
         renderActions(content, step) {

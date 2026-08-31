@@ -46,7 +46,7 @@ defmodule E2eWeb.DocPageMatrix do
     toggle: [:anatomy, :api, :events, :patterns],
     toggle_group: [:anatomy, :api, :events, :patterns],
     tooltip: [:anatomy, :api, :events, :patterns],
-    progress: [:anatomy, :api, :events, :style],
+    progress: [:anatomy, :api, :events, :patterns, :style],
     rating_group: [:anatomy, :api, :events, :style, :form, :live_form],
     steps: [:anatomy, :api, :events, :style],
     qr_code: [:anatomy, :api, :events, :style],

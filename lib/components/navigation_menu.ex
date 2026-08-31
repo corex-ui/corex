@@ -215,7 +215,7 @@ defmodule Corex.NavigationMenu do
         >
           <div data-scope="navigation-menu" data-part="viewport-inner">
             <%= if slot = @content_by_value[item.value] do %>
-              {render_slot(slot, item)}
+              {render_slot([slot], item)}
             <% else %>
               {default_panel(item)}
             <% end %>

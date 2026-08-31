@@ -32,11 +32,13 @@ const PresenceHook = createZagLiveHook({
     const inst = new Presence(hook.el, presenceProps(hook.el, hook));
 
     dom.add<CustomEvent<{ present: boolean }>>("corex:presence:set-present", (event) => {
+      hook.el.dataset.present = event.detail.present ? "true" : "false";
       inst.updateProps(presenceProps(hook.el, hook, event.detail.present), { force: true });
     });
 
     server.add("presence_set_present", (payload: { id?: string; present: boolean }) => {
       if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      hook.el.dataset.present = payload.present ? "true" : "false";
       inst.updateProps(presenceProps(hook.el, hook, payload.present), { force: true });
     });
 

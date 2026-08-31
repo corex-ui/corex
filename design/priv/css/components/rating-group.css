@@ -75,12 +75,14 @@
     clip-path: inset(0 50% 0 0);
   }
 
-  .rating-group [data-scope="rating-group"][data-part="item"]:focus {
+  .rating-group [data-scope="rating-group"][data-part="item"]:focus,
+  .rating-group [data-scope="rating-group"][data-part="item"][data-focus] {
     outline: none;
     box-shadow: none;
   }
 
-  .rating-group [data-scope="rating-group"][data-part="item"]:focus-visible {
+  .rating-group [data-scope="rating-group"][data-part="item"]:focus-visible,
+  .rating-group [data-scope="rating-group"][data-part="item"][data-focus-visible] {
     outline: none;
     border-radius: var(--radius-sm);
     box-shadow: 0 0 0 var(--ring-width) var(--ctl-ring, var(--color-focus));

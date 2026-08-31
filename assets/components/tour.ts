@@ -4,10 +4,31 @@ import { Component, type SchemaOf } from "../lib/core";
 
 type Schema = SchemaOf<typeof machine>;
 
+const TOUR_Z = "2147483000";
+
+function ensureVisualViewport(): void {
+  if (typeof window === "undefined" || window.visualViewport) return;
+  Object.defineProperty(window, "visualViewport", {
+    configurable: true,
+    value: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      offsetLeft: 0,
+      offsetTop: 0,
+      pageLeft: 0,
+      pageTop: 0,
+      scale: 1,
+      addEventListener() {},
+      removeEventListener() {},
+    },
+  });
+}
+
 export class Tour extends Component<Props, Api, Schema> {
   private portalled = new Set<HTMLElement>();
 
   initMachine(props: Props): VanillaMachine<Schema> {
+    ensureVisualViewport();
     return new VanillaMachine(machine, props);
   }
 
@@ -88,6 +109,7 @@ export class Tour extends Component<Props, Api, Schema> {
         document.body.appendChild(node);
         this.portalled.add(node);
       }
+      node.style.setProperty("z-index", TOUR_Z);
     }
   }
 

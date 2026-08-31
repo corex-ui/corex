@@ -236,18 +236,24 @@ function getAnimationName(styles) {
 
 // components/presence.ts
 var Presence = class extends Component {
+  desiredPresent = true;
   initMachine(props) {
-    return new VanillaMachine(machine, props);
+    this.desiredPresent = props.present ?? true;
+    return new VanillaMachine(machine, { ...props, immediate: true });
   }
   initApi() {
     return this.zagConnect(connect);
   }
+  updateProps(props, opts) {
+    if (typeof props.present === "boolean") this.desiredPresent = props.present;
+    return super.updateProps(props, opts);
+  }
   render() {
     const root = this.el.querySelector('[data-scope="presence"][data-part="root"]') ?? this.el;
     this.api.setNode(root);
+    root.dataset.state = this.desiredPresent ? "open" : "closed";
+    root.dataset.present = this.desiredPresent ? "true" : "false";
     root.hidden = !this.api.present;
-    root.dataset.state = this.api.present ? "open" : "closed";
-    root.dataset.present = this.api.present ? "true" : "false";
   }
 };
 
@@ -273,10 +279,12 @@ var PresenceHook = createZagLiveHook({
   mount(hook, { dom, server }) {
     const inst = new Presence(hook.el, presenceProps(hook.el, hook));
     dom.add("corex:presence:set-present", (event) => {
+      hook.el.dataset.present = event.detail.present ? "true" : "false";
       inst.updateProps(presenceProps(hook.el, hook, event.detail.present), { force: true });
     });
     server.add("presence_set_present", (payload) => {
       if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      hook.el.dataset.present = payload.present ? "true" : "false";
       inst.updateProps(presenceProps(hook.el, hook, payload.present), { force: true });
     });
     return inst;

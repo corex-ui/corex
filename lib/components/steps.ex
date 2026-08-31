@@ -146,7 +146,7 @@ defmodule Corex.Steps do
           {Connect.mounted_content(%Content{id: @id, dir: @dir, index: i, step: @step})}
         >
           <%= if slot = @content_by_index[i] do %>
-            {render_slot(slot)}
+            {render_slot([slot])}
           <% else %>
             {step_copy(i)}
           <% end %>

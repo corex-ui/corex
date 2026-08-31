@@ -23,7 +23,7 @@ defmodule Corex.RatingGroup do
     ```heex
     <.rating_group class="rating-group" value={4.0}>
       <:item :let={item}>
-        <span aria-hidden="true">{Enum.at(~w(😞 🙁 😐 🙂 😀), item.index - 1)}</span>
+        <span aria-hidden="true">{["😞", "🙁", "😐", "🙂", "😀"] |> Enum.at(item.index - 1)}</span>
       </:item>
     </.rating_group>
     ```
@@ -146,7 +146,7 @@ defmodule Corex.RatingGroup do
         <div data-scope="rating-group" data-part="control">
           <span :for={i <- 1..@count} data-scope="rating-group" data-part="item" data-index={i}>
             <%= if @item != [] do %>
-              {render_slot(@item, %{index: i})}
+              {render_slot(@item, %{index: i, count: @count})}
             <% else %>
               <svg
                 data-scope="rating-group"

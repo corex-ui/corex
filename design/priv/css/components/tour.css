@@ -3,7 +3,7 @@
 @layer components {
   .tour {
     width: fit-content;
-    --tour-z-index: 10000;
+    --tour-z-index: 2147483000;
   }
 
   .tour[data-loading] > * {
@@ -13,8 +13,8 @@
   [data-scope="tour"][data-part="backdrop"],
   [data-scope="tour"][data-part="spotlight"],
   [data-scope="tour"][data-part="positioner"] {
-    --tour-z-index: 10000;
-    z-index: calc(var(--tour-layer, 0) + var(--tour-z-index));
+    --tour-z-index: 2147483000;
+    z-index: var(--tour-z-index);
   }
 
   [data-scope="tour"][data-part="backdrop"] {
@@ -78,7 +78,7 @@
     --arrow-background: var(--ctl-bg, var(--color-ui));
     position: relative;
     width: min(100%, var(--container-sm));
-    z-index: calc(var(--tour-layer, 0) + var(--tour-z-index));
+    z-index: var(--tour-z-index, 2147483000);
     transform-origin: var(--transform-origin, center);
   }
 
