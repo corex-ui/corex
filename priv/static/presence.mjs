@@ -1,4 +1,8 @@
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
@@ -245,7 +249,7 @@ var Presence = class extends Component {
 };
 
 // hooks/presence.ts
-function presenceProps(el, hook) {
+function presenceProps(el, hook, present) {
   const onExitComplete = () => {
     const eventName = getString(el, "onExitComplete");
     if (eventName && canPushEvent(hook.liveSocket)) {
@@ -257,14 +261,22 @@ function presenceProps(el, hook) {
     }
   };
   return {
-    present: el.dataset.present !== "false",
+    present: present ?? el.dataset.present !== "false",
     onExitComplete
   };
 }
 var PresenceHook = createZagLiveHook({
   key: "presence",
-  mount(hook) {
-    return new Presence(hook.el, presenceProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const inst = new Presence(hook.el, presenceProps(hook.el, hook));
+    dom.add("corex:presence:set-present", (event) => {
+      inst.updateProps(presenceProps(hook.el, hook, event.detail.present));
+    });
+    server.add("presence_set_present", (payload) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      inst.updateProps(presenceProps(hook.el, hook, payload.present));
+    });
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(presenceProps(hook.el, hook));

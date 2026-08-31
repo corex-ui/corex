@@ -42,6 +42,10 @@
     z-index: var(--z-overlay, 1100);
   }
 
+  .cascade-select [data-scope="cascade-select"][data-part="content"][hidden] {
+    display: none !important;
+  }
+
   .cascade-select [data-scope="cascade-select"][data-part="content"] {
     @apply scrollbar scrollbar--sm;
     display: flex;

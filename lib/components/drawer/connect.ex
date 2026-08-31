@@ -119,8 +119,7 @@ defmodule Corex.Drawer.Connect do
       "data-state" => "closed",
       "id" => "drawer:#{assigns.id}:content",
       "hidden" => true,
-      "aria-hidden" => "true",
-      "style" => "display:none;pointer-events:none"
+      "aria-hidden" => "true"
     }
   end
 

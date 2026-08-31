@@ -82,7 +82,6 @@ defmodule Corex.Tour.Connect do
       "dir" => Map.get(assigns, :dir),
       "id" => "tour:" <> assigns.id <> ":positioner",
       "data-state" => "closed",
-      "hidden" => true,
       "style" =>
         "position:fixed;isolation:isolate;pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);"
     }
@@ -103,8 +102,7 @@ defmodule Corex.Tour.Connect do
       "id" => "tour:" <> assigns.id <> ":content",
       "data-state" => "closed",
       "hidden" => true,
-      "aria-hidden" => "true",
-      "style" => "display:none;pointer-events:none"
+      "aria-hidden" => "true"
     }
   end
 

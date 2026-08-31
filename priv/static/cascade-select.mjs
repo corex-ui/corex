@@ -24,6 +24,10 @@ import {
   trackFocusVisible
 } from "./chunks/chunk-2NCIS2R3.mjs";
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
   createAnatomy
 } from "./chunks/chunk-YMOPD357.mjs";
 import {
@@ -1566,10 +1570,34 @@ var CascadeSelect = class extends Component {
   render() {
     const root = this.el.querySelector('[data-scope="cascade-select"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
+    const label = this.el.querySelector(
+      '[data-scope="cascade-select"][data-part="label"]'
+    );
+    if (label) this.spreadProps(label, this.api.getLabelProps());
+    const control = this.el.querySelector(
+      '[data-scope="cascade-select"][data-part="control"]'
+    );
+    if (control) this.spreadProps(control, this.api.getControlProps());
     const trigger = this.el.querySelector(
       '[data-scope="cascade-select"][data-part="trigger"]'
     );
     if (trigger) this.spreadProps(trigger, this.api.getTriggerProps());
+    const indicator = this.el.querySelector(
+      '[data-scope="cascade-select"][data-part="indicator"]'
+    );
+    if (indicator) this.spreadProps(indicator, this.api.getIndicatorProps());
+    const clear = this.el.querySelector(
+      '[data-scope="cascade-select"][data-part="clear-trigger"]'
+    );
+    if (clear) this.spreadProps(clear, this.api.getClearTriggerProps());
+    const valueText = this.el.querySelector(
+      '[data-scope="cascade-select"][data-part="value-text"]'
+    );
+    if (valueText) {
+      this.spreadProps(valueText, this.api.getValueTextProps());
+      const placeholder = this.el.dataset.placeholder || "Select";
+      valueText.textContent = this.api.valueAsString || placeholder;
+    }
     const positioner = this.el.querySelector(
       '[data-scope="cascade-select"][data-part="positioner"]'
     );
@@ -1577,28 +1605,67 @@ var CascadeSelect = class extends Component {
     const content = this.el.querySelector(
       '[data-scope="cascade-select"][data-part="content"]'
     );
-    if (content) this.spreadProps(content, this.api.getContentProps());
+    if (content) {
+      this.spreadProps(content, this.api.getContentProps());
+      this.renderColumns(content);
+    }
     const hidden = this.el.querySelector(
       '[data-scope="cascade-select"][data-part="hidden-input"]'
     );
     if (hidden) this.spreadProps(hidden, this.api.getHiddenInputProps());
+  }
+  renderColumns(content) {
     const col = this.api.collection;
-    const children = col.getNodeChildren(col.rootNode);
-    children.forEach((item, index) => {
-      const value = [item.value];
-      const indexPath = [index];
-      const selector = `[data-scope="cascade-select"][data-part="item"][data-value="${CSS.escape(item.value)}"]`;
-      let node = content?.querySelector(selector);
-      if (!node && content) {
-        node = document.createElement("div");
-        node.dataset.scope = "cascade-select";
-        node.dataset.part = "item";
-        node.dataset.value = item.value;
-        node.textContent = item.label ?? item.value;
-        content.appendChild(node);
+    content.replaceChildren();
+    const walk = (node, indexPath, value) => {
+      const children = col.getNodeChildren(node);
+      const list = document.createElement("ul");
+      list.dataset.scope = "cascade-select";
+      list.dataset.part = "list";
+      const parentProps = { item: node, indexPath, value };
+      this.spreadProps(list, this.api.getListProps(parentProps));
+      children.forEach((item, index) => {
+        const itemValue = [...value, col.getNodeValue(item)];
+        const itemIndexPath = [...indexPath, index];
+        const itemProps = { item, indexPath: itemIndexPath, value: itemValue };
+        const itemState = this.api.getItemState(itemProps);
+        const li = document.createElement("li");
+        li.dataset.scope = "cascade-select";
+        li.dataset.part = "item";
+        this.spreadProps(li, this.api.getItemProps(itemProps));
+        const text = document.createElement("span");
+        text.dataset.scope = "cascade-select";
+        text.dataset.part = "item-text";
+        this.spreadProps(text, this.api.getItemTextProps(itemProps));
+        text.textContent = item.label ?? item.name ?? item.value;
+        li.appendChild(text);
+        if (itemState.hasChildren) {
+          const branch = document.createElement("span");
+          branch.dataset.scope = "cascade-select";
+          branch.dataset.part = "item-branch";
+          branch.setAttribute("aria-hidden", "true");
+          branch.textContent = "\u203A";
+          li.appendChild(branch);
+        }
+        const indicator = document.createElement("span");
+        indicator.dataset.scope = "cascade-select";
+        indicator.dataset.part = "item-indicator";
+        this.spreadProps(indicator, this.api.getItemIndicatorProps(itemProps));
+        indicator.textContent = "\u2713";
+        li.appendChild(indicator);
+        list.appendChild(li);
+      });
+      content.appendChild(list);
+      const nodeState = this.api.getItemState(parentProps);
+      if (nodeState.highlightedChild && col.isBranchNode(nodeState.highlightedChild)) {
+        const childIndex = nodeState.highlightedIndex ?? 0;
+        walk(nodeState.highlightedChild, [...indexPath, childIndex], [
+          ...value,
+          col.getNodeValue(nodeState.highlightedChild)
+        ]);
       }
-      if (node) this.spreadProps(node, this.api.getItemProps({ item, indexPath, value }));
-    });
+    };
+    walk(col.rootNode, [], []);
   }
 };
 
@@ -1608,14 +1675,72 @@ var DEFAULT_ROOT = {
   label: "root",
   children: [
     {
-      value: "fruit",
-      label: "Fruit",
+      value: "electronics",
+      label: "Electronics",
       children: [
-        { value: "apple", label: "Apple" },
-        { value: "banana", label: "Banana" }
+        {
+          value: "computers",
+          label: "Computers",
+          children: [
+            { value: "laptops", label: "Laptops" },
+            { value: "desktops", label: "Desktops" },
+            { value: "tablets", label: "Tablets" }
+          ]
+        },
+        {
+          value: "phones",
+          label: "Phones",
+          children: [
+            { value: "android", label: "Android" },
+            { value: "ios", label: "iOS" }
+          ]
+        }
       ]
     },
-    { value: "veg", label: "Vegetable", children: [{ value: "carrot", label: "Carrot" }] }
+    {
+      value: "clothing",
+      label: "Clothing",
+      children: [
+        {
+          value: "men",
+          label: "Men",
+          children: [
+            { value: "shirts", label: "Shirts" },
+            { value: "pants", label: "Pants" }
+          ]
+        },
+        {
+          value: "women",
+          label: "Women",
+          children: [
+            { value: "dresses", label: "Dresses" },
+            { value: "shoes", label: "Shoes" }
+          ]
+        }
+      ]
+    },
+    {
+      value: "home",
+      label: "Home",
+      children: [
+        {
+          value: "kitchen",
+          label: "Kitchen",
+          children: [
+            { value: "cookware", label: "Cookware" },
+            { value: "appliances", label: "Appliances" }
+          ]
+        },
+        {
+          value: "garden",
+          label: "Garden",
+          children: [
+            { value: "plants", label: "Plants" },
+            { value: "tools", label: "Tools" }
+          ]
+        }
+      ]
+    }
   ]
 };
 function cascadeSelectProps(el, hook) {
@@ -1636,13 +1761,22 @@ function cascadeSelectProps(el, hook) {
     dir: getDir(el),
     rootNode: safeParseJson(el.dataset.tree, DEFAULT_ROOT),
     disabled: getBoolean(el, "disabled"),
+    name: getString(el, "name"),
     onValueChange
   };
 }
 var CascadeSelectHook = createZagLiveHook({
   key: "cascade-select",
-  mount(hook) {
-    return new CascadeSelect(hook.el, cascadeSelectProps(hook.el, hook));
+  mount(hook, { dom: dom2, server }) {
+    const inst = new CascadeSelect(hook.el, cascadeSelectProps(hook.el, hook));
+    dom2.add("corex:cascade-select:set-open", (event) => {
+      inst.api.setOpen(event.detail.open);
+    });
+    server.add("cascade_select_set_open", (payload) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      inst.api.setOpen(payload.open);
+    });
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(cascadeSelectProps(hook.el, hook));

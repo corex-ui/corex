@@ -19,6 +19,10 @@ import {
   trackInteractOutside
 } from "./chunks/chunk-AVGG6QG4.mjs";
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
   createAnatomy
 } from "./chunks/chunk-YMOPD357.mjs";
 import {
@@ -1107,42 +1111,92 @@ var Tour = class extends Component {
       const title = content.querySelector('[data-scope="tour"][data-part="title"]');
       if (title) {
         this.spreadProps(title, this.api.getTitleProps());
-        const step = this.api.step;
-        if (step) title.textContent = String(step.title ?? "");
+        title.textContent = String(this.api.step?.title ?? "");
       }
       const description = content.querySelector(
         '[data-scope="tour"][data-part="description"]'
       );
       if (description) {
         this.spreadProps(description, this.api.getDescriptionProps());
-        const step = this.api.step;
-        if (step) description.textContent = String(step.description ?? "");
+        description.textContent = String(this.api.step?.description ?? "");
       }
+      this.renderActions(content, this.api.step);
     }
     const close = this.el.querySelector(
       '[data-scope="tour"][data-part="close-trigger"]'
     );
     if (close) this.spreadProps(close, this.api.getCloseTriggerProps());
   }
+  renderActions(content, step) {
+    const host = content.querySelector('[data-scope="tour"][data-part="actions"]') ?? (() => {
+      const el = document.createElement("div");
+      el.dataset.scope = "tour";
+      el.dataset.part = "actions";
+      content.appendChild(el);
+      return el;
+    })();
+    host.replaceChildren();
+    for (const action of step?.actions ?? []) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.scope = "tour";
+      button.dataset.part = "action-trigger";
+      this.spreadProps(button, this.api.getActionTriggerProps({ action }));
+      button.textContent = action.label;
+      host.appendChild(button);
+    }
+  }
 };
 
 // hooks/tour.ts
 var DEFAULT_STEPS = [
   {
-    id: "start",
+    id: "welcome",
     type: "dialog",
-    title: "Welcome",
-    description: "Tour step",
+    title: "Welcome to Corex",
+    description: "This overlay stays closed on the server. Start it after JavaScript hydrates.",
     actions: [{ label: "Next", action: "next" }]
+  },
+  {
+    id: "docs",
+    type: "tooltip",
+    title: "Docs",
+    description: "Open Anatomy, API, Events, and Style from the sidebar.",
+    target: "#tour-target-nav",
+    actions: [
+      { label: "Back", action: "prev" },
+      { label: "Next", action: "next" }
+    ]
+  },
+  {
+    id: "playground",
+    type: "tooltip",
+    title: "Playground",
+    description: "Try interactions live, then copy the anatomy into your app.",
+    target: "#tour-target-playground",
+    actions: [
+      { label: "Back", action: "prev" },
+      { label: "Next", action: "next" }
+    ]
   },
   {
     id: "done",
     type: "dialog",
-    title: "Done",
-    description: "You finished the tour.",
-    actions: [{ label: "Close", action: "dismiss" }]
+    title: "You\u2019re set",
+    description: "That\u2019s the tour. Close when you\u2019re ready to explore.",
+    actions: [{ label: "Finish", action: "dismiss" }]
   }
 ];
+function hydrateSteps(steps) {
+  return steps.map((step) => {
+    const target = step.target;
+    if (typeof target === "string") {
+      const selector = target;
+      return { ...step, target: () => document.querySelector(selector) };
+    }
+    return step;
+  });
+}
 function tourProps(el, hook) {
   const onStepChange = (details) => {
     const eventName = getString(el, "onStepChange") ?? getString(el, "onValueChange");
@@ -1162,14 +1216,22 @@ function tourProps(el, hook) {
   return {
     id: el.id,
     dir: getDir(el),
-    steps: safeParseJson(el.dataset.steps, DEFAULT_STEPS),
+    steps: hydrateSteps(safeParseJson(el.dataset.steps, DEFAULT_STEPS)),
     onStepChange
   };
 }
 var TourHook = createZagLiveHook({
   key: "tour",
-  mount(hook) {
-    return new Tour(hook.el, tourProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const tour = new Tour(hook.el, tourProps(hook.el, hook));
+    dom.add("corex:tour:start", () => {
+      tour.api.start();
+    });
+    server.add("tour_start", (payload) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      tour.api.start();
+    });
+    return tour;
   },
   update(hook, inst) {
     inst.updateProps(tourProps(hook.el, hook));

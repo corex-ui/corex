@@ -5,6 +5,10 @@ import {
   getValuePercent
 } from "./chunks/chunk-AJX2XHOK.mjs";
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
   createAnatomy
 } from "./chunks/chunk-YMOPD357.mjs";
 import {
@@ -359,8 +363,16 @@ function progressProps(el, hook) {
 }
 var ProgressHook = createZagLiveHook({
   key: "progress",
-  mount(hook) {
-    return new Progress(hook.el, progressProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const inst = new Progress(hook.el, progressProps(hook.el, hook));
+    dom.add("corex:progress:set-value", (event) => {
+      inst.api.setValue(event.detail.value);
+    });
+    server.add("progress_set_value", (payload) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      inst.api.setValue(payload.value);
+    });
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(progressProps(hook.el, hook));

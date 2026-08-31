@@ -1,4 +1,8 @@
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
   createAnatomy
 } from "./chunks/chunk-YMOPD357.mjs";
 import {
@@ -463,6 +467,7 @@ function ratingGroupProps(el, hook) {
   return {
     id: el.id,
     dir: getDir(el),
+    name: getString(el, "name"),
     count: getNumber(el, "count") ?? 5,
     defaultValue: getNumber(el, "value"),
     allowHalf: getBoolean(el, "allowHalf"),
@@ -473,8 +478,16 @@ function ratingGroupProps(el, hook) {
 }
 var RatingGroupHook = createZagLiveHook({
   key: "rating-group",
-  mount(hook) {
-    return new RatingGroup(hook.el, ratingGroupProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const inst = new RatingGroup(hook.el, ratingGroupProps(hook.el, hook));
+    dom.add("corex:rating-group:set-value", (event) => {
+      inst.api.setValue(event.detail.value);
+    });
+    server.add("rating_group_set_value", (payload) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      inst.api.setValue(payload.value);
+    });
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(ratingGroupProps(hook.el, hook));

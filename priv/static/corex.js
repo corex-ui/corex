@@ -49235,6 +49235,7 @@ ${err}`);
       "use strict";
       init_chunk_G4YHNHIV();
       init_chunk_AJX2XHOK();
+      init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
       anatomy37 = createAnatomy("progress").parts(
@@ -49410,8 +49411,16 @@ ${err}`);
       };
       ProgressHook = createZagLiveHook({
         key: "progress",
-        mount(hook) {
-          return new Progress(hook.el, progressProps(hook.el, hook));
+        mount(hook, { dom: dom3, server }) {
+          const inst = new Progress(hook.el, progressProps(hook.el, hook));
+          dom3.add("corex:progress:set-value", (event) => {
+            inst.api.setValue(event.detail.value);
+          });
+          server.add("progress_set_value", (payload) => {
+            if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            inst.api.setValue(payload.value);
+          });
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(progressProps(hook.el, hook));
@@ -49622,6 +49631,7 @@ ${err}`);
     return {
       id: el.id,
       dir: getDir(el),
+      name: getString(el, "name"),
       count: (_a4 = getNumber(el, "count")) != null ? _a4 : 5,
       defaultValue: getNumber(el, "value"),
       allowHalf: getBoolean(el, "allowHalf"),
@@ -49634,6 +49644,7 @@ ${err}`);
   var init_rating_group = __esm({
     "../priv/static/rating-group.mjs"() {
       "use strict";
+      init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
       anatomy38 = createAnatomy("rating-group").parts("root", "label", "item", "control");
@@ -49890,8 +49901,16 @@ ${err}`);
       };
       RatingGroupHook = createZagLiveHook({
         key: "rating-group",
-        mount(hook) {
-          return new RatingGroup(hook.el, ratingGroupProps(hook.el, hook));
+        mount(hook, { dom: dom3, server }) {
+          const inst = new RatingGroup(hook.el, ratingGroupProps(hook.el, hook));
+          dom3.add("corex:rating-group:set-value", (event) => {
+            inst.api.setValue(event.detail.value);
+          });
+          server.add("rating_group_set_value", (payload) => {
+            if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            inst.api.setValue(payload.value);
+          });
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(ratingGroupProps(hook.el, hook));
@@ -50102,6 +50121,15 @@ ${err}`);
       defaultStep: getNumber(el, "step"),
       linear: getBoolean(el, "linear"),
       orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+      isStepValid: (index) => {
+        const content = el.querySelector(
+          `[data-scope="steps"][data-part="content"][data-index="${index}"]`
+        );
+        const gate = content == null ? void 0 : content.querySelector("[data-step-gate]");
+        if (!gate) return true;
+        if (gate.type === "checkbox" || gate.type === "radio") return gate.checked;
+        return gate.value.trim().length > 0;
+      },
       onStepChange
     };
   }
@@ -50298,7 +50326,11 @@ ${err}`);
       StepsHook = createZagLiveHook({
         key: "steps",
         mount(hook) {
-          return new Steps(hook.el, stepsProps(hook.el, hook));
+          const inst = new Steps(hook.el, stepsProps(hook.el, hook));
+          const refresh = () => inst.render();
+          hook.el.addEventListener("input", refresh);
+          hook.el.addEventListener("change", refresh);
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(stepsProps(hook.el, hook));
@@ -51244,6 +51276,8 @@ ${err}`);
           if (frame) this.spreadProps(frame, this.api.getFrameProps());
           const pattern = this.el.querySelector('[data-part="pattern"]');
           if (pattern) this.spreadProps(pattern, this.api.getPatternProps());
+          const overlay = this.el.querySelector('[data-part="overlay"]');
+          if (overlay) this.spreadProps(overlay, this.api.getOverlayProps());
         }
       };
       QrCodeHook = createZagLiveHook({
@@ -51281,7 +51315,7 @@ ${err}`);
   function getAnimationName(styles) {
     return (styles == null ? void 0 : styles.animationName) || "none";
   }
-  function presenceProps(el, hook) {
+  function presenceProps(el, hook, present) {
     const onExitComplete = () => {
       const eventName = getString(el, "onExitComplete");
       if (eventName && canPushEvent(hook.liveSocket)) {
@@ -51293,7 +51327,7 @@ ${err}`);
       }
     };
     return {
-      present: el.dataset.present !== "false",
+      present: present != null ? present : el.dataset.present !== "false",
       onExitComplete
     };
   }
@@ -51301,6 +51335,7 @@ ${err}`);
   var init_presence = __esm({
     "../priv/static/presence.mjs"() {
       "use strict";
+      init_chunk_EAQ6WQNO();
       init_chunk_R62PCG6O();
       machine41 = createMachine({
         props({ props }) {
@@ -51517,8 +51552,16 @@ ${err}`);
       };
       PresenceHook = createZagLiveHook({
         key: "presence",
-        mount(hook) {
-          return new Presence(hook.el, presenceProps(hook.el, hook));
+        mount(hook, { dom: dom3, server }) {
+          const inst = new Presence(hook.el, presenceProps(hook.el, hook));
+          dom3.add("corex:presence:set-present", (event) => {
+            inst.updateProps(presenceProps(hook.el, hook, event.detail.present));
+          });
+          server.add("presence_set_present", (payload) => {
+            if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            inst.updateProps(presenceProps(hook.el, hook, payload.present));
+          });
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(presenceProps(hook.el, hook));
@@ -55254,6 +55297,16 @@ ${err}`);
     if (calendarId === "gregory" || calendarId === "iso8601") return void 0;
     return createCalendar(calendarId);
   }
+  function parseIsoList(raw) {
+    const values = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    if (values.length === 0) return [];
+    try {
+      const parsed = parse3(values);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch (e2) {
+      return [];
+    }
+  }
   function dateInputProps(el, hook) {
     const onValueChange = (details) => {
       const eventName = getString(el, "onValueChange");
@@ -55290,6 +55343,7 @@ ${err}`);
       init_chunk_YIRWSF62();
       init_chunk_G4YHNHIV();
       init_chunk_NUOTFVKH();
+      init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
       __defProp10 = Object.defineProperty;
@@ -56332,6 +56386,7 @@ ${err}`);
               this.spreadProps(node, this.api.getSegmentProps({ segment, index: 0 }));
             });
             existing.slice(segments.length).forEach((node) => node.remove());
+            group2.querySelectorAll('[data-part="skeleton"]').forEach((node) => node.remove());
           }
           const hidden = this.el.querySelector(
             '[data-scope="date-input"][data-part="hidden-input"]'
@@ -56341,8 +56396,18 @@ ${err}`);
       };
       DateInputHook = createZagLiveHook({
         key: "date-input",
-        mount(hook) {
-          return new DateInput(hook.el, dateInputProps(hook.el, hook));
+        mount(hook, { dom: dom3, server }) {
+          const inst = new DateInput(hook.el, dateInputProps(hook.el, hook));
+          dom3.add("corex:date-input:set-value", (event) => {
+            const parsed = parseIsoList(event.detail.value);
+            if (parsed.length > 0) inst.api.setValue(parsed);
+          });
+          server.add("date_input_set_value", (payload) => {
+            if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            const parsed = parseIsoList(payload.value);
+            if (parsed.length > 0) inst.api.setValue(parsed);
+          });
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(dateInputProps(hook.el, hook));
@@ -59956,6 +60021,7 @@ ${err}`);
       dir: getDir(el),
       rootNode: safeParseJson(el.dataset.tree, DEFAULT_ROOT),
       disabled: getBoolean(el, "disabled"),
+      name: getString(el, "name"),
       onValueChange
     };
   }
@@ -59970,6 +60036,7 @@ ${err}`);
       init_chunk_4ATAXYH3();
       init_chunk_AVGG6QG4();
       init_chunk_2NCIS2R3();
+      init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
       anatomy47 = createAnatomy("cascade-select").parts(
@@ -61018,10 +61085,34 @@ ${err}`);
           var _a4;
           const root = (_a4 = this.el.querySelector('[data-scope="cascade-select"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(root, this.api.getRootProps());
+          const label = this.el.querySelector(
+            '[data-scope="cascade-select"][data-part="label"]'
+          );
+          if (label) this.spreadProps(label, this.api.getLabelProps());
+          const control = this.el.querySelector(
+            '[data-scope="cascade-select"][data-part="control"]'
+          );
+          if (control) this.spreadProps(control, this.api.getControlProps());
           const trigger = this.el.querySelector(
             '[data-scope="cascade-select"][data-part="trigger"]'
           );
           if (trigger) this.spreadProps(trigger, this.api.getTriggerProps());
+          const indicator = this.el.querySelector(
+            '[data-scope="cascade-select"][data-part="indicator"]'
+          );
+          if (indicator) this.spreadProps(indicator, this.api.getIndicatorProps());
+          const clear = this.el.querySelector(
+            '[data-scope="cascade-select"][data-part="clear-trigger"]'
+          );
+          if (clear) this.spreadProps(clear, this.api.getClearTriggerProps());
+          const valueText = this.el.querySelector(
+            '[data-scope="cascade-select"][data-part="value-text"]'
+          );
+          if (valueText) {
+            this.spreadProps(valueText, this.api.getValueTextProps());
+            const placeholder = this.el.dataset.placeholder || "Select";
+            valueText.textContent = this.api.valueAsString || placeholder;
+          }
           const positioner = this.el.querySelector(
             '[data-scope="cascade-select"][data-part="positioner"]'
           );
@@ -61029,29 +61120,69 @@ ${err}`);
           const content = this.el.querySelector(
             '[data-scope="cascade-select"][data-part="content"]'
           );
-          if (content) this.spreadProps(content, this.api.getContentProps());
+          if (content) {
+            this.spreadProps(content, this.api.getContentProps());
+            this.renderColumns(content);
+          }
           const hidden = this.el.querySelector(
             '[data-scope="cascade-select"][data-part="hidden-input"]'
           );
           if (hidden) this.spreadProps(hidden, this.api.getHiddenInputProps());
+        }
+        renderColumns(content) {
           const col = this.api.collection;
-          const children = col.getNodeChildren(col.rootNode);
-          children.forEach((item, index) => {
-            var _a5;
-            const value = [item.value];
-            const indexPath = [index];
-            const selector = `[data-scope="cascade-select"][data-part="item"][data-value="${CSS.escape(item.value)}"]`;
-            let node = content == null ? void 0 : content.querySelector(selector);
-            if (!node && content) {
-              node = document.createElement("div");
-              node.dataset.scope = "cascade-select";
-              node.dataset.part = "item";
-              node.dataset.value = item.value;
-              node.textContent = (_a5 = item.label) != null ? _a5 : item.value;
-              content.appendChild(node);
+          content.replaceChildren();
+          const walk = (node, indexPath, value) => {
+            var _a4;
+            const children = col.getNodeChildren(node);
+            const list = document.createElement("ul");
+            list.dataset.scope = "cascade-select";
+            list.dataset.part = "list";
+            const parentProps = { item: node, indexPath, value };
+            this.spreadProps(list, this.api.getListProps(parentProps));
+            children.forEach((item, index) => {
+              var _a5, _b;
+              const itemValue2 = [...value, col.getNodeValue(item)];
+              const itemIndexPath = [...indexPath, index];
+              const itemProps = { item, indexPath: itemIndexPath, value: itemValue2 };
+              const itemState = this.api.getItemState(itemProps);
+              const li = document.createElement("li");
+              li.dataset.scope = "cascade-select";
+              li.dataset.part = "item";
+              this.spreadProps(li, this.api.getItemProps(itemProps));
+              const text = document.createElement("span");
+              text.dataset.scope = "cascade-select";
+              text.dataset.part = "item-text";
+              this.spreadProps(text, this.api.getItemTextProps(itemProps));
+              text.textContent = (_b = (_a5 = item.label) != null ? _a5 : item.name) != null ? _b : item.value;
+              li.appendChild(text);
+              if (itemState.hasChildren) {
+                const branch = document.createElement("span");
+                branch.dataset.scope = "cascade-select";
+                branch.dataset.part = "item-branch";
+                branch.setAttribute("aria-hidden", "true");
+                branch.textContent = "\u203A";
+                li.appendChild(branch);
+              }
+              const indicator = document.createElement("span");
+              indicator.dataset.scope = "cascade-select";
+              indicator.dataset.part = "item-indicator";
+              this.spreadProps(indicator, this.api.getItemIndicatorProps(itemProps));
+              indicator.textContent = "\u2713";
+              li.appendChild(indicator);
+              list.appendChild(li);
+            });
+            content.appendChild(list);
+            const nodeState = this.api.getItemState(parentProps);
+            if (nodeState.highlightedChild && col.isBranchNode(nodeState.highlightedChild)) {
+              const childIndex = (_a4 = nodeState.highlightedIndex) != null ? _a4 : 0;
+              walk(nodeState.highlightedChild, [...indexPath, childIndex], [
+                ...value,
+                col.getNodeValue(nodeState.highlightedChild)
+              ]);
             }
-            if (node) this.spreadProps(node, this.api.getItemProps({ item, indexPath, value }));
-          });
+          };
+          walk(col.rootNode, [], []);
         }
       };
       DEFAULT_ROOT = {
@@ -61059,20 +61190,86 @@ ${err}`);
         label: "root",
         children: [
           {
-            value: "fruit",
-            label: "Fruit",
+            value: "electronics",
+            label: "Electronics",
             children: [
-              { value: "apple", label: "Apple" },
-              { value: "banana", label: "Banana" }
+              {
+                value: "computers",
+                label: "Computers",
+                children: [
+                  { value: "laptops", label: "Laptops" },
+                  { value: "desktops", label: "Desktops" },
+                  { value: "tablets", label: "Tablets" }
+                ]
+              },
+              {
+                value: "phones",
+                label: "Phones",
+                children: [
+                  { value: "android", label: "Android" },
+                  { value: "ios", label: "iOS" }
+                ]
+              }
             ]
           },
-          { value: "veg", label: "Vegetable", children: [{ value: "carrot", label: "Carrot" }] }
+          {
+            value: "clothing",
+            label: "Clothing",
+            children: [
+              {
+                value: "men",
+                label: "Men",
+                children: [
+                  { value: "shirts", label: "Shirts" },
+                  { value: "pants", label: "Pants" }
+                ]
+              },
+              {
+                value: "women",
+                label: "Women",
+                children: [
+                  { value: "dresses", label: "Dresses" },
+                  { value: "shoes", label: "Shoes" }
+                ]
+              }
+            ]
+          },
+          {
+            value: "home",
+            label: "Home",
+            children: [
+              {
+                value: "kitchen",
+                label: "Kitchen",
+                children: [
+                  { value: "cookware", label: "Cookware" },
+                  { value: "appliances", label: "Appliances" }
+                ]
+              },
+              {
+                value: "garden",
+                label: "Garden",
+                children: [
+                  { value: "plants", label: "Plants" },
+                  { value: "tools", label: "Tools" }
+                ]
+              }
+            ]
+          }
         ]
       };
       CascadeSelectHook = createZagLiveHook({
         key: "cascade-select",
-        mount(hook) {
-          return new CascadeSelect(hook.el, cascadeSelectProps(hook.el, hook));
+        mount(hook, { dom: dom22, server }) {
+          const inst = new CascadeSelect(hook.el, cascadeSelectProps(hook.el, hook));
+          dom22.add("corex:cascade-select:set-open", (event) => {
+            inst.api.setOpen(event.detail.open);
+          });
+          server.add("cascade_select_set_open", (payload) => {
+            if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            inst.api.setOpen(payload.open);
+          });
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(cascadeSelectProps(hook.el, hook));
@@ -61518,6 +61715,16 @@ ${err}`);
       utilities.show();
     }
   }
+  function hydrateSteps(steps) {
+    return steps.map((step) => {
+      const target = step.target;
+      if (typeof target === "string") {
+        const selector = target;
+        return __spreadProps(__spreadValues({}, step), { target: () => document.querySelector(selector) });
+      }
+      return step;
+    });
+  }
   function tourProps(el, hook) {
     const onStepChange = (details) => {
       var _a4, _b;
@@ -61538,7 +61745,7 @@ ${err}`);
     return {
       id: el.id,
       dir: getDir(el),
-      steps: safeParseJson(el.dataset.steps, DEFAULT_STEPS),
+      steps: hydrateSteps(safeParseJson(el.dataset.steps, DEFAULT_STEPS)),
       onStepChange
     };
   }
@@ -61552,6 +61759,7 @@ ${err}`);
       init_chunk_7DTCDTRW();
       init_chunk_4ATAXYH3();
       init_chunk_AVGG6QG4();
+      init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
       init_chunk_R62PCG6O();
       anatomy48 = createAnatomy("tour").parts(
@@ -62188,7 +62396,7 @@ ${err}`);
           return this.zagConnect(connect49);
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c, _d;
           const backdrop = this.el.querySelector(
             '[data-scope="tour"][data-part="backdrop"]'
           );
@@ -62203,44 +62411,93 @@ ${err}`);
             const title = content.querySelector('[data-scope="tour"][data-part="title"]');
             if (title) {
               this.spreadProps(title, this.api.getTitleProps());
-              const step = this.api.step;
-              if (step) title.textContent = String((_a4 = step.title) != null ? _a4 : "");
+              title.textContent = String((_b = (_a4 = this.api.step) == null ? void 0 : _a4.title) != null ? _b : "");
             }
             const description = content.querySelector(
               '[data-scope="tour"][data-part="description"]'
             );
             if (description) {
               this.spreadProps(description, this.api.getDescriptionProps());
-              const step = this.api.step;
-              if (step) description.textContent = String((_b = step.description) != null ? _b : "");
+              description.textContent = String((_d = (_c = this.api.step) == null ? void 0 : _c.description) != null ? _d : "");
             }
+            this.renderActions(content, this.api.step);
           }
           const close = this.el.querySelector(
             '[data-scope="tour"][data-part="close-trigger"]'
           );
           if (close) this.spreadProps(close, this.api.getCloseTriggerProps());
         }
+        renderActions(content, step) {
+          var _a4, _b;
+          const host = (_a4 = content.querySelector('[data-scope="tour"][data-part="actions"]')) != null ? _a4 : (() => {
+            const el = document.createElement("div");
+            el.dataset.scope = "tour";
+            el.dataset.part = "actions";
+            content.appendChild(el);
+            return el;
+          })();
+          host.replaceChildren();
+          for (const action of (_b = step == null ? void 0 : step.actions) != null ? _b : []) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.dataset.scope = "tour";
+            button.dataset.part = "action-trigger";
+            this.spreadProps(button, this.api.getActionTriggerProps({ action }));
+            button.textContent = action.label;
+            host.appendChild(button);
+          }
+        }
       };
       DEFAULT_STEPS = [
         {
-          id: "start",
+          id: "welcome",
           type: "dialog",
-          title: "Welcome",
-          description: "Tour step",
+          title: "Welcome to Corex",
+          description: "This overlay stays closed on the server. Start it after JavaScript hydrates.",
           actions: [{ label: "Next", action: "next" }]
+        },
+        {
+          id: "docs",
+          type: "tooltip",
+          title: "Docs",
+          description: "Open Anatomy, API, Events, and Style from the sidebar.",
+          target: "#tour-target-nav",
+          actions: [
+            { label: "Back", action: "prev" },
+            { label: "Next", action: "next" }
+          ]
+        },
+        {
+          id: "playground",
+          type: "tooltip",
+          title: "Playground",
+          description: "Try interactions live, then copy the anatomy into your app.",
+          target: "#tour-target-playground",
+          actions: [
+            { label: "Back", action: "prev" },
+            { label: "Next", action: "next" }
+          ]
         },
         {
           id: "done",
           type: "dialog",
-          title: "Done",
-          description: "You finished the tour.",
-          actions: [{ label: "Close", action: "dismiss" }]
+          title: "You\u2019re set",
+          description: "That\u2019s the tour. Close when you\u2019re ready to explore.",
+          actions: [{ label: "Finish", action: "dismiss" }]
         }
       ];
       TourHook = createZagLiveHook({
         key: "tour",
-        mount(hook) {
-          return new Tour(hook.el, tourProps(hook.el, hook));
+        mount(hook, { dom: dom3, server }) {
+          const tour = new Tour(hook.el, tourProps(hook.el, hook));
+          dom3.add("corex:tour:start", () => {
+            tour.api.start();
+          });
+          server.add("tour_start", (payload) => {
+            if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+            tour.api.start();
+          });
+          return tour;
         },
         update(hook, inst) {
           inst.updateProps(tourProps(hook.el, hook));

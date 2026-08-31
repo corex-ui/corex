@@ -30,6 +30,6 @@ defmodule Corex.CascadeSelectTest do
     result = Connect.content(%{id: "cs", dir: "ltr"})
     assert result["hidden"] == true
     assert result["aria-hidden"] == "true"
-    assert result["style"] =~ "display:none"
+    refute Map.has_key?(result, "style")
   end
 end

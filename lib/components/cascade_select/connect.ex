@@ -186,8 +186,7 @@ defmodule Corex.CascadeSelect.Connect do
       "id" => "cascade-select:" <> assigns.id <> ":content",
       "hidden" => true,
       "aria-hidden" => "true",
-      "tabindex" => -1,
-      "style" => "display:none;pointer-events:none"
+      "tabindex" => -1
     }
   end
 

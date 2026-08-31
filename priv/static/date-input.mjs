@@ -17,6 +17,10 @@ import {
   createLiveRegion
 } from "./chunks/chunk-NUOTFVKH.mjs";
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-EAQ6WQNO.mjs";
+import {
   createAnatomy
 } from "./chunks/chunk-YMOPD357.mjs";
 import {
@@ -1823,6 +1827,7 @@ var DateInput = class extends Component {
         this.spreadProps(node, this.api.getSegmentProps({ segment, index: 0 }));
       });
       existing.slice(segments.length).forEach((node) => node.remove());
+      group.querySelectorAll('[data-part="skeleton"]').forEach((node) => node.remove());
     }
     const hidden = this.el.querySelector(
       '[data-scope="date-input"][data-part="hidden-input"]'
@@ -1832,6 +1837,16 @@ var DateInput = class extends Component {
 };
 
 // hooks/date-input.ts
+function parseIsoList(raw) {
+  const values = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  if (values.length === 0) return [];
+  try {
+    const parsed = parse(values);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return [];
+  }
+}
 function dateInputProps(el, hook) {
   const onValueChange = (details) => {
     const eventName = getString(el, "onValueChange");
@@ -1863,8 +1878,18 @@ function dateInputProps(el, hook) {
 }
 var DateInputHook = createZagLiveHook({
   key: "date-input",
-  mount(hook) {
-    return new DateInput(hook.el, dateInputProps(hook.el, hook));
+  mount(hook, { dom, server }) {
+    const inst = new DateInput(hook.el, dateInputProps(hook.el, hook));
+    dom.add("corex:date-input:set-value", (event) => {
+      const parsed = parseIsoList(event.detail.value);
+      if (parsed.length > 0) inst.api.setValue(parsed);
+    });
+    server.add("date_input_set_value", (payload) => {
+      if (!idMatches(hook.el.id, readPayloadId(payload))) return;
+      const parsed = parseIsoList(payload.value);
+      if (parsed.length > 0) inst.api.setValue(parsed);
+    });
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(dateInputProps(hook.el, hook));

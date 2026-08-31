@@ -81,8 +81,7 @@ defmodule Corex.HoverCard.Connect do
       "data-state" => "closed",
       "id" => "hover-card:#{assigns.id}:content",
       "hidden" => true,
-      "aria-hidden" => "true",
-      "style" => "display:none;pointer-events:none"
+      "aria-hidden" => "true"
     }
   end
 

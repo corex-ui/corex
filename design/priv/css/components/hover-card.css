@@ -32,6 +32,10 @@
     pointer-events: auto;
   }
 
+  .hover-card [data-scope="hover-card"][data-part="content"][hidden] {
+    display: none !important;
+  }
+
   .hover-card [data-scope="hover-card"][data-part="content"] {
     padding: var(--ctl-space, var(--spacing-space));
     max-width: var(--container-xs);

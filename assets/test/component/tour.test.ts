@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Tour } from "../../components/tour";
 import { tourTree } from "../helpers/component-smoke";
 
@@ -27,5 +27,22 @@ describe("Tour", () => {
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
     c.destroy();
+  });
+
+  it("start() opens content", async () => {
+    stubVisualViewport();
+    const el = tourTree();
+    document.body.appendChild(el);
+    const c = new Tour(el, {
+      id: el.id,
+      steps: [{ id: "start", type: "dialog", title: "Hi", description: "There" }],
+    });
+    c.init();
+    expect(c.api.open).toBe(false);
+    c.api.start();
+    await vi.waitFor(() => expect(c.api.open).toBe(true));
+    expect(c.api.step?.title).toBe("Hi");
+    c.destroy();
+    el.remove();
   });
 });

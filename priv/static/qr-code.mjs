@@ -917,6 +917,8 @@ var QrCode2 = class extends Component {
     if (frame) this.spreadProps(frame, this.api.getFrameProps());
     const pattern = this.el.querySelector('[data-part="pattern"]');
     if (pattern) this.spreadProps(pattern, this.api.getPatternProps());
+    const overlay = this.el.querySelector('[data-part="overlay"]');
+    if (overlay) this.spreadProps(overlay, this.api.getOverlayProps());
   }
 };
 
