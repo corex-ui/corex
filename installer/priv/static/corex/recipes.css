@@ -160,7 +160,6 @@ pre.code,
 .image-cropper :where([data-scope="image-cropper"][data-part="root"]),
 .navigation-menu :where([data-scope="navigation-menu"][data-part="root"]),
 .cascade-select :where([data-scope="cascade-select"][data-part="root"]),
-.tour :where([data-scope="tour"][data-part="root"]),
 .tree-view :where([data-scope="tree-view"][data-part="root"]) {
   display: flex;
   flex-direction: column;
@@ -307,6 +306,7 @@ pre.code,
 .dialog :where([data-scope="dialog"][data-part="close-trigger"]),
 .drawer :where([data-scope="drawer"][data-part="trigger"]),
 .drawer :where([data-scope="drawer"][data-part="close-trigger"]),
+.hover-card :where([data-scope="hover-card"][data-part="trigger"]),
 .popover :where([data-scope="popover"][data-part="trigger"]),
 .popover :where([data-scope="popover"][data-part="close-trigger"]),
 .editable :where([data-scope="editable"][data-part="edit-trigger"]),
@@ -333,7 +333,14 @@ pre.code,
 .toast :where([data-scope="toast"][data-part="action-trigger"]),
 .toast :where([data-scope="toast"][data-part="close-trigger"]),
 .toggle :where([data-scope="toggle"][data-part="root"]),
-.toggle-group :where([data-scope="toggle-group"][data-part="item"]) {
+.toggle-group :where([data-scope="toggle-group"][data-part="item"]),
+.steps :where([data-scope="steps"][data-part="trigger"]),
+.steps :where([data-scope="steps"][data-part="prev-trigger"]),
+.steps :where([data-scope="steps"][data-part="next-trigger"]),
+.splitter :where([data-scope="splitter"][data-part="resize-trigger"]),
+.navigation-menu :where([data-scope="navigation-menu"][data-part="trigger"]),
+.cascade-select :where([data-scope="cascade-select"][data-part="trigger"]),
+.tour :where([data-scope="tour"][data-part="close-trigger"]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -444,7 +451,9 @@ pre.code,
 }
 
 .checkbox :where([data-scope="checkbox"][data-part="control"]),
-.radio-group :where([data-scope="radio-group"][data-part="item-control"]) {
+.radio-group :where([data-scope="radio-group"][data-part="item-control"]),
+.rating-group :where([data-scope="rating-group"][data-part="control"]),
+.date-input :where([data-scope="date-input"][data-part="control"]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -534,6 +543,11 @@ pre.code,
 .pagination :where([data-scope="pagination"][data-part="item"]),
 .select :where([data-scope="select"][data-part="item"]),
 .tabs :where([data-scope="tabs"][data-part="trigger"]),
+.rating-group :where([data-scope="rating-group"][data-part="item"]),
+.toc :where([data-scope="toc"][data-part="item"]),
+.toc :where([data-scope="toc"][data-part="link"]),
+.navigation-menu :where([data-scope="navigation-menu"][data-part="link"]),
+.cascade-select :where([data-scope="cascade-select"][data-part="item"]),
 .tree-view :where([data-scope="tree-view"][data-part="item"]),
 .tree-view :where([data-scope="tree-view"][data-part="branch-control"]) {
   width: 100%;
@@ -800,6 +814,9 @@ pre.code,
 .select :where([data-scope="select"][data-part="content"]),
 .tabs :where([data-scope="tabs"][data-part="content"]),
 .toast :where([data-scope="toast"][data-part="root"]),
+.steps :where([data-scope="steps"][data-part="content"]),
+.cascade-select :where([data-scope="cascade-select"][data-part="content"]),
+.tour :where([data-scope="tour"][data-part="content"]),
 .tooltip :where([data-scope="tooltip"][data-part="content"]) {
   display: flex;
   flex-direction: column;

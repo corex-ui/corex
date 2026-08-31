@@ -1,73 +1,118 @@
 @import "../main.css";
 
 @layer components {
- .drawer[data-loading] > * {
- @apply ui-loading;
- }
+  .drawer {
+    width: fit-content;
+  }
 
- .drawer [data-scope="drawer"][data-part="backdrop"] {
- position: fixed;
- inset: 0;
- background: color-mix(in srgb, var(--color-ui) 95%, transparent);
- z-index: 50;
- }
+  .drawer[data-loading] > * {
+    @apply ui-loading;
+  }
 
- .drawer [data-scope="drawer"][data-part="positioner"] {
- position: fixed;
- inset: 0;
- display: flex;
- align-items: flex-end;
- justify-content: center;
- z-index: 50;
- pointer-events: none;
- }
+  .drawer [data-scope="drawer"][data-part="backdrop"] {
+    --backdrop-opacity: 0.5;
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+    opacity: calc(var(--backdrop-opacity) * (1 - var(--drawer-swipe-progress, 0)));
+    z-index: var(--z-overlay, 1100);
+    transition-property: opacity;
+    transition-duration: calc(var(--drawer-swipe-strength, 1) * 0.4s);
+  }
 
- .drawer [data-scope="drawer"][data-part="content"] {
- pointer-events: auto;
- width: min(100%, var(--container-md));
- max-height: 92vh;
- padding: var(--spacing-space-lg);
- display: flex;
- flex-direction: column;
- gap: var(--spacing-space-md);
- background-color: var(--ctl-bg, var(--color-ui));
- color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
- border: var(--border-width) solid var(--ctl-bd, var(--color-border));
- border-radius: var(--ctl-radius, var(--radius-lg)) var(--ctl-radius, var(--radius-lg)) 0 0;
- box-shadow: var(--shadow-ui);
- }
+  .drawer [data-scope="drawer"][data-part="backdrop"][data-state="open"] {
+    animation: fadeIn calc(var(--drawer-swipe-strength, 1) * 0.4s) ease-out;
+  }
 
- .drawer [data-scope="drawer"][data-part="positioner"][data-state="closed"] {
- pointer-events: none;
- }
+  .drawer [data-scope="drawer"][data-part="backdrop"][data-state="closed"] {
+    animation: fadeOut calc(var(--drawer-swipe-strength, 1) * 0.3s) ease-in;
+    opacity: 0;
+  }
 
- .drawer [data-scope="drawer"][data-part="content"][data-state="closed"] {
- visibility: hidden;
- }
+  .drawer [data-scope="drawer"][data-part="positioner"] {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: var(--z-overlay, 1100);
+    pointer-events: none;
+  }
 
- .drawer [data-scope="drawer"][data-part="grabber"] {
- display: flex;
- justify-content: center;
- padding-block: var(--spacing-space-xs);
- }
+  .drawer [data-scope="drawer"][data-part="positioner"][data-swipe-direction="up"] {
+    align-items: flex-start;
+  }
 
- .drawer [data-scope="drawer"][data-part="grabber-indicator"] {
- width: var(--spacing-space-3xl);
- height: var(--spacing-space-xs);
- border-radius: var(--radius-full);
- background: var(--ctl-bd, var(--color-border));
- }
+  .drawer [data-scope="drawer"][data-part="positioner"][data-swipe-direction="left"] {
+    justify-content: flex-start;
+    align-items: stretch;
+  }
 
- .drawer [data-scope="drawer"][data-part="header"] {
- display: flex;
- align-items: flex-start;
- gap: var(--spacing-space-sm);
- }
+  .drawer [data-scope="drawer"][data-part="positioner"][data-swipe-direction="right"] {
+    justify-content: flex-end;
+    align-items: stretch;
+  }
 
- .drawer [data-scope="drawer"][data-part="close-trigger"] {
- margin-inline-start: auto;
- aspect-ratio: 1 / 1;
- padding: 0;
- @apply ui-size-sm;
- }
+  .drawer [data-scope="drawer"][data-part="positioner"][data-state="closed"] {
+    pointer-events: none;
+  }
+
+  .drawer [data-scope="drawer"][data-part="content"] {
+    pointer-events: auto;
+    width: min(100%, var(--container-md));
+    max-height: 92vh;
+    padding: var(--spacing-space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-space-md);
+    background-color: var(--ctl-bg, var(--color-ui));
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-lg)) var(--ctl-radius, var(--radius-lg)) 0 0;
+    box-shadow: var(--shadow-ui);
+    position: relative;
+  }
+
+  .drawer [data-scope="drawer"][data-part="content"][data-swipe-direction="left"],
+  .drawer [data-scope="drawer"][data-part="content"][data-swipe-direction="right"] {
+    height: 100%;
+    max-height: none;
+    width: min(var(--container-sm), 90vw);
+    border-radius: 0;
+  }
+
+  .drawer [data-scope="drawer"][data-part="content"][data-state="closed"] {
+    visibility: hidden;
+  }
+
+  .drawer [data-scope="drawer"][data-part="grabber"] {
+    display: flex;
+    justify-content: center;
+    padding-block: var(--spacing-space-xs);
+    width: 100%;
+  }
+
+  .drawer [data-scope="drawer"][data-part="grabber-indicator"] {
+    width: var(--spacing-space-3xl);
+    height: var(--spacing-space-xs);
+    border-radius: var(--radius-full);
+    background: var(--ctl-bd, var(--color-border));
+  }
+
+  .drawer [data-scope="drawer"][data-part="header"] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-space-sm);
+  }
+
+  .drawer [data-scope="drawer"][data-part="title"] {
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  .drawer [data-scope="drawer"][data-part="close-trigger"] {
+    margin-inline-start: auto;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    @apply ui-size-sm;
+  }
 }

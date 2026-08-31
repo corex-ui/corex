@@ -1,61 +1,68 @@
 @import "../main.css";
 
 @layer components {
- .hover-card {
- position: relative;
- --z-index: var(--z-overlay, 1100);
- }
+  .hover-card {
+    position: relative;
+    width: fit-content;
+    --z-index: var(--z-overlay, 1100);
+  }
 
- .hover-card:has([data-scope="hover-card"][data-part="content"][data-state="open"]) {
- z-index: var(--z-overlay, 1100);
- }
+  .hover-card:has([data-scope="hover-card"][data-part="content"][data-state="open"]) {
+    z-index: var(--z-overlay, 1100);
+  }
 
- .hover-card[data-loading] > * {
- @apply ui-loading;
- }
+  .hover-card[data-loading] > * {
+    @apply ui-loading;
+  }
 
- .hover-card [data-scope="hover-card"][data-part="positioner"] {
- position: absolute;
- left: 0;
- top: 0;
- isolation: isolate;
- z-index: var(--z-overlay, 1100);
- visibility: hidden;
- pointer-events: none;
- }
+  .hover-card [data-scope="hover-card"][data-part="positioner"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    isolation: isolate;
+    z-index: var(--z-overlay, 1100);
+    visibility: hidden;
+    pointer-events: none;
+  }
 
- .hover-card [data-scope="hover-card"][data-part="positioner"]:has(
- [data-scope="hover-card"][data-part="content"][data-state="open"]
- ) {
- visibility: visible;
- pointer-events: auto;
- }
+  .hover-card [data-scope="hover-card"][data-part="positioner"]:has(
+      [data-scope="hover-card"][data-part="content"][data-state="open"]
+    ) {
+    visibility: visible;
+    pointer-events: auto;
+  }
 
- .hover-card [data-scope="hover-card"][data-part="content"] {
- padding: var(--ctl-space, var(--spacing-space));
- max-width: var(--container-xs);
- position: relative;
- z-index: 1;
- font-size: var(--ctl-text, var(--text-sm));
- color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
- background-color: var(--ctl-bg, var(--color-ui));
- border: var(--border-width) solid var(--ctl-bd, var(--color-border));
- border-radius: var(--ctl-radius, var(--radius-md));
- box-shadow: var(--shadow-ui);
- }
+  .hover-card [data-scope="hover-card"][data-part="content"] {
+    padding: var(--ctl-space, var(--spacing-space));
+    max-width: var(--container-xs);
+    min-width: var(--container-5xs);
+    position: relative;
+    z-index: 1;
+    font-size: var(--ctl-text, var(--text-sm));
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+    background-color: var(--ctl-bg, var(--color-ui));
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+    border-radius: var(--ctl-radius, var(--radius-md));
+    box-shadow: var(--shadow-ui);
+    transform-origin: var(--transform-origin);
+  }
 
- .hover-card [data-scope="hover-card"][data-part="content"][data-state="closed"] {
- visibility: hidden;
- opacity: 0;
- }
+  .hover-card [data-scope="hover-card"][data-part="content"][data-state="open"] {
+    animation: scaleFadeIn var(--duration-fast, 0.15s) ease-out;
+  }
 
- .hover-card [data-scope="hover-card"][data-part="arrow"] {
- --arrow-size: var(--spacing-space);
- --arrow-background: var(--ctl-bg, var(--color-ui));
- }
+  .hover-card [data-scope="hover-card"][data-part="content"][data-state="closed"] {
+    visibility: hidden;
+    opacity: 0;
+  }
 
- .hover-card [data-scope="hover-card"][data-part="arrow-tip"] {
- background: var(--arrow-background);
- border: var(--border-width) solid var(--ctl-bd, var(--color-border));
- }
+  .hover-card [data-scope="hover-card"][data-part="arrow"] {
+    --arrow-size: var(--spacing-space);
+    --arrow-background: var(--ctl-bg, var(--color-ui));
+  }
+
+  .hover-card [data-scope="hover-card"][data-part="arrow-tip"] {
+    background: var(--arrow-background);
+    border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+  }
 }
