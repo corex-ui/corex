@@ -105,7 +105,7 @@ defmodule E2e.MixProject do
       {:wallaby, "~> 0.30", only: :test},
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
-      {:tidewave, "~> 0.5.5", only: :dev},
+      {:tidewave, "~> 0.9.0", only: :dev},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:usage_rules, "~> 1.1", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
