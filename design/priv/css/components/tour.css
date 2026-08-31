@@ -6,6 +6,21 @@
     --tour-z-index: 2147483000;
   }
 
+  [data-corex-tour-overlay] {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    overflow: visible;
+    background: transparent;
+    z-index: var(--tour-z-index, 2147483000);
+  }
+
   .tour[data-loading] > * {
     @apply ui-loading;
   }

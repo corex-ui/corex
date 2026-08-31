@@ -1111,6 +1111,7 @@ function ensureVisualViewport() {
 }
 var Tour = class extends Component {
   portalled = /* @__PURE__ */ new Set();
+  overlayObserver = null;
   get overlayRootId() {
     return `corex-tour-overlay-${this.el.id}`;
   }
@@ -1122,12 +1123,16 @@ var Tour = class extends Component {
     return this.zagConnect(connect);
   }
   unportal() {
+    this.overlayObserver?.disconnect();
+    this.overlayObserver = null;
+    const host = document.getElementById(this.overlayRootId);
+    this.hideOverlayPopover(host);
     const root = this.el.querySelector('[data-scope="tour"][data-part="root"]') ?? this.el;
     for (const node of this.portalled) {
       if (node.isConnected) root.appendChild(node);
     }
     this.portalled.clear();
-    document.getElementById(this.overlayRootId)?.remove();
+    host?.remove();
   }
   render() {
     this.portalOverlay();
@@ -1145,8 +1150,7 @@ var Tour = class extends Component {
         positioner.style.pointerEvents = "auto";
       }
     }
-    const overlay = document.getElementById(this.overlayRootId);
-    if (overlay) overlay.style.pointerEvents = this.api.open ? "auto" : "none";
+    this.syncOverlayLayer();
     const content = this.part("content");
     if (content) {
       this.spreadProps(content, this.api.getContentProps());
@@ -1192,13 +1196,58 @@ var Tour = class extends Component {
       host = document.createElement("div");
       host.id = this.overlayRootId;
       host.setAttribute("data-corex-tour-overlay", "");
-      host.style.cssText = `position:fixed;inset:0;z-index:${TOUR_Z};pointer-events:none;`;
+      host.setAttribute("popover", "manual");
+      host.style.cssText = [
+        "position:fixed",
+        "inset:0",
+        "width:100vw",
+        "height:100dvh",
+        "max-width:none",
+        "max-height:none",
+        "margin:0",
+        "padding:0",
+        "border:none",
+        "overflow:visible",
+        "background:transparent",
+        `z-index:${TOUR_Z}`,
+        "pointer-events:none"
+      ].join(";");
       document.body.appendChild(host);
     }
     return host;
   }
+  watchOverlayTheft() {
+    if (this.overlayObserver || typeof MutationObserver === "undefined") return;
+    this.overlayObserver = new MutationObserver(() => {
+      if (!this.api.open) return;
+      this.portalOverlay();
+      this.syncOverlayLayer();
+    });
+    this.overlayObserver.observe(this.el, { childList: true, subtree: true });
+  }
+  syncOverlayLayer() {
+    const overlay = document.getElementById(this.overlayRootId);
+    if (!overlay) return;
+    overlay.style.pointerEvents = this.api.open ? "auto" : "none";
+    if (this.api.open) this.showOverlayPopover(overlay);
+    else this.hideOverlayPopover(overlay);
+  }
+  showOverlayPopover(host) {
+    try {
+      if (typeof host.showPopover === "function") host.showPopover();
+    } catch {
+    }
+  }
+  hideOverlayPopover(host) {
+    if (!host) return;
+    try {
+      if (typeof host.hidePopover === "function") host.hidePopover();
+    } catch {
+    }
+  }
   portalOverlay() {
     const host = this.overlayHost();
+    this.watchOverlayTheft();
     const parts2 = ["backdrop", "spotlight", "positioner"];
     for (const part of parts2) {
       const node = this.el.querySelector(`[data-scope="tour"][data-part="${part}"]`) ?? [...this.portalled].find((el) => el.dataset.part === part);

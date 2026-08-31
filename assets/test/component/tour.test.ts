@@ -29,6 +29,7 @@ describe("Tour", () => {
     const overlay = document.body.querySelector<HTMLElement>("[data-corex-tour-overlay]");
     expect(overlay).toBeTruthy();
     expect(overlay?.parentElement).toBe(document.body);
+    expect(overlay?.getAttribute("popover")).toBe("manual");
     expect(overlay?.querySelector('[data-part="spotlight"]')).toBeTruthy();
     c.unportal();
     c.destroy();
