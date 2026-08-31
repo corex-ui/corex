@@ -27,6 +27,10 @@ function ensureVisualViewport(): void {
 export class Tour extends Component<Props, Api, Schema> {
   private portalled = new Set<HTMLElement>();
 
+  private get overlayRootId(): string {
+    return `corex-tour-overlay-${this.el.id}`;
+  }
+
   initMachine(props: Props): VanillaMachine<Schema> {
     ensureVisualViewport();
     return new VanillaMachine(machine, props);
@@ -43,6 +47,7 @@ export class Tour extends Component<Props, Api, Schema> {
       if (node.isConnected) root.appendChild(node);
     }
     this.portalled.clear();
+    document.getElementById(this.overlayRootId)?.remove();
   }
 
   render(): void {
@@ -60,8 +65,12 @@ export class Tour extends Component<Props, Api, Schema> {
       if (this.api.open) {
         positioner.style.removeProperty("transform");
         positioner.removeAttribute("aria-hidden");
+        positioner.style.pointerEvents = "auto";
       }
     }
+
+    const overlay = document.getElementById(this.overlayRootId);
+    if (overlay) overlay.style.pointerEvents = this.api.open ? "auto" : "none";
 
     const content = this.part("content");
     if (content) {
@@ -105,15 +114,28 @@ export class Tour extends Component<Props, Api, Schema> {
     return null;
   }
 
+  private overlayHost(): HTMLElement {
+    let host = document.getElementById(this.overlayRootId);
+    if (!host) {
+      host = document.createElement("div");
+      host.id = this.overlayRootId;
+      host.setAttribute("data-corex-tour-overlay", "");
+      host.style.cssText = `position:fixed;inset:0;z-index:${TOUR_Z};pointer-events:none;`;
+      document.body.appendChild(host);
+    }
+    return host;
+  }
+
   private portalOverlay(): void {
+    const host = this.overlayHost();
     const parts = ["backdrop", "spotlight", "positioner"] as const;
     for (const part of parts) {
       const node =
         this.el.querySelector<HTMLElement>(`[data-scope="tour"][data-part="${part}"]`) ??
         [...this.portalled].find((el) => el.dataset.part === part);
       if (!node) continue;
-      if (node.parentElement !== document.body) {
-        document.body.appendChild(node);
+      if (node.parentElement !== host) {
+        host.appendChild(node);
         this.portalled.add(node);
       }
       node.style.setProperty("z-index", TOUR_Z);

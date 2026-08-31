@@ -26,10 +26,10 @@ describe("Tour", () => {
     });
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
-    expect(
-      document.body.querySelector('[data-scope="tour"][data-part="spotlight"]') ??
-        el.querySelector('[data-part="spotlight"]')
-    ).toBeTruthy();
+    const overlay = document.body.querySelector<HTMLElement>("[data-corex-tour-overlay]");
+    expect(overlay).toBeTruthy();
+    expect(overlay?.parentElement).toBe(document.body);
+    expect(overlay?.querySelector('[data-part="spotlight"]')).toBeTruthy();
     c.unportal();
     c.destroy();
   });

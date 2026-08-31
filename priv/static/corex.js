@@ -62492,6 +62492,9 @@ ${err}`);
           super(...arguments);
           __publicField(this, "portalled", /* @__PURE__ */ new Set());
         }
+        get overlayRootId() {
+          return `corex-tour-overlay-${this.el.id}`;
+        }
         initMachine(props) {
           ensureVisualViewport();
           return new VanillaMachine(machine49, props);
@@ -62500,12 +62503,13 @@ ${err}`);
           return this.zagConnect(connect49);
         }
         unportal() {
-          var _a4;
+          var _a4, _b;
           const root = (_a4 = this.el.querySelector('[data-scope="tour"][data-part="root"]')) != null ? _a4 : this.el;
           for (const node of this.portalled) {
             if (node.isConnected) root.appendChild(node);
           }
           this.portalled.clear();
+          (_b = document.getElementById(this.overlayRootId)) == null ? void 0 : _b.remove();
         }
         render() {
           var _a4, _b, _c, _d;
@@ -62521,8 +62525,11 @@ ${err}`);
             if (this.api.open) {
               positioner.style.removeProperty("transform");
               positioner.removeAttribute("aria-hidden");
+              positioner.style.pointerEvents = "auto";
             }
           }
+          const overlay = document.getElementById(this.overlayRootId);
+          if (overlay) overlay.style.pointerEvents = this.api.open ? "auto" : "none";
           const content = this.part("content");
           if (content) {
             this.spreadProps(content, this.api.getContentProps());
@@ -62562,14 +62569,26 @@ ${err}`);
           }
           return null;
         }
+        overlayHost() {
+          let host = document.getElementById(this.overlayRootId);
+          if (!host) {
+            host = document.createElement("div");
+            host.id = this.overlayRootId;
+            host.setAttribute("data-corex-tour-overlay", "");
+            host.style.cssText = `position:fixed;inset:0;z-index:${TOUR_Z};pointer-events:none;`;
+            document.body.appendChild(host);
+          }
+          return host;
+        }
         portalOverlay() {
           var _a4;
+          const host = this.overlayHost();
           const parts210 = ["backdrop", "spotlight", "positioner"];
           for (const part of parts210) {
             const node = (_a4 = this.el.querySelector(`[data-scope="tour"][data-part="${part}"]`)) != null ? _a4 : [...this.portalled].find((el) => el.dataset.part === part);
             if (!node) continue;
-            if (node.parentElement !== document.body) {
-              document.body.appendChild(node);
+            if (node.parentElement !== host) {
+              host.appendChild(node);
               this.portalled.add(node);
             }
             node.style.setProperty("z-index", TOUR_Z);
