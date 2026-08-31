@@ -53,6 +53,7 @@ defmodule Corex do
     data_table: {Corex.DataTable, [data_table: 1]},
     data_list: {Corex.DataList, [data_list: 1]},
     date_picker: {Corex.DatePicker, [date_picker: 1]},
+    drawer: {Corex.Drawer, [drawer: 1]},
     dialog:
       {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
     editable: {Corex.Editable, [editable: 1]},
@@ -62,6 +63,7 @@ defmodule Corex do
     heroicon: {Corex.Heroicon, [heroicon: 1]},
     native_input: {Corex.NativeInput, [native_input: 1]},
     hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
+    hover_card: {Corex.HoverCard, [hover_card: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
     layout_heading: {Corex.Layout.Heading, [layout_heading: 1]},
     marquee: {Corex.Marquee, [marquee: 1]},
@@ -71,6 +73,7 @@ defmodule Corex do
     pagination: {Corex.Pagination, [pagination: 1]},
     password_input: {Corex.PasswordInput, [password_input: 1]},
     pin_input: {Corex.PinInput, [pin_input: 1]},
+    popover: {Corex.Popover, [popover: 1]},
     radio_group: {Corex.RadioGroup, [radio_group: 1]},
     select: {Corex.Select, [select: 1]},
     signature_pad: {Corex.SignaturePad, [signature_pad: 1]},

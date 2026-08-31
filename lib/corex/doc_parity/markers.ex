@@ -13,10 +13,25 @@ defmodule Corex.DocParity.Markers do
       "placement" => ["anatomy_placement_code"],
       "with arrow" => ["anatomy_with_arrow_code"]
     },
+    "hover_card" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "placement" => ["anatomy_placement_code"],
+      "with arrow" => ["anatomy_with_arrow_code"]
+    },
+    "popover" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "placement" => ["anatomy_placement_code"],
+      "with title" => ["anatomy_with_title_code"]
+    },
     "pin_input" => %{"basic" => ["minimal_code"]},
     "password_input" => %{
       "custom error" => ["invalid_code"],
       "minimal" => ["minimal_code"]
+    },
+    "drawer" => %{
+      "minimal" => ["anatomy_minimal_code"],
+      "snap points" => ["anatomy_snap_points_code"],
+      "with title" => ["anatomy_with_title_code"]
     },
     "dialog" => %{
       "actions in content" => ["actions_code"],

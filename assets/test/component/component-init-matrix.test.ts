@@ -12,6 +12,9 @@ import { ColorPicker, parse as parseColor } from "../../components/color-picker"
 import { Combobox } from "../../components/combobox";
 import { DatePicker } from "../../components/date-picker";
 import { Dialog } from "../../components/dialog";
+import { Drawer } from "../../components/drawer";
+import { HoverCard } from "../../components/hover-card";
+import { Popover } from "../../components/popover";
 import { Editable } from "../../components/editable";
 import { FileUpload } from "../../components/file-upload";
 import { FloatingPanel } from "../../components/floating-panel";
@@ -47,7 +50,9 @@ import {
   colorPickerTree,
   comboboxTree,
   dialogTree,
+  drawerTree,
   editableTree,
+  hoverCardTree,
   fileUploadTree,
   floatingPanelTree,
   listboxTree,
@@ -56,6 +61,7 @@ import {
   paginationTree,
   passwordInputTree,
   pinInputTree,
+  popoverTree,
   radioGroupTree,
   sampleTreeRoot,
   selectTree,
@@ -204,6 +210,30 @@ const cases: [string, Factory][] = [
     () => {
       const el = dialogTree();
       const c = new Dialog(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Drawer",
+    () => {
+      const el = drawerTree();
+      const c = new Drawer(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "HoverCard",
+    () => {
+      const el = hoverCardTree();
+      const c = new HoverCard(el, { id: el.id });
+      return { init: () => c.init(), destroy: () => c.destroy() };
+    },
+  ],
+  [
+    "Popover",
+    () => {
+      const el = popoverTree();
+      const c = new Popover(el, { id: el.id });
       return { init: () => c.init(), destroy: () => c.destroy() };
     },
   ],

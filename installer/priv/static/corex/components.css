@@ -15,9 +15,11 @@
 @import "./components/data-table.css";
 @import "./components/date-picker.css";
 @import "./components/dialog.css";
+@import "./components/drawer.css";
 @import "./components/editable.css";
 @import "./components/file-upload.css";
 @import "./components/floating-panel.css";
+@import "./components/hover-card.css";
 @import "./components/icon.css";
 @import "./components/layout-heading.css";
 @import "./components/link.css";
@@ -29,6 +31,7 @@
 @import "./components/pagination.css";
 @import "./components/password-input.css";
 @import "./components/pin-input.css";
+@import "./components/popover.css";
 @import "./components/radio-group.css";
 @import "./components/scrollbar.css";
 @import "./components/select.css";

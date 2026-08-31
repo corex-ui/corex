@@ -36,6 +36,9 @@ declare module "corex/date-picker" {
 declare module "corex/dialog" {
   export const Dialog: CorexHook;
 }
+declare module "corex/drawer" {
+  export const Drawer: CorexHook;
+}
 declare module "corex/editable" {
   export const Editable: CorexHook;
 }
@@ -44,6 +47,9 @@ declare module "corex/file-upload" {
 }
 declare module "corex/floating-panel" {
   export const FloatingPanel: CorexHook;
+}
+declare module "corex/hover-card" {
+  export const HoverCard: CorexHook;
 }
 declare module "corex/listbox" {
   export const Listbox: CorexHook;
@@ -65,6 +71,9 @@ declare module "corex/password-input" {
 }
 declare module "corex/pin-input" {
   export const PinInput: CorexHook;
+}
+declare module "corex/popover" {
+  export const Popover: CorexHook;
 }
 declare module "corex/radio-group" {
   export const RadioGroup: CorexHook;

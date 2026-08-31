@@ -42,7 +42,7 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-CLKNJROH.mjs";
 
 // ../node_modules/.pnpm/@zag-js+carousel@1.43.3/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(

@@ -251,6 +251,13 @@ defmodule E2eWeb.Router do
       live("/tooltip/api", TooltipApiLive)
       live("/tooltip/events", TooltipEventsLive)
       live("/tooltip/patterns", TooltipPatternsLive)
+
+      live("/popover/api", PopoverApiLive)
+      live("/popover/events", PopoverEventsLive)
+      live("/hover-card/api", HoverCardApiLive)
+      live("/hover-card/events", HoverCardEventsLive)
+      live("/drawer/api", DrawerApiLive)
+      live("/drawer/events", DrawerEventsLive)
     end
 
     get("/templates", ShowcaseRedirectController, :to_showcases)
@@ -387,6 +394,12 @@ defmodule E2eWeb.Router do
     get("/timer/style", PageController, :timer_styling_page)
     get("/tooltip/anatomy", PageController, :tooltip_page)
     get("/tooltip/style", PageController, :tooltip_styling_page)
+    get("/popover/anatomy", PageController, :popover_page)
+    get("/popover/style", PageController, :popover_styling_page)
+    get("/hover-card/anatomy", PageController, :hover_card_page)
+    get("/hover-card/style", PageController, :hover_card_styling_page)
+    get("/drawer/anatomy", PageController, :drawer_page)
+    get("/drawer/style", PageController, :drawer_styling_page)
     resources("/users", UserController)
   end
 

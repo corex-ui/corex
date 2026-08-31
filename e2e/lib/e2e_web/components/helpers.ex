@@ -348,6 +348,17 @@ defmodule E2eWeb.Helpers do
           ]
         },
         %{
+          label: ~t"Drawer",
+          id: "drawer",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/drawer/anatomy",
+          api_to: ~p"/drawer/api",
+          events_to: ~p"/drawer/events",
+          style_to: ~p"/drawer/style"
+        },
+        %{
           label: ~t"Dialog",
           id: "dialog",
           anatomy_to: ~p"/dialog/anatomy",
@@ -359,6 +370,17 @@ defmodule E2eWeb.Helpers do
           animation_to: ~p"/dialog/animation",
           style: true,
           style_to: ~p"/dialog/style"
+        },
+        %{
+          label: ~t"Hover card",
+          id: "hover-card",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/hover-card/anatomy",
+          api_to: ~p"/hover-card/api",
+          events_to: ~p"/hover-card/events",
+          style_to: ~p"/hover-card/style"
         },
         %{
           label: ~t"Editable",
@@ -679,6 +701,17 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/toggle-group/events",
           patterns_to: ~p"/toggle-group/patterns",
           style_to: ~p"/toggle-group/style"
+        },
+        %{
+          label: ~t"Popover",
+          id: "popover",
+          style: true,
+          playground: false,
+          pattern: false,
+          anatomy_to: ~p"/popover/anatomy",
+          api_to: ~p"/popover/api",
+          events_to: ~p"/popover/events",
+          style_to: ~p"/popover/style"
         },
         %{
           label: ~t"Tooltip",

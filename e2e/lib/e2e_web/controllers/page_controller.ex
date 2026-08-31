@@ -1975,6 +1975,30 @@ defmodule E2eWeb.PageController do
     render(conn, :tooltip_styling_page)
   end
 
+  def popover_page(conn, _params) do
+    render(conn, :popover_page)
+  end
+
+  def popover_styling_page(conn, _params) do
+    render(conn, :popover_styling_page)
+  end
+
+  def hover_card_page(conn, _params) do
+    render(conn, :hover_card_page)
+  end
+
+  def hover_card_styling_page(conn, _params) do
+    render(conn, :hover_card_styling_page)
+  end
+
+  def drawer_page(conn, _params) do
+    render(conn, :drawer_page)
+  end
+
+  def drawer_styling_page(conn, _params) do
+    render(conn, :drawer_styling_page)
+  end
+
   def templates_page(conn, _params) do
     template_carousel_items = [
       Corex.Image.new("/images/templates/soonex/preview-hero.png",

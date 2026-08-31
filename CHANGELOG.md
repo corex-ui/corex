@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Components
+
+- **Popover**, **Hover card**, and **Drawer** (Zag.js beta) — overlay hosts with Connect, hooks, Design CSS, and e2e docs.
+
 ## 0.2.2 - 2026-08-29
 
 ### Upgrade notes

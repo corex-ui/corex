@@ -1,0 +1,30 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="popover-anatomy-page"
+    title={~t"Popover · Anatomy"}
+    subtitle={~t"Click trigger, optional title, and placement."}
+  >
+    <.demo_section
+      id="popover-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.PopoverDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.PopoverDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="popover-anatomy-with-title"
+      title={~t"With title"}
+      code={E2eWeb.Demos.PopoverDemo.anatomy_with_title_code()}
+    >
+      <:preview><E2eWeb.Demos.PopoverDemo.anatomy_with_title_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="popover-anatomy-placement"
+      title={~t"Placement"}
+      code={E2eWeb.Demos.PopoverDemo.anatomy_placement_code()}
+    >
+      <:preview><E2eWeb.Demos.PopoverDemo.anatomy_placement_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

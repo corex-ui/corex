@@ -37,9 +37,11 @@ defmodule Corex.Design.Components do
     "data-table" => %{family: :static},
     "date-picker" => %{family: :action},
     "dialog" => %{family: :action},
+    "drawer" => %{family: :action},
     "editable" => %{family: :action},
     "file-upload" => %{family: :action},
     "floating-panel" => %{family: :action},
+    "hover-card" => %{family: :action},
     "icon" => %{family: :static},
     "layout-heading" => %{family: :static},
     "link" => %{family: :action},
@@ -51,6 +53,7 @@ defmodule Corex.Design.Components do
     "pagination" => %{family: :selection},
     "password-input" => %{family: :field},
     "pin-input" => %{family: :field},
+    "popover" => %{family: :action},
     "radio-group" => %{family: :selection},
     "scrollbar" => %{family: :static},
     "select" => %{family: :action},
@@ -123,6 +126,13 @@ defmodule Corex.Design.Components do
     {"dialog", "trigger", :trigger},
     {"dialog", "close-trigger", :trigger},
     {"dialog", "content", :content},
+    {"drawer", "trigger", :trigger},
+    {"drawer", "close-trigger", :trigger},
+    {"drawer", "content", :content},
+    {"hover-card", "content", :content},
+    {"popover", "trigger", :trigger},
+    {"popover", "close-trigger", :trigger},
+    {"popover", "content", :content},
     {"editable", "root", :root},
     {"editable", "label", :label},
     {"editable", "input", :input},
@@ -260,7 +270,7 @@ defmodule Corex.Design.Components do
   @no_radius_hosts ~w(tree-view)
 
   # Floating panels: ghost (transparent fill) is not a useful surface treatment.
-  @no_ghost_hosts ~w(tooltip)
+  @no_ghost_hosts ~w(tooltip popover hover-card drawer)
 
   @no_variant_families MapSet.new([:selection, :field, :static])
 

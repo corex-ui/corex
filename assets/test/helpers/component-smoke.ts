@@ -315,6 +315,57 @@ export function toggleGroupTree(): HTMLElement {
   );
 }
 
+export function popoverTree(): HTMLElement {
+  return withId(
+    scopeTree("popover", [
+      {
+        part: "root",
+        children: [
+          { part: "trigger" },
+          { part: "positioner", children: [{ part: "content" }] },
+        ],
+      },
+    ])
+  );
+}
+
+export function hoverCardTree(): HTMLElement {
+  return withId(
+    scopeTree("hover-card", [
+      {
+        part: "root",
+        children: [
+          { part: "trigger" },
+          { part: "positioner", children: [{ part: "content" }] },
+        ],
+      },
+    ])
+  );
+}
+
+export function drawerTree(): HTMLElement {
+  return withId(
+    scopeTree("drawer", [
+      {
+        part: "root",
+        children: [
+          { part: "trigger" },
+          { part: "backdrop" },
+          {
+            part: "positioner",
+            children: [
+              {
+                part: "content",
+                children: [{ part: "grabber" }, { part: "title" }],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+  );
+}
+
 export function tooltipTree(): HTMLElement {
   return withId(
     scopeTree("tooltip", [

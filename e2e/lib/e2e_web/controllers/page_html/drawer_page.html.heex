@@ -1,0 +1,30 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="drawer-anatomy-page"
+    title={~t"Drawer · Anatomy"}
+    subtitle={~t"Sheet trigger, title, and snap points."}
+  >
+    <.demo_section
+      id="drawer-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.DrawerDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.DrawerDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="drawer-anatomy-with-title"
+      title={~t"With title"}
+      code={E2eWeb.Demos.DrawerDemo.anatomy_with_title_code()}
+    >
+      <:preview><E2eWeb.Demos.DrawerDemo.anatomy_with_title_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="drawer-anatomy-snap-points"
+      title={~t"Snap points"}
+      code={E2eWeb.Demos.DrawerDemo.anatomy_snap_points_code()}
+    >
+      <:preview><E2eWeb.Demos.DrawerDemo.anatomy_snap_points_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-JPQZXVRQ.mjs
+  // ../priv/static/chunks/chunk-CLKNJROH.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -447,8 +447,8 @@ var Corex = (() => {
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
-  function joinStatePath(parts35) {
-    return parts35.join(STATE_DELIMITER);
+  function joinStatePath(parts38) {
+    return parts38.join(STATE_DELIMITER);
   }
   function isAbsoluteStatePath(value) {
     return value.includes(STATE_DELIMITER);
@@ -465,7 +465,7 @@ var Corex = (() => {
   function appendStatePath(base, segment) {
     return base ? `${base}${STATE_DELIMITER}${segment}` : segment;
   }
-  function buildStateIndex(machine35) {
+  function buildStateIndex(machine38) {
     const index = /* @__PURE__ */ new Map();
     const idIndex = /* @__PURE__ */ new Map();
     const visit2 = (basePath, state2) => {
@@ -491,32 +491,32 @@ var Corex = (() => {
         visit2(childPath, childState);
       }
     };
-    for (const [topKey, topState] of Object.entries(machine35.states)) {
+    for (const [topKey, topState] of Object.entries(machine38.states)) {
       if (!topState) continue;
       visit2(topKey, topState);
     }
     return { index, idIndex };
   }
-  function ensureStateIndex(machine35) {
-    const cached = stateIndexCache.get(machine35);
+  function ensureStateIndex(machine38) {
+    const cached = stateIndexCache.get(machine38);
     if (cached) return cached;
-    const { index, idIndex } = buildStateIndex(machine35);
-    stateIndexCache.set(machine35, index);
-    stateIdIndexCache.set(machine35, idIndex);
+    const { index, idIndex } = buildStateIndex(machine38);
+    stateIndexCache.set(machine38, index);
+    stateIdIndexCache.set(machine38, idIndex);
     return index;
   }
-  function getStatePathById(machine35, stateId) {
+  function getStatePathById(machine38, stateId) {
     var _a4;
-    ensureStateIndex(machine35);
-    return (_a4 = stateIdIndexCache.get(machine35)) == null ? void 0 : _a4.get(stateId);
+    ensureStateIndex(machine38);
+    return (_a4 = stateIdIndexCache.get(machine38)) == null ? void 0 : _a4.get(stateId);
   }
   function toSegments(value) {
     if (!value) return [];
     return String(value).split(STATE_DELIMITER).filter(Boolean);
   }
-  function getStateChain(machine35, state2) {
+  function getStateChain(machine38, state2) {
     if (!state2) return [];
-    const stateIndex = ensureStateIndex(machine35);
+    const stateIndex = ensureStateIndex(machine38);
     const segments = toSegments(state2);
     const chain = [];
     const statePath = [];
@@ -529,8 +529,8 @@ var Corex = (() => {
     }
     return chain;
   }
-  function resolveAbsoluteStateValue(machine35, value) {
-    const stateIndex = ensureStateIndex(machine35);
+  function resolveAbsoluteStateValue(machine38, value) {
+    const stateIndex = ensureStateIndex(machine38);
     const segments = toSegments(value);
     if (!segments.length) return value;
     const resolved = [];
@@ -550,48 +550,48 @@ var Corex = (() => {
     }
     return resolvedPath;
   }
-  function hasStatePath(machine35, value) {
-    const stateIndex = ensureStateIndex(machine35);
+  function hasStatePath(machine38, value) {
+    const stateIndex = ensureStateIndex(machine38);
     return stateIndex.has(value);
   }
-  function resolveStateValue(machine35, value, source) {
+  function resolveStateValue(machine38, value, source) {
     const stateValue = String(value);
     if (isExplicitAbsoluteStatePath(stateValue)) {
       const stateId = stripAbsolutePrefix(stateValue);
-      const statePath = getStatePathById(machine35, stateId);
+      const statePath = getStatePathById(machine38, stateId);
       ensure(statePath, () => `[zag-js] Unknown state id: "${stateId}"`);
-      return resolveAbsoluteStateValue(machine35, statePath);
+      return resolveAbsoluteStateValue(machine38, statePath);
     }
     if (isChildTarget(stateValue) && source) {
       const childPath = appendStatePath(source, stateValue.slice(1));
-      return resolveAbsoluteStateValue(machine35, childPath);
+      return resolveAbsoluteStateValue(machine38, childPath);
     }
     if (!isAbsoluteStatePath(stateValue) && source) {
       const sourceSegments = toSegments(source);
       for (let index = sourceSegments.length - 1; index >= 1; index--) {
         const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
         const candidate = appendStatePath(base, stateValue);
-        if (hasStatePath(machine35, candidate)) return resolveAbsoluteStateValue(machine35, candidate);
+        if (hasStatePath(machine38, candidate)) return resolveAbsoluteStateValue(machine38, candidate);
       }
-      if (hasStatePath(machine35, stateValue)) return resolveAbsoluteStateValue(machine35, stateValue);
+      if (hasStatePath(machine38, stateValue)) return resolveAbsoluteStateValue(machine38, stateValue);
     }
-    return resolveAbsoluteStateValue(machine35, stateValue);
+    return resolveAbsoluteStateValue(machine38, stateValue);
   }
-  function findTransition(machine35, state2, eventType) {
+  function findTransition(machine38, state2, eventType) {
     var _a4, _b;
-    const chain = getStateChain(machine35, state2);
+    const chain = getStateChain(machine38, state2);
     for (let index = chain.length - 1; index >= 0; index--) {
       const transitionMap = (_a4 = chain[index]) == null ? void 0 : _a4.state.on;
       const transition = transitionMap == null ? void 0 : transitionMap[eventType];
       if (transition) return { transitions: transition, source: (_b = chain[index]) == null ? void 0 : _b.path };
     }
-    const rootTransitionMap = machine35.on;
+    const rootTransitionMap = machine38.on;
     return { transitions: rootTransitionMap == null ? void 0 : rootTransitionMap[eventType], source: void 0 };
   }
-  function getExitEnterStates(machine35, prevState, nextState, reenter) {
+  function getExitEnterStates(machine38, prevState, nextState, reenter) {
     var _a4, _b, _c, _d;
-    const prevChain = prevState ? getStateChain(machine35, prevState) : [];
-    const nextChain = getStateChain(machine35, nextState);
+    const prevChain = prevState ? getStateChain(machine38, prevState) : [];
+    const nextChain = getStateChain(machine38, nextState);
     let commonIndex = 0;
     while (commonIndex < prevChain.length && commonIndex < nextChain.length && ((_a4 = prevChain[commonIndex]) == null ? void 0 : _a4.path) === ((_b = nextChain[commonIndex]) == null ? void 0 : _b.path)) {
       commonIndex += 1;
@@ -609,8 +609,8 @@ var Corex = (() => {
     if (!current) return false;
     return current === value || current.startsWith(`${value}${STATE_DELIMITER}`);
   }
-  function hasTag(machine35, state2, tag) {
-    return getStateChain(machine35, state2).some((item) => {
+  function hasTag(machine38, state2, tag) {
+    return getStateChain(machine38, state2).some((item) => {
       var _a4;
       return (_a4 = item.state.tags) == null ? void 0 : _a4.includes(tag);
     });
@@ -1501,6 +1501,71 @@ var Corex = (() => {
       removeAccessibleListeners();
     };
   }
+  function resolveElement(value) {
+    if (value == null) return null;
+    return typeof value === "function" ? value() : value;
+  }
+  function getNextTabbableAfterTrigger(container, trigger, getShadowRoot) {
+    if (!trigger) return null;
+    const tabbables = getTabbables(container.ownerDocument.body, { getShadowRoot });
+    const triggerIndex = tabbables.indexOf(trigger);
+    if (triggerIndex === -1) return null;
+    for (let i2 = triggerIndex + 1; i2 < tabbables.length; i2++) {
+      const el = tabbables[i2];
+      if (!contains(container, el)) return el;
+    }
+    return null;
+  }
+  function proxyTabFocusImpl(container, options = {}) {
+    var _a4;
+    const { triggerElement, onFocus, onFocusEnter, getShadowRoot } = options;
+    const initial = (_a4 = resolveElement(container)) != null ? _a4 : resolveElement(triggerElement);
+    const doc = (initial == null ? void 0 : initial.ownerDocument) || document;
+    function onKeyDown(event) {
+      if (event.key !== "Tab") return;
+      const content = resolveElement(container);
+      const trigger = resolveElement(triggerElement);
+      if (!content) return;
+      const [firstTabbable, lastTabbable] = getTabbableEdges(content, { includeContainer: true, getShadowRoot });
+      const noTabbableElements = !firstTabbable && !lastTabbable;
+      let elementToFocus = null;
+      if (event.shiftKey && (isActiveElement(firstTabbable) || noTabbableElements)) {
+        elementToFocus = trigger;
+      } else if (!event.shiftKey && isActiveElement(trigger)) {
+        onFocusEnter == null ? void 0 : onFocusEnter();
+        elementToFocus = firstTabbable;
+      } else if (!event.shiftKey && (isActiveElement(lastTabbable) || noTabbableElements)) {
+        elementToFocus = getNextTabbableAfterTrigger(content, trigger, getShadowRoot);
+      } else if (event.shiftKey) {
+        const nextTabbableAfterTrigger = getNextTabbableAfterTrigger(content, trigger, getShadowRoot);
+        if (isActiveElement(nextTabbableAfterTrigger)) {
+          onFocusEnter == null ? void 0 : onFocusEnter();
+          elementToFocus = lastTabbable;
+        }
+      }
+      if (!elementToFocus) return;
+      event.preventDefault();
+      if (typeof onFocus === "function") {
+        onFocus(elementToFocus);
+      } else {
+        elementToFocus.focus();
+      }
+    }
+    return addDomEvent(doc, "keydown", onKeyDown, true);
+  }
+  function proxyTabFocus(container, options) {
+    const _a4 = options, { defer } = _a4, restOptions = __objRest(_a4, ["defer"]);
+    const func = defer ? raf : (v2) => v2();
+    const cleanups = [];
+    cleanups.push(
+      func(() => {
+        cleanups.push(proxyTabFocusImpl(container, restOptions));
+      })
+    );
+    return () => {
+      cleanups.forEach((fn) => fn == null ? void 0 : fn());
+    };
+  }
   function queryAll(root, selector) {
     var _a4;
     return Array.from((_a4 = root == null ? void 0 : root.querySelectorAll(selector)) != null ? _a4 : []);
@@ -2049,8 +2114,8 @@ var Corex = (() => {
     return out;
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, REGISTRIES, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, BACKSLASH_RE, DOUBLE_QUOTE_RE, cssesc, getByOwnerId, isOwnedBy, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, IPHONE_REGEX, IPAD_REGEX, MAC_REGEX, APPLE_VENDOR_REGEX, FIREFOX_REGEX, ANDROID_REGEX, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, HEAVY_PROP_KEYS, objectRefIds, nextObjectRefId, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_JPQZXVRQ = __esm({
-    "../priv/static/chunks/chunk-JPQZXVRQ.mjs"() {
+  var init_chunk_CLKNJROH = __esm({
+    "../priv/static/chunks/chunk-CLKNJROH.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2617,9 +2682,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine35, userProps = {}) {
+        constructor(machine38, userProps = {}) {
           var _a4, _b, _c;
-          __publicField2(this, "machine", machine35);
+          __publicField2(this, "machine", machine38);
           __publicField2(this, "scope");
           __publicField2(this, "context");
           __publicField2(this, "prop");
@@ -2767,11 +2832,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a5, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props = (_b2 = (_a5 = machine35.props) == null ? void 0 : _a5.call(machine35, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            const props = (_b2 = (_a5 = machine38.props) == null ? void 0 : _a5.call(machine38, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
             return props[key];
           };
           this.prop = prop;
-          const context = (_a4 = machine35.context) == null ? void 0 : _a4.call(machine35, {
+          const context = (_a4 = machine38.context) == null ? void 0 : _a4.call(machine38, {
             prop,
             bindable,
             scope: this.scope,
@@ -2812,8 +2877,8 @@ var Corex = (() => {
           };
           this.context = ctx;
           const computed = (key) => {
-            ensure(machine35.computed, () => `[zag-js] No computed object found on machine`);
-            return machine35.computed[key]({
+            ensure(machine38.computed, () => `[zag-js] No computed object found on machine`);
+            return machine38.computed[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2823,10 +2888,10 @@ var Corex = (() => {
             });
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine35.refs) == null ? void 0 : _b.call(machine35, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine38.refs) == null ? void 0 : _b.call(machine38, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: resolveStateValue(machine35, machine35.initialState({ prop })),
+            defaultValue: resolveStateValue(machine38, machine38.initialState({ prop })),
             onChange: (nextState, prevState) => {
               var _a5, _b2;
               const { exiting, entering } = getExitEnterStates(this.machine, prevState, nextState, (_a5 = this.transition) == null ? void 0 : _a5.reenter);
@@ -2849,8 +2914,8 @@ var Corex = (() => {
                 }
               });
               if (prevState === INIT_STATE) {
-                this.action(machine35.entry);
-                const cleanup = this.effect(machine35.effects);
+                this.action(machine38.entry);
+                const cleanup = this.effect(machine38.effects);
                 if (cleanup) {
                   const existing = this.effects.get(INIT_STATE);
                   this.effects.set(INIT_STATE, existing ? callAll(existing, cleanup) : cleanup);
@@ -3024,18 +3089,18 @@ var Corex = (() => {
           return connectFn(this.machine.service, normalizeProps);
         }
       };
-      createAnatomy = (name, parts35 = []) => ({
+      createAnatomy = (name, parts38 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts35)) {
+          if (isEmpty(parts38)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts35, ...values]),
-        omit: (...values) => createAnatomy(name, parts35.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts35),
-        keys: () => parts35,
-        build: () => [...new Set(parts35)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts38, ...values]),
+        omit: (...values) => createAnatomy(name, parts38.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts38),
+        keys: () => parts38,
+        build: () => [...new Set(parts38)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -3053,7 +3118,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-BF7VYAZN.mjs
+  // ../priv/static/chunks/chunk-SHBNM52E.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -3375,15 +3440,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_BF7VYAZN = __esm({
-    "../priv/static/chunks/chunk-BF7VYAZN.mjs"() {
+  var init_chunk_SHBNM52E = __esm({
+    "../priv/static/chunks/chunk-SHBNM52E.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-I5HWU3ET.mjs
+  // ../priv/static/chunks/chunk-PWB4AEF6.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3666,10 +3731,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_I5HWU3ET = __esm({
-    "../priv/static/chunks/chunk-I5HWU3ET.mjs"() {
+  var init_chunk_PWB4AEF6 = __esm({
+    "../priv/static/chunks/chunk-PWB4AEF6.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
@@ -3973,10 +4038,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_BF7VYAZN();
-      init_chunk_I5HWU3ET();
+      init_chunk_SHBNM52E();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4515,7 +4580,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-F6YUZM6O.mjs
+  // ../priv/static/chunks/chunk-POHGVU2K.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -4722,10 +4787,10 @@ var Corex = (() => {
     syncLiveViewFormInput(input, getValue, onTouched);
   }
   var PHX_HAS_FOCUSED;
-  var init_chunk_F6YUZM6O = __esm({
-    "../priv/static/chunks/chunk-F6YUZM6O.mjs"() {
+  var init_chunk_POHGVU2K = __esm({
+    "../priv/static/chunks/chunk-POHGVU2K.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
@@ -5016,10 +5081,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_UZJUBX5G();
       init_chunk_AJX2XHOK();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -5461,7 +5526,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -6129,7 +6194,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_AJX2XHOK();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6871,7 +6936,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-CPYFNSV2.mjs
+  // ../priv/static/chunks/chunk-RHLZLEPV.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -7008,10 +7073,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, interactiveContentSelector, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, pendingLabelControl, hasBlurredWindowRecently, lastPointerPosition, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_CPYFNSV2 = __esm({
-    "../priv/static/chunks/chunk-CPYFNSV2.mjs"() {
+  var init_chunk_RHLZLEPV = __esm({
+    "../priv/static/chunks/chunk-RHLZLEPV.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       interactiveContentSelector = [
         "a[href]",
@@ -7197,11 +7262,11 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_CPYFNSV2();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_RHLZLEPV();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -7520,7 +7585,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4Z6E5U4O.mjs
+  // ../priv/static/chunks/chunk-OWGIU2G5.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -7543,10 +7608,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_4Z6E5U4O = __esm({
-    "../priv/static/chunks/chunk-4Z6E5U4O.mjs"() {
+  var init_chunk_OWGIU2G5 = __esm({
+    "../priv/static/chunks/chunk-OWGIU2G5.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7724,9 +7789,9 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_4Z6E5U4O();
+      init_chunk_OWGIU2G5();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -8037,9 +8102,9 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_AJX2XHOK();
-      init_chunk_I5HWU3ET();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -8406,13 +8471,2404 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-56433QZX.mjs
+  // ../priv/static/chunks/chunk-ZUMK6UW2.mjs
+  function insert(items, index, ...values) {
+    return [...items.slice(0, index), ...values, ...items.slice(index)];
+  }
+  function move(items, indices, toIndex) {
+    indices = [...indices].sort((a2, b2) => a2 - b2);
+    const itemsToMove = indices.map((i2) => items[i2]);
+    for (let i2 = indices.length - 1; i2 >= 0; i2--) {
+      items = [...items.slice(0, indices[i2]), ...items.slice(indices[i2] + 1)];
+    }
+    toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
+    return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
+  }
+  function isGridCollection(v2) {
+    return hasProp(v2, "columnCount") && hasProp(v2, "getRows");
+  }
+  function resolveSelectedItems({
+    values,
+    collection: collection5,
+    selectedItemMap
+  }) {
+    var _a4;
+    const result = [];
+    for (const value of values) {
+      const item = (_a4 = collection5.find(value)) != null ? _a4 : selectedItemMap.get(value);
+      if (item != null) result.push(item);
+    }
+    return result;
+  }
+  function updateSelectedItemMap({
+    selectedItemMap,
+    values,
+    selectedItems,
+    collection: collection5
+  }) {
+    const nextMap = new Map(selectedItemMap);
+    for (const item of selectedItems) {
+      const value = collection5.getItemValue(item);
+      if (value != null) nextMap.set(value, item);
+    }
+    const allowedValues = new Set(values);
+    for (const value of nextMap.keys()) {
+      if (!allowedValues.has(value)) nextMap.delete(value);
+    }
+    return nextMap;
+  }
+  function deriveSelectionState({
+    values,
+    collection: collection5,
+    selectedItemMap
+  }) {
+    const selectedItems = resolveSelectedItems({ values, collection: collection5, selectedItemMap });
+    const nextSelectedItemMap = updateSelectedItemMap({
+      selectedItemMap,
+      values,
+      selectedItems,
+      collection: collection5
+    });
+    return { selectedItems, nextSelectedItemMap };
+  }
+  function createSelectedItemMap({
+    selectedItems,
+    collection: collection5
+  }) {
+    return updateSelectedItemMap({
+      selectedItemMap: /* @__PURE__ */ new Map(),
+      values: selectedItems.map((item) => collection5.getItemValue(item)).filter(Boolean),
+      selectedItems,
+      collection: collection5
+    });
+  }
+  function access(node, indexPath, options) {
+    for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
+    return node;
+  }
+  function ancestorIndexPaths(indexPaths) {
+    const sortedPaths = sortIndexPaths(indexPaths);
+    const result = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (const indexPath of sortedPaths) {
+      const key = indexPath.join();
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(indexPath);
+      }
+    }
+    return result;
+  }
+  function compareIndexPaths(a2, b2) {
+    for (let i2 = 0; i2 < Math.min(a2.length, b2.length); i2++) {
+      if (a2[i2] < b2[i2]) return -1;
+      if (a2[i2] > b2[i2]) return 1;
+    }
+    return a2.length - b2.length;
+  }
+  function sortIndexPaths(indexPaths) {
+    return indexPaths.sort(compareIndexPaths);
+  }
+  function find(node, options) {
+    let found;
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) {
+          found = child;
+          return "stop";
+        }
+      }
+    }));
+    return found;
+  }
+  function findAll(node, options) {
+    const found = [];
+    visit(node, {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) found.push(child);
+      },
+      getChildren: options.getChildren
+    });
+    return found;
+  }
+  function findIndexPath(node, options) {
+    let found;
+    visit(node, {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) {
+          found = [...indexPath];
+          return "stop";
+        }
+      },
+      getChildren: options.getChildren
+    });
+    return found;
+  }
+  function reduce(node, options) {
+    let result = options.initialResult;
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onEnter: (child, indexPath) => {
+        result = options.nextResult(result, child, indexPath);
+      }
+    }));
+    return result;
+  }
+  function flatMap(node, options) {
+    return reduce(node, __spreadProps(__spreadValues({}, options), {
+      initialResult: [],
+      nextResult: (result, child, indexPath) => {
+        result.push(...options.transform(child, indexPath));
+        return result;
+      }
+    }));
+  }
+  function filter(node, options) {
+    const { predicate, create, getChildren } = options;
+    const filterRecursive = (node2, indexPath) => {
+      const children = getChildren(node2, indexPath);
+      const filteredChildren = [];
+      children.forEach((child, index) => {
+        const childIndexPath = [...indexPath, index];
+        const filteredChild = filterRecursive(child, childIndexPath);
+        if (filteredChild) filteredChildren.push(filteredChild);
+      });
+      const isRoot = indexPath.length === 0;
+      const nodeMatches = predicate(node2, indexPath);
+      const hasFilteredChildren = filteredChildren.length > 0;
+      if (isRoot || nodeMatches || hasFilteredChildren) {
+        return create(node2, filteredChildren, indexPath);
+      }
+      return null;
+    };
+    return filterRecursive(node, []) || create(node, [], []);
+  }
+  function flatten(rootNode, options) {
+    const nodes = [];
+    let idx = 0;
+    const idxMap = /* @__PURE__ */ new Map();
+    const parentMap = /* @__PURE__ */ new Map();
+    visit(rootNode, {
+      getChildren: options.getChildren,
+      onEnter: (node, indexPath) => {
+        if (!idxMap.has(node)) {
+          idxMap.set(node, idx++);
+        }
+        const children = options.getChildren(node, indexPath);
+        children.forEach((child) => {
+          if (!parentMap.has(child)) {
+            parentMap.set(child, node);
+          }
+          if (!idxMap.has(child)) {
+            idxMap.set(child, idx++);
+          }
+        });
+        const _children = children.length > 0 ? children.map((child) => idxMap.get(child)) : void 0;
+        const parent = parentMap.get(node);
+        const _parent = parent ? idxMap.get(parent) : void 0;
+        const _index = idxMap.get(node);
+        nodes.push(__spreadProps(__spreadValues({}, node), { _children, _parent, _index }));
+      }
+    });
+    return nodes;
+  }
+  function insertOperation(index, nodes) {
+    return { type: "insert", index, nodes };
+  }
+  function removeOperation(indexes) {
+    return { type: "remove", indexes };
+  }
+  function replaceOperation() {
+    return { type: "replace" };
+  }
+  function splitIndexPath(indexPath) {
+    return [indexPath.slice(0, -1), indexPath[indexPath.length - 1]];
+  }
+  function getInsertionOperations(indexPath, nodes, operations = /* @__PURE__ */ new Map()) {
+    var _a4;
+    const [parentIndexPath, index] = splitIndexPath(indexPath);
+    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
+      const parentKey = parentIndexPath.slice(0, i2).join();
+      switch ((_a4 = operations.get(parentKey)) == null ? void 0 : _a4.type) {
+        case "remove":
+          continue;
+      }
+      operations.set(parentKey, replaceOperation());
+    }
+    const operation = operations.get(parentIndexPath.join());
+    switch (operation == null ? void 0 : operation.type) {
+      case "remove":
+        operations.set(parentIndexPath.join(), {
+          type: "removeThenInsert",
+          removeIndexes: operation.indexes,
+          insertIndex: index,
+          insertNodes: nodes
+        });
+        break;
+      default:
+        operations.set(parentIndexPath.join(), insertOperation(index, nodes));
+    }
+    return operations;
+  }
+  function getRemovalOperations(indexPaths) {
+    var _a4;
+    const operations = /* @__PURE__ */ new Map();
+    const indexesToRemove = /* @__PURE__ */ new Map();
+    for (const indexPath of indexPaths) {
+      const parentKey = indexPath.slice(0, -1).join();
+      const value = (_a4 = indexesToRemove.get(parentKey)) != null ? _a4 : [];
+      value.push(indexPath[indexPath.length - 1]);
+      indexesToRemove.set(
+        parentKey,
+        value.sort((a2, b2) => a2 - b2)
+      );
+    }
+    for (const indexPath of indexPaths) {
+      for (let i2 = indexPath.length - 2; i2 >= 0; i2--) {
+        const parentKey = indexPath.slice(0, i2).join();
+        if (!operations.has(parentKey)) {
+          operations.set(parentKey, replaceOperation());
+        }
+      }
+    }
+    for (const [parentKey, indexes] of indexesToRemove) {
+      operations.set(parentKey, removeOperation(indexes));
+    }
+    return operations;
+  }
+  function getReplaceOperations(indexPath, node) {
+    const operations = /* @__PURE__ */ new Map();
+    const [parentIndexPath, index] = splitIndexPath(indexPath);
+    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
+      const parentKey = parentIndexPath.slice(0, i2).join();
+      operations.set(parentKey, replaceOperation());
+    }
+    operations.set(parentIndexPath.join(), {
+      type: "removeThenInsert",
+      removeIndexes: [index],
+      insertIndex: index,
+      insertNodes: [node]
+    });
+    return operations;
+  }
+  function mutate(node, operations, options) {
+    return map(node, __spreadProps(__spreadValues({}, options), {
+      getChildren: (node2, indexPath) => {
+        const key = indexPath.join();
+        const operation = operations.get(key);
+        switch (operation == null ? void 0 : operation.type) {
+          case "replace":
+          case "remove":
+          case "removeThenInsert":
+          case "insert":
+            return options.getChildren(node2, indexPath);
+          default:
+            return [];
+        }
+      },
+      transform: (node2, children, indexPath) => {
+        const key = indexPath.join();
+        const operation = operations.get(key);
+        switch (operation == null ? void 0 : operation.type) {
+          case "remove":
+            return options.create(
+              node2,
+              children.filter((_2, index) => !operation.indexes.includes(index)),
+              indexPath
+            );
+          case "removeThenInsert":
+            const updatedChildren = children.filter((_2, index) => !operation.removeIndexes.includes(index));
+            const adjustedIndex = operation.removeIndexes.reduce(
+              (index, removedIndex) => removedIndex < index ? index - 1 : index,
+              operation.insertIndex
+            );
+            return options.create(node2, splice(updatedChildren, adjustedIndex, 0, ...operation.insertNodes), indexPath);
+          case "insert":
+            return options.create(node2, splice(children, operation.index, 0, ...operation.nodes), indexPath);
+          case "replace":
+            return options.create(node2, children, indexPath);
+          default:
+            return node2;
+        }
+      }
+    }));
+  }
+  function splice(array, start, deleteCount, ...items) {
+    return [...array.slice(0, start), ...items, ...array.slice(start + deleteCount)];
+  }
+  function map(node, options) {
+    const childrenMap = {};
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onLeave: (child, indexPath) => {
+        var _a4, _b;
+        const keyIndexPath = [0, ...indexPath];
+        const key = keyIndexPath.join();
+        const transformed = options.transform(child, (_a4 = childrenMap[key]) != null ? _a4 : [], indexPath);
+        const parentKey = keyIndexPath.slice(0, -1).join();
+        const parentChildren = (_b = childrenMap[parentKey]) != null ? _b : [];
+        parentChildren.push(transformed);
+        childrenMap[parentKey] = parentChildren;
+      }
+    }));
+    return childrenMap[""][0];
+  }
+  function insert2(node, options) {
+    const { nodes, at } = options;
+    if (at.length === 0) throw new Error(`Can't insert nodes at the root`);
+    const state2 = getInsertionOperations(at, nodes);
+    return mutate(node, state2, options);
+  }
+  function replace(node, options) {
+    if (options.at.length === 0) return options.node;
+    const operations = getReplaceOperations(options.at, options.node);
+    return mutate(node, operations, options);
+  }
+  function remove2(node, options) {
+    if (options.indexPaths.length === 0) return node;
+    for (const indexPath of options.indexPaths) {
+      if (indexPath.length === 0) throw new Error(`Can't remove the root node`);
+    }
+    const operations = getRemovalOperations(options.indexPaths);
+    return mutate(node, operations, options);
+  }
+  function move2(node, options) {
+    if (options.indexPaths.length === 0) return node;
+    for (const indexPath of options.indexPaths) {
+      if (indexPath.length === 0) throw new Error(`Can't move the root node`);
+    }
+    if (options.to.length === 0) throw new Error(`Can't move nodes to the root`);
+    const _ancestorIndexPaths = ancestorIndexPaths(options.indexPaths);
+    const nodesToInsert = _ancestorIndexPaths.map((indexPath) => access(node, indexPath, options));
+    const operations = getInsertionOperations(options.to, nodesToInsert, getRemovalOperations(_ancestorIndexPaths));
+    return mutate(node, operations, options);
+  }
+  function visit(node, options) {
+    const { onEnter, onLeave, getChildren } = options;
+    let indexPath = [];
+    let stack = [{ node }];
+    const getIndexPath = options.reuseIndexPath ? () => indexPath : () => indexPath.slice();
+    while (stack.length > 0) {
+      let wrapper = stack[stack.length - 1];
+      if (wrapper.state === void 0) {
+        const enterResult = onEnter == null ? void 0 : onEnter(wrapper.node, getIndexPath());
+        if (enterResult === "stop") return;
+        wrapper.state = enterResult === "skip" ? -1 : 0;
+      }
+      const children = wrapper.children || getChildren(wrapper.node, getIndexPath());
+      wrapper.children || (wrapper.children = children);
+      if (wrapper.state !== -1) {
+        if (wrapper.state < children.length) {
+          let currentIndex = wrapper.state;
+          indexPath.push(currentIndex);
+          stack.push({ node: children[currentIndex] });
+          wrapper.state = currentIndex + 1;
+          continue;
+        }
+        const leaveResult = onLeave == null ? void 0 : onLeave(wrapper.node, getIndexPath());
+        if (leaveResult === "stop") return;
+      }
+      indexPath.pop();
+      stack.pop();
+    }
+  }
+  var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
+  var init_chunk_ZUMK6UW2 = __esm({
+    "../priv/static/chunks/chunk-ZUMK6UW2.mjs"() {
+      "use strict";
+      init_chunk_CLKNJROH();
+      __defProp5 = Object.defineProperty;
+      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
+      fallback = {
+        itemToValue(item) {
+          if (typeof item === "string") return item;
+          if (isObject(item) && hasProp(item, "value")) return item.value;
+          return "";
+        },
+        itemToString(item) {
+          if (typeof item === "string") return item;
+          if (isObject(item) && hasProp(item, "label")) return item.label;
+          return fallback.itemToValue(item);
+        },
+        isItemDisabled(item) {
+          if (isObject(item) && hasProp(item, "disabled")) return !!item.disabled;
+          return false;
+        }
+      };
+      ListCollection = class _ListCollection {
+        constructor(options) {
+          __publicField5(this, "options", options);
+          __publicField5(this, "items");
+          __publicField5(this, "indexMap", null);
+          __publicField5(this, "copy", (items) => {
+            return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
+          });
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual(this.items, other.items);
+          });
+          __publicField5(this, "setItems", (items) => {
+            return this.copy(items);
+          });
+          __publicField5(this, "getValues", (items = this.items) => {
+            const values = [];
+            for (const item of items) {
+              const value = this.getItemValue(item);
+              if (value != null) values.push(value);
+            }
+            return values;
+          });
+          __publicField5(this, "find", (value) => {
+            if (value == null) return null;
+            const index = this.indexOf(value);
+            return index !== -1 ? this.at(index) : null;
+          });
+          __publicField5(this, "findMany", (values) => {
+            const result = [];
+            for (const value of values) {
+              const item = this.find(value);
+              if (item != null) result.push(item);
+            }
+            return result;
+          });
+          __publicField5(this, "at", (index) => {
+            var _a4;
+            if (!this.options.groupBy && !this.options.groupSort) {
+              return (_a4 = this.items[index]) != null ? _a4 : null;
+            }
+            let idx = 0;
+            const groups = this.group();
+            for (const [, items] of groups) {
+              for (const item of items) {
+                if (idx === index) return item;
+                idx++;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "sortFn", (valueA, valueB) => {
+            const indexA = this.indexOf(valueA);
+            const indexB = this.indexOf(valueB);
+            return (indexA != null ? indexA : 0) - (indexB != null ? indexB : 0);
+          });
+          __publicField5(this, "sort", (values) => {
+            return [...values].sort(this.sortFn.bind(this));
+          });
+          __publicField5(this, "getItemValue", (item) => {
+            var _a4, _b, _c;
+            if (item == null) return null;
+            return (_c = (_b = (_a4 = this.options).itemToValue) == null ? void 0 : _b.call(_a4, item)) != null ? _c : fallback.itemToValue(item);
+          });
+          __publicField5(this, "getItemDisabled", (item) => {
+            var _a4, _b, _c;
+            if (item == null) return false;
+            return (_c = (_b = (_a4 = this.options).isItemDisabled) == null ? void 0 : _b.call(_a4, item)) != null ? _c : fallback.isItemDisabled(item);
+          });
+          __publicField5(this, "stringifyItem", (item) => {
+            var _a4, _b, _c;
+            if (item == null) return null;
+            return (_c = (_b = (_a4 = this.options).itemToString) == null ? void 0 : _b.call(_a4, item)) != null ? _c : fallback.itemToString(item);
+          });
+          __publicField5(this, "stringify", (value) => {
+            if (value == null) return null;
+            return this.stringifyItem(this.find(value));
+          });
+          __publicField5(this, "stringifyItems", (items, separator = ", ") => {
+            const strs = [];
+            for (const item of items) {
+              const str = this.stringifyItem(item);
+              if (str != null) strs.push(str);
+            }
+            return strs.join(separator);
+          });
+          __publicField5(this, "stringifyMany", (value, separator) => {
+            return this.stringifyItems(this.findMany(value), separator);
+          });
+          __publicField5(this, "has", (value) => {
+            return this.indexOf(value) !== -1;
+          });
+          __publicField5(this, "hasItem", (item) => {
+            if (item == null) return false;
+            return this.has(this.getItemValue(item));
+          });
+          __publicField5(this, "group", () => {
+            const { groupBy, groupSort } = this.options;
+            if (!groupBy) return [["", [...this.items]]];
+            const groups = /* @__PURE__ */ new Map();
+            this.items.forEach((item, index) => {
+              const groupKey = groupBy(item, index);
+              if (!groups.has(groupKey)) {
+                groups.set(groupKey, []);
+              }
+              groups.get(groupKey).push(item);
+            });
+            let entries = Array.from(groups.entries());
+            if (groupSort) {
+              entries.sort(([a2], [b2]) => {
+                if (typeof groupSort === "function") return groupSort(a2, b2);
+                if (Array.isArray(groupSort)) {
+                  const indexA = groupSort.indexOf(a2);
+                  const indexB = groupSort.indexOf(b2);
+                  if (indexA === -1) return 1;
+                  if (indexB === -1) return -1;
+                  return indexA - indexB;
+                }
+                if (groupSort === "asc") return a2.localeCompare(b2);
+                if (groupSort === "desc") return b2.localeCompare(a2);
+                return 0;
+              });
+            }
+            return entries;
+          });
+          __publicField5(this, "getNextValue", (value, step = 1, clamp5 = false) => {
+            let index = this.indexOf(value);
+            if (index === -1) return null;
+            index = clamp5 ? Math.min(index + step, this.size - 1) : index + step;
+            while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
+            return this.getItemValue(this.at(index));
+          });
+          __publicField5(this, "getPreviousValue", (value, step = 1, clamp5 = false) => {
+            let index = this.indexOf(value);
+            if (index === -1) return null;
+            index = clamp5 ? Math.max(index - step, 0) : index - step;
+            while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
+            return this.getItemValue(this.at(index));
+          });
+          __publicField5(this, "indexOf", (value) => {
+            var _a4;
+            if (value == null) return -1;
+            if (!this.options.groupBy && !this.options.groupSort) {
+              return this.items.findIndex((item) => this.getItemValue(item) === value);
+            }
+            if (!this.indexMap) {
+              this.indexMap = /* @__PURE__ */ new Map();
+              let idx = 0;
+              const groups = this.group();
+              for (const [, items] of groups) {
+                for (const item of items) {
+                  const itemValue2 = this.getItemValue(item);
+                  if (itemValue2 != null) {
+                    this.indexMap.set(itemValue2, idx);
+                  }
+                  idx++;
+                }
+              }
+            }
+            return (_a4 = this.indexMap.get(value)) != null ? _a4 : -1;
+          });
+          __publicField5(this, "getByText", (text, current) => {
+            const currentIndex = current != null ? this.indexOf(current) : -1;
+            const isSingleKey = text.length === 1;
+            for (let i2 = 0; i2 < this.items.length; i2++) {
+              const item = this.items[(currentIndex + i2 + 1) % this.items.length];
+              if (isSingleKey && this.getItemValue(item) === current) continue;
+              if (this.getItemDisabled(item)) continue;
+              if (match3(this.stringifyItem(item), text)) return item;
+            }
+            return void 0;
+          });
+          __publicField5(this, "search", (queryString, options2) => {
+            const { state: state2, currentValue, timeout = 350 } = options2;
+            const search = state2.keysSoFar + queryString;
+            const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+            const query2 = isRepeated ? search[0] : search;
+            const item = this.getByText(query2, currentValue);
+            const value = this.getItemValue(item);
+            function cleanup() {
+              clearTimeout(state2.timer);
+              state2.timer = -1;
+            }
+            function update(value2) {
+              state2.keysSoFar = value2;
+              cleanup();
+              if (value2 !== "") {
+                state2.timer = +setTimeout(() => {
+                  update("");
+                  cleanup();
+                }, timeout);
+              }
+            }
+            update(search);
+            return value;
+          });
+          __publicField5(this, "update", (value, item) => {
+            let index = this.indexOf(value);
+            if (index === -1) return this;
+            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
+          });
+          __publicField5(this, "upsert", (value, item, mode = "append") => {
+            let index = this.indexOf(value);
+            if (index === -1) {
+              const fn = mode === "append" ? this.append : this.prepend;
+              return fn(item);
+            }
+            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
+          });
+          __publicField5(this, "insert", (index, ...items) => {
+            return this.copy(insert(this.items, index, ...items));
+          });
+          __publicField5(this, "insertBefore", (value, ...items) => {
+            let toIndex = this.indexOf(value);
+            if (toIndex === -1) {
+              if (this.items.length === 0) toIndex = 0;
+              else return this;
+            }
+            return this.copy(insert(this.items, toIndex, ...items));
+          });
+          __publicField5(this, "insertAfter", (value, ...items) => {
+            let toIndex = this.indexOf(value);
+            if (toIndex === -1) {
+              if (this.items.length === 0) toIndex = 0;
+              else return this;
+            }
+            return this.copy(insert(this.items, toIndex + 1, ...items));
+          });
+          __publicField5(this, "prepend", (...items) => {
+            return this.copy(insert(this.items, 0, ...items));
+          });
+          __publicField5(this, "append", (...items) => {
+            return this.copy(insert(this.items, this.items.length, ...items));
+          });
+          __publicField5(this, "filter", (fn) => {
+            const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
+            return this.copy(filteredItems);
+          });
+          __publicField5(this, "remove", (...itemsOrValues) => {
+            const values = itemsOrValues.map(
+              (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
+            );
+            return this.copy(
+              this.items.filter((item) => {
+                const value = this.getItemValue(item);
+                if (value == null) return false;
+                return !values.includes(value);
+              })
+            );
+          });
+          __publicField5(this, "move", (value, toIndex) => {
+            const fromIndex = this.indexOf(value);
+            if (fromIndex === -1) return this;
+            return this.copy(move(this.items, [fromIndex], toIndex));
+          });
+          __publicField5(this, "moveBefore", (value, ...values) => {
+            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
+            if (toIndex === -1) return this;
+            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
+            return this.copy(move(this.items, indices, toIndex));
+          });
+          __publicField5(this, "moveAfter", (value, ...values) => {
+            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
+            if (toIndex === -1) return this;
+            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
+            return this.copy(move(this.items, indices, toIndex + 1));
+          });
+          __publicField5(this, "reorder", (fromIndex, toIndex) => {
+            return this.copy(move(this.items, [fromIndex], toIndex));
+          });
+          __publicField5(this, "compareValue", (a2, b2) => {
+            const indexA = this.indexOf(a2);
+            const indexB = this.indexOf(b2);
+            if (indexA < indexB) return -1;
+            if (indexA > indexB) return 1;
+            return 0;
+          });
+          __publicField5(this, "range", (from, to) => {
+            let keys = [];
+            let key = from;
+            while (key != null) {
+              let item = this.find(key);
+              if (item) keys.push(key);
+              if (key === to) return keys;
+              key = this.getNextValue(key);
+            }
+            return [];
+          });
+          __publicField5(this, "getValueRange", (from, to) => {
+            if (from && to) {
+              if (this.compareValue(from, to) <= 0) {
+                return this.range(from, to);
+              }
+              return this.range(to, from);
+            }
+            return [];
+          });
+          __publicField5(this, "toString", () => {
+            let result = "";
+            for (const item of this.items) {
+              const value = this.getItemValue(item);
+              const label = this.stringifyItem(item);
+              const disabled = this.getItemDisabled(item);
+              const itemString = [value, label, disabled].filter(Boolean).join(":");
+              result += itemString + ",";
+            }
+            return result;
+          });
+          __publicField5(this, "toJSON", () => {
+            return {
+              size: this.size,
+              first: this.firstValue,
+              last: this.lastValue
+            };
+          });
+          this.items = [...options.items];
+        }
+        /**
+         * Returns the number of items in the collection
+         */
+        get size() {
+          return this.items.length;
+        }
+        /**
+         * Returns the first value in the collection
+         */
+        get firstValue() {
+          let index = 0;
+          while (this.getItemDisabled(this.at(index))) index++;
+          return this.getItemValue(this.at(index));
+        }
+        /**
+         * Returns the last value in the collection
+         */
+        get lastValue() {
+          let index = this.size - 1;
+          while (this.getItemDisabled(this.at(index))) index--;
+          return this.getItemValue(this.at(index));
+        }
+        *[Symbol.iterator]() {
+          yield* __yieldStar(this.items);
+        }
+      };
+      match3 = (label, query2) => {
+        return !!(label == null ? void 0 : label.toLowerCase().startsWith(query2.toLowerCase()));
+      };
+      GridCollection = class extends ListCollection {
+        constructor(options) {
+          const { columnCount } = options;
+          super(options);
+          __publicField5(this, "columnCount");
+          __publicField5(this, "rows", null);
+          __publicField5(this, "getRows", () => {
+            if (!this.rows) {
+              this.rows = chunk([...this.items], this.columnCount);
+            }
+            return this.rows;
+          });
+          __publicField5(this, "getRowCount", () => {
+            return Math.ceil(this.items.length / this.columnCount);
+          });
+          __publicField5(this, "getCellIndex", (row, column) => {
+            return row * this.columnCount + column;
+          });
+          __publicField5(this, "getCell", (row, column) => {
+            return this.at(this.getCellIndex(row, column));
+          });
+          __publicField5(this, "getValueCell", (value) => {
+            const index = this.indexOf(value);
+            if (index === -1) return null;
+            const row = Math.floor(index / this.columnCount);
+            const column = index % this.columnCount;
+            return { row, column };
+          });
+          __publicField5(this, "getLastEnabledColumnIndex", (row) => {
+            for (let col = this.columnCount - 1; col >= 0; col--) {
+              const cell = this.getCell(row, col);
+              if (cell && !this.getItemDisabled(cell)) {
+                return col;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "getFirstEnabledColumnIndex", (row) => {
+            for (let col = 0; col < this.columnCount; col++) {
+              const cell = this.getCell(row, col);
+              if (cell && !this.getItemDisabled(cell)) {
+                return col;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "getPreviousRowValue", (value, loop = false) => {
+            const currentCell = this.getValueCell(value);
+            if (currentCell === null) return null;
+            const rows = this.getRows();
+            const rowCount = rows.length;
+            let prevRowIndex = currentCell.row;
+            let prevColumnIndex = currentCell.column;
+            for (let i2 = 1; i2 <= rowCount; i2++) {
+              prevRowIndex = prevIndex(rows, prevRowIndex, { loop });
+              const prevRow = rows[prevRowIndex];
+              if (!prevRow) continue;
+              const prevCell = prevRow[prevColumnIndex];
+              if (!prevCell) {
+                const lastColumnIndex = this.getLastEnabledColumnIndex(prevRowIndex);
+                if (lastColumnIndex != null) {
+                  prevColumnIndex = lastColumnIndex;
+                }
+              }
+              const cell = this.getCell(prevRowIndex, prevColumnIndex);
+              if (!this.getItemDisabled(cell)) {
+                return this.getItemValue(cell);
+              }
+            }
+            return this.firstValue;
+          });
+          __publicField5(this, "getNextRowValue", (value, loop = false) => {
+            const currentCell = this.getValueCell(value);
+            if (currentCell === null) return null;
+            const rows = this.getRows();
+            const rowCount = rows.length;
+            let nextRowIndex = currentCell.row;
+            let nextColumnIndex = currentCell.column;
+            for (let i2 = 1; i2 <= rowCount; i2++) {
+              nextRowIndex = nextIndex(rows, nextRowIndex, { loop });
+              const nextRow = rows[nextRowIndex];
+              if (!nextRow) continue;
+              const nextCell = nextRow[nextColumnIndex];
+              if (!nextCell) {
+                const lastColumnIndex = this.getLastEnabledColumnIndex(nextRowIndex);
+                if (lastColumnIndex != null) {
+                  nextColumnIndex = lastColumnIndex;
+                }
+              }
+              const cell = this.getCell(nextRowIndex, nextColumnIndex);
+              if (!this.getItemDisabled(cell)) {
+                return this.getItemValue(cell);
+              }
+            }
+            return this.lastValue;
+          });
+          this.columnCount = columnCount;
+        }
+      };
+      Selection = class _Selection extends Set {
+        constructor(values = []) {
+          super(values);
+          __publicField5(this, "selectionMode", "single");
+          __publicField5(this, "deselectable", true);
+          __publicField5(this, "copy", () => {
+            const clone = new _Selection([...this]);
+            return this.sync(clone);
+          });
+          __publicField5(this, "sync", (other) => {
+            other.selectionMode = this.selectionMode;
+            other.deselectable = this.deselectable;
+            return other;
+          });
+          __publicField5(this, "isEmpty", () => {
+            return this.size === 0;
+          });
+          __publicField5(this, "isSelected", (value) => {
+            if (this.selectionMode === "none" || value == null) {
+              return false;
+            }
+            return this.has(value);
+          });
+          __publicField5(this, "canSelect", (collection5, value) => {
+            return this.selectionMode !== "none" || !collection5.getItemDisabled(collection5.find(value));
+          });
+          __publicField5(this, "firstSelectedValue", (collection5) => {
+            let firstValue = null;
+            for (let value of this) {
+              if (!firstValue || collection5.compareValue(value, firstValue) < 0) {
+                firstValue = value;
+              }
+            }
+            return firstValue;
+          });
+          __publicField5(this, "lastSelectedValue", (collection5) => {
+            let lastValue = null;
+            for (let value of this) {
+              if (!lastValue || collection5.compareValue(value, lastValue) > 0) {
+                lastValue = value;
+              }
+            }
+            return lastValue;
+          });
+          __publicField5(this, "extendSelection", (collection5, anchorValue, targetValue) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single") {
+              return this.replaceSelection(collection5, targetValue);
+            }
+            const selection = this.copy();
+            const lastSelected = Array.from(this).pop();
+            for (let key of collection5.getValueRange(anchorValue, lastSelected != null ? lastSelected : targetValue)) {
+              selection.delete(key);
+            }
+            for (let key of collection5.getValueRange(targetValue, anchorValue)) {
+              if (this.canSelect(collection5, key)) {
+                selection.add(key);
+              }
+            }
+            return selection;
+          });
+          __publicField5(this, "toggleSelection", (collection5, value) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single" && !this.isSelected(value)) {
+              return this.replaceSelection(collection5, value);
+            }
+            const selection = this.copy();
+            if (selection.has(value)) {
+              selection.delete(value);
+            } else if (selection.canSelect(collection5, value)) {
+              selection.add(value);
+            }
+            return selection;
+          });
+          __publicField5(this, "replaceSelection", (collection5, value) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (value == null) {
+              return this;
+            }
+            if (!this.canSelect(collection5, value)) {
+              return this;
+            }
+            const selection = new _Selection([value]);
+            return this.sync(selection);
+          });
+          __publicField5(this, "setSelection", (values2) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            let selection = new _Selection();
+            for (let value of values2) {
+              if (value != null) {
+                selection.add(value);
+                if (this.selectionMode === "single") {
+                  break;
+                }
+              }
+            }
+            return this.sync(selection);
+          });
+          __publicField5(this, "clearSelection", () => {
+            const selection = this.copy();
+            if (selection.deselectable && selection.size > 0) {
+              selection.clear();
+            }
+            return selection;
+          });
+          __publicField5(this, "select", (collection5, value, forceToggle) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single") {
+              if (this.isSelected(value) && this.deselectable) {
+                return this.toggleSelection(collection5, value);
+              } else {
+                return this.replaceSelection(collection5, value);
+              }
+            } else if (this.selectionMode === "multiple" || forceToggle) {
+              return this.toggleSelection(collection5, value);
+            } else {
+              return this.replaceSelection(collection5, value);
+            }
+          });
+          __publicField5(this, "deselect", (value) => {
+            const selection = this.copy();
+            selection.delete(value);
+            return selection;
+          });
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual(Array.from(this), Array.from(other));
+          });
+        }
+      };
+      TreeCollection = class _TreeCollection {
+        constructor(options) {
+          __publicField5(this, "options", options);
+          __publicField5(this, "rootNode");
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual(this.rootNode, other.rootNode);
+          });
+          __publicField5(this, "getNodeChildren", (node) => {
+            var _a4, _b, _c, _d;
+            return (_d = (_c = (_b = (_a4 = this.options).nodeToChildren) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
+          });
+          __publicField5(this, "resolveIndexPath", (valueOrIndexPath) => {
+            return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
+          });
+          __publicField5(this, "resolveNode", (valueOrIndexPath) => {
+            const indexPath = this.resolveIndexPath(valueOrIndexPath);
+            return indexPath ? this.at(indexPath) : void 0;
+          });
+          __publicField5(this, "getNodeChildrenCount", (node) => {
+            var _a4, _b, _c;
+            return (_c = (_b = (_a4 = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
+          });
+          __publicField5(this, "getNodeValue", (node) => {
+            var _a4, _b, _c;
+            return (_c = (_b = (_a4 = this.options).nodeToValue) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToValue(node);
+          });
+          __publicField5(this, "getNodeDisabled", (node) => {
+            var _a4, _b, _c;
+            return (_c = (_b = (_a4 = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
+          });
+          __publicField5(this, "stringify", (value) => {
+            const node = this.findNode(value);
+            if (!node) return null;
+            return this.stringifyNode(node);
+          });
+          __publicField5(this, "stringifyNode", (node) => {
+            var _a4, _b, _c;
+            return (_c = (_b = (_a4 = this.options).nodeToString) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToString(node);
+          });
+          __publicField5(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
+            let firstChild;
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a4;
+                if (this.isSameNode(node, rootNode)) return;
+                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
+                if (!firstChild && indexPath.length > 0 && !this.getNodeDisabled(node)) {
+                  firstChild = node;
+                  return "stop";
+                }
+              }
+            });
+            return firstChild;
+          });
+          __publicField5(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
+            let lastChild;
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a4;
+                if (this.isSameNode(node, rootNode)) return;
+                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
+                if (indexPath.length > 0 && !this.getNodeDisabled(node)) {
+                  lastChild = node;
+                }
+              }
+            });
+            return lastChild;
+          });
+          __publicField5(this, "at", (indexPath) => {
+            return access(this.rootNode, indexPath, {
+              getChildren: this.getNodeChildren
+            });
+          });
+          __publicField5(this, "findNode", (value, rootNode = this.rootNode) => {
+            return find(rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+          });
+          __publicField5(this, "findNodes", (values, rootNode = this.rootNode) => {
+            const v2 = new Set(values.filter((v22) => v22 != null));
+            return findAll(rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => v2.has(this.getNodeValue(node))
+            });
+          });
+          __publicField5(this, "sort", (values) => {
+            return values.reduce((acc, value) => {
+              const indexPath = this.getIndexPath(value);
+              if (indexPath) acc.push({ value, indexPath });
+              return acc;
+            }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
+          });
+          __publicField5(this, "getValue", (indexPath) => {
+            const node = this.at(indexPath);
+            return node ? this.getNodeValue(node) : void 0;
+          });
+          __publicField5(this, "getValuePath", (indexPath) => {
+            if (!indexPath) return [];
+            const valuePath = [];
+            let currentPath = [...indexPath];
+            while (currentPath.length > 0) {
+              const node = this.at(currentPath);
+              if (node) valuePath.unshift(this.getNodeValue(node));
+              currentPath.pop();
+            }
+            return valuePath;
+          });
+          __publicField5(this, "getDepth", (value) => {
+            var _a4;
+            const indexPath = findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+            return (_a4 = indexPath == null ? void 0 : indexPath.length) != null ? _a4 : 0;
+          });
+          __publicField5(this, "isSameNode", (node, other) => {
+            return this.getNodeValue(node) === this.getNodeValue(other);
+          });
+          __publicField5(this, "isRootNode", (node) => {
+            return this.isSameNode(node, this.rootNode);
+          });
+          __publicField5(this, "contains", (parentIndexPath, valueIndexPath) => {
+            if (!parentIndexPath || !valueIndexPath) return false;
+            return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
+          });
+          __publicField5(this, "getNextNode", (value, opts = {}) => {
+            let found = false;
+            let nextNode;
+            visit(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a4;
+                if (this.isRootNode(node)) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: nodeValue, node, indexPath })) {
+                  if (nodeValue === value) {
+                    found = true;
+                  }
+                  return "skip";
+                }
+                if (found && !this.getNodeDisabled(node)) {
+                  nextNode = node;
+                  return "stop";
+                }
+                if (nodeValue === value) {
+                  found = true;
+                }
+              }
+            });
+            return nextNode;
+          });
+          __publicField5(this, "getPreviousNode", (value, opts = {}) => {
+            let previousNode;
+            let found = false;
+            visit(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a4;
+                if (this.isRootNode(node)) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: nodeValue, node, indexPath })) {
+                  return "skip";
+                }
+                if (nodeValue === value) {
+                  found = true;
+                  return "stop";
+                }
+                if (!this.getNodeDisabled(node)) {
+                  previousNode = node;
+                }
+              }
+            });
+            return found ? previousNode : void 0;
+          });
+          __publicField5(this, "getParentNodes", (valueOrIndexPath) => {
+            var _a4;
+            const indexPath = (_a4 = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a4.slice();
+            if (!indexPath) return [];
+            const result = [];
+            while (indexPath.length > 0) {
+              indexPath.pop();
+              const parentNode = this.at(indexPath);
+              if (parentNode && !this.isRootNode(parentNode)) {
+                result.unshift(parentNode);
+              }
+            }
+            return result;
+          });
+          __publicField5(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
+            const parentNode = this.resolveNode(valueOrIndexPath);
+            if (!parentNode) return [];
+            const result = [];
+            visit(parentNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, nodeIndexPath) => {
+                if (nodeIndexPath.length === 0) return;
+                if (!(options2 == null ? void 0 : options2.withBranch) && this.isBranchNode(node)) return;
+                result.push(node);
+              }
+            });
+            return result;
+          });
+          __publicField5(this, "getDescendantValues", (valueOrIndexPath, options2) => {
+            const children = this.getDescendantNodes(valueOrIndexPath, options2);
+            return children.map((child) => this.getNodeValue(child));
+          });
+          __publicField5(this, "getParentIndexPath", (indexPath) => {
+            return indexPath.slice(0, -1);
+          });
+          __publicField5(this, "getParentNode", (valueOrIndexPath) => {
+            const indexPath = this.resolveIndexPath(valueOrIndexPath);
+            return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
+          });
+          __publicField5(this, "visit", (opts) => {
+            const _a4 = opts, { skip } = _a4, rest = __objRest(_a4, ["skip"]);
+            visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a5;
+                if (this.isRootNode(node)) return;
+                if (skip == null ? void 0 : skip({ value: this.getNodeValue(node), node, indexPath })) return "skip";
+                return (_a5 = rest.onEnter) == null ? void 0 : _a5.call(rest, node, indexPath);
+              }
+            }));
+          });
+          __publicField5(this, "getPreviousSibling", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const siblings = this.getNodeChildren(parentNode);
+            let idx = indexPath[indexPath.length - 1];
+            while (--idx >= 0) {
+              const sibling = siblings[idx];
+              if (!this.getNodeDisabled(sibling)) return sibling;
+            }
+            return;
+          });
+          __publicField5(this, "getNextSibling", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const siblings = this.getNodeChildren(parentNode);
+            let idx = indexPath[indexPath.length - 1];
+            while (++idx < siblings.length) {
+              const sibling = siblings[idx];
+              if (!this.getNodeDisabled(sibling)) return sibling;
+            }
+            return;
+          });
+          __publicField5(this, "getSiblingNodes", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            return parentNode ? this.getNodeChildren(parentNode) : [];
+          });
+          __publicField5(this, "getValues", (rootNode = this.rootNode) => {
+            const values = flatMap(rootNode, {
+              getChildren: this.getNodeChildren,
+              transform: (node) => [this.getNodeValue(node)]
+            });
+            return values.slice(1);
+          });
+          __publicField5(this, "isValidDepth", (indexPath, depth) => {
+            if (depth == null) return true;
+            if (typeof depth === "function") return depth(indexPath.length);
+            return indexPath.length === depth;
+          });
+          __publicField5(this, "isBranchNode", (node) => {
+            return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
+          });
+          __publicField5(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
+            let values = [];
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a4;
+                if (indexPath.length === 0) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: nodeValue, node, indexPath })) return "skip";
+                if (this.isBranchNode(node) && this.isValidDepth(indexPath, opts.depth)) {
+                  values.push(this.getNodeValue(node));
+                }
+              }
+            });
+            return values;
+          });
+          __publicField5(this, "flatten", (rootNode = this.rootNode) => {
+            return flatten(rootNode, { getChildren: this.getNodeChildren });
+          });
+          __publicField5(this, "_create", (node, children) => {
+            if (this.getNodeChildren(node).length > 0 || children.length > 0) {
+              return __spreadProps(__spreadValues({}, node), { children });
+            }
+            return __spreadValues({}, node);
+          });
+          __publicField5(this, "_insert", (rootNode, indexPath, nodes) => {
+            return this.copy(
+              insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
+            );
+          });
+          __publicField5(this, "copy", (rootNode) => {
+            return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
+          });
+          __publicField5(this, "_replace", (rootNode, indexPath, node) => {
+            return this.copy(
+              replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
+            );
+          });
+          __publicField5(this, "_move", (rootNode, indexPaths, to) => {
+            return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
+          });
+          __publicField5(this, "_remove", (rootNode, indexPaths) => {
+            return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
+          });
+          __publicField5(this, "replace", (indexPath, node) => {
+            return this._replace(this.rootNode, indexPath, node);
+          });
+          __publicField5(this, "remove", (indexPaths) => {
+            return this._remove(this.rootNode, indexPaths);
+          });
+          __publicField5(this, "insertBefore", (indexPath, nodes) => {
+            const parentNode = this.getParentNode(indexPath);
+            return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
+          });
+          __publicField5(this, "insertAfter", (indexPath, nodes) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
+            return this._insert(this.rootNode, nextIndex2, nodes);
+          });
+          __publicField5(this, "move", (fromIndexPaths, toIndexPath) => {
+            return this._move(this.rootNode, fromIndexPaths, toIndexPath);
+          });
+          __publicField5(this, "filter", (predicate) => {
+            const filteredRoot = filter(this.rootNode, {
+              predicate,
+              getChildren: this.getNodeChildren,
+              create: this._create
+            });
+            return this.copy(filteredRoot);
+          });
+          __publicField5(this, "toJSON", () => {
+            return this.getValues(this.rootNode);
+          });
+          this.rootNode = options.rootNode;
+        }
+        getIndexPath(valueOrValuePath) {
+          if (Array.isArray(valueOrValuePath)) {
+            if (valueOrValuePath.length === 0) return [];
+            const indexPath = [];
+            let currentChildren = this.getNodeChildren(this.rootNode);
+            for (let i2 = 0; i2 < valueOrValuePath.length; i2++) {
+              const currentValue = valueOrValuePath[i2];
+              const matchingChildIndex = currentChildren.findIndex((child) => this.getNodeValue(child) === currentValue);
+              if (matchingChildIndex === -1) break;
+              indexPath.push(matchingChildIndex);
+              if (i2 < valueOrValuePath.length - 1) {
+                const currentNode = currentChildren[matchingChildIndex];
+                currentChildren = this.getNodeChildren(currentNode);
+              }
+            }
+            return indexPath;
+          } else {
+            return findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === valueOrValuePath
+            });
+          }
+        }
+      };
+      fallbackMethods = {
+        nodeToValue(node) {
+          if (typeof node === "string") return node;
+          if (isObject(node) && hasProp(node, "value")) return node.value;
+          return "";
+        },
+        nodeToString(node) {
+          if (typeof node === "string") return node;
+          if (isObject(node) && hasProp(node, "label")) return node.label;
+          return fallbackMethods.nodeToValue(node);
+        },
+        isNodeDisabled(node) {
+          if (isObject(node) && hasProp(node, "disabled")) return !!node.disabled;
+          return false;
+        },
+        nodeToChildren(node) {
+          return node.children;
+        },
+        nodeToChildrenCount(node) {
+          if (isObject(node) && hasProp(node, "childrenCount")) return node.childrenCount;
+        }
+      };
+    }
+  });
+
+  // ../priv/static/chunks/chunk-KZFRQXNF.mjs
+  function stripLeadingC0AndSpace(destination) {
+    let i2 = 0;
+    while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
+      i2 += 1;
+    }
+    return destination.slice(i2);
+  }
+  function sanitizeRedirectDestination(destination) {
+    const trimmed = stripLeadingC0AndSpace(destination);
+    if (!trimmed) return null;
+    if (trimmed.startsWith("//")) return null;
+    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+    if (schemeMatch) {
+      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+      if (scheme !== "http" && scheme !== "https") return null;
+    }
+    return trimmed;
+  }
+  function isAllowedRedirectDestination(destination) {
+    return sanitizeRedirectDestination(destination) !== null;
+  }
+  function readDomItemRedirect(itemEl, fallback2) {
+    if (!itemEl) {
+      const destination2 = fallback2 ? sanitizeRedirectDestination(fallback2) : null;
+      if (!destination2) return null;
+      return { destination: destination2 };
+    }
+    const dataRedirect = itemEl.getAttribute("data-redirect");
+    if (dataRedirect === "false") return null;
+    const raw = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
+    const destination = sanitizeRedirectDestination(raw);
+    if (!destination) return null;
+    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
+    const newTab = itemEl.hasAttribute("data-new-tab");
+    return { destination, mode, newTab };
+  }
+  function performRedirect(input, ctx) {
+    if (!input || !input.destination) return false;
+    const destination = sanitizeRedirectDestination(input.destination);
+    if (!destination) return false;
+    const { newTab, mode } = input;
+    if (newTab) {
+      window.open(destination, "_blank", "noopener,noreferrer");
+      return true;
+    }
+    const connected = canPushEvent(ctx.liveSocket);
+    if (!connected || !mode || mode === "href") {
+      window.location.href = destination;
+      return true;
+    }
+    const js = ctx.liveSocket.js();
+    if (mode === "patch") {
+      js.patch(destination);
+    } else {
+      js.navigate(destination);
+    }
+    return true;
+  }
+  var REDIRECT_MODES, SCHEME_PREFIX;
+  var init_chunk_KZFRQXNF = __esm({
+    "../priv/static/chunks/chunk-KZFRQXNF.mjs"() {
+      "use strict";
+      init_chunk_CLKNJROH();
+      REDIRECT_MODES = ["href", "patch", "navigate"];
+      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+    }
+  });
+
+  // ../priv/static/chunks/chunk-BRPHFNEG.mjs
+  function connect8(service, normalize2) {
+    const { context, prop, scope, computed, send, refs } = service;
+    const disabled = prop("disabled");
+    const collection22 = prop("collection");
+    const layout = isGridCollection(collection22) ? "grid" : "list";
+    const focused = context.get("focused");
+    const focusVisible = refs.get("focusVisible") && focused;
+    const inputState = refs.get("inputState");
+    const value = context.get("value");
+    const selectedItems = computed("selectedItems");
+    const highlightedValue = context.get("highlightedValue");
+    const highlightedItem = context.get("highlightedItem");
+    const isTypingAhead = computed("isTypingAhead");
+    const interactive = computed("isInteractive");
+    const ariaActiveDescendant = highlightedValue ? getItemId3(scope, highlightedValue) : void 0;
+    function getItemState(props) {
+      const itemDisabled = collection22.getItemDisabled(props.item);
+      const value2 = collection22.getItemValue(props.item);
+      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
+      const highlighted = highlightedValue === value2;
+      return {
+        value: value2,
+        disabled: Boolean(disabled || itemDisabled),
+        focused: highlighted && focused,
+        focusVisible: highlighted && focusVisible,
+        // deprecated
+        highlighted: highlighted && (inputState.focused ? focused : focusVisible),
+        selected: context.get("value").includes(value2)
+      };
+    }
+    return {
+      empty: value.length === 0,
+      highlightedItem,
+      highlightedValue,
+      clearHighlightedValue() {
+        send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+      },
+      selectedItems,
+      hasSelectedItems: computed("hasSelectedItems"),
+      value,
+      valueAsString: computed("valueAsString"),
+      collection: collection22,
+      disabled: !!disabled,
+      selectValue(value2) {
+        send({ type: "ITEM.SELECT", value: value2 });
+      },
+      setValue(value2) {
+        send({ type: "VALUE.SET", value: value2 });
+      },
+      selectAll() {
+        if (!computed("multiple")) {
+          throw new Error("[zag-js] Cannot select all items in a single-select listbox");
+        }
+        send({ type: "VALUE.SET", value: collection22.getValues() });
+      },
+      highlightValue(value2) {
+        send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
+      },
+      highlightFirst() {
+        send({ type: "HIGHLIGHT.FIRST" });
+      },
+      highlightLast() {
+        send({ type: "HIGHLIGHT.LAST" });
+      },
+      highlightNext() {
+        send({ type: "HIGHLIGHT.NEXT" });
+      },
+      highlightPrevious() {
+        send({ type: "HIGHLIGHT.PREV" });
+      },
+      clearValue(value2) {
+        if (value2) {
+          send({ type: "ITEM.CLEAR", value: value2 });
+        } else {
+          send({ type: "VALUE.CLEAR" });
+        }
+      },
+      getItemState,
+      getRootProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts8.root.attrs), {
+          dir: prop("dir"),
+          id: getRootId8(scope),
+          "data-orientation": prop("orientation"),
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getInputProps(props = {}) {
+        var _a4;
+        const keyboardPriority = (_a4 = props.keyboardPriority) != null ? _a4 : "caret";
+        return normalize2.input(__spreadProps(__spreadValues({}, parts8.input.attrs), {
+          dir: prop("dir"),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          autoComplete: "off",
+          autoCorrect: "off",
+          "aria-haspopup": "listbox",
+          "aria-controls": getContentId2(scope),
+          "aria-autocomplete": "list",
+          "aria-activedescendant": ariaActiveDescendant,
+          spellCheck: false,
+          enterKeyHint: "go",
+          onFocus() {
+            queueMicrotask(() => {
+              send({ type: "INPUT.FOCUS", autoHighlight: !!(props == null ? void 0 : props.autoHighlight) });
+            });
+          },
+          onBlur() {
+            send({ type: "CONTENT.BLUR", src: "input" });
+          },
+          onInput(event) {
+            if (!(props == null ? void 0 : props.autoHighlight)) return;
+            if (event.currentTarget.value.trim()) return;
+            queueMicrotask(() => {
+              send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const nativeEvent = getNativeEvent(event);
+            const forwardEvent = () => {
+              var _a5;
+              event.preventDefault();
+              const win = scope.getWin();
+              const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
+              (_a5 = getContentEl2(scope)) == null ? void 0 : _a5.dispatchEvent(keyboardEvent);
+            };
+            switch (nativeEvent.key) {
+              case "ArrowLeft":
+              case "ArrowRight": {
+                if (!isGridCollection(collection22)) return;
+                if (event.ctrlKey) return;
+                if (keyboardPriority !== "navigate") return;
+                forwardEvent();
+                break;
+              }
+              case "Home":
+              case "End": {
+                if (keyboardPriority !== "navigate") return;
+                if (highlightedValue == null && event.shiftKey) return;
+                forwardEvent();
+                break;
+              }
+              case "ArrowDown":
+              case "ArrowUp": {
+                forwardEvent();
+                break;
+              }
+              case "Enter":
+                if (highlightedValue != null) {
+                  event.preventDefault();
+                  send({ type: "ITEM.CLICK", value: highlightedValue });
+                }
+                break;
+              default:
+                break;
+            }
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize2.element(__spreadProps(__spreadValues({
+          dir: prop("dir"),
+          id: getLabelId4(scope)
+        }, parts8.label.attrs), {
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getValueTextProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts8.valueText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getItemProps(props) {
+        const itemState = getItemState(props);
+        return normalize2.element(__spreadProps(__spreadValues({
+          id: getItemId3(scope, itemState.value),
+          role: "option"
+        }, parts8.item.attrs), {
+          dir: prop("dir"),
+          "data-value": itemState.value,
+          "aria-selected": itemState.selected,
+          "data-selected": dataAttr(itemState.selected),
+          "data-layout": layout,
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          "data-orientation": prop("orientation"),
+          "data-highlighted": dataAttr(itemState.highlighted),
+          "data-disabled": dataAttr(itemState.disabled),
+          "aria-disabled": ariaAttr(itemState.disabled),
+          onPointerMove(event) {
+            if (!props.highlightOnHover) return;
+            if (itemState.disabled || event.pointerType !== "mouse") return;
+            if (getInteractionModality() !== "pointer") return;
+            if (itemState.highlighted) return;
+            send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
+          },
+          onMouseDown(event) {
+            var _a4;
+            event.preventDefault();
+            (_a4 = getContentEl2(scope)) == null ? void 0 : _a4.focus();
+          },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (isDownloadingEvent(event)) return;
+            if (isOpeningInNewTab(event)) return;
+            if (isContextMenuEvent(event)) return;
+            if (itemState.disabled) return;
+            send({
+              type: "ITEM.CLICK",
+              value: itemState.value,
+              shiftKey: event.shiftKey,
+              anchorValue: highlightedValue,
+              metaKey: isCtrlOrMetaKey(event)
+            });
+          }
+        }));
+      },
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
+        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          "data-disabled": dataAttr(itemState.disabled),
+          "data-highlighted": dataAttr(itemState.highlighted)
+        }));
+      },
+      getItemIndicatorProps(props) {
+        const itemState = getItemState(props);
+        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemIndicator.attrs), {
+          "aria-hidden": true,
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          hidden: !itemState.selected
+        }));
+      },
+      getItemGroupLabelProps(props) {
+        const { htmlFor } = props;
+        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
+          id: getItemGroupLabelId(scope, htmlFor),
+          dir: prop("dir"),
+          role: "presentation"
+        }));
+      },
+      getItemGroupProps(props) {
+        const { id } = props;
+        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
+          "data-disabled": dataAttr(disabled),
+          "data-orientation": prop("orientation"),
+          "data-empty": dataAttr(collection22.size === 0),
+          id: getItemGroupId2(scope, id),
+          "aria-labelledby": getItemGroupLabelId(scope, id),
+          role: "group",
+          dir: prop("dir")
+        }));
+      },
+      getContentProps() {
+        return normalize2.element(__spreadProps(__spreadValues({
+          dir: prop("dir"),
+          id: getContentId2(scope),
+          role: "listbox"
+        }, parts8.content.attrs), {
+          "data-activedescendant": ariaActiveDescendant,
+          "aria-activedescendant": ariaActiveDescendant,
+          "data-orientation": prop("orientation"),
+          "aria-multiselectable": computed("multiple") ? true : void 0,
+          "aria-labelledby": getLabelId4(scope),
+          tabIndex: 0,
+          "data-layout": layout,
+          "data-empty": dataAttr(collection22.size === 0),
+          style: {
+            "--column-count": isGridCollection(collection22) ? collection22.columnCount : 1
+          },
+          onFocus() {
+            send({ type: "CONTENT.FOCUS" });
+          },
+          onBlur() {
+            send({ type: "CONTENT.BLUR" });
+          },
+          onKeyDown(event) {
+            if (!interactive) return;
+            const target = getEventTarget(event);
+            if (!contains(event.currentTarget, getEventTarget(event))) return;
+            const shiftKey = event.shiftKey;
+            const keyMap2 = {
+              ArrowUp(event2) {
+                let nextValue = null;
+                if (isGridCollection(collection22) && highlightedValue) {
+                  nextValue = collection22.getPreviousRowValue(highlightedValue);
+                } else if (highlightedValue) {
+                  nextValue = collection22.getPreviousValue(highlightedValue);
+                }
+                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                  nextValue = collection22.lastValue;
+                }
+                if (!nextValue) return;
+                event2.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowDown(event2) {
+                let nextValue = null;
+                if (isGridCollection(collection22) && highlightedValue) {
+                  nextValue = collection22.getNextRowValue(highlightedValue);
+                } else if (highlightedValue) {
+                  nextValue = collection22.getNextValue(highlightedValue);
+                }
+                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                  nextValue = collection22.firstValue;
+                }
+                if (!nextValue) return;
+                event2.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowLeft() {
+                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
+                let nextValue = highlightedValue ? collection22.getPreviousValue(highlightedValue) : null;
+                if (!nextValue && prop("loopFocus")) {
+                  nextValue = collection22.lastValue;
+                }
+                if (!nextValue) return;
+                event.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowRight() {
+                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
+                let nextValue = highlightedValue ? collection22.getNextValue(highlightedValue) : null;
+                if (!nextValue && prop("loopFocus")) {
+                  nextValue = collection22.firstValue;
+                }
+                if (!nextValue) return;
+                event.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              Home(event2) {
+                if (isEditableElement(target)) return;
+                event2.preventDefault();
+                let nextValue = collection22.firstValue;
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              End(event2) {
+                if (isEditableElement(target)) return;
+                event2.preventDefault();
+                let nextValue = collection22.lastValue;
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              Enter() {
+                send({ type: "ITEM.CLICK", value: highlightedValue });
+              },
+              a(event2) {
+                if (isCtrlOrMetaKey(event2) && computed("multiple") && !prop("disallowSelectAll")) {
+                  event2.preventDefault();
+                  send({ type: "VALUE.SET", value: collection22.getValues() });
+                }
+              },
+              Space(event2) {
+                var _a4;
+                if (isTypingAhead && prop("typeahead")) {
+                  send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
+                } else {
+                  (_a4 = keyMap2.Enter) == null ? void 0 : _a4.call(keyMap2, event2);
+                }
+              },
+              Escape(event2) {
+                if (prop("deselectable") && value.length > 0) {
+                  event2.preventDefault();
+                  event2.stopPropagation();
+                  send({ type: "VALUE.CLEAR" });
+                }
+              }
+            };
+            const exec = keyMap2[getEventKey(event)];
+            if (exec) {
+              exec(event);
+              return;
+            }
+            if (isEditableElement(target)) return;
+            if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
+              send({ type: "CONTENT.TYPEAHEAD", key: event.key });
+              event.preventDefault();
+            }
+          }
+        }));
+      }
+    };
+  }
+  function invokeOnSelect(current, next2, onSelect) {
+    const added = diff2(next2, current);
+    for (const item of added) {
+      onSelect == null ? void 0 : onSelect({ value: item });
+    }
+  }
+  function itemValue(item) {
+    var _a4;
+    return (_a4 = item.value) != null ? _a4 : "";
+  }
+  function itemsMembershipKey(items) {
+    return items.map((item) => itemValue(item)).join("\0");
+  }
+  function zagListCollectionConfig(items, hasGroups) {
+    if (hasGroups) {
+      return {
+        items,
+        itemToValue: (item) => itemValue(item),
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => {
+          var _a4;
+          return (_a4 = item.group) != null ? _a4 : "";
+        }
+      };
+    }
+    return {
+      items,
+      itemToValue: (item) => itemValue(item),
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    };
+  }
+  function buildCollection(items, hasGroups) {
+    return collection(zagListCollectionConfig(items, hasGroups));
+  }
+  function readItemsJson(el) {
+    var _a4;
+    return (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
+  }
+  function parseItemsJson(raw) {
+    return safeParseJson(raw, []);
+  }
+  function itemsHaveGroups(items) {
+    return items.some((item) => Boolean(item.group));
+  }
+  function readItems(el) {
+    const json = readItemsJson(el);
+    const items = parseItemsJson(json);
+    return { json, items, hasGroups: itemsHaveGroups(items) };
+  }
+  function applyItems(host, items, hasGroups = itemsHaveGroups(items)) {
+    host.hasGroups = hasGroups;
+    if (host.setAllOptions) {
+      host.setAllOptions(items);
+    } else if (host.setOptions) {
+      host.setOptions(items);
+    }
+  }
+  function refreshItemsIfChanged(el, state2, host) {
+    const json = readItemsJson(el);
+    if (json === state2.lastItemsJson) return false;
+    state2.lastItemsJson = json;
+    const items = parseItemsJson(json);
+    applyItems(host, items);
+    return true;
+  }
+  function firstSelectedValue(values) {
+    return values.length > 0 ? String(values[0]) : null;
+  }
+  function redirectCollectionItem(el, scope, value, liveSocket) {
+    if (!value) return false;
+    const itemEl = el.querySelector(
+      `[data-scope="${scope}"][data-part="item"][data-value="${CSS.escape(value)}"]`
+    );
+    return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
+  }
+  function initCollectionItems(el, state2) {
+    const result = readItems(el);
+    state2.lastItemsJson = result.json;
+    return result;
+  }
+  var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
+  var init_chunk_BRPHFNEG = __esm({
+    "../priv/static/chunks/chunk-BRPHFNEG.mjs"() {
+      "use strict";
+      init_chunk_ZUMK6UW2();
+      init_chunk_KZFRQXNF();
+      init_chunk_RHLZLEPV();
+      init_chunk_CLKNJROH();
+      anatomy8 = createAnatomy("listbox").parts(
+        "label",
+        "input",
+        "item",
+        "itemText",
+        "itemIndicator",
+        "itemGroup",
+        "itemGroupLabel",
+        "content",
+        "root",
+        "valueText"
+      );
+      parts8 = anatomy8.build();
+      collection = (options) => {
+        return new ListCollection(options);
+      };
+      collection.empty = () => {
+        return new ListCollection({ items: [] });
+      };
+      gridCollection = (options) => {
+        return new GridCollection(options);
+      };
+      gridCollection.empty = () => {
+        return new GridCollection({ items: [], columnCount: 0 });
+      };
+      getRootId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `listbox:${ctx.id}`;
+      };
+      getContentId2 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `listbox:${ctx.id}:content`;
+      };
+      getLabelId4 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `listbox:${ctx.id}:label`;
+      };
+      getItemId3 = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item:${id}`;
+      };
+      getItemGroupId2 = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroup) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group:${id}`;
+      };
+      getItemGroupLabelId = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group-label:${id}`;
+      };
+      getContentEl2 = (ctx) => ctx.getById(getContentId2(ctx));
+      getItemEl = (ctx, id) => ctx.getById(getItemId3(ctx, id));
+      ({ guards, createMachine: createMachine2 } = setup());
+      ({ or } = guards);
+      machine8 = createMachine2({
+        props({ props }) {
+          return __spreadValues({
+            loopFocus: false,
+            composite: true,
+            defaultValue: [],
+            multiple: false,
+            typeahead: true,
+            collection: collection.empty(),
+            orientation: "vertical",
+            selectionMode: "single"
+          }, props);
+        },
+        context({ prop, bindable: bindable2, getContext }) {
+          var _a4, _b;
+          const initialValue = (_b = (_a4 = prop("value")) != null ? _a4 : prop("defaultValue")) != null ? _b : [];
+          const initialSelectedItems = prop("collection").findMany(initialValue);
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              isEqual,
+              onChange(value) {
+                var _a5, _b2;
+                const context = getContext();
+                const collection22 = prop("collection");
+                const selectedItemMap = context.get("selectedItemMap");
+                const proposed = deriveSelectionState({
+                  values: value,
+                  collection: collection22,
+                  selectedItemMap
+                });
+                const effectiveValue = (_a5 = prop("value")) != null ? _a5 : value;
+                const effective = effectiveValue === value ? proposed : deriveSelectionState({
+                  values: effectiveValue,
+                  collection: collection22,
+                  selectedItemMap: proposed.nextSelectedItemMap
+                });
+                context.set("selectedItemMap", effective.nextSelectedItemMap);
+                return (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
+              }
+            })),
+            highlightedValue: bindable2(() => ({
+              defaultValue: prop("defaultHighlightedValue") || null,
+              value: prop("highlightedValue"),
+              sync: true,
+              onChange(value) {
+                var _a5;
+                (_a5 = prop("onHighlightChange")) == null ? void 0 : _a5({
+                  highlightedValue: value,
+                  highlightedItem: prop("collection").find(value),
+                  highlightedIndex: prop("collection").indexOf(value)
+                });
+              }
+            })),
+            highlightedItem: bindable2(() => ({
+              defaultValue: null
+            })),
+            selectedItemMap: bindable2(() => {
+              return {
+                defaultValue: createSelectedItemMap({
+                  selectedItems: initialSelectedItems,
+                  collection: prop("collection")
+                })
+              };
+            }),
+            focused: bindable2(() => ({
+              sync: true,
+              defaultValue: false
+            }))
+          };
+        },
+        refs() {
+          return {
+            typeahead: __spreadValues({}, getByTypeahead.defaultOptions),
+            focusVisible: false,
+            inputState: { autoHighlight: false, focused: false }
+          };
+        },
+        computed: {
+          hasSelectedItems: ({ context }) => context.get("value").length > 0,
+          isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
+          isInteractive: ({ prop }) => !prop("disabled"),
+          selection: ({ context, prop }) => {
+            const selection = new Selection(context.get("value"));
+            selection.selectionMode = prop("selectionMode");
+            selection.deselectable = !!prop("deselectable");
+            return selection;
+          },
+          multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
+          selectedItems: ({ context, prop }) => resolveSelectedItems({
+            values: context.get("value"),
+            collection: prop("collection"),
+            selectedItemMap: context.get("selectedItemMap")
+          }),
+          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
+        },
+        initialState() {
+          return "idle";
+        },
+        watch({ context, prop, track, action }) {
+          track([() => context.get("value").toString()], () => {
+            action(["syncSelectedItems"]);
+          });
+          track([() => context.get("highlightedValue")], () => {
+            action(["syncHighlightedItem"]);
+          });
+          track([() => prop("collection").toString()], () => {
+            action(["syncHighlightedValue"]);
+          });
+        },
+        effects: ["trackFocusVisible"],
+        on: {
+          "HIGHLIGHTED_VALUE.SET": {
+            actions: ["setHighlightedItem"]
+          },
+          "ITEM.SELECT": {
+            actions: ["selectItem"]
+          },
+          "ITEM.CLEAR": {
+            actions: ["clearItem"]
+          },
+          "VALUE.SET": {
+            actions: ["setSelectedItems"]
+          },
+          "VALUE.CLEAR": {
+            actions: ["clearSelectedItems"]
+          },
+          "HIGHLIGHT.FIRST": {
+            actions: ["highlightFirstValue"]
+          },
+          "HIGHLIGHT.LAST": {
+            actions: ["highlightLastValue"]
+          },
+          "HIGHLIGHT.NEXT": {
+            actions: ["highlightNextValue"]
+          },
+          "HIGHLIGHT.PREV": {
+            actions: ["highlightPreviousValue"]
+          }
+        },
+        states: {
+          idle: {
+            effects: ["scrollToHighlightedItem"],
+            on: {
+              "INPUT.FOCUS": {
+                actions: ["setFocused", "setInputState"]
+              },
+              "CONTENT.FOCUS": [
+                {
+                  guard: or("hasSelectedValue", "hasHighlightedValue"),
+                  actions: ["setFocused"]
+                },
+                {
+                  actions: ["setFocused", "setDefaultHighlightedValue"]
+                }
+              ],
+              "CONTENT.BLUR": {
+                actions: ["clearFocused", "clearInputState"]
+              },
+              "ITEM.CLICK": {
+                actions: ["setHighlightedItem", "selectHighlightedItem"]
+              },
+              "CONTENT.TYPEAHEAD": {
+                actions: ["setFocused", "highlightMatchingItem"]
+              },
+              "ITEM.POINTER_MOVE": {
+                actions: ["highlightItem"]
+              },
+              "ITEM.POINTER_LEAVE": {
+                actions: ["clearHighlightedItem"]
+              },
+              NAVIGATE: {
+                actions: ["setFocused", "setHighlightedItem", "selectWithKeyboard"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            hasSelectedValue: ({ context }) => context.get("value").length > 0,
+            hasHighlightedValue: ({ context }) => context.get("highlightedValue") != null
+          },
+          effects: {
+            trackFocusVisible: ({ scope, refs }) => {
+              var _a4;
+              return trackFocusVisible({
+                root: (_a4 = scope.getRootNode) == null ? void 0 : _a4.call(scope),
+                onChange(details) {
+                  refs.set("focusVisible", details.isFocusVisible);
+                }
+              });
+            },
+            scrollToHighlightedItem({ context, prop, scope }) {
+              const exec = (immediate) => {
+                const highlightedValue = context.get("highlightedValue");
+                if (highlightedValue == null) return;
+                const modality = getInteractionModality();
+                if (modality === "pointer") return;
+                const contentEl2 = getContentEl2(scope);
+                const scrollToIndexFn = prop("scrollToIndexFn");
+                if (scrollToIndexFn) {
+                  const highlightedIndex = prop("collection").indexOf(highlightedValue);
+                  scrollToIndexFn == null ? void 0 : scrollToIndexFn({
+                    index: highlightedIndex,
+                    immediate,
+                    getElement() {
+                      return getItemEl(scope, highlightedValue);
+                    }
+                  });
+                  return;
+                }
+                const itemEl = getItemEl(scope, highlightedValue);
+                scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
+              };
+              raf(() => {
+                setInteractionModality("virtual");
+                exec(true);
+              });
+              const contentEl = () => getContentEl2(scope);
+              return observeAttributes(contentEl, {
+                defer: true,
+                attributes: ["data-activedescendant"],
+                callback() {
+                  exec(false);
+                }
+              });
+            }
+          },
+          actions: {
+            selectHighlightedItem({ context, prop, event, computed }) {
+              var _a4;
+              const value = (_a4 = event.value) != null ? _a4 : context.get("highlightedValue");
+              const collection22 = prop("collection");
+              if (value == null || !collection22.has(value)) return;
+              const selection = computed("selection");
+              if (event.shiftKey && computed("multiple") && event.anchorValue) {
+                const next2 = selection.extendSelection(collection22, event.anchorValue, value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              } else {
+                const next2 = selection.select(collection22, value, event.metaKey);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              }
+            },
+            selectWithKeyboard({ context, prop, event, computed }) {
+              const selection = computed("selection");
+              const collection22 = prop("collection");
+              if (event.shiftKey && computed("multiple") && event.anchorValue) {
+                const next2 = selection.extendSelection(collection22, event.anchorValue, event.value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+                return;
+              }
+              if (prop("selectOnHighlight")) {
+                const next2 = selection.replaceSelection(collection22, event.value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              }
+            },
+            highlightItem({ context, event }) {
+              context.set("highlightedValue", event.value);
+            },
+            highlightMatchingItem({ context, prop, event, refs }) {
+              const value = prop("collection").search(event.key, {
+                state: refs.get("typeahead"),
+                currentValue: context.get("highlightedValue")
+              });
+              if (value == null) return;
+              context.set("highlightedValue", value);
+            },
+            setHighlightedItem({ context, event }) {
+              context.set("highlightedValue", event.value);
+            },
+            highlightFirstValue({ context, prop }) {
+              var _a4;
+              context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
+            },
+            highlightLastValue({ context, prop }) {
+              var _a4;
+              context.set("highlightedValue", (_a4 = prop("collection").lastValue) != null ? _a4 : null);
+            },
+            highlightNextValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              let nextValue = null;
+              if (isGridCollection(collection22) && highlightedValue) {
+                nextValue = collection22.getNextRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection22.getNextValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection22.firstValue;
+              }
+              if (!nextValue) return;
+              context.set("highlightedValue", nextValue);
+            },
+            highlightPreviousValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              let nextValue = null;
+              if (isGridCollection(collection22) && highlightedValue) {
+                nextValue = collection22.getPreviousRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection22.getPreviousValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection22.lastValue;
+              }
+              if (!nextValue) return;
+              context.set("highlightedValue", nextValue);
+            },
+            clearHighlightedItem({ context }) {
+              context.set("highlightedValue", null);
+            },
+            selectItem({ context, prop, event, computed }) {
+              const collection22 = prop("collection");
+              const selection = computed("selection");
+              const next2 = selection.select(collection22, event.value);
+              invokeOnSelect(selection, next2, prop("onSelect"));
+              context.set("value", Array.from(next2));
+            },
+            clearItem({ context, event, computed }) {
+              const selection = computed("selection");
+              const value = selection.deselect(event.value);
+              context.set("value", Array.from(value));
+            },
+            setSelectedItems({ context, event }) {
+              context.set("value", event.value);
+            },
+            clearSelectedItems({ context }) {
+              context.set("value", []);
+            },
+            syncSelectedItems({ context, prop }) {
+              const next2 = deriveSelectionState({
+                values: context.get("value"),
+                collection: prop("collection"),
+                selectedItemMap: context.get("selectedItemMap")
+              });
+              context.set("selectedItemMap", next2.nextSelectedItemMap);
+            },
+            syncHighlightedItem({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              const highlightedItem = highlightedValue ? collection22.find(highlightedValue) : null;
+              context.set("highlightedItem", highlightedItem);
+            },
+            syncHighlightedValue({ context, prop, refs }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              const { autoHighlight } = refs.get("inputState");
+              if (autoHighlight) {
+                queueMicrotask(() => {
+                  var _a4;
+                  context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
+                });
+                return;
+              }
+              if (highlightedValue != null && !collection22.has(highlightedValue)) {
+                queueMicrotask(() => {
+                  context.set("highlightedValue", null);
+                });
+              }
+            },
+            setFocused({ context }) {
+              context.set("focused", true);
+            },
+            setDefaultHighlightedValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const firstValue = collection22.firstValue;
+              if (firstValue != null) {
+                context.set("highlightedValue", firstValue);
+              }
+            },
+            clearFocused({ context }) {
+              context.set("focused", false);
+            },
+            setInputState({ refs, event }) {
+              refs.set("inputState", { autoHighlight: !!event.autoHighlight, focused: true });
+            },
+            clearInputState({ refs }) {
+              refs.set("inputState", { autoHighlight: false, focused: false });
+            }
+          }
+        }
+      });
+      diff2 = (a2, b2) => {
+        const result = new Set(a2);
+        for (const item of b2) result.delete(item);
+        return result;
+      };
+    }
+  });
+
+  // ../priv/static/chunks/chunk-QE4GGWXJ.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
-  function stripZagSubmitNames(el, scope, parts35 = ["hidden-input"]) {
+  function stripZagSubmitNames(el, scope, parts38 = ["hidden-input"]) {
     if (!hasArraySubmitName(el)) return;
-    for (const part of parts35) {
+    for (const part of parts38) {
       el.querySelectorAll(`[data-scope="${scope}"][data-part="${part}"]`).forEach(
         (node) => {
           node.removeAttribute("name");
@@ -8421,10 +10877,10 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_56433QZX = __esm({
-    "../priv/static/chunks/chunk-56433QZX.mjs"() {
+  var init_chunk_QE4GGWXJ = __esm({
+    "../priv/static/chunks/chunk-QE4GGWXJ.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
     }
   });
 
@@ -8500,7 +10956,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YKCP6S4O.mjs
+  // ../priv/static/chunks/chunk-QBBRC35T.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9878,10 +12334,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_YKCP6S4O = __esm({
-    "../priv/static/chunks/chunk-YKCP6S4O.mjs"() {
+  var init_chunk_QBBRC35T = __esm({
+    "../priv/static/chunks/chunk-QBBRC35T.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10592,7 +13048,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-KNSNFBRP.mjs
+  // ../priv/static/chunks/chunk-HY5BRBNW.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10817,17 +13273,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_KNSNFBRP = __esm({
-    "../priv/static/chunks/chunk-KNSNFBRP.mjs"() {
+  var init_chunk_HY5BRBNW = __esm({
+    "../priv/static/chunks/chunk-HY5BRBNW.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-CKZ5NOMG.mjs
+  // ../priv/static/chunks/chunk-QFRIDKAW.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -11034,11 +13490,11 @@ var Corex = (() => {
     );
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents, layerObservers;
-  var init_chunk_CKZ5NOMG = __esm({
-    "../priv/static/chunks/chunk-CKZ5NOMG.mjs"() {
+  var init_chunk_QFRIDKAW = __esm({
+    "../priv/static/chunks/chunk-QFRIDKAW.mjs"() {
       "use strict";
-      init_chunk_KNSNFBRP();
-      init_chunk_JPQZXVRQ();
+      init_chunk_HY5BRBNW();
+      init_chunk_CLKNJROH();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -11173,7 +13629,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4JF6I36R.mjs
+  // ../priv/static/chunks/chunk-ZTJV2RYM.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -11218,2401 +13674,10 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_4JF6I36R = __esm({
-    "../priv/static/chunks/chunk-4JF6I36R.mjs"() {
+  var init_chunk_ZTJV2RYM = __esm({
+    "../priv/static/chunks/chunk-ZTJV2RYM.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-R3ADGBXU.mjs
-  function insert(items, index, ...values) {
-    return [...items.slice(0, index), ...values, ...items.slice(index)];
-  }
-  function move(items, indices, toIndex) {
-    indices = [...indices].sort((a2, b2) => a2 - b2);
-    const itemsToMove = indices.map((i2) => items[i2]);
-    for (let i2 = indices.length - 1; i2 >= 0; i2--) {
-      items = [...items.slice(0, indices[i2]), ...items.slice(indices[i2] + 1)];
-    }
-    toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
-    return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
-  }
-  function isGridCollection(v2) {
-    return hasProp(v2, "columnCount") && hasProp(v2, "getRows");
-  }
-  function resolveSelectedItems({
-    values,
-    collection: collection5,
-    selectedItemMap
-  }) {
-    var _a4;
-    const result = [];
-    for (const value of values) {
-      const item = (_a4 = collection5.find(value)) != null ? _a4 : selectedItemMap.get(value);
-      if (item != null) result.push(item);
-    }
-    return result;
-  }
-  function updateSelectedItemMap({
-    selectedItemMap,
-    values,
-    selectedItems,
-    collection: collection5
-  }) {
-    const nextMap = new Map(selectedItemMap);
-    for (const item of selectedItems) {
-      const value = collection5.getItemValue(item);
-      if (value != null) nextMap.set(value, item);
-    }
-    const allowedValues = new Set(values);
-    for (const value of nextMap.keys()) {
-      if (!allowedValues.has(value)) nextMap.delete(value);
-    }
-    return nextMap;
-  }
-  function deriveSelectionState({
-    values,
-    collection: collection5,
-    selectedItemMap
-  }) {
-    const selectedItems = resolveSelectedItems({ values, collection: collection5, selectedItemMap });
-    const nextSelectedItemMap = updateSelectedItemMap({
-      selectedItemMap,
-      values,
-      selectedItems,
-      collection: collection5
-    });
-    return { selectedItems, nextSelectedItemMap };
-  }
-  function createSelectedItemMap({
-    selectedItems,
-    collection: collection5
-  }) {
-    return updateSelectedItemMap({
-      selectedItemMap: /* @__PURE__ */ new Map(),
-      values: selectedItems.map((item) => collection5.getItemValue(item)).filter(Boolean),
-      selectedItems,
-      collection: collection5
-    });
-  }
-  function access(node, indexPath, options) {
-    for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
-    return node;
-  }
-  function ancestorIndexPaths(indexPaths) {
-    const sortedPaths = sortIndexPaths(indexPaths);
-    const result = [];
-    const seen = /* @__PURE__ */ new Set();
-    for (const indexPath of sortedPaths) {
-      const key = indexPath.join();
-      if (!seen.has(key)) {
-        seen.add(key);
-        result.push(indexPath);
-      }
-    }
-    return result;
-  }
-  function compareIndexPaths(a2, b2) {
-    for (let i2 = 0; i2 < Math.min(a2.length, b2.length); i2++) {
-      if (a2[i2] < b2[i2]) return -1;
-      if (a2[i2] > b2[i2]) return 1;
-    }
-    return a2.length - b2.length;
-  }
-  function sortIndexPaths(indexPaths) {
-    return indexPaths.sort(compareIndexPaths);
-  }
-  function find(node, options) {
-    let found;
-    visit(node, __spreadProps(__spreadValues({}, options), {
-      onEnter: (child, indexPath) => {
-        if (options.predicate(child, indexPath)) {
-          found = child;
-          return "stop";
-        }
-      }
-    }));
-    return found;
-  }
-  function findAll(node, options) {
-    const found = [];
-    visit(node, {
-      onEnter: (child, indexPath) => {
-        if (options.predicate(child, indexPath)) found.push(child);
-      },
-      getChildren: options.getChildren
-    });
-    return found;
-  }
-  function findIndexPath(node, options) {
-    let found;
-    visit(node, {
-      onEnter: (child, indexPath) => {
-        if (options.predicate(child, indexPath)) {
-          found = [...indexPath];
-          return "stop";
-        }
-      },
-      getChildren: options.getChildren
-    });
-    return found;
-  }
-  function reduce(node, options) {
-    let result = options.initialResult;
-    visit(node, __spreadProps(__spreadValues({}, options), {
-      onEnter: (child, indexPath) => {
-        result = options.nextResult(result, child, indexPath);
-      }
-    }));
-    return result;
-  }
-  function flatMap(node, options) {
-    return reduce(node, __spreadProps(__spreadValues({}, options), {
-      initialResult: [],
-      nextResult: (result, child, indexPath) => {
-        result.push(...options.transform(child, indexPath));
-        return result;
-      }
-    }));
-  }
-  function filter(node, options) {
-    const { predicate, create, getChildren } = options;
-    const filterRecursive = (node2, indexPath) => {
-      const children = getChildren(node2, indexPath);
-      const filteredChildren = [];
-      children.forEach((child, index) => {
-        const childIndexPath = [...indexPath, index];
-        const filteredChild = filterRecursive(child, childIndexPath);
-        if (filteredChild) filteredChildren.push(filteredChild);
-      });
-      const isRoot = indexPath.length === 0;
-      const nodeMatches = predicate(node2, indexPath);
-      const hasFilteredChildren = filteredChildren.length > 0;
-      if (isRoot || nodeMatches || hasFilteredChildren) {
-        return create(node2, filteredChildren, indexPath);
-      }
-      return null;
-    };
-    return filterRecursive(node, []) || create(node, [], []);
-  }
-  function flatten(rootNode, options) {
-    const nodes = [];
-    let idx = 0;
-    const idxMap = /* @__PURE__ */ new Map();
-    const parentMap = /* @__PURE__ */ new Map();
-    visit(rootNode, {
-      getChildren: options.getChildren,
-      onEnter: (node, indexPath) => {
-        if (!idxMap.has(node)) {
-          idxMap.set(node, idx++);
-        }
-        const children = options.getChildren(node, indexPath);
-        children.forEach((child) => {
-          if (!parentMap.has(child)) {
-            parentMap.set(child, node);
-          }
-          if (!idxMap.has(child)) {
-            idxMap.set(child, idx++);
-          }
-        });
-        const _children = children.length > 0 ? children.map((child) => idxMap.get(child)) : void 0;
-        const parent = parentMap.get(node);
-        const _parent = parent ? idxMap.get(parent) : void 0;
-        const _index = idxMap.get(node);
-        nodes.push(__spreadProps(__spreadValues({}, node), { _children, _parent, _index }));
-      }
-    });
-    return nodes;
-  }
-  function insertOperation(index, nodes) {
-    return { type: "insert", index, nodes };
-  }
-  function removeOperation(indexes) {
-    return { type: "remove", indexes };
-  }
-  function replaceOperation() {
-    return { type: "replace" };
-  }
-  function splitIndexPath(indexPath) {
-    return [indexPath.slice(0, -1), indexPath[indexPath.length - 1]];
-  }
-  function getInsertionOperations(indexPath, nodes, operations = /* @__PURE__ */ new Map()) {
-    var _a4;
-    const [parentIndexPath, index] = splitIndexPath(indexPath);
-    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
-      const parentKey = parentIndexPath.slice(0, i2).join();
-      switch ((_a4 = operations.get(parentKey)) == null ? void 0 : _a4.type) {
-        case "remove":
-          continue;
-      }
-      operations.set(parentKey, replaceOperation());
-    }
-    const operation = operations.get(parentIndexPath.join());
-    switch (operation == null ? void 0 : operation.type) {
-      case "remove":
-        operations.set(parentIndexPath.join(), {
-          type: "removeThenInsert",
-          removeIndexes: operation.indexes,
-          insertIndex: index,
-          insertNodes: nodes
-        });
-        break;
-      default:
-        operations.set(parentIndexPath.join(), insertOperation(index, nodes));
-    }
-    return operations;
-  }
-  function getRemovalOperations(indexPaths) {
-    var _a4;
-    const operations = /* @__PURE__ */ new Map();
-    const indexesToRemove = /* @__PURE__ */ new Map();
-    for (const indexPath of indexPaths) {
-      const parentKey = indexPath.slice(0, -1).join();
-      const value = (_a4 = indexesToRemove.get(parentKey)) != null ? _a4 : [];
-      value.push(indexPath[indexPath.length - 1]);
-      indexesToRemove.set(
-        parentKey,
-        value.sort((a2, b2) => a2 - b2)
-      );
-    }
-    for (const indexPath of indexPaths) {
-      for (let i2 = indexPath.length - 2; i2 >= 0; i2--) {
-        const parentKey = indexPath.slice(0, i2).join();
-        if (!operations.has(parentKey)) {
-          operations.set(parentKey, replaceOperation());
-        }
-      }
-    }
-    for (const [parentKey, indexes] of indexesToRemove) {
-      operations.set(parentKey, removeOperation(indexes));
-    }
-    return operations;
-  }
-  function getReplaceOperations(indexPath, node) {
-    const operations = /* @__PURE__ */ new Map();
-    const [parentIndexPath, index] = splitIndexPath(indexPath);
-    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
-      const parentKey = parentIndexPath.slice(0, i2).join();
-      operations.set(parentKey, replaceOperation());
-    }
-    operations.set(parentIndexPath.join(), {
-      type: "removeThenInsert",
-      removeIndexes: [index],
-      insertIndex: index,
-      insertNodes: [node]
-    });
-    return operations;
-  }
-  function mutate(node, operations, options) {
-    return map(node, __spreadProps(__spreadValues({}, options), {
-      getChildren: (node2, indexPath) => {
-        const key = indexPath.join();
-        const operation = operations.get(key);
-        switch (operation == null ? void 0 : operation.type) {
-          case "replace":
-          case "remove":
-          case "removeThenInsert":
-          case "insert":
-            return options.getChildren(node2, indexPath);
-          default:
-            return [];
-        }
-      },
-      transform: (node2, children, indexPath) => {
-        const key = indexPath.join();
-        const operation = operations.get(key);
-        switch (operation == null ? void 0 : operation.type) {
-          case "remove":
-            return options.create(
-              node2,
-              children.filter((_2, index) => !operation.indexes.includes(index)),
-              indexPath
-            );
-          case "removeThenInsert":
-            const updatedChildren = children.filter((_2, index) => !operation.removeIndexes.includes(index));
-            const adjustedIndex = operation.removeIndexes.reduce(
-              (index, removedIndex) => removedIndex < index ? index - 1 : index,
-              operation.insertIndex
-            );
-            return options.create(node2, splice(updatedChildren, adjustedIndex, 0, ...operation.insertNodes), indexPath);
-          case "insert":
-            return options.create(node2, splice(children, operation.index, 0, ...operation.nodes), indexPath);
-          case "replace":
-            return options.create(node2, children, indexPath);
-          default:
-            return node2;
-        }
-      }
-    }));
-  }
-  function splice(array, start, deleteCount, ...items) {
-    return [...array.slice(0, start), ...items, ...array.slice(start + deleteCount)];
-  }
-  function map(node, options) {
-    const childrenMap = {};
-    visit(node, __spreadProps(__spreadValues({}, options), {
-      onLeave: (child, indexPath) => {
-        var _a4, _b;
-        const keyIndexPath = [0, ...indexPath];
-        const key = keyIndexPath.join();
-        const transformed = options.transform(child, (_a4 = childrenMap[key]) != null ? _a4 : [], indexPath);
-        const parentKey = keyIndexPath.slice(0, -1).join();
-        const parentChildren = (_b = childrenMap[parentKey]) != null ? _b : [];
-        parentChildren.push(transformed);
-        childrenMap[parentKey] = parentChildren;
-      }
-    }));
-    return childrenMap[""][0];
-  }
-  function insert2(node, options) {
-    const { nodes, at } = options;
-    if (at.length === 0) throw new Error(`Can't insert nodes at the root`);
-    const state2 = getInsertionOperations(at, nodes);
-    return mutate(node, state2, options);
-  }
-  function replace(node, options) {
-    if (options.at.length === 0) return options.node;
-    const operations = getReplaceOperations(options.at, options.node);
-    return mutate(node, operations, options);
-  }
-  function remove2(node, options) {
-    if (options.indexPaths.length === 0) return node;
-    for (const indexPath of options.indexPaths) {
-      if (indexPath.length === 0) throw new Error(`Can't remove the root node`);
-    }
-    const operations = getRemovalOperations(options.indexPaths);
-    return mutate(node, operations, options);
-  }
-  function move2(node, options) {
-    if (options.indexPaths.length === 0) return node;
-    for (const indexPath of options.indexPaths) {
-      if (indexPath.length === 0) throw new Error(`Can't move the root node`);
-    }
-    if (options.to.length === 0) throw new Error(`Can't move nodes to the root`);
-    const _ancestorIndexPaths = ancestorIndexPaths(options.indexPaths);
-    const nodesToInsert = _ancestorIndexPaths.map((indexPath) => access(node, indexPath, options));
-    const operations = getInsertionOperations(options.to, nodesToInsert, getRemovalOperations(_ancestorIndexPaths));
-    return mutate(node, operations, options);
-  }
-  function visit(node, options) {
-    const { onEnter, onLeave, getChildren } = options;
-    let indexPath = [];
-    let stack = [{ node }];
-    const getIndexPath = options.reuseIndexPath ? () => indexPath : () => indexPath.slice();
-    while (stack.length > 0) {
-      let wrapper = stack[stack.length - 1];
-      if (wrapper.state === void 0) {
-        const enterResult = onEnter == null ? void 0 : onEnter(wrapper.node, getIndexPath());
-        if (enterResult === "stop") return;
-        wrapper.state = enterResult === "skip" ? -1 : 0;
-      }
-      const children = wrapper.children || getChildren(wrapper.node, getIndexPath());
-      wrapper.children || (wrapper.children = children);
-      if (wrapper.state !== -1) {
-        if (wrapper.state < children.length) {
-          let currentIndex = wrapper.state;
-          indexPath.push(currentIndex);
-          stack.push({ node: children[currentIndex] });
-          wrapper.state = currentIndex + 1;
-          continue;
-        }
-        const leaveResult = onLeave == null ? void 0 : onLeave(wrapper.node, getIndexPath());
-        if (leaveResult === "stop") return;
-      }
-      indexPath.pop();
-      stack.pop();
-    }
-  }
-  var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_R3ADGBXU = __esm({
-    "../priv/static/chunks/chunk-R3ADGBXU.mjs"() {
-      "use strict";
-      init_chunk_JPQZXVRQ();
-      __defProp5 = Object.defineProperty;
-      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
-      fallback = {
-        itemToValue(item) {
-          if (typeof item === "string") return item;
-          if (isObject(item) && hasProp(item, "value")) return item.value;
-          return "";
-        },
-        itemToString(item) {
-          if (typeof item === "string") return item;
-          if (isObject(item) && hasProp(item, "label")) return item.label;
-          return fallback.itemToValue(item);
-        },
-        isItemDisabled(item) {
-          if (isObject(item) && hasProp(item, "disabled")) return !!item.disabled;
-          return false;
-        }
-      };
-      ListCollection = class _ListCollection {
-        constructor(options) {
-          __publicField5(this, "options", options);
-          __publicField5(this, "items");
-          __publicField5(this, "indexMap", null);
-          __publicField5(this, "copy", (items) => {
-            return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
-          });
-          __publicField5(this, "isEqual", (other) => {
-            return isEqual(this.items, other.items);
-          });
-          __publicField5(this, "setItems", (items) => {
-            return this.copy(items);
-          });
-          __publicField5(this, "getValues", (items = this.items) => {
-            const values = [];
-            for (const item of items) {
-              const value = this.getItemValue(item);
-              if (value != null) values.push(value);
-            }
-            return values;
-          });
-          __publicField5(this, "find", (value) => {
-            if (value == null) return null;
-            const index = this.indexOf(value);
-            return index !== -1 ? this.at(index) : null;
-          });
-          __publicField5(this, "findMany", (values) => {
-            const result = [];
-            for (const value of values) {
-              const item = this.find(value);
-              if (item != null) result.push(item);
-            }
-            return result;
-          });
-          __publicField5(this, "at", (index) => {
-            var _a4;
-            if (!this.options.groupBy && !this.options.groupSort) {
-              return (_a4 = this.items[index]) != null ? _a4 : null;
-            }
-            let idx = 0;
-            const groups = this.group();
-            for (const [, items] of groups) {
-              for (const item of items) {
-                if (idx === index) return item;
-                idx++;
-              }
-            }
-            return null;
-          });
-          __publicField5(this, "sortFn", (valueA, valueB) => {
-            const indexA = this.indexOf(valueA);
-            const indexB = this.indexOf(valueB);
-            return (indexA != null ? indexA : 0) - (indexB != null ? indexB : 0);
-          });
-          __publicField5(this, "sort", (values) => {
-            return [...values].sort(this.sortFn.bind(this));
-          });
-          __publicField5(this, "getItemValue", (item) => {
-            var _a4, _b, _c;
-            if (item == null) return null;
-            return (_c = (_b = (_a4 = this.options).itemToValue) == null ? void 0 : _b.call(_a4, item)) != null ? _c : fallback.itemToValue(item);
-          });
-          __publicField5(this, "getItemDisabled", (item) => {
-            var _a4, _b, _c;
-            if (item == null) return false;
-            return (_c = (_b = (_a4 = this.options).isItemDisabled) == null ? void 0 : _b.call(_a4, item)) != null ? _c : fallback.isItemDisabled(item);
-          });
-          __publicField5(this, "stringifyItem", (item) => {
-            var _a4, _b, _c;
-            if (item == null) return null;
-            return (_c = (_b = (_a4 = this.options).itemToString) == null ? void 0 : _b.call(_a4, item)) != null ? _c : fallback.itemToString(item);
-          });
-          __publicField5(this, "stringify", (value) => {
-            if (value == null) return null;
-            return this.stringifyItem(this.find(value));
-          });
-          __publicField5(this, "stringifyItems", (items, separator = ", ") => {
-            const strs = [];
-            for (const item of items) {
-              const str = this.stringifyItem(item);
-              if (str != null) strs.push(str);
-            }
-            return strs.join(separator);
-          });
-          __publicField5(this, "stringifyMany", (value, separator) => {
-            return this.stringifyItems(this.findMany(value), separator);
-          });
-          __publicField5(this, "has", (value) => {
-            return this.indexOf(value) !== -1;
-          });
-          __publicField5(this, "hasItem", (item) => {
-            if (item == null) return false;
-            return this.has(this.getItemValue(item));
-          });
-          __publicField5(this, "group", () => {
-            const { groupBy, groupSort } = this.options;
-            if (!groupBy) return [["", [...this.items]]];
-            const groups = /* @__PURE__ */ new Map();
-            this.items.forEach((item, index) => {
-              const groupKey = groupBy(item, index);
-              if (!groups.has(groupKey)) {
-                groups.set(groupKey, []);
-              }
-              groups.get(groupKey).push(item);
-            });
-            let entries = Array.from(groups.entries());
-            if (groupSort) {
-              entries.sort(([a2], [b2]) => {
-                if (typeof groupSort === "function") return groupSort(a2, b2);
-                if (Array.isArray(groupSort)) {
-                  const indexA = groupSort.indexOf(a2);
-                  const indexB = groupSort.indexOf(b2);
-                  if (indexA === -1) return 1;
-                  if (indexB === -1) return -1;
-                  return indexA - indexB;
-                }
-                if (groupSort === "asc") return a2.localeCompare(b2);
-                if (groupSort === "desc") return b2.localeCompare(a2);
-                return 0;
-              });
-            }
-            return entries;
-          });
-          __publicField5(this, "getNextValue", (value, step = 1, clamp5 = false) => {
-            let index = this.indexOf(value);
-            if (index === -1) return null;
-            index = clamp5 ? Math.min(index + step, this.size - 1) : index + step;
-            while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
-            return this.getItemValue(this.at(index));
-          });
-          __publicField5(this, "getPreviousValue", (value, step = 1, clamp5 = false) => {
-            let index = this.indexOf(value);
-            if (index === -1) return null;
-            index = clamp5 ? Math.max(index - step, 0) : index - step;
-            while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
-            return this.getItemValue(this.at(index));
-          });
-          __publicField5(this, "indexOf", (value) => {
-            var _a4;
-            if (value == null) return -1;
-            if (!this.options.groupBy && !this.options.groupSort) {
-              return this.items.findIndex((item) => this.getItemValue(item) === value);
-            }
-            if (!this.indexMap) {
-              this.indexMap = /* @__PURE__ */ new Map();
-              let idx = 0;
-              const groups = this.group();
-              for (const [, items] of groups) {
-                for (const item of items) {
-                  const itemValue2 = this.getItemValue(item);
-                  if (itemValue2 != null) {
-                    this.indexMap.set(itemValue2, idx);
-                  }
-                  idx++;
-                }
-              }
-            }
-            return (_a4 = this.indexMap.get(value)) != null ? _a4 : -1;
-          });
-          __publicField5(this, "getByText", (text, current) => {
-            const currentIndex = current != null ? this.indexOf(current) : -1;
-            const isSingleKey = text.length === 1;
-            for (let i2 = 0; i2 < this.items.length; i2++) {
-              const item = this.items[(currentIndex + i2 + 1) % this.items.length];
-              if (isSingleKey && this.getItemValue(item) === current) continue;
-              if (this.getItemDisabled(item)) continue;
-              if (match3(this.stringifyItem(item), text)) return item;
-            }
-            return void 0;
-          });
-          __publicField5(this, "search", (queryString, options2) => {
-            const { state: state2, currentValue, timeout = 350 } = options2;
-            const search = state2.keysSoFar + queryString;
-            const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-            const query2 = isRepeated ? search[0] : search;
-            const item = this.getByText(query2, currentValue);
-            const value = this.getItemValue(item);
-            function cleanup() {
-              clearTimeout(state2.timer);
-              state2.timer = -1;
-            }
-            function update(value2) {
-              state2.keysSoFar = value2;
-              cleanup();
-              if (value2 !== "") {
-                state2.timer = +setTimeout(() => {
-                  update("");
-                  cleanup();
-                }, timeout);
-              }
-            }
-            update(search);
-            return value;
-          });
-          __publicField5(this, "update", (value, item) => {
-            let index = this.indexOf(value);
-            if (index === -1) return this;
-            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
-          });
-          __publicField5(this, "upsert", (value, item, mode = "append") => {
-            let index = this.indexOf(value);
-            if (index === -1) {
-              const fn = mode === "append" ? this.append : this.prepend;
-              return fn(item);
-            }
-            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
-          });
-          __publicField5(this, "insert", (index, ...items) => {
-            return this.copy(insert(this.items, index, ...items));
-          });
-          __publicField5(this, "insertBefore", (value, ...items) => {
-            let toIndex = this.indexOf(value);
-            if (toIndex === -1) {
-              if (this.items.length === 0) toIndex = 0;
-              else return this;
-            }
-            return this.copy(insert(this.items, toIndex, ...items));
-          });
-          __publicField5(this, "insertAfter", (value, ...items) => {
-            let toIndex = this.indexOf(value);
-            if (toIndex === -1) {
-              if (this.items.length === 0) toIndex = 0;
-              else return this;
-            }
-            return this.copy(insert(this.items, toIndex + 1, ...items));
-          });
-          __publicField5(this, "prepend", (...items) => {
-            return this.copy(insert(this.items, 0, ...items));
-          });
-          __publicField5(this, "append", (...items) => {
-            return this.copy(insert(this.items, this.items.length, ...items));
-          });
-          __publicField5(this, "filter", (fn) => {
-            const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
-            return this.copy(filteredItems);
-          });
-          __publicField5(this, "remove", (...itemsOrValues) => {
-            const values = itemsOrValues.map(
-              (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
-            );
-            return this.copy(
-              this.items.filter((item) => {
-                const value = this.getItemValue(item);
-                if (value == null) return false;
-                return !values.includes(value);
-              })
-            );
-          });
-          __publicField5(this, "move", (value, toIndex) => {
-            const fromIndex = this.indexOf(value);
-            if (fromIndex === -1) return this;
-            return this.copy(move(this.items, [fromIndex], toIndex));
-          });
-          __publicField5(this, "moveBefore", (value, ...values) => {
-            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
-            if (toIndex === -1) return this;
-            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
-            return this.copy(move(this.items, indices, toIndex));
-          });
-          __publicField5(this, "moveAfter", (value, ...values) => {
-            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
-            if (toIndex === -1) return this;
-            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
-            return this.copy(move(this.items, indices, toIndex + 1));
-          });
-          __publicField5(this, "reorder", (fromIndex, toIndex) => {
-            return this.copy(move(this.items, [fromIndex], toIndex));
-          });
-          __publicField5(this, "compareValue", (a2, b2) => {
-            const indexA = this.indexOf(a2);
-            const indexB = this.indexOf(b2);
-            if (indexA < indexB) return -1;
-            if (indexA > indexB) return 1;
-            return 0;
-          });
-          __publicField5(this, "range", (from, to) => {
-            let keys = [];
-            let key = from;
-            while (key != null) {
-              let item = this.find(key);
-              if (item) keys.push(key);
-              if (key === to) return keys;
-              key = this.getNextValue(key);
-            }
-            return [];
-          });
-          __publicField5(this, "getValueRange", (from, to) => {
-            if (from && to) {
-              if (this.compareValue(from, to) <= 0) {
-                return this.range(from, to);
-              }
-              return this.range(to, from);
-            }
-            return [];
-          });
-          __publicField5(this, "toString", () => {
-            let result = "";
-            for (const item of this.items) {
-              const value = this.getItemValue(item);
-              const label = this.stringifyItem(item);
-              const disabled = this.getItemDisabled(item);
-              const itemString = [value, label, disabled].filter(Boolean).join(":");
-              result += itemString + ",";
-            }
-            return result;
-          });
-          __publicField5(this, "toJSON", () => {
-            return {
-              size: this.size,
-              first: this.firstValue,
-              last: this.lastValue
-            };
-          });
-          this.items = [...options.items];
-        }
-        /**
-         * Returns the number of items in the collection
-         */
-        get size() {
-          return this.items.length;
-        }
-        /**
-         * Returns the first value in the collection
-         */
-        get firstValue() {
-          let index = 0;
-          while (this.getItemDisabled(this.at(index))) index++;
-          return this.getItemValue(this.at(index));
-        }
-        /**
-         * Returns the last value in the collection
-         */
-        get lastValue() {
-          let index = this.size - 1;
-          while (this.getItemDisabled(this.at(index))) index--;
-          return this.getItemValue(this.at(index));
-        }
-        *[Symbol.iterator]() {
-          yield* __yieldStar(this.items);
-        }
-      };
-      match3 = (label, query2) => {
-        return !!(label == null ? void 0 : label.toLowerCase().startsWith(query2.toLowerCase()));
-      };
-      GridCollection = class extends ListCollection {
-        constructor(options) {
-          const { columnCount } = options;
-          super(options);
-          __publicField5(this, "columnCount");
-          __publicField5(this, "rows", null);
-          __publicField5(this, "getRows", () => {
-            if (!this.rows) {
-              this.rows = chunk([...this.items], this.columnCount);
-            }
-            return this.rows;
-          });
-          __publicField5(this, "getRowCount", () => {
-            return Math.ceil(this.items.length / this.columnCount);
-          });
-          __publicField5(this, "getCellIndex", (row, column) => {
-            return row * this.columnCount + column;
-          });
-          __publicField5(this, "getCell", (row, column) => {
-            return this.at(this.getCellIndex(row, column));
-          });
-          __publicField5(this, "getValueCell", (value) => {
-            const index = this.indexOf(value);
-            if (index === -1) return null;
-            const row = Math.floor(index / this.columnCount);
-            const column = index % this.columnCount;
-            return { row, column };
-          });
-          __publicField5(this, "getLastEnabledColumnIndex", (row) => {
-            for (let col = this.columnCount - 1; col >= 0; col--) {
-              const cell = this.getCell(row, col);
-              if (cell && !this.getItemDisabled(cell)) {
-                return col;
-              }
-            }
-            return null;
-          });
-          __publicField5(this, "getFirstEnabledColumnIndex", (row) => {
-            for (let col = 0; col < this.columnCount; col++) {
-              const cell = this.getCell(row, col);
-              if (cell && !this.getItemDisabled(cell)) {
-                return col;
-              }
-            }
-            return null;
-          });
-          __publicField5(this, "getPreviousRowValue", (value, loop = false) => {
-            const currentCell = this.getValueCell(value);
-            if (currentCell === null) return null;
-            const rows = this.getRows();
-            const rowCount = rows.length;
-            let prevRowIndex = currentCell.row;
-            let prevColumnIndex = currentCell.column;
-            for (let i2 = 1; i2 <= rowCount; i2++) {
-              prevRowIndex = prevIndex(rows, prevRowIndex, { loop });
-              const prevRow = rows[prevRowIndex];
-              if (!prevRow) continue;
-              const prevCell = prevRow[prevColumnIndex];
-              if (!prevCell) {
-                const lastColumnIndex = this.getLastEnabledColumnIndex(prevRowIndex);
-                if (lastColumnIndex != null) {
-                  prevColumnIndex = lastColumnIndex;
-                }
-              }
-              const cell = this.getCell(prevRowIndex, prevColumnIndex);
-              if (!this.getItemDisabled(cell)) {
-                return this.getItemValue(cell);
-              }
-            }
-            return this.firstValue;
-          });
-          __publicField5(this, "getNextRowValue", (value, loop = false) => {
-            const currentCell = this.getValueCell(value);
-            if (currentCell === null) return null;
-            const rows = this.getRows();
-            const rowCount = rows.length;
-            let nextRowIndex = currentCell.row;
-            let nextColumnIndex = currentCell.column;
-            for (let i2 = 1; i2 <= rowCount; i2++) {
-              nextRowIndex = nextIndex(rows, nextRowIndex, { loop });
-              const nextRow = rows[nextRowIndex];
-              if (!nextRow) continue;
-              const nextCell = nextRow[nextColumnIndex];
-              if (!nextCell) {
-                const lastColumnIndex = this.getLastEnabledColumnIndex(nextRowIndex);
-                if (lastColumnIndex != null) {
-                  nextColumnIndex = lastColumnIndex;
-                }
-              }
-              const cell = this.getCell(nextRowIndex, nextColumnIndex);
-              if (!this.getItemDisabled(cell)) {
-                return this.getItemValue(cell);
-              }
-            }
-            return this.lastValue;
-          });
-          this.columnCount = columnCount;
-        }
-      };
-      Selection = class _Selection extends Set {
-        constructor(values = []) {
-          super(values);
-          __publicField5(this, "selectionMode", "single");
-          __publicField5(this, "deselectable", true);
-          __publicField5(this, "copy", () => {
-            const clone = new _Selection([...this]);
-            return this.sync(clone);
-          });
-          __publicField5(this, "sync", (other) => {
-            other.selectionMode = this.selectionMode;
-            other.deselectable = this.deselectable;
-            return other;
-          });
-          __publicField5(this, "isEmpty", () => {
-            return this.size === 0;
-          });
-          __publicField5(this, "isSelected", (value) => {
-            if (this.selectionMode === "none" || value == null) {
-              return false;
-            }
-            return this.has(value);
-          });
-          __publicField5(this, "canSelect", (collection5, value) => {
-            return this.selectionMode !== "none" || !collection5.getItemDisabled(collection5.find(value));
-          });
-          __publicField5(this, "firstSelectedValue", (collection5) => {
-            let firstValue = null;
-            for (let value of this) {
-              if (!firstValue || collection5.compareValue(value, firstValue) < 0) {
-                firstValue = value;
-              }
-            }
-            return firstValue;
-          });
-          __publicField5(this, "lastSelectedValue", (collection5) => {
-            let lastValue = null;
-            for (let value of this) {
-              if (!lastValue || collection5.compareValue(value, lastValue) > 0) {
-                lastValue = value;
-              }
-            }
-            return lastValue;
-          });
-          __publicField5(this, "extendSelection", (collection5, anchorValue, targetValue) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (this.selectionMode === "single") {
-              return this.replaceSelection(collection5, targetValue);
-            }
-            const selection = this.copy();
-            const lastSelected = Array.from(this).pop();
-            for (let key of collection5.getValueRange(anchorValue, lastSelected != null ? lastSelected : targetValue)) {
-              selection.delete(key);
-            }
-            for (let key of collection5.getValueRange(targetValue, anchorValue)) {
-              if (this.canSelect(collection5, key)) {
-                selection.add(key);
-              }
-            }
-            return selection;
-          });
-          __publicField5(this, "toggleSelection", (collection5, value) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (this.selectionMode === "single" && !this.isSelected(value)) {
-              return this.replaceSelection(collection5, value);
-            }
-            const selection = this.copy();
-            if (selection.has(value)) {
-              selection.delete(value);
-            } else if (selection.canSelect(collection5, value)) {
-              selection.add(value);
-            }
-            return selection;
-          });
-          __publicField5(this, "replaceSelection", (collection5, value) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (value == null) {
-              return this;
-            }
-            if (!this.canSelect(collection5, value)) {
-              return this;
-            }
-            const selection = new _Selection([value]);
-            return this.sync(selection);
-          });
-          __publicField5(this, "setSelection", (values2) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            let selection = new _Selection();
-            for (let value of values2) {
-              if (value != null) {
-                selection.add(value);
-                if (this.selectionMode === "single") {
-                  break;
-                }
-              }
-            }
-            return this.sync(selection);
-          });
-          __publicField5(this, "clearSelection", () => {
-            const selection = this.copy();
-            if (selection.deselectable && selection.size > 0) {
-              selection.clear();
-            }
-            return selection;
-          });
-          __publicField5(this, "select", (collection5, value, forceToggle) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (this.selectionMode === "single") {
-              if (this.isSelected(value) && this.deselectable) {
-                return this.toggleSelection(collection5, value);
-              } else {
-                return this.replaceSelection(collection5, value);
-              }
-            } else if (this.selectionMode === "multiple" || forceToggle) {
-              return this.toggleSelection(collection5, value);
-            } else {
-              return this.replaceSelection(collection5, value);
-            }
-          });
-          __publicField5(this, "deselect", (value) => {
-            const selection = this.copy();
-            selection.delete(value);
-            return selection;
-          });
-          __publicField5(this, "isEqual", (other) => {
-            return isEqual(Array.from(this), Array.from(other));
-          });
-        }
-      };
-      TreeCollection = class _TreeCollection {
-        constructor(options) {
-          __publicField5(this, "options", options);
-          __publicField5(this, "rootNode");
-          __publicField5(this, "isEqual", (other) => {
-            return isEqual(this.rootNode, other.rootNode);
-          });
-          __publicField5(this, "getNodeChildren", (node) => {
-            var _a4, _b, _c, _d;
-            return (_d = (_c = (_b = (_a4 = this.options).nodeToChildren) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
-          });
-          __publicField5(this, "resolveIndexPath", (valueOrIndexPath) => {
-            return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
-          });
-          __publicField5(this, "resolveNode", (valueOrIndexPath) => {
-            const indexPath = this.resolveIndexPath(valueOrIndexPath);
-            return indexPath ? this.at(indexPath) : void 0;
-          });
-          __publicField5(this, "getNodeChildrenCount", (node) => {
-            var _a4, _b, _c;
-            return (_c = (_b = (_a4 = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
-          });
-          __publicField5(this, "getNodeValue", (node) => {
-            var _a4, _b, _c;
-            return (_c = (_b = (_a4 = this.options).nodeToValue) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToValue(node);
-          });
-          __publicField5(this, "getNodeDisabled", (node) => {
-            var _a4, _b, _c;
-            return (_c = (_b = (_a4 = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
-          });
-          __publicField5(this, "stringify", (value) => {
-            const node = this.findNode(value);
-            if (!node) return null;
-            return this.stringifyNode(node);
-          });
-          __publicField5(this, "stringifyNode", (node) => {
-            var _a4, _b, _c;
-            return (_c = (_b = (_a4 = this.options).nodeToString) == null ? void 0 : _b.call(_a4, node)) != null ? _c : fallbackMethods.nodeToString(node);
-          });
-          __publicField5(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
-            let firstChild;
-            visit(rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a4;
-                if (this.isSameNode(node, rootNode)) return;
-                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
-                if (!firstChild && indexPath.length > 0 && !this.getNodeDisabled(node)) {
-                  firstChild = node;
-                  return "stop";
-                }
-              }
-            });
-            return firstChild;
-          });
-          __publicField5(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
-            let lastChild;
-            visit(rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a4;
-                if (this.isSameNode(node, rootNode)) return;
-                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
-                if (indexPath.length > 0 && !this.getNodeDisabled(node)) {
-                  lastChild = node;
-                }
-              }
-            });
-            return lastChild;
-          });
-          __publicField5(this, "at", (indexPath) => {
-            return access(this.rootNode, indexPath, {
-              getChildren: this.getNodeChildren
-            });
-          });
-          __publicField5(this, "findNode", (value, rootNode = this.rootNode) => {
-            return find(rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === value
-            });
-          });
-          __publicField5(this, "findNodes", (values, rootNode = this.rootNode) => {
-            const v2 = new Set(values.filter((v22) => v22 != null));
-            return findAll(rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => v2.has(this.getNodeValue(node))
-            });
-          });
-          __publicField5(this, "sort", (values) => {
-            return values.reduce((acc, value) => {
-              const indexPath = this.getIndexPath(value);
-              if (indexPath) acc.push({ value, indexPath });
-              return acc;
-            }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
-          });
-          __publicField5(this, "getValue", (indexPath) => {
-            const node = this.at(indexPath);
-            return node ? this.getNodeValue(node) : void 0;
-          });
-          __publicField5(this, "getValuePath", (indexPath) => {
-            if (!indexPath) return [];
-            const valuePath = [];
-            let currentPath = [...indexPath];
-            while (currentPath.length > 0) {
-              const node = this.at(currentPath);
-              if (node) valuePath.unshift(this.getNodeValue(node));
-              currentPath.pop();
-            }
-            return valuePath;
-          });
-          __publicField5(this, "getDepth", (value) => {
-            var _a4;
-            const indexPath = findIndexPath(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === value
-            });
-            return (_a4 = indexPath == null ? void 0 : indexPath.length) != null ? _a4 : 0;
-          });
-          __publicField5(this, "isSameNode", (node, other) => {
-            return this.getNodeValue(node) === this.getNodeValue(other);
-          });
-          __publicField5(this, "isRootNode", (node) => {
-            return this.isSameNode(node, this.rootNode);
-          });
-          __publicField5(this, "contains", (parentIndexPath, valueIndexPath) => {
-            if (!parentIndexPath || !valueIndexPath) return false;
-            return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
-          });
-          __publicField5(this, "getNextNode", (value, opts = {}) => {
-            let found = false;
-            let nextNode;
-            visit(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a4;
-                if (this.isRootNode(node)) return;
-                const nodeValue = this.getNodeValue(node);
-                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: nodeValue, node, indexPath })) {
-                  if (nodeValue === value) {
-                    found = true;
-                  }
-                  return "skip";
-                }
-                if (found && !this.getNodeDisabled(node)) {
-                  nextNode = node;
-                  return "stop";
-                }
-                if (nodeValue === value) {
-                  found = true;
-                }
-              }
-            });
-            return nextNode;
-          });
-          __publicField5(this, "getPreviousNode", (value, opts = {}) => {
-            let previousNode;
-            let found = false;
-            visit(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a4;
-                if (this.isRootNode(node)) return;
-                const nodeValue = this.getNodeValue(node);
-                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: nodeValue, node, indexPath })) {
-                  return "skip";
-                }
-                if (nodeValue === value) {
-                  found = true;
-                  return "stop";
-                }
-                if (!this.getNodeDisabled(node)) {
-                  previousNode = node;
-                }
-              }
-            });
-            return found ? previousNode : void 0;
-          });
-          __publicField5(this, "getParentNodes", (valueOrIndexPath) => {
-            var _a4;
-            const indexPath = (_a4 = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a4.slice();
-            if (!indexPath) return [];
-            const result = [];
-            while (indexPath.length > 0) {
-              indexPath.pop();
-              const parentNode = this.at(indexPath);
-              if (parentNode && !this.isRootNode(parentNode)) {
-                result.unshift(parentNode);
-              }
-            }
-            return result;
-          });
-          __publicField5(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
-            const parentNode = this.resolveNode(valueOrIndexPath);
-            if (!parentNode) return [];
-            const result = [];
-            visit(parentNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, nodeIndexPath) => {
-                if (nodeIndexPath.length === 0) return;
-                if (!(options2 == null ? void 0 : options2.withBranch) && this.isBranchNode(node)) return;
-                result.push(node);
-              }
-            });
-            return result;
-          });
-          __publicField5(this, "getDescendantValues", (valueOrIndexPath, options2) => {
-            const children = this.getDescendantNodes(valueOrIndexPath, options2);
-            return children.map((child) => this.getNodeValue(child));
-          });
-          __publicField5(this, "getParentIndexPath", (indexPath) => {
-            return indexPath.slice(0, -1);
-          });
-          __publicField5(this, "getParentNode", (valueOrIndexPath) => {
-            const indexPath = this.resolveIndexPath(valueOrIndexPath);
-            return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
-          });
-          __publicField5(this, "visit", (opts) => {
-            const _a4 = opts, { skip } = _a4, rest = __objRest(_a4, ["skip"]);
-            visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a5;
-                if (this.isRootNode(node)) return;
-                if (skip == null ? void 0 : skip({ value: this.getNodeValue(node), node, indexPath })) return "skip";
-                return (_a5 = rest.onEnter) == null ? void 0 : _a5.call(rest, node, indexPath);
-              }
-            }));
-          });
-          __publicField5(this, "getPreviousSibling", (indexPath) => {
-            const parentNode = this.getParentNode(indexPath);
-            if (!parentNode) return;
-            const siblings = this.getNodeChildren(parentNode);
-            let idx = indexPath[indexPath.length - 1];
-            while (--idx >= 0) {
-              const sibling = siblings[idx];
-              if (!this.getNodeDisabled(sibling)) return sibling;
-            }
-            return;
-          });
-          __publicField5(this, "getNextSibling", (indexPath) => {
-            const parentNode = this.getParentNode(indexPath);
-            if (!parentNode) return;
-            const siblings = this.getNodeChildren(parentNode);
-            let idx = indexPath[indexPath.length - 1];
-            while (++idx < siblings.length) {
-              const sibling = siblings[idx];
-              if (!this.getNodeDisabled(sibling)) return sibling;
-            }
-            return;
-          });
-          __publicField5(this, "getSiblingNodes", (indexPath) => {
-            const parentNode = this.getParentNode(indexPath);
-            return parentNode ? this.getNodeChildren(parentNode) : [];
-          });
-          __publicField5(this, "getValues", (rootNode = this.rootNode) => {
-            const values = flatMap(rootNode, {
-              getChildren: this.getNodeChildren,
-              transform: (node) => [this.getNodeValue(node)]
-            });
-            return values.slice(1);
-          });
-          __publicField5(this, "isValidDepth", (indexPath, depth) => {
-            if (depth == null) return true;
-            if (typeof depth === "function") return depth(indexPath.length);
-            return indexPath.length === depth;
-          });
-          __publicField5(this, "isBranchNode", (node) => {
-            return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
-          });
-          __publicField5(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
-            let values = [];
-            visit(rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a4;
-                if (indexPath.length === 0) return;
-                const nodeValue = this.getNodeValue(node);
-                if ((_a4 = opts.skip) == null ? void 0 : _a4.call(opts, { value: nodeValue, node, indexPath })) return "skip";
-                if (this.isBranchNode(node) && this.isValidDepth(indexPath, opts.depth)) {
-                  values.push(this.getNodeValue(node));
-                }
-              }
-            });
-            return values;
-          });
-          __publicField5(this, "flatten", (rootNode = this.rootNode) => {
-            return flatten(rootNode, { getChildren: this.getNodeChildren });
-          });
-          __publicField5(this, "_create", (node, children) => {
-            if (this.getNodeChildren(node).length > 0 || children.length > 0) {
-              return __spreadProps(__spreadValues({}, node), { children });
-            }
-            return __spreadValues({}, node);
-          });
-          __publicField5(this, "_insert", (rootNode, indexPath, nodes) => {
-            return this.copy(
-              insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
-            );
-          });
-          __publicField5(this, "copy", (rootNode) => {
-            return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
-          });
-          __publicField5(this, "_replace", (rootNode, indexPath, node) => {
-            return this.copy(
-              replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
-            );
-          });
-          __publicField5(this, "_move", (rootNode, indexPaths, to) => {
-            return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
-          });
-          __publicField5(this, "_remove", (rootNode, indexPaths) => {
-            return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
-          });
-          __publicField5(this, "replace", (indexPath, node) => {
-            return this._replace(this.rootNode, indexPath, node);
-          });
-          __publicField5(this, "remove", (indexPaths) => {
-            return this._remove(this.rootNode, indexPaths);
-          });
-          __publicField5(this, "insertBefore", (indexPath, nodes) => {
-            const parentNode = this.getParentNode(indexPath);
-            return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
-          });
-          __publicField5(this, "insertAfter", (indexPath, nodes) => {
-            const parentNode = this.getParentNode(indexPath);
-            if (!parentNode) return;
-            const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
-            return this._insert(this.rootNode, nextIndex2, nodes);
-          });
-          __publicField5(this, "move", (fromIndexPaths, toIndexPath) => {
-            return this._move(this.rootNode, fromIndexPaths, toIndexPath);
-          });
-          __publicField5(this, "filter", (predicate) => {
-            const filteredRoot = filter(this.rootNode, {
-              predicate,
-              getChildren: this.getNodeChildren,
-              create: this._create
-            });
-            return this.copy(filteredRoot);
-          });
-          __publicField5(this, "toJSON", () => {
-            return this.getValues(this.rootNode);
-          });
-          this.rootNode = options.rootNode;
-        }
-        getIndexPath(valueOrValuePath) {
-          if (Array.isArray(valueOrValuePath)) {
-            if (valueOrValuePath.length === 0) return [];
-            const indexPath = [];
-            let currentChildren = this.getNodeChildren(this.rootNode);
-            for (let i2 = 0; i2 < valueOrValuePath.length; i2++) {
-              const currentValue = valueOrValuePath[i2];
-              const matchingChildIndex = currentChildren.findIndex((child) => this.getNodeValue(child) === currentValue);
-              if (matchingChildIndex === -1) break;
-              indexPath.push(matchingChildIndex);
-              if (i2 < valueOrValuePath.length - 1) {
-                const currentNode = currentChildren[matchingChildIndex];
-                currentChildren = this.getNodeChildren(currentNode);
-              }
-            }
-            return indexPath;
-          } else {
-            return findIndexPath(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === valueOrValuePath
-            });
-          }
-        }
-      };
-      fallbackMethods = {
-        nodeToValue(node) {
-          if (typeof node === "string") return node;
-          if (isObject(node) && hasProp(node, "value")) return node.value;
-          return "";
-        },
-        nodeToString(node) {
-          if (typeof node === "string") return node;
-          if (isObject(node) && hasProp(node, "label")) return node.label;
-          return fallbackMethods.nodeToValue(node);
-        },
-        isNodeDisabled(node) {
-          if (isObject(node) && hasProp(node, "disabled")) return !!node.disabled;
-          return false;
-        },
-        nodeToChildren(node) {
-          return node.children;
-        },
-        nodeToChildrenCount(node) {
-          if (isObject(node) && hasProp(node, "childrenCount")) return node.childrenCount;
-        }
-      };
-    }
-  });
-
-  // ../priv/static/chunks/chunk-IPIIGVFP.mjs
-  function stripLeadingC0AndSpace(destination) {
-    let i2 = 0;
-    while (i2 < destination.length && destination.charCodeAt(i2) <= 32) {
-      i2 += 1;
-    }
-    return destination.slice(i2);
-  }
-  function sanitizeRedirectDestination(destination) {
-    const trimmed = stripLeadingC0AndSpace(destination);
-    if (!trimmed) return null;
-    if (trimmed.startsWith("//")) return null;
-    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
-    if (schemeMatch) {
-      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
-      if (scheme !== "http" && scheme !== "https") return null;
-    }
-    return trimmed;
-  }
-  function isAllowedRedirectDestination(destination) {
-    return sanitizeRedirectDestination(destination) !== null;
-  }
-  function readDomItemRedirect(itemEl, fallback2) {
-    if (!itemEl) {
-      const destination2 = fallback2 ? sanitizeRedirectDestination(fallback2) : null;
-      if (!destination2) return null;
-      return { destination: destination2 };
-    }
-    const dataRedirect = itemEl.getAttribute("data-redirect");
-    if (dataRedirect === "false") return null;
-    const raw = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    const destination = sanitizeRedirectDestination(raw);
-    if (!destination) return null;
-    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
-    const newTab = itemEl.hasAttribute("data-new-tab");
-    return { destination, mode, newTab };
-  }
-  function performRedirect(input, ctx) {
-    if (!input || !input.destination) return false;
-    const destination = sanitizeRedirectDestination(input.destination);
-    if (!destination) return false;
-    const { newTab, mode } = input;
-    if (newTab) {
-      window.open(destination, "_blank", "noopener,noreferrer");
-      return true;
-    }
-    const connected = canPushEvent(ctx.liveSocket);
-    if (!connected || !mode || mode === "href") {
-      window.location.href = destination;
-      return true;
-    }
-    const js = ctx.liveSocket.js();
-    if (mode === "patch") {
-      js.patch(destination);
-    } else {
-      js.navigate(destination);
-    }
-    return true;
-  }
-  var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_IPIIGVFP = __esm({
-    "../priv/static/chunks/chunk-IPIIGVFP.mjs"() {
-      "use strict";
-      init_chunk_JPQZXVRQ();
-      REDIRECT_MODES = ["href", "patch", "navigate"];
-      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
-    }
-  });
-
-  // ../priv/static/chunks/chunk-L27QKFAY.mjs
-  function connect8(service, normalize2) {
-    const { context, prop, scope, computed, send, refs } = service;
-    const disabled = prop("disabled");
-    const collection22 = prop("collection");
-    const layout = isGridCollection(collection22) ? "grid" : "list";
-    const focused = context.get("focused");
-    const focusVisible = refs.get("focusVisible") && focused;
-    const inputState = refs.get("inputState");
-    const value = context.get("value");
-    const selectedItems = computed("selectedItems");
-    const highlightedValue = context.get("highlightedValue");
-    const highlightedItem = context.get("highlightedItem");
-    const isTypingAhead = computed("isTypingAhead");
-    const interactive = computed("isInteractive");
-    const ariaActiveDescendant = highlightedValue ? getItemId3(scope, highlightedValue) : void 0;
-    function getItemState(props) {
-      const itemDisabled = collection22.getItemDisabled(props.item);
-      const value2 = collection22.getItemValue(props.item);
-      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
-      const highlighted = highlightedValue === value2;
-      return {
-        value: value2,
-        disabled: Boolean(disabled || itemDisabled),
-        focused: highlighted && focused,
-        focusVisible: highlighted && focusVisible,
-        // deprecated
-        highlighted: highlighted && (inputState.focused ? focused : focusVisible),
-        selected: context.get("value").includes(value2)
-      };
-    }
-    return {
-      empty: value.length === 0,
-      highlightedItem,
-      highlightedValue,
-      clearHighlightedValue() {
-        send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
-      },
-      selectedItems,
-      hasSelectedItems: computed("hasSelectedItems"),
-      value,
-      valueAsString: computed("valueAsString"),
-      collection: collection22,
-      disabled: !!disabled,
-      selectValue(value2) {
-        send({ type: "ITEM.SELECT", value: value2 });
-      },
-      setValue(value2) {
-        send({ type: "VALUE.SET", value: value2 });
-      },
-      selectAll() {
-        if (!computed("multiple")) {
-          throw new Error("[zag-js] Cannot select all items in a single-select listbox");
-        }
-        send({ type: "VALUE.SET", value: collection22.getValues() });
-      },
-      highlightValue(value2) {
-        send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
-      },
-      highlightFirst() {
-        send({ type: "HIGHLIGHT.FIRST" });
-      },
-      highlightLast() {
-        send({ type: "HIGHLIGHT.LAST" });
-      },
-      highlightNext() {
-        send({ type: "HIGHLIGHT.NEXT" });
-      },
-      highlightPrevious() {
-        send({ type: "HIGHLIGHT.PREV" });
-      },
-      clearValue(value2) {
-        if (value2) {
-          send({ type: "ITEM.CLEAR", value: value2 });
-        } else {
-          send({ type: "VALUE.CLEAR" });
-        }
-      },
-      getItemState,
-      getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts8.root.attrs), {
-          dir: prop("dir"),
-          id: getRootId8(scope),
-          "data-orientation": prop("orientation"),
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getInputProps(props = {}) {
-        var _a4;
-        const keyboardPriority = (_a4 = props.keyboardPriority) != null ? _a4 : "caret";
-        return normalize2.input(__spreadProps(__spreadValues({}, parts8.input.attrs), {
-          dir: prop("dir"),
-          disabled,
-          "data-disabled": dataAttr(disabled),
-          autoComplete: "off",
-          autoCorrect: "off",
-          "aria-haspopup": "listbox",
-          "aria-controls": getContentId2(scope),
-          "aria-autocomplete": "list",
-          "aria-activedescendant": ariaActiveDescendant,
-          spellCheck: false,
-          enterKeyHint: "go",
-          onFocus() {
-            queueMicrotask(() => {
-              send({ type: "INPUT.FOCUS", autoHighlight: !!(props == null ? void 0 : props.autoHighlight) });
-            });
-          },
-          onBlur() {
-            send({ type: "CONTENT.BLUR", src: "input" });
-          },
-          onInput(event) {
-            if (!(props == null ? void 0 : props.autoHighlight)) return;
-            if (event.currentTarget.value.trim()) return;
-            queueMicrotask(() => {
-              send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
-            });
-          },
-          onKeyDown(event) {
-            if (event.defaultPrevented) return;
-            if (isComposingEvent(event)) return;
-            const nativeEvent = getNativeEvent(event);
-            const forwardEvent = () => {
-              var _a5;
-              event.preventDefault();
-              const win = scope.getWin();
-              const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
-              (_a5 = getContentEl2(scope)) == null ? void 0 : _a5.dispatchEvent(keyboardEvent);
-            };
-            switch (nativeEvent.key) {
-              case "ArrowLeft":
-              case "ArrowRight": {
-                if (!isGridCollection(collection22)) return;
-                if (event.ctrlKey) return;
-                if (keyboardPriority !== "navigate") return;
-                forwardEvent();
-                break;
-              }
-              case "Home":
-              case "End": {
-                if (keyboardPriority !== "navigate") return;
-                if (highlightedValue == null && event.shiftKey) return;
-                forwardEvent();
-                break;
-              }
-              case "ArrowDown":
-              case "ArrowUp": {
-                forwardEvent();
-                break;
-              }
-              case "Enter":
-                if (highlightedValue != null) {
-                  event.preventDefault();
-                  send({ type: "ITEM.CLICK", value: highlightedValue });
-                }
-                break;
-              default:
-                break;
-            }
-          }
-        }));
-      },
-      getLabelProps() {
-        return normalize2.element(__spreadProps(__spreadValues({
-          dir: prop("dir"),
-          id: getLabelId4(scope)
-        }, parts8.label.attrs), {
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getValueTextProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts8.valueText.attrs), {
-          dir: prop("dir"),
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getItemProps(props) {
-        const itemState = getItemState(props);
-        return normalize2.element(__spreadProps(__spreadValues({
-          id: getItemId3(scope, itemState.value),
-          role: "option"
-        }, parts8.item.attrs), {
-          dir: prop("dir"),
-          "data-value": itemState.value,
-          "aria-selected": itemState.selected,
-          "data-selected": dataAttr(itemState.selected),
-          "data-layout": layout,
-          "data-state": itemState.selected ? "checked" : "unchecked",
-          "data-orientation": prop("orientation"),
-          "data-highlighted": dataAttr(itemState.highlighted),
-          "data-disabled": dataAttr(itemState.disabled),
-          "aria-disabled": ariaAttr(itemState.disabled),
-          onPointerMove(event) {
-            if (!props.highlightOnHover) return;
-            if (itemState.disabled || event.pointerType !== "mouse") return;
-            if (getInteractionModality() !== "pointer") return;
-            if (itemState.highlighted) return;
-            send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
-          },
-          onMouseDown(event) {
-            var _a4;
-            event.preventDefault();
-            (_a4 = getContentEl2(scope)) == null ? void 0 : _a4.focus();
-          },
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            if (isDownloadingEvent(event)) return;
-            if (isOpeningInNewTab(event)) return;
-            if (isContextMenuEvent(event)) return;
-            if (itemState.disabled) return;
-            send({
-              type: "ITEM.CLICK",
-              value: itemState.value,
-              shiftKey: event.shiftKey,
-              anchorValue: highlightedValue,
-              metaKey: isCtrlOrMetaKey(event)
-            });
-          }
-        }));
-      },
-      getItemTextProps(props) {
-        const itemState = getItemState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
-          "data-state": itemState.selected ? "checked" : "unchecked",
-          "data-disabled": dataAttr(itemState.disabled),
-          "data-highlighted": dataAttr(itemState.highlighted)
-        }));
-      },
-      getItemIndicatorProps(props) {
-        const itemState = getItemState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemIndicator.attrs), {
-          "aria-hidden": true,
-          "data-state": itemState.selected ? "checked" : "unchecked",
-          hidden: !itemState.selected
-        }));
-      },
-      getItemGroupLabelProps(props) {
-        const { htmlFor } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
-          id: getItemGroupLabelId(scope, htmlFor),
-          dir: prop("dir"),
-          role: "presentation"
-        }));
-      },
-      getItemGroupProps(props) {
-        const { id } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
-          "data-disabled": dataAttr(disabled),
-          "data-orientation": prop("orientation"),
-          "data-empty": dataAttr(collection22.size === 0),
-          id: getItemGroupId2(scope, id),
-          "aria-labelledby": getItemGroupLabelId(scope, id),
-          role: "group",
-          dir: prop("dir")
-        }));
-      },
-      getContentProps() {
-        return normalize2.element(__spreadProps(__spreadValues({
-          dir: prop("dir"),
-          id: getContentId2(scope),
-          role: "listbox"
-        }, parts8.content.attrs), {
-          "data-activedescendant": ariaActiveDescendant,
-          "aria-activedescendant": ariaActiveDescendant,
-          "data-orientation": prop("orientation"),
-          "aria-multiselectable": computed("multiple") ? true : void 0,
-          "aria-labelledby": getLabelId4(scope),
-          tabIndex: 0,
-          "data-layout": layout,
-          "data-empty": dataAttr(collection22.size === 0),
-          style: {
-            "--column-count": isGridCollection(collection22) ? collection22.columnCount : 1
-          },
-          onFocus() {
-            send({ type: "CONTENT.FOCUS" });
-          },
-          onBlur() {
-            send({ type: "CONTENT.BLUR" });
-          },
-          onKeyDown(event) {
-            if (!interactive) return;
-            const target = getEventTarget(event);
-            if (!contains(event.currentTarget, getEventTarget(event))) return;
-            const shiftKey = event.shiftKey;
-            const keyMap2 = {
-              ArrowUp(event2) {
-                let nextValue = null;
-                if (isGridCollection(collection22) && highlightedValue) {
-                  nextValue = collection22.getPreviousRowValue(highlightedValue);
-                } else if (highlightedValue) {
-                  nextValue = collection22.getPreviousValue(highlightedValue);
-                }
-                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                  nextValue = collection22.lastValue;
-                }
-                if (!nextValue) return;
-                event2.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              ArrowDown(event2) {
-                let nextValue = null;
-                if (isGridCollection(collection22) && highlightedValue) {
-                  nextValue = collection22.getNextRowValue(highlightedValue);
-                } else if (highlightedValue) {
-                  nextValue = collection22.getNextValue(highlightedValue);
-                }
-                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                  nextValue = collection22.firstValue;
-                }
-                if (!nextValue) return;
-                event2.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              ArrowLeft() {
-                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
-                let nextValue = highlightedValue ? collection22.getPreviousValue(highlightedValue) : null;
-                if (!nextValue && prop("loopFocus")) {
-                  nextValue = collection22.lastValue;
-                }
-                if (!nextValue) return;
-                event.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              ArrowRight() {
-                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
-                let nextValue = highlightedValue ? collection22.getNextValue(highlightedValue) : null;
-                if (!nextValue && prop("loopFocus")) {
-                  nextValue = collection22.firstValue;
-                }
-                if (!nextValue) return;
-                event.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              Home(event2) {
-                if (isEditableElement(target)) return;
-                event2.preventDefault();
-                let nextValue = collection22.firstValue;
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              End(event2) {
-                if (isEditableElement(target)) return;
-                event2.preventDefault();
-                let nextValue = collection22.lastValue;
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              Enter() {
-                send({ type: "ITEM.CLICK", value: highlightedValue });
-              },
-              a(event2) {
-                if (isCtrlOrMetaKey(event2) && computed("multiple") && !prop("disallowSelectAll")) {
-                  event2.preventDefault();
-                  send({ type: "VALUE.SET", value: collection22.getValues() });
-                }
-              },
-              Space(event2) {
-                var _a4;
-                if (isTypingAhead && prop("typeahead")) {
-                  send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
-                } else {
-                  (_a4 = keyMap2.Enter) == null ? void 0 : _a4.call(keyMap2, event2);
-                }
-              },
-              Escape(event2) {
-                if (prop("deselectable") && value.length > 0) {
-                  event2.preventDefault();
-                  event2.stopPropagation();
-                  send({ type: "VALUE.CLEAR" });
-                }
-              }
-            };
-            const exec = keyMap2[getEventKey(event)];
-            if (exec) {
-              exec(event);
-              return;
-            }
-            if (isEditableElement(target)) return;
-            if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
-              send({ type: "CONTENT.TYPEAHEAD", key: event.key });
-              event.preventDefault();
-            }
-          }
-        }));
-      }
-    };
-  }
-  function invokeOnSelect(current, next2, onSelect) {
-    const added = diff2(next2, current);
-    for (const item of added) {
-      onSelect == null ? void 0 : onSelect({ value: item });
-    }
-  }
-  function itemValue(item) {
-    var _a4;
-    return (_a4 = item.value) != null ? _a4 : "";
-  }
-  function itemsMembershipKey(items) {
-    return items.map((item) => itemValue(item)).join("\0");
-  }
-  function zagListCollectionConfig(items, hasGroups) {
-    if (hasGroups) {
-      return {
-        items,
-        itemToValue: (item) => itemValue(item),
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => {
-          var _a4;
-          return (_a4 = item.group) != null ? _a4 : "";
-        }
-      };
-    }
-    return {
-      items,
-      itemToValue: (item) => itemValue(item),
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    };
-  }
-  function buildCollection(items, hasGroups) {
-    return collection(zagListCollectionConfig(items, hasGroups));
-  }
-  function readItemsJson(el) {
-    var _a4;
-    return (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
-  }
-  function parseItemsJson(raw) {
-    return safeParseJson(raw, []);
-  }
-  function itemsHaveGroups(items) {
-    return items.some((item) => Boolean(item.group));
-  }
-  function readItems(el) {
-    const json = readItemsJson(el);
-    const items = parseItemsJson(json);
-    return { json, items, hasGroups: itemsHaveGroups(items) };
-  }
-  function applyItems(host, items, hasGroups = itemsHaveGroups(items)) {
-    host.hasGroups = hasGroups;
-    if (host.setAllOptions) {
-      host.setAllOptions(items);
-    } else if (host.setOptions) {
-      host.setOptions(items);
-    }
-  }
-  function refreshItemsIfChanged(el, state2, host) {
-    const json = readItemsJson(el);
-    if (json === state2.lastItemsJson) return false;
-    state2.lastItemsJson = json;
-    const items = parseItemsJson(json);
-    applyItems(host, items);
-    return true;
-  }
-  function firstSelectedValue(values) {
-    return values.length > 0 ? String(values[0]) : null;
-  }
-  function redirectCollectionItem(el, scope, value, liveSocket) {
-    if (!value) return false;
-    const itemEl = el.querySelector(
-      `[data-scope="${scope}"][data-part="item"][data-value="${CSS.escape(value)}"]`
-    );
-    return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
-  }
-  function initCollectionItems(el, state2) {
-    const result = readItems(el);
-    state2.lastItemsJson = result.json;
-    return result;
-  }
-  var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_L27QKFAY = __esm({
-    "../priv/static/chunks/chunk-L27QKFAY.mjs"() {
-      "use strict";
-      init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
-      init_chunk_CPYFNSV2();
-      init_chunk_JPQZXVRQ();
-      anatomy8 = createAnatomy("listbox").parts(
-        "label",
-        "input",
-        "item",
-        "itemText",
-        "itemIndicator",
-        "itemGroup",
-        "itemGroupLabel",
-        "content",
-        "root",
-        "valueText"
-      );
-      parts8 = anatomy8.build();
-      collection = (options) => {
-        return new ListCollection(options);
-      };
-      collection.empty = () => {
-        return new ListCollection({ items: [] });
-      };
-      gridCollection = (options) => {
-        return new GridCollection(options);
-      };
-      gridCollection.empty = () => {
-        return new GridCollection({ items: [], columnCount: 0 });
-      };
-      getRootId8 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `listbox:${ctx.id}`;
-      };
-      getContentId2 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `listbox:${ctx.id}:content`;
-      };
-      getLabelId4 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `listbox:${ctx.id}:label`;
-      };
-      getItemId3 = (ctx, id) => {
-        var _a4, _b, _c;
-        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item:${id}`;
-      };
-      getItemGroupId2 = (ctx, id) => {
-        var _a4, _b, _c;
-        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroup) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group:${id}`;
-      };
-      getItemGroupLabelId = (ctx, id) => {
-        var _a4, _b, _c;
-        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group-label:${id}`;
-      };
-      getContentEl2 = (ctx) => ctx.getById(getContentId2(ctx));
-      getItemEl = (ctx, id) => ctx.getById(getItemId3(ctx, id));
-      ({ guards, createMachine: createMachine2 } = setup());
-      ({ or } = guards);
-      machine8 = createMachine2({
-        props({ props }) {
-          return __spreadValues({
-            loopFocus: false,
-            composite: true,
-            defaultValue: [],
-            multiple: false,
-            typeahead: true,
-            collection: collection.empty(),
-            orientation: "vertical",
-            selectionMode: "single"
-          }, props);
-        },
-        context({ prop, bindable: bindable2, getContext }) {
-          var _a4, _b;
-          const initialValue = (_b = (_a4 = prop("value")) != null ? _a4 : prop("defaultValue")) != null ? _b : [];
-          const initialSelectedItems = prop("collection").findMany(initialValue);
-          return {
-            value: bindable2(() => ({
-              defaultValue: prop("defaultValue"),
-              value: prop("value"),
-              isEqual,
-              onChange(value) {
-                var _a5, _b2;
-                const context = getContext();
-                const collection22 = prop("collection");
-                const selectedItemMap = context.get("selectedItemMap");
-                const proposed = deriveSelectionState({
-                  values: value,
-                  collection: collection22,
-                  selectedItemMap
-                });
-                const effectiveValue = (_a5 = prop("value")) != null ? _a5 : value;
-                const effective = effectiveValue === value ? proposed : deriveSelectionState({
-                  values: effectiveValue,
-                  collection: collection22,
-                  selectedItemMap: proposed.nextSelectedItemMap
-                });
-                context.set("selectedItemMap", effective.nextSelectedItemMap);
-                return (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
-              }
-            })),
-            highlightedValue: bindable2(() => ({
-              defaultValue: prop("defaultHighlightedValue") || null,
-              value: prop("highlightedValue"),
-              sync: true,
-              onChange(value) {
-                var _a5;
-                (_a5 = prop("onHighlightChange")) == null ? void 0 : _a5({
-                  highlightedValue: value,
-                  highlightedItem: prop("collection").find(value),
-                  highlightedIndex: prop("collection").indexOf(value)
-                });
-              }
-            })),
-            highlightedItem: bindable2(() => ({
-              defaultValue: null
-            })),
-            selectedItemMap: bindable2(() => {
-              return {
-                defaultValue: createSelectedItemMap({
-                  selectedItems: initialSelectedItems,
-                  collection: prop("collection")
-                })
-              };
-            }),
-            focused: bindable2(() => ({
-              sync: true,
-              defaultValue: false
-            }))
-          };
-        },
-        refs() {
-          return {
-            typeahead: __spreadValues({}, getByTypeahead.defaultOptions),
-            focusVisible: false,
-            inputState: { autoHighlight: false, focused: false }
-          };
-        },
-        computed: {
-          hasSelectedItems: ({ context }) => context.get("value").length > 0,
-          isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
-          isInteractive: ({ prop }) => !prop("disabled"),
-          selection: ({ context, prop }) => {
-            const selection = new Selection(context.get("value"));
-            selection.selectionMode = prop("selectionMode");
-            selection.deselectable = !!prop("deselectable");
-            return selection;
-          },
-          multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
-          selectedItems: ({ context, prop }) => resolveSelectedItems({
-            values: context.get("value"),
-            collection: prop("collection"),
-            selectedItemMap: context.get("selectedItemMap")
-          }),
-          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
-        },
-        initialState() {
-          return "idle";
-        },
-        watch({ context, prop, track, action }) {
-          track([() => context.get("value").toString()], () => {
-            action(["syncSelectedItems"]);
-          });
-          track([() => context.get("highlightedValue")], () => {
-            action(["syncHighlightedItem"]);
-          });
-          track([() => prop("collection").toString()], () => {
-            action(["syncHighlightedValue"]);
-          });
-        },
-        effects: ["trackFocusVisible"],
-        on: {
-          "HIGHLIGHTED_VALUE.SET": {
-            actions: ["setHighlightedItem"]
-          },
-          "ITEM.SELECT": {
-            actions: ["selectItem"]
-          },
-          "ITEM.CLEAR": {
-            actions: ["clearItem"]
-          },
-          "VALUE.SET": {
-            actions: ["setSelectedItems"]
-          },
-          "VALUE.CLEAR": {
-            actions: ["clearSelectedItems"]
-          },
-          "HIGHLIGHT.FIRST": {
-            actions: ["highlightFirstValue"]
-          },
-          "HIGHLIGHT.LAST": {
-            actions: ["highlightLastValue"]
-          },
-          "HIGHLIGHT.NEXT": {
-            actions: ["highlightNextValue"]
-          },
-          "HIGHLIGHT.PREV": {
-            actions: ["highlightPreviousValue"]
-          }
-        },
-        states: {
-          idle: {
-            effects: ["scrollToHighlightedItem"],
-            on: {
-              "INPUT.FOCUS": {
-                actions: ["setFocused", "setInputState"]
-              },
-              "CONTENT.FOCUS": [
-                {
-                  guard: or("hasSelectedValue", "hasHighlightedValue"),
-                  actions: ["setFocused"]
-                },
-                {
-                  actions: ["setFocused", "setDefaultHighlightedValue"]
-                }
-              ],
-              "CONTENT.BLUR": {
-                actions: ["clearFocused", "clearInputState"]
-              },
-              "ITEM.CLICK": {
-                actions: ["setHighlightedItem", "selectHighlightedItem"]
-              },
-              "CONTENT.TYPEAHEAD": {
-                actions: ["setFocused", "highlightMatchingItem"]
-              },
-              "ITEM.POINTER_MOVE": {
-                actions: ["highlightItem"]
-              },
-              "ITEM.POINTER_LEAVE": {
-                actions: ["clearHighlightedItem"]
-              },
-              NAVIGATE: {
-                actions: ["setFocused", "setHighlightedItem", "selectWithKeyboard"]
-              }
-            }
-          }
-        },
-        implementations: {
-          guards: {
-            hasSelectedValue: ({ context }) => context.get("value").length > 0,
-            hasHighlightedValue: ({ context }) => context.get("highlightedValue") != null
-          },
-          effects: {
-            trackFocusVisible: ({ scope, refs }) => {
-              var _a4;
-              return trackFocusVisible({
-                root: (_a4 = scope.getRootNode) == null ? void 0 : _a4.call(scope),
-                onChange(details) {
-                  refs.set("focusVisible", details.isFocusVisible);
-                }
-              });
-            },
-            scrollToHighlightedItem({ context, prop, scope }) {
-              const exec = (immediate) => {
-                const highlightedValue = context.get("highlightedValue");
-                if (highlightedValue == null) return;
-                const modality = getInteractionModality();
-                if (modality === "pointer") return;
-                const contentEl2 = getContentEl2(scope);
-                const scrollToIndexFn = prop("scrollToIndexFn");
-                if (scrollToIndexFn) {
-                  const highlightedIndex = prop("collection").indexOf(highlightedValue);
-                  scrollToIndexFn == null ? void 0 : scrollToIndexFn({
-                    index: highlightedIndex,
-                    immediate,
-                    getElement() {
-                      return getItemEl(scope, highlightedValue);
-                    }
-                  });
-                  return;
-                }
-                const itemEl = getItemEl(scope, highlightedValue);
-                scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
-              };
-              raf(() => {
-                setInteractionModality("virtual");
-                exec(true);
-              });
-              const contentEl = () => getContentEl2(scope);
-              return observeAttributes(contentEl, {
-                defer: true,
-                attributes: ["data-activedescendant"],
-                callback() {
-                  exec(false);
-                }
-              });
-            }
-          },
-          actions: {
-            selectHighlightedItem({ context, prop, event, computed }) {
-              var _a4;
-              const value = (_a4 = event.value) != null ? _a4 : context.get("highlightedValue");
-              const collection22 = prop("collection");
-              if (value == null || !collection22.has(value)) return;
-              const selection = computed("selection");
-              if (event.shiftKey && computed("multiple") && event.anchorValue) {
-                const next2 = selection.extendSelection(collection22, event.anchorValue, value);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-              } else {
-                const next2 = selection.select(collection22, value, event.metaKey);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-              }
-            },
-            selectWithKeyboard({ context, prop, event, computed }) {
-              const selection = computed("selection");
-              const collection22 = prop("collection");
-              if (event.shiftKey && computed("multiple") && event.anchorValue) {
-                const next2 = selection.extendSelection(collection22, event.anchorValue, event.value);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-                return;
-              }
-              if (prop("selectOnHighlight")) {
-                const next2 = selection.replaceSelection(collection22, event.value);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-              }
-            },
-            highlightItem({ context, event }) {
-              context.set("highlightedValue", event.value);
-            },
-            highlightMatchingItem({ context, prop, event, refs }) {
-              const value = prop("collection").search(event.key, {
-                state: refs.get("typeahead"),
-                currentValue: context.get("highlightedValue")
-              });
-              if (value == null) return;
-              context.set("highlightedValue", value);
-            },
-            setHighlightedItem({ context, event }) {
-              context.set("highlightedValue", event.value);
-            },
-            highlightFirstValue({ context, prop }) {
-              var _a4;
-              context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
-            },
-            highlightLastValue({ context, prop }) {
-              var _a4;
-              context.set("highlightedValue", (_a4 = prop("collection").lastValue) != null ? _a4 : null);
-            },
-            highlightNextValue({ context, prop }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              let nextValue = null;
-              if (isGridCollection(collection22) && highlightedValue) {
-                nextValue = collection22.getNextRowValue(highlightedValue);
-              } else if (highlightedValue) {
-                nextValue = collection22.getNextValue(highlightedValue);
-              }
-              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                nextValue = collection22.firstValue;
-              }
-              if (!nextValue) return;
-              context.set("highlightedValue", nextValue);
-            },
-            highlightPreviousValue({ context, prop }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              let nextValue = null;
-              if (isGridCollection(collection22) && highlightedValue) {
-                nextValue = collection22.getPreviousRowValue(highlightedValue);
-              } else if (highlightedValue) {
-                nextValue = collection22.getPreviousValue(highlightedValue);
-              }
-              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                nextValue = collection22.lastValue;
-              }
-              if (!nextValue) return;
-              context.set("highlightedValue", nextValue);
-            },
-            clearHighlightedItem({ context }) {
-              context.set("highlightedValue", null);
-            },
-            selectItem({ context, prop, event, computed }) {
-              const collection22 = prop("collection");
-              const selection = computed("selection");
-              const next2 = selection.select(collection22, event.value);
-              invokeOnSelect(selection, next2, prop("onSelect"));
-              context.set("value", Array.from(next2));
-            },
-            clearItem({ context, event, computed }) {
-              const selection = computed("selection");
-              const value = selection.deselect(event.value);
-              context.set("value", Array.from(value));
-            },
-            setSelectedItems({ context, event }) {
-              context.set("value", event.value);
-            },
-            clearSelectedItems({ context }) {
-              context.set("value", []);
-            },
-            syncSelectedItems({ context, prop }) {
-              const next2 = deriveSelectionState({
-                values: context.get("value"),
-                collection: prop("collection"),
-                selectedItemMap: context.get("selectedItemMap")
-              });
-              context.set("selectedItemMap", next2.nextSelectedItemMap);
-            },
-            syncHighlightedItem({ context, prop }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              const highlightedItem = highlightedValue ? collection22.find(highlightedValue) : null;
-              context.set("highlightedItem", highlightedItem);
-            },
-            syncHighlightedValue({ context, prop, refs }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              const { autoHighlight } = refs.get("inputState");
-              if (autoHighlight) {
-                queueMicrotask(() => {
-                  var _a4;
-                  context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
-                });
-                return;
-              }
-              if (highlightedValue != null && !collection22.has(highlightedValue)) {
-                queueMicrotask(() => {
-                  context.set("highlightedValue", null);
-                });
-              }
-            },
-            setFocused({ context }) {
-              context.set("focused", true);
-            },
-            setDefaultHighlightedValue({ context, prop }) {
-              const collection22 = prop("collection");
-              const firstValue = collection22.firstValue;
-              if (firstValue != null) {
-                context.set("highlightedValue", firstValue);
-              }
-            },
-            clearFocused({ context }) {
-              context.set("focused", false);
-            },
-            setInputState({ refs, event }) {
-              refs.set("inputState", { autoHighlight: !!event.autoHighlight, focused: true });
-            },
-            clearInputState({ refs }) {
-              refs.set("inputState", { autoHighlight: false, focused: false });
-            }
-          }
-        }
-      });
-      diff2 = (a2, b2) => {
-        const result = new Set(a2);
-        for (const item of b2) result.delete(item);
-        return result;
-      };
+      init_chunk_CLKNJROH();
     }
   });
 
@@ -14226,20 +14291,20 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_56433QZX();
+      init_chunk_BRPHFNEG();
+      init_chunk_ZUMK6UW2();
+      init_chunk_KZFRQXNF();
+      init_chunk_QE4GGWXJ();
       init_chunk_NUOTFVKH();
-      init_chunk_YKCP6S4O();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_4JF6I36R();
-      init_chunk_L27QKFAY();
-      init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
-      init_chunk_CPYFNSV2();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_RHLZLEPV();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -16613,14 +16678,14 @@ var Corex = (() => {
     "../priv/static/color-picker.mjs"() {
       "use strict";
       init_chunk_AJX2XHOK();
-      init_chunk_YKCP6S4O();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_4JF6I36R();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -18301,7 +18366,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-HWUNIC34.mjs
+  // ../priv/static/chunks/chunk-MMUMKVAL.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -18316,10 +18381,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_HWUNIC34 = __esm({
-    "../priv/static/chunks/chunk-HWUNIC34.mjs"() {
+  var init_chunk_MMUMKVAL = __esm({
+    "../priv/static/chunks/chunk-MMUMKVAL.mjs"() {
       "use strict";
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
     }
   });
 
@@ -20713,17 +20778,17 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_HWUNIC34();
+      init_chunk_MMUMKVAL();
       init_chunk_AJX2XHOK();
       init_chunk_NUOTFVKH();
-      init_chunk_YKCP6S4O();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_4JF6I36R();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -23146,110 +23211,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/dialog.mjs
-  var dialog_exports = {};
-  __export(dialog_exports, {
-    Dialog: () => DialogHook,
-    readDialogLayoutProps: () => readDialogLayoutProps
-  });
-  function connect12(service, normalize2) {
-    const { state: state2, send, context, prop, scope } = service;
-    const ariaLabel = prop("aria-label");
-    const open = state2.matches("open");
-    const triggerValue = context.get("triggerValue");
-    return {
-      open,
-      setOpen(nextOpen) {
-        const open2 = state2.matches("open");
-        if (open2 === nextOpen) return;
-        send({ type: nextOpen ? "OPEN" : "CLOSE" });
-      },
-      triggerValue,
-      setTriggerValue(value) {
-        send({ type: "TRIGGER_VALUE.SET", value });
-      },
-      getTriggerProps(props = {}) {
-        const { value } = props;
-        const current = value == null ? false : triggerValue === value;
-        return normalize2.button(__spreadProps(__spreadValues({}, parts12.trigger.attrs), {
-          dir: prop("dir"),
-          id: getTriggerId5(scope, value),
-          "data-ownedby": scope.id,
-          "data-value": value,
-          "aria-haspopup": "dialog",
-          type: "button",
-          "aria-expanded": value == null ? open : open && current,
-          "data-state": open ? "open" : "closed",
-          "aria-controls": getContentId6(scope),
-          "data-current": dataAttr(current),
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            const shouldSwitch = open && value != null && !current;
-            send({ type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TOGGLE", value });
-          }
-        }));
-      },
-      getBackdropProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts12.backdrop.attrs), {
-          dir: prop("dir"),
-          hidden: !open,
-          id: getBackdropId(scope),
-          "data-state": open ? "open" : "closed"
-        }));
-      },
-      getPositionerProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts12.positioner.attrs), {
-          dir: prop("dir"),
-          id: getPositionerId4(scope),
-          style: compact({
-            pointerEvents: !open || !prop("modal") ? "none" : void 0
-          })
-        }));
-      },
-      getContentProps() {
-        const rendered = context.get("rendered");
-        return normalize2.element(__spreadProps(__spreadValues({}, parts12.content.attrs), {
-          dir: prop("dir"),
-          role: prop("role"),
-          hidden: !open,
-          id: getContentId6(scope),
-          tabIndex: -1,
-          "data-state": open ? "open" : "closed",
-          "aria-modal": prop("modal"),
-          "aria-label": ariaLabel || void 0,
-          "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
-          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0,
-          style: compact({
-            pointerEvents: prop("modal") ? void 0 : "auto"
-          })
-        }));
-      },
-      getTitleProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts12.title.attrs), {
-          dir: prop("dir"),
-          id: getTitleId(scope)
-        }));
-      },
-      getDescriptionProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts12.description.attrs), {
-          dir: prop("dir"),
-          id: getDescriptionId(scope)
-        }));
-      },
-      getCloseTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts12.closeTrigger.attrs), {
-          dir: prop("dir"),
-          id: getCloseTriggerId(scope),
-          type: "button",
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            event.stopPropagation();
-            send({ type: "CLOSE" });
-          }
-        }));
-      }
-    };
-  }
+  // ../priv/static/chunks/chunk-HV2J7H25.mjs
   function ariaHidden(targetsOrFn, options = {}) {
     const { defer = true } = options;
     const func = defer ? raf2 : (v2) => v2();
@@ -23373,138 +23335,11 @@ var Corex = (() => {
       }
     };
   }
-  function dialogInitialAriaLabel(rootEl) {
-    var _a4, _b;
-    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
-    if ((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim()) return void 0;
-    const fromDataset = (_b = getString(rootEl, "dialogDefaultLabel")) == null ? void 0 : _b.trim();
-    if (fromDataset) return fromDataset;
-    return "Dialog";
-  }
-  function syncDialogContentAriaRefs(rootEl, contentEl) {
-    var _a4, _b;
-    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
-    if (!((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim())) {
-      contentEl.removeAttribute("aria-labelledby");
-      const label = dialogInitialAriaLabel(rootEl);
-      if (label) {
-        contentEl.setAttribute("aria-label", label);
-      } else {
-        contentEl.removeAttribute("aria-label");
-      }
-    } else {
-      contentEl.removeAttribute("aria-label");
-    }
-    const descriptionEl = rootEl.querySelector(
-      '[data-scope="dialog"][data-part="description"]'
-    );
-    if (!((_b = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _b.trim())) {
-      contentEl.removeAttribute("aria-describedby");
-    }
-  }
-  function resolveFocusElement(root, id) {
-    if (!id) return null;
-    const scoped = root.querySelector(`#${CSS.escape(id)}`);
-    if (scoped) return scoped;
-    const byId = document.getElementById(id);
-    if (byId && root.contains(byId)) return byId;
-    return null;
-  }
-  function readDialogLayoutProps(el) {
-    var _a4;
-    const role = (_a4 = getString(el, "role", ["dialog", "alertdialog"])) != null ? _a4 : "dialog";
-    const initialFocusId = getString(el, "initialFocus");
-    const finalFocusId = getString(el, "finalFocus");
-    return {
-      id: el.id,
-      role,
-      modal: getBoolean(el, "modal"),
-      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-      closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
-      preventScroll: getBoolean(el, "preventScroll"),
-      restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getDir(el),
-      initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : void 0,
-      finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : void 0
-    };
-  }
-  function runDialogScaleTransitions(el, isOpen) {
-    const opts = readScaleAnimationOptions(el);
-    const blockRoot = opts.blockInteraction ? el : void 0;
-    const backdrop = el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
-    const content = el.querySelector('[data-scope="dialog"][data-part="content"]');
-    if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
-    if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
-  }
-  function runDialogScaleIfJs(el, isOpen) {
-    if (!isJsAnimation(el)) return;
-    runDialogScaleTransitions(el, isOpen);
-  }
-  var anatomy12, parts12, getPositionerId4, getBackdropId, getContentId6, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl6, getPositionerEl4, getBackdropEl, getTriggerEl4, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, lockMap, machine12, Dialog, DIALOG_SCALE_SELECTOR, DialogHook;
-  var init_dialog = __esm({
-    "../priv/static/dialog.mjs"() {
+  var counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, lockMap;
+  var init_chunk_HV2J7H25 = __esm({
+    "../priv/static/chunks/chunk-HV2J7H25.mjs"() {
       "use strict";
-      init_chunk_BF7VYAZN();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_I5HWU3ET();
-      init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy12 = createAnatomy("dialog").parts(
-        "trigger",
-        "backdrop",
-        "positioner",
-        "content",
-        "title",
-        "description",
-        "closeTrigger"
-      );
-      parts12 = anatomy12.build();
-      getPositionerId4 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `dialog:${ctx.id}:positioner`;
-      };
-      getBackdropId = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.backdrop) != null ? _b : `dialog:${ctx.id}:backdrop`;
-      };
-      getContentId6 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `dialog:${ctx.id}:content`;
-      };
-      getTriggerId5 = (ctx, value) => {
-        var _a4;
-        const customId = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger;
-        if (customId != null) return isFunction(customId) ? customId(value) : customId;
-        return value ? `dialog:${ctx.id}:trigger:${value}` : `dialog:${ctx.id}:trigger`;
-      };
-      getTitleId = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.title) != null ? _b : `dialog:${ctx.id}:title`;
-      };
-      getDescriptionId = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.description) != null ? _b : `dialog:${ctx.id}:description`;
-      };
-      getCloseTriggerId = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.closeTrigger) != null ? _b : `dialog:${ctx.id}:close`;
-      };
-      getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
-      getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
-      getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
-      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
-      getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
-      getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
-      getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
-      getTriggerEls2 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="dialog"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
-      getActiveTriggerEl = (ctx, value) => {
-        var _a4;
-        if (value == null) {
-          return (_a4 = getTriggerEl4(ctx)) != null ? _a4 : getTriggerEls2(ctx)[0];
-        }
-        return ctx.getById(getTriggerId5(ctx, value));
-      };
+      init_chunk_CLKNJROH();
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -24241,6 +24076,246 @@ var Corex = (() => {
       isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
       LOCK_CLASSNAME = "data-scroll-lock";
       lockMap = /* @__PURE__ */ new WeakMap();
+    }
+  });
+
+  // ../priv/static/dialog.mjs
+  var dialog_exports = {};
+  __export(dialog_exports, {
+    Dialog: () => DialogHook,
+    readDialogLayoutProps: () => readDialogLayoutProps
+  });
+  function connect12(service, normalize2) {
+    const { state: state2, send, context, prop, scope } = service;
+    const ariaLabel = prop("aria-label");
+    const open = state2.matches("open");
+    const triggerValue = context.get("triggerValue");
+    return {
+      open,
+      setOpen(nextOpen) {
+        const open2 = state2.matches("open");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "TRIGGER_VALUE.SET", value });
+      },
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        return normalize2.button(__spreadProps(__spreadValues({}, parts12.trigger.attrs), {
+          dir: prop("dir"),
+          id: getTriggerId5(scope, value),
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "aria-haspopup": "dialog",
+          type: "button",
+          "aria-expanded": value == null ? open : open && current,
+          "data-state": open ? "open" : "closed",
+          "aria-controls": getContentId6(scope),
+          "data-current": dataAttr(current),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TOGGLE", value });
+          }
+        }));
+      },
+      getBackdropProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts12.backdrop.attrs), {
+          dir: prop("dir"),
+          hidden: !open,
+          id: getBackdropId(scope),
+          "data-state": open ? "open" : "closed"
+        }));
+      },
+      getPositionerProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts12.positioner.attrs), {
+          dir: prop("dir"),
+          id: getPositionerId4(scope),
+          style: compact({
+            pointerEvents: !open || !prop("modal") ? "none" : void 0
+          })
+        }));
+      },
+      getContentProps() {
+        const rendered = context.get("rendered");
+        return normalize2.element(__spreadProps(__spreadValues({}, parts12.content.attrs), {
+          dir: prop("dir"),
+          role: prop("role"),
+          hidden: !open,
+          id: getContentId6(scope),
+          tabIndex: -1,
+          "data-state": open ? "open" : "closed",
+          "aria-modal": prop("modal"),
+          "aria-label": ariaLabel || void 0,
+          "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
+          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0,
+          style: compact({
+            pointerEvents: prop("modal") ? void 0 : "auto"
+          })
+        }));
+      },
+      getTitleProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts12.title.attrs), {
+          dir: prop("dir"),
+          id: getTitleId(scope)
+        }));
+      },
+      getDescriptionProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts12.description.attrs), {
+          dir: prop("dir"),
+          id: getDescriptionId(scope)
+        }));
+      },
+      getCloseTriggerProps() {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts12.closeTrigger.attrs), {
+          dir: prop("dir"),
+          id: getCloseTriggerId(scope),
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            event.stopPropagation();
+            send({ type: "CLOSE" });
+          }
+        }));
+      }
+    };
+  }
+  function dialogInitialAriaLabel(rootEl) {
+    var _a4, _b;
+    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    if ((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim()) return void 0;
+    const fromDataset = (_b = getString(rootEl, "dialogDefaultLabel")) == null ? void 0 : _b.trim();
+    if (fromDataset) return fromDataset;
+    return "Dialog";
+  }
+  function syncDialogContentAriaRefs(rootEl, contentEl) {
+    var _a4, _b;
+    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    if (!((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim())) {
+      contentEl.removeAttribute("aria-labelledby");
+      const label = dialogInitialAriaLabel(rootEl);
+      if (label) {
+        contentEl.setAttribute("aria-label", label);
+      } else {
+        contentEl.removeAttribute("aria-label");
+      }
+    } else {
+      contentEl.removeAttribute("aria-label");
+    }
+    const descriptionEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="description"]'
+    );
+    if (!((_b = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _b.trim())) {
+      contentEl.removeAttribute("aria-describedby");
+    }
+  }
+  function resolveFocusElement(root, id) {
+    if (!id) return null;
+    const scoped = root.querySelector(`#${CSS.escape(id)}`);
+    if (scoped) return scoped;
+    const byId = document.getElementById(id);
+    if (byId && root.contains(byId)) return byId;
+    return null;
+  }
+  function readDialogLayoutProps(el) {
+    var _a4;
+    const role = (_a4 = getString(el, "role", ["dialog", "alertdialog"])) != null ? _a4 : "dialog";
+    const initialFocusId = getString(el, "initialFocus");
+    const finalFocusId = getString(el, "finalFocus");
+    return {
+      id: el.id,
+      role,
+      modal: getBoolean(el, "modal"),
+      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+      closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
+      preventScroll: getBoolean(el, "preventScroll"),
+      restoreFocus: getBoolean(el, "restoreFocus"),
+      dir: getDir(el),
+      initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : void 0,
+      finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : void 0
+    };
+  }
+  function runDialogScaleTransitions(el, isOpen) {
+    const opts = readScaleAnimationOptions(el);
+    const blockRoot = opts.blockInteraction ? el : void 0;
+    const backdrop = el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+    const content = el.querySelector('[data-scope="dialog"][data-part="content"]');
+    if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
+    if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
+  }
+  function runDialogScaleIfJs(el, isOpen) {
+    if (!isJsAnimation(el)) return;
+    runDialogScaleTransitions(el, isOpen);
+  }
+  var anatomy12, parts12, getPositionerId4, getBackdropId, getContentId6, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl6, getPositionerEl4, getBackdropEl, getTriggerEl4, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, machine12, Dialog, DIALOG_SCALE_SELECTOR, DialogHook;
+  var init_dialog = __esm({
+    "../priv/static/dialog.mjs"() {
+      "use strict";
+      init_chunk_HV2J7H25();
+      init_chunk_SHBNM52E();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_PWB4AEF6();
+      init_chunk_EAQ6WQNO();
+      init_chunk_CLKNJROH();
+      anatomy12 = createAnatomy("dialog").parts(
+        "trigger",
+        "backdrop",
+        "positioner",
+        "content",
+        "title",
+        "description",
+        "closeTrigger"
+      );
+      parts12 = anatomy12.build();
+      getPositionerId4 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `dialog:${ctx.id}:positioner`;
+      };
+      getBackdropId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.backdrop) != null ? _b : `dialog:${ctx.id}:backdrop`;
+      };
+      getContentId6 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `dialog:${ctx.id}:content`;
+      };
+      getTriggerId5 = (ctx, value) => {
+        var _a4;
+        const customId = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `dialog:${ctx.id}:trigger:${value}` : `dialog:${ctx.id}:trigger`;
+      };
+      getTitleId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.title) != null ? _b : `dialog:${ctx.id}:title`;
+      };
+      getDescriptionId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.description) != null ? _b : `dialog:${ctx.id}:description`;
+      };
+      getCloseTriggerId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.closeTrigger) != null ? _b : `dialog:${ctx.id}:close`;
+      };
+      getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
+      getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
+      getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
+      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
+      getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
+      getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
+      getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
+      getTriggerEls2 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="dialog"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
+      getActiveTriggerEl = (ctx, value) => {
+        var _a4;
+        if (value == null) {
+          return (_a4 = getTriggerEl4(ctx)) != null ? _a4 : getTriggerEls2(ctx)[0];
+        }
+        return ctx.getById(getTriggerId5(ctx, value));
+      };
       machine12 = createMachine({
         props({ props, scope }) {
           const alertDialog = props.role === "alertdialog";
@@ -24607,13 +24682,2159 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/drawer.mjs
+  var drawer_exports = {};
+  __export(drawer_exports, {
+    Drawer: () => DrawerHook,
+    parseSnapPoint: () => parseSnapPoint,
+    parseSnapPoints: () => parseSnapPoints
+  });
+  function resolveSnapPointValue(snapPoint, viewportSize, rootFontSize) {
+    if (!Number.isFinite(viewportSize) || viewportSize <= 0) return null;
+    if (typeof snapPoint === "number") {
+      if (!Number.isFinite(snapPoint)) return null;
+      if (snapPoint <= 1) return clampValue(snapPoint, 0, 1) * viewportSize;
+      return snapPoint;
+    }
+    const trimmed = snapPoint.trim();
+    if (trimmed.endsWith("px")) {
+      const value = Number.parseFloat(trimmed);
+      return Number.isFinite(value) ? value : null;
+    }
+    if (trimmed.endsWith("rem")) {
+      const value = Number.parseFloat(trimmed);
+      return Number.isFinite(value) ? value * rootFontSize : null;
+    }
+    return null;
+  }
+  function resolveSnapPoint(snapPoint, options) {
+    const { contentSize, viewportSize, rootFontSize } = options;
+    const maxSize = Math.min(contentSize, viewportSize);
+    if (!Number.isFinite(maxSize) || maxSize <= 0) return null;
+    const resolvedSize = resolveSnapPointValue(snapPoint, viewportSize, rootFontSize);
+    if (resolvedSize === null || !Number.isFinite(resolvedSize)) return null;
+    const height = clampValue(resolvedSize, 0, maxSize);
+    return {
+      value: snapPoint,
+      height,
+      offset: Math.max(0, contentSize - height)
+    };
+  }
+  function dedupeSnapPoints(points) {
+    if (points.length <= 1) return points;
+    const deduped = [];
+    const seenHeights = [];
+    for (let index = points.length - 1; index >= 0; index -= 1) {
+      const point = points[index];
+      const isDuplicate = seenHeights.some((height) => Math.abs(height - point.height) <= HEIGHT_DEDUP_EPSILON_PX);
+      if (isDuplicate) continue;
+      seenHeights.push(point.height);
+      deduped.push(point);
+    }
+    deduped.reverse();
+    return deduped;
+  }
+  function findClosestSnapPoint(offset3, snapPoints) {
+    if (snapPoints.length === 0) return null;
+    return snapPoints.reduce((acc, curr) => {
+      const closestDiff = Math.abs(offset3 - acc.offset);
+      const currentDiff = Math.abs(offset3 - curr.offset);
+      return currentDiff < closestDiff ? curr : acc;
+    });
+  }
+  function isVerticalSwipeDirection(direction) {
+    return direction === "down" || direction === "up";
+  }
+  function isNegativeSwipeDirection(direction) {
+    return direction === "up" || direction === "left";
+  }
+  function isWithinDrawerInteractionSurface(target, contentEl, swipeAreaEl) {
+    if (!target) return false;
+    return contains(contentEl, target) || contains(swipeAreaEl, target);
+  }
+  function resolveSwipeDirection(direction, dir) {
+    if (direction === "start") return dir === "rtl" ? "right" : "left";
+    if (direction === "end") return dir === "rtl" ? "left" : "right";
+    return direction;
+  }
+  function getSwipeDirectionSize(rect, direction) {
+    return isVerticalSwipeDirection(direction) ? rect.height : rect.width;
+  }
+  function resolveSwipeProgress(contentSize, dragOffset, snapPointOffset) {
+    if (!contentSize || contentSize <= 0) return 0;
+    const currentOffset = dragOffset != null ? dragOffset : snapPointOffset;
+    return clampValue(currentOffset / contentSize, 0, 1);
+  }
+  function hasOpeningSwipeIntent(start, current, direction) {
+    const axis = isVerticalSwipeDirection(direction) ? "y" : "x";
+    const sign3 = isNegativeSwipeDirection(direction) ? -1 : 1;
+    const displacement = (start[axis] - current[axis]) * sign3;
+    return displacement > SWIPE_AREA_OPEN_INTENT_MIN_PX;
+  }
+  function overflowAllowsScroll(overflow) {
+    return overflow === "auto" || overflow === "scroll" || overflow === "overlay";
+  }
+  function canScrollAlongY(el) {
+    const style = getComputedStyle2(el);
+    if (!overflowAllowsScroll(style.overflowY)) return false;
+    return el.scrollHeight > el.clientHeight + SCROLL_SLACK_EPSILON;
+  }
+  function canScrollAlongX(el) {
+    const style = getComputedStyle2(el);
+    if (!overflowAllowsScroll(style.overflowX)) return false;
+    return el.scrollWidth > el.clientWidth + SCROLL_SLACK_EPSILON;
+  }
+  function canScrollOnSwipeAxis(el, direction) {
+    return isVerticalSwipeDirection(direction) ? canScrollAlongY(el) : canScrollAlongX(el);
+  }
+  function findClosestScrollableAncestorOnSwipeAxis(target, container, direction) {
+    if (!container) return null;
+    let el = target;
+    while (el && el !== container) {
+      if (canScrollOnSwipeAxis(el, direction)) return el;
+      el = el.parentElement;
+    }
+    return null;
+  }
+  function getScrollInfo(target, container, direction) {
+    let availableForwardScroll = 0;
+    let availableBackwardScroll = 0;
+    if (!container) return { availableForwardScroll, availableBackwardScroll };
+    const vertical = isVerticalSwipeDirection(direction);
+    let element = target;
+    while (element) {
+      if (vertical ? canScrollAlongY(element) : canScrollAlongX(element)) {
+        const clientSize = vertical ? element.clientHeight : element.clientWidth;
+        const scrollPos = vertical ? element.scrollTop : element.scrollLeft;
+        const scrollSize = vertical ? element.scrollHeight : element.scrollWidth;
+        const scrolled = scrollSize - scrollPos - clientSize;
+        availableForwardScroll += scrolled;
+        availableBackwardScroll += scrollPos;
+      }
+      if (element === container || element === element.ownerDocument.documentElement) break;
+      element = element.parentElement;
+    }
+    return { availableForwardScroll, availableBackwardScroll };
+  }
+  function shouldPreventTouchScroll(options) {
+    const { scrollParent, swipeDirection, lastMainAxis, currentMainAxis } = options;
+    const vertical = isVerticalSwipeDirection(swipeDirection);
+    const movingPositive = currentMainAxis > lastMainAxis;
+    if (vertical) {
+      const scrollPos = scrollParent.scrollTop;
+      const maxScroll = Math.max(0, scrollParent.scrollHeight - scrollParent.clientHeight);
+      if (swipeDirection === "down") return scrollPos <= SCROLL_SLACK_EPSILON && movingPositive;
+      if (swipeDirection === "up") return scrollPos >= maxScroll - SCROLL_SLACK_EPSILON && !movingPositive;
+    } else {
+      const scrollPos = scrollParent.scrollLeft;
+      const maxScroll = Math.max(0, scrollParent.scrollWidth - scrollParent.clientWidth);
+      if (swipeDirection === "right") return scrollPos <= SCROLL_SLACK_EPSILON && movingPositive;
+      if (swipeDirection === "left") return scrollPos >= maxScroll - SCROLL_SLACK_EPSILON && !movingPositive;
+    }
+    return false;
+  }
+  function isDragExemptElement(el) {
+    if (!isHTMLElement(el)) return false;
+    if (el.closest(NO_DRAG_SELECTOR)) return true;
+    let node = el;
+    while (node) {
+      if (isEditableElement(node)) return true;
+      node = node.parentElement;
+    }
+    const input = el.closest("input");
+    if (isInputElement(input)) {
+      const type = input.type;
+      if (type === "range" || type === "file") return true;
+    }
+    return false;
+  }
+  function isTextSelectionInDrawer(doc, contentEl) {
+    if (!contentEl) return false;
+    const selection = doc.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return false;
+    try {
+      const range2 = selection.getRangeAt(0);
+      if (contains(contentEl, range2.commonAncestorContainer)) return true;
+      if (contains(contentEl, selection.anchorNode)) return true;
+      if (contains(contentEl, selection.focusNode)) return true;
+      if (typeof range2.intersectsNode === "function" && range2.intersectsNode(contentEl)) return true;
+    } catch (e2) {
+      return false;
+    }
+    return false;
+  }
+  function isDragExemptFromComposedPath(event) {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+    for (const node of path) {
+      if (isDragExemptElement(node)) return true;
+    }
+    return isDragExemptElement(event.target);
+  }
+  function shouldIgnorePointerDownForDrag(event) {
+    if (!isLeftClick(event)) return true;
+    const target = getEventTarget(event);
+    if ((target == null ? void 0 : target.hasAttribute(NO_DRAG_DATA_ATTR)) || (target == null ? void 0 : target.closest(NO_DRAG_SELECTOR))) return true;
+    return isDragExemptFromComposedPath(event);
+  }
+  function getSwipeOpenOffset(swipingOpen, dragOffset, contentSize) {
+    if (!swipingOpen || dragOffset !== null) return null;
+    return contentSize != null ? contentSize : SWIPE_OPEN_HIDDEN_OFFSET;
+  }
+  function connect13(service, normalize2) {
+    var _a4, _b;
+    const { state: state2, send, context, scope, prop, refs } = service;
+    const open = state2.hasTag("open");
+    const closed = state2.matches("closed");
+    const closing = state2.matches("closing");
+    const swipingOpen = state2.matches("swiping-open");
+    const dragOffset = context.get("dragOffset");
+    const dragging = dragOffset !== null;
+    const triggerValue = context.get("triggerValue");
+    const snapPoint = context.get("snapPoint");
+    const swipeDirection = prop("swipeDirection");
+    const physicalDirection = resolveSwipeDirection(swipeDirection, prop("dir"));
+    const contentSize = context.get("contentSize");
+    const swipeStrength = context.get("swipeStrength");
+    const resolvedActiveSnapPoint = context.get("resolvedActiveSnapPoint");
+    const snapPointOffset = (_a4 = resolvedActiveSnapPoint == null ? void 0 : resolvedActiveSnapPoint.offset) != null ? _a4 : 0;
+    const nestedMetrics = context.get("nestedMetrics");
+    const swipeOpenOffset = getSwipeOpenOffset(swipingOpen, dragOffset, contentSize);
+    const currentOffset = (_b = swipeOpenOffset != null ? swipeOpenOffset : dragOffset) != null ? _b : snapPointOffset;
+    const signedSnapPointOffset = isNegativeSwipeDirection(physicalDirection) ? -snapPointOffset : snapPointOffset;
+    const isActivelySwiping = dragging || swipingOpen;
+    const swipeMovement = dragging || swipingOpen ? currentOffset - snapPointOffset : 0;
+    const signedMovement = isNegativeSwipeDirection(physicalDirection) ? -swipeMovement : swipeMovement;
+    const swipeProgress = isActivelySwiping && contentSize && contentSize > 0 ? clampValue(Math.abs(signedMovement) / contentSize, 0, 1) : swipingOpen ? 1 : 0;
+    const signedCurrentOffset = isNegativeSwipeDirection(physicalDirection) ? -currentOffset : currentOffset;
+    const translateX = isVerticalSwipeDirection(physicalDirection) ? 0 : signedCurrentOffset;
+    const translateY = isVerticalSwipeDirection(physicalDirection) ? signedCurrentOffset : 0;
+    function onContentPointerDown(event) {
+      refs.get("swipeSession").contentPointerDown({
+        event,
+        getDoc: () => scope.getDoc(),
+        getContentEl: () => getContentEl7(scope),
+        getWin: () => scope.getWin(),
+        swipeDirection: physicalDirection,
+        canCommit: () => state2.hasTag("open") && !state2.matches("closing"),
+        onCommit(point) {
+          send({ type: "POINTER_DOWN", point });
+        }
+      });
+    }
+    function onGrabberPointerDown(event) {
+      refs.get("swipeSession").grabberPointerDown({
+        event,
+        point: getEventPoint(event),
+        canCommit: () => state2.hasTag("open") && !state2.matches("closing"),
+        onCommit(point) {
+          send({ type: "POINTER_DOWN", point });
+        }
+      });
+    }
+    return {
+      open,
+      dragging,
+      setOpen(nextOpen) {
+        const open2 = state2.hasTag("open");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      snapPoints: prop("snapPoints"),
+      swipeDirection,
+      snapPoint,
+      setSnapPoint(snapPoint2) {
+        const currentSnapPoint = context.get("snapPoint");
+        if (currentSnapPoint === snapPoint2) return;
+        send({ type: "SNAP_POINT.SET", snapPoint: snapPoint2 });
+      },
+      getOpenPercentage() {
+        if (!open || !contentSize) return 0;
+        return clampValue(1 - currentOffset / contentSize, 0, 1);
+      },
+      getSnapPointIndex() {
+        if (snapPoint === null) return -1;
+        return prop("snapPoints").indexOf(snapPoint);
+      },
+      getContentSize() {
+        return contentSize;
+      },
+      getPositionerProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.positioner.attrs), {
+          id: getPositionerId5(scope),
+          dir: prop("dir"),
+          hidden: closed,
+          "data-state": open ? "open" : "closed",
+          "data-swipe-direction": physicalDirection,
+          style: compact({
+            pointerEvents: closing || !prop("modal") ? "none" : void 0
+          })
+        }));
+      },
+      getContentProps(props = { draggable: true }) {
+        const movementX = isVerticalSwipeDirection(physicalDirection) ? 0 : signedMovement;
+        const movementY = isVerticalSwipeDirection(physicalDirection) ? signedMovement : 0;
+        const rendered = context.get("rendered");
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.content.attrs), {
+          dir: prop("dir"),
+          id: getContentId7(scope),
+          tabIndex: -1,
+          role: prop("role"),
+          "aria-modal": prop("modal"),
+          "aria-labelledby": rendered.title ? getTitleId2(scope) : void 0,
+          "aria-describedby": rendered.description ? getDescriptionId2(scope) : void 0,
+          hidden: !open,
+          "data-state": open ? "open" : "closed",
+          "data-expanded": (resolvedActiveSnapPoint == null ? void 0 : resolvedActiveSnapPoint.offset) === 0 ? "" : void 0,
+          "data-swipe-direction": physicalDirection,
+          "data-swiping": dragging || swipingOpen ? "" : void 0,
+          "data-dragging": dragging ? "" : void 0,
+          "data-nested-drawer-open": nestedMetrics.open ? "" : void 0,
+          "data-nested-drawer-swiping": nestedMetrics.swiping ? "" : void 0,
+          style: compact({
+            pointerEvents: prop("modal") ? void 0 : "auto",
+            visibility: swipingOpen && dragOffset === null ? "hidden" : void 0,
+            transform: "translate3d(var(--drawer-translate-x, 0px), var(--drawer-translate-y, 0px), 0)",
+            transitionDuration: dragging || swipingOpen ? "0s" : void 0,
+            "--drawer-translate": toPx(translateY),
+            "--drawer-translate-x": toPx(translateX),
+            "--drawer-translate-y": toPx(translateY),
+            "--drawer-snap-point-offset-x": isVerticalSwipeDirection(physicalDirection) ? "0px" : toPx(signedSnapPointOffset),
+            "--drawer-snap-point-offset-y": isVerticalSwipeDirection(physicalDirection) ? toPx(signedSnapPointOffset) : "0px",
+            "--drawer-swipe-movement-x": toPx(movementX),
+            "--drawer-swipe-movement-y": toPx(movementY),
+            "--drawer-swipe-strength": `${swipeStrength}`,
+            "--nested-drawers": `${nestedMetrics.count}`,
+            "--drawer-height": nestedMetrics.height > 0 ? toPx(nestedMetrics.height) : void 0,
+            "--drawer-frontmost-height": nestedMetrics.frontmostHeight > 0 ? toPx(nestedMetrics.frontmostHeight) : void 0,
+            willChange: "transform"
+          }),
+          onPointerDown(event) {
+            if (!props.draggable) return;
+            onContentPointerDown(event);
+          }
+        }));
+      },
+      getTitleProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.title.attrs), {
+          id: getTitleId2(scope),
+          dir: prop("dir")
+        }));
+      },
+      getDescriptionProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.description.attrs), {
+          id: getDescriptionId2(scope),
+          dir: prop("dir")
+        }));
+      },
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "OPEN", value: value != null ? value : void 0 });
+      },
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        return normalize2.button(__spreadProps(__spreadValues({}, parts13.trigger.attrs), {
+          dir: prop("dir"),
+          id: getTriggerId6(scope, value),
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "aria-haspopup": "dialog",
+          type: "button",
+          "aria-expanded": value == null ? open : open && current,
+          "data-state": open ? "open" : "closed",
+          "aria-controls": getContentId7(scope),
+          "data-current": dataAttr(current),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "TRIGGER_VALUE.SET" : open ? "CLOSE" : "OPEN", value });
+          }
+        }));
+      },
+      getBackdropProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.backdrop.attrs), {
+          id: getBackdropId2(scope),
+          hidden: !open || swipingOpen && dragOffset === null,
+          "data-state": open ? "open" : "closed",
+          "data-swiping": dragging || swipingOpen ? "" : void 0,
+          style: {
+            willChange: "opacity",
+            pointerEvents: closing ? "none" : void 0,
+            "--drawer-swipe-progress": `${swipeProgress}`,
+            "--drawer-swipe-strength": `${swipeStrength}`
+          }
+        }));
+      },
+      getGrabberProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.grabber.attrs), {
+          id: getGrabberId(scope),
+          onPointerDown(event) {
+            onGrabberPointerDown(event);
+          },
+          style: {
+            touchAction: "none"
+          }
+        }));
+      },
+      getGrabberIndicatorProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.grabberIndicator.attrs), {
+          id: getGrabberIndicatorId(scope)
+        }));
+      },
+      getCloseTriggerProps() {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts13.closeTrigger.attrs), {
+          id: getCloseTriggerId2(scope),
+          type: "button",
+          onClick() {
+            send({ type: "CLOSE" });
+          }
+        }));
+      },
+      getSwipeAreaProps(props = {}) {
+        var _a5, _b2;
+        const disabled = (_a5 = props.disabled) != null ? _a5 : false;
+        const openDirection = (_b2 = props.swipeDirection) != null ? _b2 : oppositeSwipeDirection[swipeDirection];
+        const physicalOpenDirection = resolveSwipeDirection(openDirection, prop("dir"));
+        return normalize2.element(__spreadProps(__spreadValues({}, parts13.swipeArea.attrs), {
+          id: getSwipeAreaId(scope),
+          role: "presentation",
+          "aria-hidden": true,
+          "data-state": open ? "open" : "closed",
+          "data-swiping": swipingOpen ? "" : void 0,
+          "data-swipe-direction": physicalOpenDirection,
+          "data-disabled": disabled ? "" : void 0,
+          style: {
+            touchAction: isVerticalSwipeDirection(physicalOpenDirection) ? "pan-x" : "pan-y",
+            pointerEvents: disabled || open && !swipingOpen ? "none" : void 0
+          },
+          onPointerDown(event) {
+            if (disabled) return;
+            if (!isLeftClick(event)) return;
+            if (event.pointerType === "touch") return;
+            if (open && !swipingOpen) return;
+            send({ type: "SWIPE_AREA.START", point: getEventPoint(event) });
+            if (event.cancelable) event.preventDefault();
+          },
+          onTouchStart(event) {
+            if (disabled) return;
+            if (open && !swipingOpen) return;
+            const touch = event.touches[0];
+            if (!touch) return;
+            send({ type: "SWIPE_AREA.START", point: { x: touch.clientX, y: touch.clientY } });
+          }
+        }));
+      }
+    };
+  }
+  function waitForContentEl(scope, setup2) {
+    const contentEl = getContentEl7(scope);
+    let cleanup = contentEl ? setup2(contentEl) : void 0;
+    let abort;
+    if (!cleanup) {
+      const [promise, cancel] = waitForElement(() => getContentEl7(scope), {
+        timeout: 1e3,
+        rootNode: scope.getDoc()
+      });
+      abort = cancel;
+      promise.then((el) => cleanup = setup2(el)).catch(noop);
+    }
+    return () => {
+      abort == null ? void 0 : abort();
+      cleanup == null ? void 0 : cleanup();
+    };
+  }
+  function parseSnapPoints(raw) {
+    if (!raw || raw.trim() === "") return void 0;
+    return raw.split(",").map((part) => {
+      const trimmed = part.trim();
+      if (trimmed.endsWith("px") || trimmed.endsWith("%")) return trimmed;
+      const n2 = Number(trimmed);
+      return Number.isNaN(n2) ? trimmed : n2;
+    });
+  }
+  function parseSnapPoint(raw) {
+    if (!raw || raw.trim() === "") return void 0;
+    const trimmed = raw.trim();
+    if (trimmed.endsWith("px") || trimmed.endsWith("%")) return trimmed;
+    const n2 = Number(trimmed);
+    return Number.isNaN(n2) ? trimmed : n2;
+  }
+  function createDrawerCallbacks(el, pushEvent, liveSocket) {
+    const onTriggerValueChange = (details) => {
+      var _a4;
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: (_a4 = details.value) != null ? _a4 : ""
+        });
+      }
+    };
+    const onOpenChange = (details) => {
+      const eventName = getString(el, "onOpenChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          open: details.open
+        });
+      }
+      const eventNameClient = getString(el, "onOpenChangeClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              open: details.open
+            }
+          })
+        );
+      }
+    };
+    const onSnapPointChange = (details) => {
+      const eventName = getString(el, "onSnapPointChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          snap_point: details.snapPoint
+        });
+      }
+      const eventNameClient = getString(el, "onSnapPointChangeClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              snap_point: details.snapPoint
+            }
+          })
+        );
+      }
+    };
+    return { onOpenChange, onTriggerValueChange, onSnapPointChange };
+  }
+  function drawerProps(el, hook) {
+    const swipeDirection = getString(el, "swipeDirection", ["up", "down", "start", "end"]);
+    return __spreadValues({
+      id: el.id,
+      defaultOpen: getBoolean(el, "defaultOpen"),
+      dir: getDir(el),
+      modal: getBoolean(el, "modal"),
+      trapFocus: getBoolean(el, "trapFocus"),
+      preventScroll: getBoolean(el, "preventScroll"),
+      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+      closeOnEscape: getBoolean(el, "closeOnEscape"),
+      preventDragOnScroll: getBoolean(el, "preventDragOnScroll"),
+      swipeDirection,
+      snapPoints: parseSnapPoints(getString(el, "snapPoints")),
+      defaultSnapPoint: parseSnapPoint(getString(el, "defaultSnapPoint"))
+    }, createDrawerCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket));
+  }
+  var __defProp8, __defNormalProp8, __publicField8, anatomy13, parts13, getContentId7, getPositionerId5, getTitleId2, getDescriptionId2, getTriggerId6, getTriggerEls3, getActiveTriggerEl2, getBackdropId2, getGrabberId, getGrabberIndicatorId, getCloseTriggerId2, getSwipeAreaId, getContentEl7, getPositionerEl5, getTitleEl2, getDescriptionEl2, getTriggerEl5, getBackdropEl2, getCloseTriggerEl2, getSwipeAreaEl, HEIGHT_DEDUP_EPSILON_PX, VELOCITY_WINDOW_MS, MAX_RELEASE_VELOCITY_AGE_MS, MIN_GESTURE_DURATION_MS, MIN_VELOCITY_SAMPLES, SAMPLE_BUFFER_COMPACT_THRESHOLD, DEFERRED_DRAG_MIN_MAIN_AXIS_PX, DEFERRED_DRAG_MAIN_OVER_CROSS_RATIO, SwipeSession, RELEASE_DISPLACEMENT_TRUST_PX, OPEN_SWIPE_HIDDEN_VISIBLE_RATIO, OPEN_SWIPE_HIDDEN_VELOCITY_MULTIPLIER, OPEN_SWIPE_REVEALED_VISIBLE_RATIO, OPEN_SWIPE_REVEALED_OPPOSING_MAX_ABS_VELOCITY, DRAG_START_THRESHOLD, CROSS_AXIS_BIAS, SCROLL_SLACK_GATE, SCROLL_SLACK_EPSILON, SEQUENTIAL_THRESHOLD, SNAP_VELOCITY_THRESHOLD, SNAP_VELOCITY_MULTIPLIER, MAX_SNAP_VELOCITY, SWIPE_STRENGTH_MAX_DURATION_MS, SWIPE_STRENGTH_MIN_SCALAR, SWIPE_STRENGTH_MAX_SCALAR, SWIPE_AREA_OPEN_INTENT_MIN_PX, NO_DRAG_DATA_ATTR, NO_DRAG_SELECTOR, DrawerSwipeSession, oppositeSwipeDirection, SWIPE_OPEN_HIDDEN_OFFSET, DrawerRegistry, drawerRegistry, and5, getActiveSnapOffset, hasRemSnapPoints, DEFAULT_SNAP_POINTS, machine13, Drawer, DrawerHook;
+  var init_drawer = __esm({
+    "../priv/static/drawer.mjs"() {
+      "use strict";
+      init_chunk_HV2J7H25();
+      init_chunk_AJX2XHOK();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_EAQ6WQNO();
+      init_chunk_CLKNJROH();
+      __defProp8 = Object.defineProperty;
+      __defNormalProp8 = (obj, key, value) => key in obj ? __defProp8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField8 = (obj, key, value) => __defNormalProp8(obj, typeof key !== "symbol" ? key + "" : key, value);
+      anatomy13 = createAnatomy("drawer").parts(
+        "positioner",
+        "content",
+        "title",
+        "description",
+        "trigger",
+        "backdrop",
+        "grabber",
+        "grabberIndicator",
+        "closeTrigger",
+        "swipeArea"
+      );
+      parts13 = anatomy13.build();
+      getContentId7 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `drawer:${ctx.id}:content`;
+      };
+      getPositionerId5 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `drawer:${ctx.id}:positioner`;
+      };
+      getTitleId2 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.title) != null ? _b : `drawer:${ctx.id}:title`;
+      };
+      getDescriptionId2 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.description) != null ? _b : `drawer:${ctx.id}:description`;
+      };
+      getTriggerId6 = (ctx, value) => {
+        var _a4;
+        const customId = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `drawer:${ctx.id}:trigger:${value}` : `drawer:${ctx.id}:trigger`;
+      };
+      getTriggerEls3 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="drawer"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
+      getActiveTriggerEl2 = (ctx, value) => {
+        var _a4;
+        if (value == null) return (_a4 = getTriggerEl5(ctx)) != null ? _a4 : getTriggerEls3(ctx)[0];
+        return ctx.getById(getTriggerId6(ctx, value));
+      };
+      getBackdropId2 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.backdrop) != null ? _b : `drawer:${ctx.id}:backdrop`;
+      };
+      getGrabberId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.grabber) != null ? _b : `drawer:${ctx.id}:grabber`;
+      };
+      getGrabberIndicatorId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.grabberIndicator) != null ? _b : `drawer:${ctx.id}:grabber-indicator`;
+      };
+      getCloseTriggerId2 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.closeTrigger) != null ? _b : `drawer:${ctx.id}:close-trigger`;
+      };
+      getSwipeAreaId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.swipeArea) != null ? _b : `drawer:${ctx.id}:swipe-area`;
+      };
+      getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
+      getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
+      getTitleEl2 = (ctx) => ctx.getById(getTitleId2(ctx));
+      getDescriptionEl2 = (ctx) => ctx.getById(getDescriptionId2(ctx));
+      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId6(ctx));
+      getBackdropEl2 = (ctx) => ctx.getById(getBackdropId2(ctx));
+      getCloseTriggerEl2 = (ctx) => ctx.getById(getCloseTriggerId2(ctx));
+      getSwipeAreaEl = (ctx) => ctx.getById(getSwipeAreaId(ctx));
+      HEIGHT_DEDUP_EPSILON_PX = 1;
+      VELOCITY_WINDOW_MS = 100;
+      MAX_RELEASE_VELOCITY_AGE_MS = 80;
+      MIN_GESTURE_DURATION_MS = 50;
+      MIN_VELOCITY_SAMPLES = 2;
+      SAMPLE_BUFFER_COMPACT_THRESHOLD = 8;
+      DEFERRED_DRAG_MIN_MAIN_AXIS_PX = 6;
+      DEFERRED_DRAG_MAIN_OVER_CROSS_RATIO = 1.35;
+      SwipeSession = class {
+        constructor() {
+          __publicField8(this, "startPoint", null);
+          __publicField8(this, "velocity", null);
+          __publicField8(this, "samples", []);
+          __publicField8(this, "sampleStartIndex", 0);
+          __publicField8(this, "gestureStartAxis", null);
+          __publicField8(this, "gestureStartTime", null);
+          __publicField8(this, "gestureSign", 1);
+          __publicField8(this, "pendingSwipe", null);
+        }
+        setStartPoint(point) {
+          this.startPoint = point;
+        }
+        clearStartPoint() {
+          this.startPoint = null;
+        }
+        getStartPoint() {
+          return this.startPoint;
+        }
+        getGestureAxis(direction) {
+          return direction === "left" || direction === "right" ? "x" : "y";
+        }
+        getGestureSign(direction) {
+          return isNegativeSwipeDirection(direction) ? -1 : 1;
+        }
+        getAxisValue(point, axis) {
+          return point[axis];
+        }
+        getMainAxisDisplacement(point, axis, sign3) {
+          if (!this.startPoint) return 0;
+          const startAxis = this.getAxisValue(this.startPoint, axis);
+          const currentAxis = this.getAxisValue(point, axis);
+          return (startAxis - currentAxis) * sign3;
+        }
+        getCrossAxisDisplacement(point, axis) {
+          if (!this.startPoint) return 0;
+          const crossAxis = axis === "x" ? "y" : "x";
+          const startAxis = this.getAxisValue(this.startPoint, crossAxis);
+          const currentAxis = this.getAxisValue(point, crossAxis);
+          return currentAxis - startAxis;
+        }
+        track(point, axis, sign3) {
+          const axisValue = this.getAxisValue(point, axis);
+          const now = performance.now();
+          if (this.gestureStartAxis === null) {
+            this.gestureStartAxis = axisValue;
+            this.gestureStartTime = now;
+            this.gestureSign = sign3;
+          }
+          this.samples.push({ axis: axisValue, time: now });
+          const cutoff = now - VELOCITY_WINDOW_MS;
+          while (this.sampleStartIndex < this.samples.length && this.samples[this.sampleStartIndex].time < cutoff) {
+            this.sampleStartIndex += 1;
+          }
+          if (this.sampleStartIndex >= SAMPLE_BUFFER_COMPACT_THRESHOLD) {
+            this.samples = this.samples.slice(this.sampleStartIndex);
+            this.sampleStartIndex = 0;
+          }
+          const sampleCount = this.samples.length - this.sampleStartIndex;
+          if (sampleCount < MIN_VELOCITY_SAMPLES) {
+            this.velocity = 0;
+            return;
+          }
+          const oldest = this.samples[this.sampleStartIndex];
+          const newest = this.samples[this.samples.length - 1];
+          const dt = newest.time - oldest.time;
+          if (dt <= 0) {
+            this.velocity = 0;
+            return;
+          }
+          const delta = (newest.axis - oldest.axis) * sign3;
+          const velocity = delta / dt * 1e3;
+          this.velocity = Number.isFinite(velocity) ? velocity : 0;
+        }
+        getReleaseVelocity() {
+          var _a4, _b;
+          const now = performance.now();
+          const sampleCount = this.samples.length - this.sampleStartIndex;
+          if (sampleCount >= MIN_VELOCITY_SAMPLES) {
+            const newest = this.samples[this.samples.length - 1];
+            if (now - newest.time <= MAX_RELEASE_VELOCITY_AGE_MS) {
+              return (_a4 = this.velocity) != null ? _a4 : 0;
+            }
+          }
+          if (this.gestureStartAxis !== null && this.gestureStartTime !== null) {
+            const lastSample = this.samples[this.samples.length - 1];
+            if (lastSample) {
+              const dt = Math.max(lastSample.time - this.gestureStartTime, MIN_GESTURE_DURATION_MS);
+              const delta = (lastSample.axis - this.gestureStartAxis) * this.gestureSign;
+              const velocity = delta / dt * 1e3;
+              return Number.isFinite(velocity) ? velocity : 0;
+            }
+          }
+          return (_b = this.velocity) != null ? _b : 0;
+        }
+        clearVelocityTracking() {
+          this.samples = [];
+          this.sampleStartIndex = 0;
+          this.velocity = null;
+          this.gestureStartAxis = null;
+          this.gestureStartTime = null;
+          this.gestureSign = 1;
+        }
+        clear() {
+          this.cancelDeferredSwipe();
+          this.clearStartPoint();
+          this.clearVelocityTracking();
+        }
+        startDeferredSwipe(options) {
+          const { getWin, pointerId, startPoint, swipeDirection, onCommit, canCommit, onCancel } = options;
+          this.cancelDeferredSwipe();
+          const win = getWin();
+          const vertical = isVerticalSwipeDirection(swipeDirection);
+          const onMove = (event) => {
+            if (event.pointerId !== pointerId) return;
+            const dx = event.clientX - startPoint.x;
+            const dy = event.clientY - startPoint.y;
+            const mainDelta = vertical ? dy : dx;
+            const crossDelta = vertical ? dx : dy;
+            const absMain = Math.abs(mainDelta);
+            const absCross = Math.abs(crossDelta);
+            if (absMain >= DEFERRED_DRAG_MIN_MAIN_AXIS_PX && absMain >= absCross * DEFERRED_DRAG_MAIN_OVER_CROSS_RATIO) {
+              if (!canCommit || canCommit()) {
+                onCommit(startPoint);
+              }
+              this.cancelDeferredSwipe();
+            }
+          };
+          const onEnd = (event) => {
+            if (event.pointerId !== pointerId) return;
+            onCancel == null ? void 0 : onCancel();
+            this.cancelDeferredSwipe();
+          };
+          const cleanups = [
+            addDomEvent(win, "pointermove", onMove, { capture: true }),
+            addDomEvent(win, "pointerup", onEnd, { capture: true }),
+            addDomEvent(win, "pointercancel", onEnd, { capture: true }),
+            addDomEvent(win, "lostpointercapture", onEnd, { capture: true })
+          ];
+          this.pendingSwipe = { pointerId, startPoint, cleanups };
+        }
+        cancelDeferredSwipe() {
+          if (!this.pendingSwipe) return;
+          this.pendingSwipe.cleanups.forEach((cleanup) => cleanup());
+          this.pendingSwipe = null;
+        }
+        bind(options) {
+          const {
+            getDoc,
+            getSelectionTarget,
+            swipeDirection,
+            onStart,
+            onMove,
+            onEnd,
+            onCancel,
+            preventDefault,
+            cancelOnInterrupt
+          } = options;
+          const doc = getDoc();
+          let usingTouchEvents = false;
+          let restoreSelection;
+          const axis = this.getGestureAxis(swipeDirection);
+          const sign3 = this.getGestureSign(swipeDirection);
+          const trackPoint = (point) => {
+            this.track(point, axis, sign3);
+          };
+          const startSelectionGuard = () => {
+            restoreSelection != null ? restoreSelection : restoreSelection = disableTextSelection({
+              doc,
+              target: getSelectionTarget == null ? void 0 : getSelectionTarget()
+            });
+          };
+          const stopSelectionGuard = () => {
+            restoreSelection == null ? void 0 : restoreSelection();
+            restoreSelection = void 0;
+          };
+          function onPointerMove(event) {
+            if (event.pointerType === "touch" && usingTouchEvents) return;
+            const point = getEventPoint(event);
+            const target = getEventTarget(event);
+            startSelectionGuard();
+            trackPoint(point);
+            onMove({
+              point,
+              target,
+              event,
+              pointerType: event.pointerType,
+              axis,
+              swipeDirection
+            });
+          }
+          function onPointerUp(event) {
+            if (event.pointerType === "touch" && usingTouchEvents) {
+              usingTouchEvents = false;
+              return;
+            }
+            stopSelectionGuard();
+            onEnd({ point: getEventPoint(event), swipeDirection });
+          }
+          function onPointerCancel(event) {
+            if (event.pointerType === "touch" && usingTouchEvents) {
+              usingTouchEvents = false;
+              return;
+            }
+            stopSelectionGuard();
+            onCancel();
+          }
+          function onTouchStartEvent(event) {
+            if (!event.touches[0]) return;
+            usingTouchEvents = true;
+            const point = getEventPoint(event);
+            const target = getEventTarget(event);
+            onStart == null ? void 0 : onStart({ point, target, event, pointerType: "touch", axis, swipeDirection });
+          }
+          function onTouchMoveEvent(event) {
+            if (!event.touches[0]) return;
+            usingTouchEvents = true;
+            const point = getEventPoint(event);
+            const target = getEventTarget(event);
+            const details = { point, target, event, pointerType: "touch", axis, swipeDirection };
+            if ((preventDefault == null ? void 0 : preventDefault(details)) && event.cancelable) {
+              event.preventDefault();
+            }
+            startSelectionGuard();
+            trackPoint(point);
+            onMove(details);
+          }
+          function onTouchEnd(event) {
+            if (event.touches.length !== 0) return;
+            stopSelectionGuard();
+            onEnd({ point: getEventPoint(event), swipeDirection });
+          }
+          function onTouchCancel() {
+            stopSelectionGuard();
+            onCancel();
+          }
+          function onVisibilityChange() {
+            if (doc.visibilityState !== "hidden") return;
+            const shouldCancel = cancelOnInterrupt == null ? void 0 : cancelOnInterrupt({
+              reason: "visibility-hidden",
+              event: doc,
+              target: null,
+              pointerType: null
+            });
+            if (shouldCancel === false) return;
+            stopSelectionGuard();
+            onCancel();
+          }
+          function onLostPointerCapture(event) {
+            if (event.pointerType === "touch") return;
+            const target = getEventTarget(event);
+            const shouldCancel = cancelOnInterrupt == null ? void 0 : cancelOnInterrupt({
+              reason: "lost-pointer-capture",
+              event,
+              target,
+              pointerType: event.pointerType
+            });
+            if (shouldCancel === false) return;
+            onCancel();
+          }
+          const cleanups = [
+            addDomEvent(doc, "pointermove", onPointerMove),
+            addDomEvent(doc, "pointerup", onPointerUp),
+            addDomEvent(doc, "pointercancel", onPointerCancel),
+            addDomEvent(doc, "touchstart", onTouchStartEvent, { capture: true, passive: false }),
+            addDomEvent(doc, "touchmove", onTouchMoveEvent, { capture: true, passive: false }),
+            addDomEvent(doc, "touchend", onTouchEnd, { capture: true }),
+            addDomEvent(doc, "touchcancel", onTouchCancel, { capture: true }),
+            addDomEvent(doc, "visibilitychange", onVisibilityChange),
+            addDomEvent(doc, "lostpointercapture", onLostPointerCapture, true)
+          ];
+          return () => {
+            stopSelectionGuard();
+            cleanups.forEach((cleanup) => cleanup());
+          };
+        }
+      };
+      RELEASE_DISPLACEMENT_TRUST_PX = 24;
+      OPEN_SWIPE_HIDDEN_VISIBLE_RATIO = 0.22;
+      OPEN_SWIPE_HIDDEN_VELOCITY_MULTIPLIER = 1.25;
+      OPEN_SWIPE_REVEALED_VISIBLE_RATIO = 0.5;
+      OPEN_SWIPE_REVEALED_OPPOSING_MAX_ABS_VELOCITY = 650;
+      DRAG_START_THRESHOLD = 0.3;
+      CROSS_AXIS_BIAS = 0.58;
+      SCROLL_SLACK_GATE = 0.5;
+      SCROLL_SLACK_EPSILON = 1;
+      SEQUENTIAL_THRESHOLD = 24;
+      SNAP_VELOCITY_THRESHOLD = 400;
+      SNAP_VELOCITY_MULTIPLIER = 0.4;
+      MAX_SNAP_VELOCITY = 4e3;
+      SWIPE_STRENGTH_MAX_DURATION_MS = 360;
+      SWIPE_STRENGTH_MIN_SCALAR = 0.1;
+      SWIPE_STRENGTH_MAX_SCALAR = 1;
+      SWIPE_AREA_OPEN_INTENT_MIN_PX = 5;
+      NO_DRAG_DATA_ATTR = "data-no-drag";
+      NO_DRAG_SELECTOR = `[${NO_DRAG_DATA_ATTR}]`;
+      DrawerSwipeSession = class {
+        constructor(options) {
+          __publicField8(this, "session", new SwipeSession());
+          __publicField8(this, "dragOffset", null);
+          __publicField8(this, "preventDragOnScroll");
+          this.preventDragOnScroll = options.preventDragOnScroll;
+        }
+        contentPointerDown(options) {
+          const { event, getDoc, getContentEl: getContentEl22, getWin, swipeDirection, canCommit, onCommit } = options;
+          if (shouldIgnorePointerDownForDrag(event)) return;
+          if (isTextSelectionInDrawer(getDoc(), getContentEl22())) return;
+          if (!canCommit()) return;
+          const point = getEventPoint(event);
+          const shouldDefer = event.pointerType === "mouse" || event.pointerType === "pen";
+          if (!shouldDefer) {
+            onCommit(point);
+            return;
+          }
+          this.session.startDeferredSwipe({
+            getWin,
+            pointerId: event.pointerId,
+            startPoint: point,
+            swipeDirection,
+            onCommit,
+            canCommit
+          });
+        }
+        grabberPointerDown(options) {
+          const { event, point, canCommit, onCommit } = options;
+          if (shouldIgnorePointerDownForDrag(event)) return;
+          this.session.cancelDeferredSwipe();
+          if (!canCommit()) return;
+          onCommit(point);
+        }
+        adjustReleaseVelocityAgainstDisplacement(velocity, displacementFromSnap) {
+          const displacementSign = Math.sign(displacementFromSnap);
+          const velocitySign = Math.sign(velocity);
+          if (displacementSign !== 0 && Math.abs(displacementFromSnap) >= RELEASE_DISPLACEMENT_TRUST_PX && velocitySign !== 0 && velocitySign !== displacementSign) {
+            return 0;
+          }
+          return velocity;
+        }
+        adjustReleaseVelocityForOpenSwipe(velocity, visibleRatio, swipeVelocityThreshold) {
+          if (visibleRatio < OPEN_SWIPE_HIDDEN_VISIBLE_RATIO && velocity < 0 && Math.abs(velocity) < swipeVelocityThreshold * OPEN_SWIPE_HIDDEN_VELOCITY_MULTIPLIER) {
+            return 0;
+          }
+          if (visibleRatio > OPEN_SWIPE_REVEALED_VISIBLE_RATIO && velocity > 0 && Math.abs(velocity) < OPEN_SWIPE_REVEALED_OPPOSING_MAX_ABS_VELOCITY) {
+            return 0;
+          }
+          return velocity;
+        }
+        beginSwipe(point) {
+          this.session.setStartPoint(point);
+        }
+        clearSwipeStart() {
+          this.session.clearStartPoint();
+        }
+        getSwipeStart() {
+          return this.session.getStartPoint();
+        }
+        getDragOffset() {
+          return this.dragOffset;
+        }
+        resetDragOffset() {
+          this.dragOffset = null;
+        }
+        resetVelocity() {
+          this.session.clearVelocityTracking();
+        }
+        reset() {
+          this.dragOffset = null;
+          this.session.clear();
+        }
+        setDragOffset(point, resolvedActiveSnapPointOffset, direction) {
+          if (!this.session.getStartPoint()) {
+            this.dragOffset = null;
+            return;
+          }
+          const axis = this.session.getGestureAxis(direction);
+          const sign3 = this.session.getGestureSign(direction);
+          let delta = this.session.getMainAxisDisplacement(point, axis, sign3) - resolvedActiveSnapPointOffset;
+          if (delta > 0) {
+            delta = Math.sqrt(delta);
+          }
+          this.dragOffset = -delta;
+        }
+        setSwipeOpenOffset(point, contentSize, direction) {
+          if (!this.session.getStartPoint()) {
+            this.dragOffset = null;
+            return;
+          }
+          const axis = this.session.getGestureAxis(direction);
+          const sign3 = this.session.getGestureSign(direction);
+          const openDisplacement = this.session.getMainAxisDisplacement(point, axis, sign3);
+          let dragOffset = contentSize - Math.max(0, openDisplacement);
+          if (dragOffset < 0) {
+            dragOffset = -Math.sqrt(Math.abs(dragOffset));
+          }
+          this.dragOffset = dragOffset;
+        }
+        canStartDrag(point, target, container, preventDragOnScroll, direction) {
+          if (!isHTMLElement(target)) return false;
+          if (isDragExemptElement(target)) return false;
+          if (!this.session.getStartPoint() || !container) return false;
+          if (!preventDragOnScroll) return true;
+          const axis = this.session.getGestureAxis(direction);
+          const sign3 = this.session.getGestureSign(direction);
+          const delta = this.session.getMainAxisDisplacement(point, axis, sign3);
+          if (Math.abs(delta) < DRAG_START_THRESHOLD) return false;
+          const crossDelta = Math.abs(this.session.getCrossAxisDisplacement(point, axis));
+          if (crossDelta > Math.abs(delta) * CROSS_AXIS_BIAS) {
+            const crossDirection = isVerticalSwipeDirection(direction) ? "right" : "down";
+            const crossScroll = getScrollInfo(target, container, crossDirection);
+            if (crossScroll.availableForwardScroll > SCROLL_SLACK_GATE || crossScroll.availableBackwardScroll > SCROLL_SLACK_GATE) {
+              return false;
+            }
+          }
+          const { availableForwardScroll, availableBackwardScroll } = getScrollInfo(target, container, direction);
+          if (delta > 0 && availableForwardScroll > SCROLL_SLACK_GATE || delta < 0 && availableBackwardScroll > SCROLL_SLACK_GATE) {
+            return false;
+          }
+          return true;
+        }
+        resolveSnapPointOnRelease(snapPoints, snapPoint, snapToSequentialPoints, contentSize) {
+          var _a4, _b, _c, _d, _e;
+          const dragOffset = this.dragOffset;
+          if (dragOffset === null) return (_b = (_a4 = snapPoints[0]) == null ? void 0 : _a4.value) != null ? _b : 1;
+          const releaseVelocity = this.session.getReleaseVelocity();
+          if (snapToSequentialPoints && snapPoint) {
+            const ordered = [...snapPoints].sort((a2, b2) => a2.offset - b2.offset);
+            let currentIndex = 0;
+            let closestDist = Math.abs(snapPoint.offset - ordered[0].offset);
+            for (let i2 = 1; i2 < ordered.length; i2++) {
+              const dist = Math.abs(snapPoint.offset - ordered[i2].offset);
+              if (dist < closestDist) {
+                closestDist = dist;
+                currentIndex = i2;
+              }
+            }
+            const currentPoint = ordered[currentIndex];
+            const delta = dragOffset - currentPoint.offset;
+            const dragDirection = Math.sign(delta);
+            const velocityAdjusted = this.adjustReleaseVelocityAgainstDisplacement(releaseVelocity, delta);
+            const velocityDirection = Math.sign(velocityAdjusted);
+            let targetSnapPoint = currentPoint;
+            let effectiveTargetOffset = dragOffset;
+            const shouldAdvance = dragDirection !== 0 && velocityDirection === dragDirection && Math.abs(velocityAdjusted) >= SNAP_VELOCITY_THRESHOLD;
+            if (shouldAdvance) {
+              const adjacentIndex = Math.min(Math.max(currentIndex + dragDirection, 0), ordered.length - 1);
+              if (adjacentIndex !== currentIndex) {
+                targetSnapPoint = ordered[adjacentIndex];
+                effectiveTargetOffset = targetSnapPoint.offset;
+              } else if (dragDirection > 0) {
+                return null;
+              }
+            } else if (delta > SEQUENTIAL_THRESHOLD) {
+              const nextPoint = ordered[Math.min(currentIndex + 1, ordered.length - 1)];
+              if (nextPoint) {
+                targetSnapPoint = nextPoint;
+                effectiveTargetOffset = nextPoint.offset;
+              }
+            } else if (delta < -SEQUENTIAL_THRESHOLD) {
+              const prevPoint = ordered[Math.max(currentIndex - 1, 0)];
+              if (prevPoint) {
+                targetSnapPoint = prevPoint;
+                effectiveTargetOffset = prevPoint.offset;
+              }
+            }
+            const closeDistance = Math.abs(effectiveTargetOffset - contentSize);
+            const snapDistance = Math.abs(effectiveTargetOffset - targetSnapPoint.offset);
+            if (closeDistance < snapDistance) return null;
+            return targetSnapPoint.value;
+          }
+          const snapRestOffset = (_c = snapPoint == null ? void 0 : snapPoint.offset) != null ? _c : 0;
+          const velocity = this.adjustReleaseVelocityAgainstDisplacement(releaseVelocity, dragOffset - snapRestOffset);
+          let targetOffset = dragOffset;
+          if (Math.abs(velocity) >= SNAP_VELOCITY_THRESHOLD) {
+            const clamped = clampValue(velocity, -MAX_SNAP_VELOCITY, MAX_SNAP_VELOCITY);
+            targetOffset += clamped * SNAP_VELOCITY_MULTIPLIER;
+            targetOffset = Math.max(0, targetOffset);
+          }
+          return (_e = (_d = findClosestSnapPoint(targetOffset, snapPoints)) == null ? void 0 : _d.value) != null ? _e : null;
+        }
+        shouldOpenOnRelease(contentSize, swipeVelocityThreshold, openThreshold) {
+          const dragOffset = this.dragOffset;
+          if (dragOffset === null || contentSize === null) return false;
+          const visibleSize = contentSize - dragOffset;
+          const visibleRatio = visibleSize / contentSize;
+          const velocity = this.adjustReleaseVelocityForOpenSwipe(
+            this.session.getReleaseVelocity(),
+            visibleRatio,
+            swipeVelocityThreshold
+          );
+          return velocity < 0 && Math.abs(velocity) >= swipeVelocityThreshold || visibleSize >= contentSize * openThreshold;
+        }
+        shouldDismissOnRelease(contentSize, snapPoints, resolvedSnapOffset) {
+          const dragOffset = this.dragOffset;
+          if (dragOffset === null || contentSize === null) return false;
+          const velocity = this.adjustReleaseVelocityAgainstDisplacement(
+            this.session.getReleaseVelocity(),
+            dragOffset - resolvedSnapOffset
+          );
+          const visibleSize = contentSize - dragOffset;
+          if (visibleSize <= 0) return true;
+          let targetOffset = dragOffset;
+          if (Math.abs(velocity) >= SNAP_VELOCITY_THRESHOLD) {
+            const clamped = clampValue(velocity, -MAX_SNAP_VELOCITY, MAX_SNAP_VELOCITY);
+            targetOffset += clamped * SNAP_VELOCITY_MULTIPLIER;
+            targetOffset = Math.max(0, targetOffset);
+          }
+          const closest = findClosestSnapPoint(targetOffset, snapPoints);
+          if (!closest) return false;
+          const closeDistance = Math.abs(targetOffset - contentSize);
+          const snapDistance = Math.abs(targetOffset - closest.offset);
+          return closeDistance < snapDistance;
+        }
+        getSwipeStrength(targetOffset, resolvedSnapOffset = null) {
+          const dragOffset = this.dragOffset;
+          if (dragOffset === null) return SWIPE_STRENGTH_MAX_SCALAR;
+          let velocity = this.session.getReleaseVelocity();
+          if (resolvedSnapOffset != null) {
+            velocity = this.adjustReleaseVelocityAgainstDisplacement(velocity, dragOffset - resolvedSnapOffset);
+          }
+          const distance = Math.abs(dragOffset - targetOffset);
+          const absVelocity = Math.abs(velocity);
+          if (absVelocity <= 0 || distance <= 0) return SWIPE_STRENGTH_MAX_SCALAR;
+          const estimatedTimeMs = distance / absVelocity * 1e3;
+          const normalized = clampValue(estimatedTimeMs / SWIPE_STRENGTH_MAX_DURATION_MS, 0, 1);
+          return SWIPE_STRENGTH_MIN_SCALAR + normalized * (SWIPE_STRENGTH_MAX_SCALAR - SWIPE_STRENGTH_MIN_SCALAR);
+        }
+        bindDragTracking(options) {
+          const { getDoc, getContentEl: getContentEl22, getSwipeAreaEl: getSwipeAreaEl2, swipeDirection, onMove, onEnd, onCancel } = options;
+          const preventDragOnScroll = this.preventDragOnScroll;
+          const isVertical = isVerticalSwipeDirection(swipeDirection);
+          let lastAxis = 0;
+          return this.session.bind({
+            getDoc,
+            getSelectionTarget: getContentEl22,
+            swipeDirection,
+            onMove,
+            onEnd,
+            onCancel,
+            cancelOnInterrupt: ({ reason, target }) => {
+              if (reason !== "lost-pointer-capture") return true;
+              return isWithinDrawerInteractionSurface(target, getContentEl22(), getSwipeAreaEl2());
+            },
+            onStart({ pointerType, point }) {
+              if (pointerType !== "touch") return;
+              lastAxis = isVertical ? point.y : point.x;
+            },
+            preventDefault({ event, pointerType, point, target }) {
+              if (pointerType !== "touch") return false;
+              const contentEl = getContentEl22();
+              const resolvedTarget = target != null ? target : event.target;
+              if (!preventDragOnScroll()) return false;
+              if (!contentEl || !resolvedTarget || isDragExemptElement(resolvedTarget)) return false;
+              const scrollParent = findClosestScrollableAncestorOnSwipeAxis(resolvedTarget, contentEl, swipeDirection);
+              if (scrollParent) {
+                const currentAxis = isVertical ? point.y : point.x;
+                const shouldPrevent = shouldPreventTouchScroll({
+                  scrollParent,
+                  swipeDirection,
+                  lastMainAxis: lastAxis,
+                  currentMainAxis: currentAxis
+                });
+                lastAxis = currentAxis;
+                return shouldPrevent;
+              }
+              lastAxis = isVertical ? point.y : point.x;
+              return false;
+            }
+          });
+        }
+        bindSwipeOpenTracking(options) {
+          const { getDoc, getContentEl: getContentEl22, getSwipeAreaEl: getSwipeAreaEl2, swipeDirection, onMove, onEnd, onCancel } = options;
+          return this.session.bind({
+            getDoc,
+            getSelectionTarget: getSwipeAreaEl2,
+            swipeDirection,
+            onMove({ point }) {
+              onMove({ point });
+            },
+            onEnd,
+            onCancel,
+            cancelOnInterrupt: ({ reason, target }) => {
+              if (reason !== "lost-pointer-capture") return true;
+              return isWithinDrawerInteractionSurface(target, getContentEl22(), getSwipeAreaEl2());
+            }
+          });
+        }
+      };
+      oppositeSwipeDirection = {
+        up: "down",
+        down: "up",
+        start: "end",
+        end: "start"
+      };
+      SWIPE_OPEN_HIDDEN_OFFSET = 9999;
+      DrawerRegistry = class {
+        constructor() {
+          __publicField8(this, "elements", /* @__PURE__ */ new Map());
+          __publicField8(this, "swipingIds", /* @__PURE__ */ new Set());
+          __publicField8(this, "swipeProgress", /* @__PURE__ */ new Map());
+          __publicField8(this, "listeners", /* @__PURE__ */ new Set());
+        }
+        notify() {
+          this.listeners.forEach((fn) => fn());
+        }
+        register(id, el) {
+          this.elements.set(id, el);
+          this.notify();
+        }
+        unregister(id) {
+          this.swipingIds.delete(id);
+          this.swipeProgress.delete(id);
+          if (!this.elements.delete(id)) return;
+          this.notify();
+        }
+        setSwiping(id, swiping) {
+          const changed = swiping ? !this.swipingIds.has(id) : this.swipingIds.has(id);
+          if (!changed && swiping) return;
+          if (swiping) {
+            this.swipingIds.add(id);
+          } else {
+            this.swipingIds.delete(id);
+            this.swipeProgress.delete(id);
+          }
+          this.notify();
+        }
+        setSwipeProgress(id, progress) {
+          this.swipeProgress.set(id, progress);
+          this.notify();
+        }
+        getSwipeProgressAfter(id) {
+          var _a4;
+          const keys = [...this.elements.keys()];
+          const myIndex = keys.indexOf(id);
+          if (myIndex === -1) return 0;
+          for (let i2 = keys.length - 1; i2 > myIndex; i2 -= 1) {
+            if (this.swipingIds.has(keys[i2])) {
+              return (_a4 = this.swipeProgress.get(keys[i2])) != null ? _a4 : 0;
+            }
+          }
+          return 0;
+        }
+        hasSwipingAfter(id) {
+          const keys = [...this.elements.keys()];
+          const myIndex = keys.indexOf(id);
+          if (myIndex === -1) return false;
+          return keys.slice(myIndex + 1).some((key) => this.swipingIds.has(key));
+        }
+        getEntries() {
+          return this.elements;
+        }
+        subscribe(fn) {
+          this.listeners.add(fn);
+          return () => {
+            this.listeners.delete(fn);
+          };
+        }
+      };
+      drawerRegistry = new DrawerRegistry();
+      ({ and: and5 } = createGuards());
+      getActiveSnapOffset = (context) => {
+        var _a4, _b;
+        return (_b = (_a4 = context.get("resolvedActiveSnapPoint")) == null ? void 0 : _a4.offset) != null ? _b : 0;
+      };
+      hasRemSnapPoints = (snapPoints) => snapPoints.some((snapPoint) => typeof snapPoint === "string" && snapPoint.trim().endsWith("rem"));
+      DEFAULT_SNAP_POINTS = [1];
+      machine13 = createMachine({
+        props({ props, scope }) {
+          var _a4, _b, _c;
+          const alertDialog = props.role === "alertdialog";
+          const initialFocusEl = alertDialog ? () => getCloseTriggerEl2(scope) : void 0;
+          const modal = typeof props.modal === "boolean" ? props.modal : true;
+          const snapPoints = (_a4 = props.snapPoints) != null ? _a4 : DEFAULT_SNAP_POINTS;
+          return __spreadValues({
+            modal,
+            trapFocus: modal,
+            preventScroll: modal,
+            closeOnInteractOutside: true,
+            closeOnEscape: true,
+            restoreFocus: true,
+            role: "dialog",
+            initialFocusEl,
+            snapPoints,
+            defaultSnapPoint: (_c = (_b = props.defaultSnapPoint) != null ? _b : snapPoints[0]) != null ? _c : null,
+            swipeDirection: "down",
+            snapToSequentialPoints: false,
+            swipeVelocityThreshold: 500,
+            closeThreshold: 0.5,
+            preventDragOnScroll: true
+          }, props);
+        },
+        context({ bindable: bindable2, prop, scope }) {
+          return {
+            triggerValue: bindable2(() => {
+              var _a4;
+              return {
+                defaultValue: (_a4 = prop("defaultTriggerValue")) != null ? _a4 : null,
+                value: prop("triggerValue"),
+                onChange(value) {
+                  const onTriggerValueChange = prop("onTriggerValueChange");
+                  if (!onTriggerValueChange) return;
+                  const triggerElement = getActiveTriggerEl2(scope, value);
+                  onTriggerValueChange({ value, triggerElement });
+                }
+              };
+            }),
+            dragOffset: bindable2(() => ({
+              defaultValue: null
+            })),
+            snapPoint: bindable2(() => ({
+              defaultValue: prop("defaultSnapPoint"),
+              value: prop("snapPoint"),
+              onChange(snapPoint) {
+                var _a4;
+                return (_a4 = prop("onSnapPointChange")) == null ? void 0 : _a4({ snapPoint });
+              }
+            })),
+            resolvedActiveSnapPoint: bindable2(() => ({
+              defaultValue: null
+            })),
+            contentSize: bindable2(() => ({
+              defaultValue: null
+            })),
+            viewportSize: bindable2(() => ({
+              defaultValue: 0
+            })),
+            rootFontSize: bindable2(() => ({
+              defaultValue: 16
+            })),
+            swipeStrength: bindable2(() => ({
+              defaultValue: 1
+            })),
+            rendered: bindable2(() => ({
+              defaultValue: { title: true, description: true }
+            })),
+            nestedMetrics: bindable2(() => ({
+              defaultValue: { count: 0, height: 0, frontmostHeight: 0, open: false, swiping: false },
+              isEqual
+            }))
+          };
+        },
+        refs({ prop }) {
+          return {
+            swipeSession: new DrawerSwipeSession({
+              preventDragOnScroll: () => prop("preventDragOnScroll")
+            }),
+            snapBackFrame: AnimationFrame.create()
+          };
+        },
+        computed: {
+          drawerId({ prop, scope }) {
+            var _a4;
+            return String((_a4 = prop("id")) != null ? _a4 : scope.id);
+          },
+          physicalSwipeDirection({ prop }) {
+            return resolveSwipeDirection(prop("swipeDirection"), prop("dir"));
+          },
+          resolvedSnapPoints({ context, prop }) {
+            const contentSize = context.get("contentSize");
+            const viewportSize = context.get("viewportSize");
+            const rootFontSize = context.get("rootFontSize");
+            if (contentSize === null) return [];
+            const points = prop("snapPoints").map((snapPoint) => resolveSnapPoint(snapPoint, { contentSize, viewportSize, rootFontSize })).filter((point) => point !== null);
+            return dedupeSnapPoints(points);
+          }
+        },
+        watch({ track, context, prop, action, computed }) {
+          track(
+            [
+              () => context.get("snapPoint"),
+              () => context.get("contentSize"),
+              () => context.get("viewportSize"),
+              () => context.get("rootFontSize"),
+              () => prop("snapPoints").join("|")
+            ],
+            () => {
+              const snapPoint = context.get("snapPoint");
+              const contentSize = context.get("contentSize");
+              const viewportSize = context.get("viewportSize");
+              const rootFontSize = context.get("rootFontSize");
+              if (snapPoint === null || contentSize === null) {
+                context.set("resolvedActiveSnapPoint", null);
+                return;
+              }
+              const resolvedPoints = computed("resolvedSnapPoints");
+              const matchedPoint = resolvedPoints.find((point) => Object.is(point.value, snapPoint));
+              if (matchedPoint) {
+                context.set("resolvedActiveSnapPoint", matchedPoint);
+                return;
+              }
+              const resolvedActiveSnapPoint = resolveSnapPoint(snapPoint, { contentSize, viewportSize, rootFontSize });
+              if (resolvedActiveSnapPoint) {
+                context.set("resolvedActiveSnapPoint", resolvedActiveSnapPoint);
+                return;
+              }
+              const fallbackPoint = resolvedPoints[0];
+              if (!fallbackPoint) {
+                context.set("resolvedActiveSnapPoint", null);
+                return;
+              }
+              context.set("snapPoint", fallbackPoint.value);
+              context.set("resolvedActiveSnapPoint", fallbackPoint);
+            }
+          );
+          track([() => prop("open")], () => {
+            action(["toggleVisibility"]);
+          });
+          track(
+            [() => context.get("dragOffset"), () => context.get("contentSize"), () => getActiveSnapOffset(context)],
+            () => {
+              action(["syncDrawerStack"]);
+            }
+          );
+        },
+        initialState({ prop }) {
+          const open = prop("open") || prop("defaultOpen");
+          return open ? "open" : "closed";
+        },
+        on: {
+          "SNAP_POINT.SET": {
+            actions: ["setSnapPoint"]
+          }
+        },
+        states: {
+          open: {
+            tags: ["open"],
+            entry: ["checkRenderedElements", "setInitialFocus", "deferClearDragOffset"],
+            effects: [
+              "trackDismissableElement",
+              "preventScroll",
+              "trapFocus",
+              "hideContentBelow",
+              "trackPointerMove",
+              "trackSizeMeasurements",
+              "trackNestedDrawerMetrics",
+              "trackDrawerStack"
+            ],
+            on: {
+              "TRIGGER_VALUE.SET": {
+                actions: ["setTriggerValue"]
+              },
+              "CONTROLLED.CLOSE": {
+                target: "closing",
+                actions: ["clearSwipeOpenAnimation", "cancelSnapBack"]
+              },
+              POINTER_DOWN: {
+                actions: ["setPointerStart", "cancelSnapBack"]
+              },
+              POINTER_MOVE: [
+                {
+                  guard: "isDragging",
+                  actions: ["setDragOffset"]
+                },
+                {
+                  guard: "shouldStartDragging",
+                  actions: ["setRegistrySwiping", "setDragOffset"]
+                }
+              ],
+              SNAP_BACK: {
+                guard: "isDragging",
+                actions: ["deferClearDragOffset", "resetSwipeStrength"]
+              },
+              POINTER_UP: [
+                {
+                  guard: and5("shouldCloseOnSwipe", "isOpenControlled"),
+                  actions: [
+                    "clearRegistrySwiping",
+                    "clearPointerStart",
+                    "setDismissSwipeStrength",
+                    "invokeOnClose",
+                    "scheduleSnapBack"
+                  ]
+                },
+                {
+                  guard: "shouldCloseOnSwipe",
+                  target: "closing",
+                  actions: ["clearSwipeOpenAnimation", "clearRegistrySwiping", "setDismissSwipeStrength"]
+                },
+                {
+                  guard: "isDragging",
+                  actions: [
+                    "clearRegistrySwiping",
+                    "suppressBackdropAnimation",
+                    "setSnapSwipeStrength",
+                    "setClosestSnapPoint",
+                    "clearPointerStart",
+                    "clearDragOffset",
+                    "clearVelocityTracking"
+                  ]
+                },
+                {
+                  actions: ["clearRegistrySwiping", "clearPointerStart", "clearDragOffset", "clearVelocityTracking"]
+                }
+              ],
+              POINTER_CANCEL: [
+                {
+                  guard: "isDragging",
+                  actions: ["clearRegistrySwiping", "clearPointerStart", "clearDragOffset", "clearVelocityTracking"]
+                },
+                {
+                  actions: ["clearRegistrySwiping", "clearPointerStart", "clearVelocityTracking"]
+                }
+              ],
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closing",
+                  actions: ["clearSwipeOpenAnimation", "resetSwipeStrength", "invokeOnClose"]
+                }
+              ]
+            }
+          },
+          closing: {
+            entry: ["cancelSnapBack"],
+            effects: ["trackExitAnimation"],
+            on: {
+              "CONTROLLED.OPEN": {
+                target: "open"
+              },
+              OPEN: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["setTriggerValue", "invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["setTriggerValue", "invokeOnOpen"]
+                }
+              ],
+              "TRIGGER_VALUE.SET": {
+                target: "open",
+                actions: ["setTriggerValue", "invokeOnOpen"]
+              },
+              ANIMATION_END: {
+                target: "closed",
+                actions: [
+                  "invokeOnClose",
+                  "clearPointerStart",
+                  "clearDragOffset",
+                  "clearActiveSnapPoint",
+                  "clearResolvedActiveSnapPoint",
+                  "clearSizeMeasurements",
+                  "clearVelocityTracking"
+                ]
+              }
+            }
+          },
+          "swipe-area-dragging": {
+            tags: ["closed"],
+            effects: ["trackSwipeOpenPointerMove"],
+            on: {
+              POINTER_MOVE: {
+                guard: "hasSwipeIntent",
+                target: "swiping-open"
+              },
+              POINTER_UP: {
+                target: "closed",
+                actions: ["clearPointerStart", "clearVelocityTracking"]
+              },
+              POINTER_CANCEL: {
+                target: "closed",
+                actions: ["clearPointerStart", "clearVelocityTracking"]
+              }
+            }
+          },
+          "swiping-open": {
+            tags: ["open"],
+            effects: ["trackSwipeOpenPointerMove", "trackSizeMeasurements"],
+            on: {
+              POINTER_MOVE: {
+                actions: ["setSwipeOpenDragOffset"]
+              },
+              POINTER_UP: [
+                {
+                  guard: and5("shouldOpenOnSwipe", "isOpenControlled"),
+                  actions: ["clearPointerStart", "invokeOnOpen"]
+                },
+                {
+                  guard: "shouldOpenOnSwipe",
+                  target: "open",
+                  actions: ["clearPointerStart", "invokeOnOpen"]
+                },
+                {
+                  target: "closed",
+                  actions: ["clearPointerStart", "clearDragOffset", "clearSizeMeasurements"]
+                }
+              ],
+              POINTER_CANCEL: {
+                target: "closed",
+                actions: ["clearPointerStart", "clearDragOffset", "clearSizeMeasurements", "clearVelocityTracking"]
+              },
+              "CONTROLLED.OPEN": {
+                target: "open"
+              },
+              CLOSE: {
+                target: "closed",
+                actions: ["clearPointerStart", "clearDragOffset", "clearSizeMeasurements"]
+              }
+            }
+          },
+          closed: {
+            tags: ["closed"],
+            on: {
+              "CONTROLLED.OPEN": {
+                target: "open"
+              },
+              OPEN: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["setTriggerValue", "invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["setTriggerValue", "invokeOnOpen"]
+                }
+              ],
+              "SWIPE_AREA.START": {
+                target: "swipe-area-dragging",
+                actions: ["setPointerStart"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isOpenControlled: ({ prop }) => prop("open") !== void 0,
+            isDragging({ context }) {
+              return context.get("dragOffset") !== null;
+            },
+            shouldStartDragging({ computed, prop, refs, event, scope }) {
+              const swipeSession = refs.get("swipeSession");
+              return swipeSession.canStartDrag(
+                event.point,
+                event.target,
+                getContentEl7(scope),
+                prop("preventDragOnScroll"),
+                computed("physicalSwipeDirection")
+              );
+            },
+            shouldCloseOnSwipe({ prop, context, computed, refs }) {
+              if (prop("snapToSequentialPoints")) return false;
+              const swipeSession = refs.get("swipeSession");
+              return swipeSession.shouldDismissOnRelease(
+                context.get("contentSize"),
+                computed("resolvedSnapPoints"),
+                getActiveSnapOffset(context)
+              );
+            },
+            hasSwipeIntent({ refs, computed, event }) {
+              const swipeSession = refs.get("swipeSession");
+              const start = swipeSession.getSwipeStart();
+              if (!start || !event.point) return false;
+              return hasOpeningSwipeIntent(start, event.point, computed("physicalSwipeDirection"));
+            },
+            shouldOpenOnSwipe({ context, refs, prop }) {
+              const swipeSession = refs.get("swipeSession");
+              return swipeSession.shouldOpenOnRelease(
+                context.get("contentSize"),
+                prop("swipeVelocityThreshold"),
+                prop("closeThreshold")
+              );
+            }
+          },
+          actions: {
+            setInitialFocus({ prop, scope }) {
+              if (prop("trapFocus")) return;
+              raf(() => {
+                const element = getInitialFocus({
+                  root: getContentEl7(scope),
+                  getInitialEl: prop("initialFocusEl")
+                });
+                element == null ? void 0 : element.focus({ preventScroll: true });
+              });
+            },
+            checkRenderedElements({ context, scope }) {
+              raf(() => {
+                context.set("rendered", {
+                  title: !!getTitleEl2(scope),
+                  description: !!getDescriptionEl2(scope)
+                });
+              });
+            },
+            deferClearDragOffset({ context, refs, scope }) {
+              const dragOffset = context.get("dragOffset");
+              if (dragOffset === null) return;
+              const contentEl = getContentEl7(scope);
+              const backdropEl = getBackdropEl2(scope);
+              if (contentEl) contentEl.style.setProperty("animation", "none", "important");
+              if (backdropEl) backdropEl.style.setProperty("animation", "none", "important");
+              raf(() => {
+                refs.get("swipeSession").resetDragOffset();
+                context.set("dragOffset", null);
+              });
+            },
+            suppressBackdropAnimation({ scope }) {
+              const backdropEl = getBackdropEl2(scope);
+              if (!backdropEl) return;
+              backdropEl.style.setProperty("animation", "none", "important");
+            },
+            clearSwipeOpenAnimation({ scope }) {
+              const contentEl = getContentEl7(scope);
+              const backdropEl = getBackdropEl2(scope);
+              if (contentEl) contentEl.style.removeProperty("animation");
+              if (backdropEl) backdropEl.style.removeProperty("animation");
+            },
+            setTriggerValue({ context, event }) {
+              if (event.value === void 0) return;
+              context.set("triggerValue", event.value);
+            },
+            invokeOnOpen({ prop }) {
+              var _a4;
+              (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: true });
+            },
+            invokeOnClose({ prop }) {
+              var _a4;
+              (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: false });
+            },
+            setSnapPoint({ context, event }) {
+              context.set("snapPoint", event.snapPoint);
+            },
+            setPointerStart({ event, refs }) {
+              refs.get("swipeSession").beginSwipe(event.point);
+            },
+            setDragOffset({ context, event, refs, computed }) {
+              var _a4;
+              const swipeSession = refs.get("swipeSession");
+              const physicalSwipeDirection = (_a4 = event.swipeDirection) != null ? _a4 : computed("physicalSwipeDirection");
+              swipeSession.setDragOffset(event.point, getActiveSnapOffset(context), physicalSwipeDirection);
+              context.set("dragOffset", swipeSession.getDragOffset());
+            },
+            setSwipeOpenDragOffset({ context, event, refs, computed }) {
+              const swipeSession = refs.get("swipeSession");
+              const contentSize = context.get("contentSize");
+              if (!contentSize) return;
+              swipeSession.setSwipeOpenOffset(event.point, contentSize, computed("physicalSwipeDirection"));
+              context.set("dragOffset", swipeSession.getDragOffset());
+            },
+            setClosestSnapPoint({ computed, context, refs, prop, send }) {
+              const snapPoints = computed("resolvedSnapPoints");
+              const contentSize = context.get("contentSize");
+              const viewportSize = context.get("viewportSize");
+              const rootFontSize = context.get("rootFontSize");
+              if (!snapPoints.length || contentSize === null) return;
+              const swipeSession = refs.get("swipeSession");
+              const closestSnapPoint = swipeSession.resolveSnapPointOnRelease(
+                snapPoints,
+                context.get("resolvedActiveSnapPoint"),
+                prop("snapToSequentialPoints"),
+                contentSize
+              );
+              if (closestSnapPoint === null) {
+                send({ type: "CLOSE" });
+                return;
+              }
+              context.set("snapPoint", closestSnapPoint);
+              const resolved = resolveSnapPoint(closestSnapPoint, { contentSize, viewportSize, rootFontSize });
+              context.set("resolvedActiveSnapPoint", resolved);
+            },
+            clearDragOffset({ context, refs }) {
+              refs.get("swipeSession").resetDragOffset();
+              context.set("dragOffset", null);
+            },
+            clearActiveSnapPoint({ context }) {
+              context.set("snapPoint", context.initial("snapPoint"));
+            },
+            clearSizeMeasurements({ context }) {
+              context.set("contentSize", null);
+              context.set("viewportSize", 0);
+              context.set("rootFontSize", 16);
+            },
+            clearResolvedActiveSnapPoint({ context }) {
+              context.set("resolvedActiveSnapPoint", null);
+            },
+            clearPointerStart({ refs }) {
+              refs.get("swipeSession").clearSwipeStart();
+            },
+            clearVelocityTracking({ refs }) {
+              refs.get("swipeSession").resetVelocity();
+            },
+            setSnapSwipeStrength({ context, refs, computed, prop }) {
+              var _a4;
+              const swipeSession = refs.get("swipeSession");
+              const snapPoints = computed("resolvedSnapPoints");
+              const contentSize = context.get("contentSize");
+              const closestSnapPoint = swipeSession.resolveSnapPointOnRelease(
+                snapPoints,
+                context.get("resolvedActiveSnapPoint"),
+                prop("snapToSequentialPoints"),
+                contentSize != null ? contentSize : 0
+              );
+              if (closestSnapPoint === null) return;
+              const viewportSize = context.get("viewportSize");
+              const rootFontSize = context.get("rootFontSize");
+              const resolved = resolveSnapPoint(closestSnapPoint, {
+                contentSize: contentSize != null ? contentSize : 0,
+                viewportSize,
+                rootFontSize
+              });
+              const restOffset = getActiveSnapOffset(context);
+              context.set("swipeStrength", swipeSession.getSwipeStrength((_a4 = resolved == null ? void 0 : resolved.offset) != null ? _a4 : 0, restOffset));
+            },
+            setDismissSwipeStrength({ context, refs }) {
+              const swipeSession = refs.get("swipeSession");
+              const contentSize = context.get("contentSize");
+              const restOffset = getActiveSnapOffset(context);
+              context.set("swipeStrength", swipeSession.getSwipeStrength(contentSize != null ? contentSize : 0, restOffset));
+            },
+            resetSwipeStrength({ context }) {
+              context.set("swipeStrength", 1);
+            },
+            scheduleSnapBack({ refs, send, prop }) {
+              if (prop("onOpenChange") != null) return;
+              refs.get("snapBackFrame").request(() => {
+                send({ type: "SNAP_BACK" });
+              });
+            },
+            cancelSnapBack({ refs }) {
+              refs.get("snapBackFrame").cancel();
+            },
+            setRegistrySwiping({ computed }) {
+              drawerRegistry.setSwiping(computed("drawerId"), true);
+            },
+            clearRegistrySwiping({ computed }) {
+              drawerRegistry.setSwiping(computed("drawerId"), false);
+            },
+            toggleVisibility({ event, send, prop }) {
+              send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+            },
+            syncDrawerStack({ context, prop, computed }) {
+              const contentSize = context.get("contentSize");
+              if (contentSize === null) return;
+              const dragOffset = context.get("dragOffset");
+              const snapPointOffset = getActiveSnapOffset(context);
+              const progress = resolveSwipeProgress(contentSize, dragOffset, snapPointOffset);
+              const id = computed("drawerId");
+              if (dragOffset !== null) {
+                drawerRegistry.setSwipeProgress(id, progress);
+              }
+              const stack = prop("stack");
+              if (!stack) return;
+              stack.setHeight(id, contentSize);
+              stack.setSwipe(id, dragOffset !== null, progress);
+            }
+          },
+          effects: {
+            trackDrawerStack({ context, prop, computed }) {
+              const stack = prop("stack");
+              if (!stack) return;
+              const id = computed("drawerId");
+              stack.register(id);
+              stack.setOpen(id, true);
+              const sync = () => {
+                const contentSize = context.get("contentSize");
+                const dragOffset = context.get("dragOffset");
+                const snapPointOffset = getActiveSnapOffset(context);
+                stack.setHeight(id, contentSize != null ? contentSize : 0);
+                stack.setSwipe(id, dragOffset !== null, resolveSwipeProgress(contentSize, dragOffset, snapPointOffset));
+              };
+              sync();
+              return () => {
+                stack.setSwipe(id, false, 0);
+                stack.setOpen(id, false);
+                stack.unregister(id);
+              };
+            },
+            trackDismissableElement({ scope, prop, send }) {
+              const getContentEl22 = () => getContentEl7(scope);
+              return trackDismissableElement(getContentEl22, {
+                type: "drawer",
+                defer: true,
+                pointerBlocking: prop("modal"),
+                layerStyleTargets: [() => getBackdropEl2(scope), () => getPositionerEl5(scope)],
+                exclude: [getTriggerEl5(scope), ...getTriggerEls3(scope)].filter(Boolean),
+                onInteractOutside(event) {
+                  var _a4;
+                  (_a4 = prop("onInteractOutside")) == null ? void 0 : _a4(event);
+                  if (!prop("closeOnInteractOutside")) {
+                    event.preventDefault();
+                  }
+                },
+                onFocusOutside: prop("onFocusOutside"),
+                onEscapeKeyDown(event) {
+                  var _a4;
+                  (_a4 = prop("onEscapeKeyDown")) == null ? void 0 : _a4(event);
+                  if (!prop("closeOnEscape")) {
+                    event.preventDefault();
+                  }
+                },
+                onPointerDownOutside: prop("onPointerDownOutside"),
+                onRequestDismiss: prop("onRequestDismiss"),
+                onDismiss() {
+                  send({ type: "CLOSE", src: "interact-outside" });
+                }
+              });
+            },
+            preventScroll({ scope, prop }) {
+              if (!prop("preventScroll")) return;
+              return preventBodyScroll(scope.getDoc());
+            },
+            trapFocus({ scope, prop, context }) {
+              if (!prop("trapFocus")) return;
+              const contentEl = () => getContentEl7(scope);
+              return trapFocus(contentEl, {
+                preventScroll: true,
+                returnFocusOnDeactivate: !!prop("restoreFocus"),
+                initialFocus: () => getInitialFocus({
+                  root: getContentEl7(scope),
+                  getInitialEl: prop("initialFocusEl")
+                }),
+                setReturnFocus: (el) => {
+                  var _a4;
+                  const finalFocusEl = (_a4 = prop("finalFocusEl")) == null ? void 0 : _a4();
+                  if (finalFocusEl) return finalFocusEl;
+                  const triggerValue = context.get("triggerValue");
+                  if (triggerValue) {
+                    const activeTriggerEl = getActiveTriggerEl2(scope, triggerValue);
+                    if (activeTriggerEl) return activeTriggerEl;
+                  }
+                  const fallbackTrigger = getTriggerEls3(scope)[0];
+                  if (fallbackTrigger) return fallbackTrigger;
+                  return el;
+                },
+                getShadowRoot: true
+              });
+            },
+            hideContentBelow({ scope, prop }) {
+              if (!prop("modal")) return;
+              const getElements4 = () => [getContentEl7(scope)];
+              return ariaHidden(getElements4, { defer: true });
+            },
+            trackPointerMove({ scope, send, refs, computed }) {
+              return refs.get("swipeSession").bindDragTracking({
+                getDoc: () => scope.getDoc(),
+                getContentEl: () => getContentEl7(scope),
+                getSwipeAreaEl: () => getSwipeAreaEl(scope),
+                swipeDirection: computed("physicalSwipeDirection"),
+                onMove(details) {
+                  send(__spreadValues({ type: "POINTER_MOVE" }, details));
+                },
+                onEnd(details) {
+                  send(__spreadValues({ type: "POINTER_UP" }, details));
+                },
+                onCancel() {
+                  send({ type: "POINTER_CANCEL" });
+                }
+              });
+            },
+            trackSizeMeasurements({ context, scope, computed, prop }) {
+              const doc = scope.getDoc();
+              const html = doc.documentElement;
+              const shouldMeasureRootFontSize = hasRemSnapPoints(prop("snapPoints"));
+              return waitForContentEl(scope, (contentEl) => {
+                const updateSize = () => {
+                  const direction = computed("physicalSwipeDirection");
+                  const rect = contentEl.getBoundingClientRect();
+                  const viewportSize = isVerticalSwipeDirection(direction) ? html.clientHeight : html.clientWidth;
+                  context.set("contentSize", getSwipeDirectionSize(rect, direction));
+                  context.set("viewportSize", viewportSize);
+                  if (shouldMeasureRootFontSize) {
+                    const rootFontSize = Number.parseFloat(getComputedStyle2(html).fontSize);
+                    if (Number.isFinite(rootFontSize)) {
+                      context.set("rootFontSize", rootFontSize);
+                    }
+                  }
+                };
+                updateSize();
+                const cleanups = [
+                  resizeObserverBorderBox.observe(contentEl, updateSize),
+                  addDomEvent(scope.getWin(), "resize", updateSize)
+                ];
+                return () => cleanups.forEach((cleanup) => cleanup == null ? void 0 : cleanup());
+              });
+            },
+            trackNestedDrawerMetrics({ scope, computed, context }) {
+              return waitForContentEl(scope, (contentEl) => {
+                const id = computed("drawerId");
+                drawerRegistry.register(id, contentEl);
+                const sync = () => {
+                  var _a4, _b;
+                  const entries = [...drawerRegistry.getEntries().entries()];
+                  const myIndex = entries.findIndex(([entryId]) => entryId === id);
+                  if (myIndex === -1) return;
+                  const count = entries.length - 1 - myIndex;
+                  const frontmostEl = (_a4 = entries[entries.length - 1]) == null ? void 0 : _a4[1];
+                  const frontmostHeight = (_b = frontmostEl == null ? void 0 : frontmostEl.getBoundingClientRect().height) != null ? _b : 0;
+                  const height = contentEl.getBoundingClientRect().height;
+                  context.set("nestedMetrics", {
+                    count,
+                    height,
+                    frontmostHeight,
+                    open: count > 0 && frontmostHeight > 0,
+                    swiping: drawerRegistry.hasSwipingAfter(id)
+                  });
+                };
+                sync();
+                const cleanups = [
+                  drawerRegistry.subscribe(sync),
+                  resizeObserverBorderBox.observe(contentEl, () => drawerRegistry.notify()),
+                  addDomEvent(scope.getWin(), "resize", () => drawerRegistry.notify())
+                ];
+                return () => {
+                  cleanups.forEach((cleanup) => cleanup == null ? void 0 : cleanup());
+                  drawerRegistry.unregister(id);
+                };
+              });
+            },
+            trackSwipeOpenPointerMove({ scope, send, refs, computed }) {
+              return refs.get("swipeSession").bindSwipeOpenTracking({
+                getDoc: () => scope.getDoc(),
+                getContentEl: () => getContentEl7(scope),
+                getSwipeAreaEl: () => getSwipeAreaEl(scope),
+                swipeDirection: computed("physicalSwipeDirection"),
+                onMove(details) {
+                  send(__spreadValues({ type: "POINTER_MOVE" }, details));
+                },
+                onEnd(details) {
+                  send(__spreadValues({ type: "POINTER_UP" }, details));
+                },
+                onCancel() {
+                  send({ type: "POINTER_CANCEL" });
+                }
+              });
+            },
+            trackExitAnimation({ send, scope }) {
+              const contentEl = getContentEl7(scope);
+              if (!contentEl) return;
+              return addDomEvent(contentEl, "exitcomplete", () => {
+                send({ type: "ANIMATION_END" });
+              });
+            }
+          }
+        }
+      });
+      Drawer = class extends Component {
+        initMachine(props) {
+          return new VanillaMachine(machine13, props);
+        }
+        initApi() {
+          return this.zagConnect(connect13);
+        }
+        syncDom() {
+          this.api = this.initApi();
+          this.render();
+        }
+        render() {
+          const rootEl = this.el;
+          rootEl.querySelectorAll('[data-scope="drawer"][data-part="trigger"]').forEach((triggerEl) => {
+            const raw = triggerEl.dataset.value;
+            const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+          });
+          const backdropEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="backdrop"]'
+          );
+          if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
+          const positionerEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="positioner"]'
+          );
+          if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+          const contentEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="content"]'
+          );
+          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          const titleEl = rootEl.querySelector('[data-scope="drawer"][data-part="title"]');
+          if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
+          const descriptionEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="description"]'
+          );
+          if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
+          const closeEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="close-trigger"]'
+          );
+          if (closeEl) this.spreadProps(closeEl, this.api.getCloseTriggerProps());
+          const grabberEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="grabber"]'
+          );
+          if (grabberEl) this.spreadProps(grabberEl, this.api.getGrabberProps());
+          const grabberIndicatorEl = rootEl.querySelector(
+            '[data-scope="drawer"][data-part="grabber-indicator"]'
+          );
+          if (grabberIndicatorEl) this.spreadProps(grabberIndicatorEl, this.api.getGrabberIndicatorProps());
+        }
+      };
+      DrawerHook = createZagLiveHook({
+        key: "drawer",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const drawer = new Drawer(el, drawerProps(el, hook));
+          dom2.add("corex:drawer:set-open", (event) => {
+            drawer.api.setOpen(event.detail.open);
+          });
+          server.add("drawer_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            drawer.api.setOpen(payload.open);
+          });
+          return drawer;
+        },
+        update(hook, drawer) {
+          drawer.updateProps(drawerProps(hook.el, hook));
+        }
+      });
+    }
+  });
+
   // ../priv/static/editable.mjs
   var editable_exports = {};
   __export(editable_exports, {
     Editable: () => EditableHook,
     dataDefaultValue: () => dataDefaultValue
   });
-  function connect13(service, normalize2) {
+  function connect14(service, normalize2) {
     var _a4;
     const { state: state2, context, send, prop, scope, computed } = service;
     const disabled = !!prop("disabled");
@@ -24653,13 +26874,13 @@ var Corex = (() => {
         send({ type: "SUBMIT" });
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts14.root.attrs), {
           id: getRootId12(scope),
           dir: prop("dir")
         }));
       },
       getAreaProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts13.area.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts14.area.attrs), {
           id: getAreaId2(scope),
           dir: prop("dir"),
           style: autoResize ? { display: "inline-grid" } : void 0,
@@ -24669,7 +26890,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts13.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts14.label.attrs), {
           id: getLabelId8(scope),
           dir: prop("dir"),
           htmlFor: getInputId4(scope),
@@ -24684,7 +26905,7 @@ var Corex = (() => {
         }));
       },
       getInputProps() {
-        return normalize2.input(__spreadProps(__spreadValues({}, parts13.input.attrs), {
+        return normalize2.input(__spreadProps(__spreadValues({}, parts14.input.attrs), {
           dir: prop("dir"),
           "aria-label": translations == null ? void 0 : translations.input,
           name: prop("name"),
@@ -24747,7 +26968,7 @@ var Corex = (() => {
       getPreviewProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getPreviewId(scope)
-        }, parts13.preview.attrs), {
+        }, parts14.preview.attrs), {
           dir: prop("dir"),
           "data-placeholder-shown": dataAttr(empty),
           "aria-readonly": ariaAttr(readOnly),
@@ -24788,7 +27009,7 @@ var Corex = (() => {
         }));
       },
       getEditTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts13.editTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts14.editTrigger.attrs), {
           id: getEditTriggerId(scope),
           dir: prop("dir"),
           "aria-label": translations == null ? void 0 : translations.edit,
@@ -24805,12 +27026,12 @@ var Corex = (() => {
       getControlProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getControlId6(scope)
-        }, parts13.control.attrs), {
+        }, parts14.control.attrs), {
           dir: prop("dir")
         }));
       },
       getSubmitTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts13.submitTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts14.submitTrigger.attrs), {
           dir: prop("dir"),
           id: getSubmitTriggerId(scope),
           "aria-label": translations == null ? void 0 : translations.submit,
@@ -24825,7 +27046,7 @@ var Corex = (() => {
         }));
       },
       getCancelTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts13.cancelTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts14.cancelTrigger.attrs), {
           dir: prop("dir"),
           "aria-label": translations == null ? void 0 : translations.cancel,
           id: getCancelTriggerId(scope),
@@ -24898,16 +27119,16 @@ var Corex = (() => {
     if (formValueInput(el)) return void 0;
     return getString(el, "name");
   }
-  var anatomy13, parts13, getRootId12, getAreaId2, getLabelId8, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, defaultTranslations5, machine13, Editable, EditableHook;
+  var anatomy14, parts14, getRootId12, getAreaId2, getLabelId8, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, defaultTranslations5, machine14, Editable, EditableHook;
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_KNSNFBRP();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_HY5BRBNW();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy13 = createAnatomy("editable").parts(
+      init_chunk_CLKNJROH();
+      anatomy14 = createAnatomy("editable").parts(
         "root",
         "area",
         "label",
@@ -24918,7 +27139,7 @@ var Corex = (() => {
         "cancelTrigger",
         "control"
       );
-      parts13 = anatomy13.build();
+      parts14 = anatomy14.build();
       getRootId12 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `editable:${ctx.id}`;
@@ -24966,7 +27187,7 @@ var Corex = (() => {
         submit: "submit",
         cancel: "cancel"
       };
-      machine13 = createMachine({
+      machine14 = createMachine({
         props({ props }) {
           return __spreadValues({
             activationMode: "focus",
@@ -25189,10 +27410,10 @@ var Corex = (() => {
       });
       Editable = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine13, props);
+          return new VanillaMachine(machine14, props);
         }
         initApi() {
-          return this.zagConnect(connect13);
+          return this.zagConnect(connect14);
         }
         render() {
           var _a4;
@@ -25461,7 +27682,7 @@ var Corex = (() => {
     const interactive = element.closest(INTERACTIVE_SELECTOR);
     return interactive != container && contains(container, interactive);
   }
-  function connect14(service, normalize2) {
+  function connect15(service, normalize2) {
     const { state: state2, send, prop, computed, scope, context } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -25526,7 +27747,7 @@ var Corex = (() => {
         return true;
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.root.attrs), {
           dir: prop("dir"),
           id: getRootId13(scope),
           "data-disabled": dataAttr(disabled),
@@ -25535,7 +27756,7 @@ var Corex = (() => {
         }));
       },
       getDropzoneProps(props = {}) {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.dropzone.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.dropzone.attrs), {
           dir: prop("dir"),
           id: getDropzoneId(scope),
           tabIndex: disabled || readOnly || props.disableClick ? void 0 : 0,
@@ -25611,9 +27832,9 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts14.trigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts15.trigger.attrs), {
           dir: prop("dir"),
-          id: getTriggerId6(scope),
+          id: getTriggerId7(scope),
           disabled: disabled || readOnly,
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
@@ -25656,7 +27877,7 @@ var Corex = (() => {
       },
       getItemGroupProps(props = {}) {
         const { type = DEFAULT_ITEM_TYPE } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.itemGroup.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.itemGroup.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-type": type
@@ -25664,7 +27885,7 @@ var Corex = (() => {
       },
       getItemProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.item.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.item.attrs), {
           dir: prop("dir"),
           id: getItemId5(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -25673,7 +27894,7 @@ var Corex = (() => {
       },
       getItemNameProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.itemName.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.itemName.attrs), {
           dir: prop("dir"),
           id: getItemNameId(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -25682,7 +27903,7 @@ var Corex = (() => {
       },
       getItemSizeTextProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.itemSizeText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.itemSizeText.attrs), {
           dir: prop("dir"),
           id: getItemSizeTextId(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -25691,7 +27912,7 @@ var Corex = (() => {
       },
       getItemPreviewProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts14.itemPreview.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts15.itemPreview.attrs), {
           dir: prop("dir"),
           id: getItemPreviewId(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -25705,7 +27926,7 @@ var Corex = (() => {
         if (!isImage) {
           throw new Error("Preview Image is only supported for image files");
         }
-        return normalize2.img(__spreadProps(__spreadValues({}, parts14.itemPreviewImage.attrs), {
+        return normalize2.img(__spreadProps(__spreadValues({}, parts15.itemPreviewImage.attrs), {
           alt: (_a4 = translations.itemPreview) == null ? void 0 : _a4.call(translations, file),
           src: url,
           "data-disabled": dataAttr(disabled),
@@ -25715,7 +27936,7 @@ var Corex = (() => {
       getItemDeleteTriggerProps(props) {
         var _a4;
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize2.button(__spreadProps(__spreadValues({}, parts14.itemDeleteTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts15.itemDeleteTrigger.attrs), {
           dir: prop("dir"),
           id: getItemDeleteTriggerId(scope, getFileId(file)),
           type: "button",
@@ -25731,7 +27952,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts14.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts15.label.attrs), {
           dir: prop("dir"),
           id: getLabelId9(scope),
           htmlFor: getHiddenInputId4(scope),
@@ -25741,7 +27962,7 @@ var Corex = (() => {
         }));
       },
       getClearTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts14.clearTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts15.clearTrigger.attrs), {
           dir: prop("dir"),
           type: "button",
           disabled: disabled || readOnly,
@@ -25858,14 +28079,14 @@ var Corex = (() => {
       }
     }
   }
-  var anatomy14, parts14, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId13, getDropzoneId, getHiddenInputId4, getTriggerId6, getLabelId9, getItemId5, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, defaultTranslations6, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine14, ACCEPTED, FileUpload, FileUploadHook;
+  var anatomy15, parts15, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId13, getDropzoneId, getHiddenInputId4, getTriggerId7, getLabelId9, getItemId5, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, defaultTranslations6, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine15, ACCEPTED, FileUpload, FileUploadHook;
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_F6YUZM6O();
+      init_chunk_POHGVU2K();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy14 = createAnatomy("file-upload").parts(
+      init_chunk_CLKNJROH();
+      anatomy15 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
         "item",
@@ -25879,7 +28100,7 @@ var Corex = (() => {
         "trigger",
         "clearTrigger"
       );
-      parts14 = anatomy14.build();
+      parts15 = anatomy15.build();
       getItemEntry = (item) => typeof item.getAsEntry === "function" ? item.getAsEntry() : typeof item.webkitGetAsEntry === "function" ? item.webkitGetAsEntry() : null;
       isDirectoryEntry = (entry) => entry.isDirectory;
       isFileEntry = (entry) => entry.isFile;
@@ -25983,7 +28204,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `file:${ctx.id}:input`;
       };
-      getTriggerId6 = (ctx) => {
+      getTriggerId7 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `file:${ctx.id}:trigger`;
       };
@@ -26022,7 +28243,7 @@ var Corex = (() => {
       };
       DEFAULT_ITEM_TYPE = "accepted";
       INTERACTIVE_SELECTOR = "button, a[href], input:not([type='file']), select, textarea, [tabindex], [contenteditable]";
-      machine14 = createMachine({
+      machine15 = createMachine({
         props({ props }) {
           return __spreadValues({
             minFileSize: 0,
@@ -26247,10 +28468,10 @@ ${err}`);
           __publicField(this, "sentinelSnapshot", "");
         }
         initMachine(props) {
-          return new VanillaMachine(machine14, props);
+          return new VanillaMachine(machine15, props);
         }
         initApi() {
-          return this.zagConnect(connect14);
+          return this.zagConnect(connect15);
         }
         cleanupPreviews() {
           for (const cleanup of this.previewCleanup.values()) cleanup();
@@ -26892,7 +29113,7 @@ ${err}`);
         throw new Error(`Invalid axis: ${axis}`);
     }
   }
-  function connect15(service, normalize2) {
+  function connect16(service, normalize2) {
     const { state: state2, send, scope, prop, computed, context } = service;
     const translations = mergeWithDefault(defaultTranslations7, prop("translations"));
     const open = state2.hasTag("open");
@@ -26936,14 +29157,14 @@ ${err}`);
         send({ type: "RESTORE" });
       },
       getTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts15.trigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts16.trigger.attrs), {
           dir: prop("dir"),
           type: "button",
           disabled: prop("disabled"),
-          id: getTriggerId7(scope),
+          id: getTriggerId8(scope),
           "data-state": open ? "open" : "closed",
           "data-dragging": dataAttr(dragging),
-          "aria-controls": getContentId7(scope),
+          "aria-controls": getContentId8(scope),
           onClick(event) {
             if (event.defaultPrevented) return;
             if (prop("disabled")) return;
@@ -26953,9 +29174,9 @@ ${err}`);
         }));
       },
       getPositionerProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.positioner.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.positioner.attrs), {
           dir: prop("dir"),
-          id: getPositionerId5(scope),
+          id: getPositionerId6(scope),
           style: {
             "--width": toPx(size3 == null ? void 0 : size3.width),
             "--height": toPx(size3 == null ? void 0 : size3.height),
@@ -26971,13 +29192,13 @@ ${err}`);
         }));
       },
       getContentProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.content.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.content.attrs), {
           dir: prop("dir"),
           role: "dialog",
           tabIndex: 0,
           hidden: !open,
-          id: getContentId7(scope),
-          "aria-labelledby": getTitleId2(scope),
+          id: getContentId8(scope),
+          "aria-labelledby": getTitleId3(scope),
           "data-state": open ? "open" : "closed",
           "data-dragging": dataAttr(dragging),
           "data-topmost": dataAttr(isTopmost),
@@ -27024,7 +29245,7 @@ ${err}`);
         }));
       },
       getCloseTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts15.closeTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts16.closeTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
           "aria-label": "Close Window",
@@ -27053,7 +29274,7 @@ ${err}`);
             hidden: !isStaged
           })
         });
-        return normalize2.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts15.stageTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts16.stageTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
           "data-stage": props.stage
@@ -27072,7 +29293,7 @@ ${err}`);
         }));
       },
       getResizeTriggerProps(props) {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.resizeTrigger.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.resizeTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canResize),
           "data-axis": props.axis,
@@ -27101,7 +29322,7 @@ ${err}`);
         }));
       },
       getDragTriggerProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.dragTrigger.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.dragTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canDrag),
           onPointerDown(event) {
@@ -27140,7 +29361,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.control.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(prop("disabled")),
           "data-stage": context.get("stage"),
@@ -27150,13 +29371,13 @@ ${err}`);
         }));
       },
       getTitleProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.title.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.title.attrs), {
           dir: prop("dir"),
-          id: getTitleId2(scope)
+          id: getTitleId3(scope)
         }));
       },
       getHeaderProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.header.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.header.attrs), {
           dir: prop("dir"),
           id: getHeaderId(scope),
           "data-dragging": dataAttr(dragging),
@@ -27168,7 +29389,7 @@ ${err}`);
         }));
       },
       getBodyProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts15.body.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts16.body.attrs), {
           dir: prop("dir"),
           "data-dragging": dataAttr(dragging),
           "data-minimized": dataAttr(isMinimized),
@@ -27266,17 +29487,17 @@ ${err}`);
     const getAnchorPosition = defaultPosition == null && positioning ? (details) => anchorPointFromPositioning(positioning, details, defaultSize, getDir(el)) : void 0;
     return { defaultPosition, getAnchorPosition };
   }
-  var anatomy15, parts15, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId7, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl7, getHeaderEl, getBoundaryRect, defaultTranslations7, validStages, store, panelStack, not4, and5, FALLBACK_SIZE, FALLBACK_POSITION, machine15, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
+  var anatomy16, parts16, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId8, getPositionerId6, getContentId8, getTitleId3, getHeaderId, getTriggerEl6, getPositionerEl6, getContentEl8, getHeaderEl, getBoundaryRect, defaultTranslations7, validStages, store, panelStack, not4, and6, FALLBACK_SIZE, FALLBACK_POSITION, machine16, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
       init_chunk_QSONVEW6();
       init_chunk_UZJUBX5G();
       init_chunk_AJX2XHOK();
-      init_chunk_4JF6I36R();
+      init_chunk_ZTJV2RYM();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy15 = createAnatomy("floating-panel").parts(
+      init_chunk_CLKNJROH();
+      anatomy16 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
         "content",
@@ -27289,7 +29510,7 @@ ${err}`);
         "closeTrigger",
         "control"
       );
-      parts15 = anatomy15.build();
+      parts16 = anatomy16.build();
       AffineTransform = class _AffineTransform {
         constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
           __publicField4(this, "m00");
@@ -27508,19 +29729,19 @@ ${err}`);
         nw: "se"
       };
       ({ sign: sign2, abs: abs2, min: min3 } = Math);
-      getTriggerId7 = (ctx) => {
+      getTriggerId8 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `float:${ctx.id}:trigger`;
       };
-      getPositionerId5 = (ctx) => {
+      getPositionerId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `float:${ctx.id}:positioner`;
       };
-      getContentId7 = (ctx) => {
+      getContentId8 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `float:${ctx.id}:content`;
       };
-      getTitleId2 = (ctx) => {
+      getTitleId3 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.title) != null ? _b : `float:${ctx.id}:title`;
       };
@@ -27528,9 +29749,9 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.header) != null ? _b : `float:${ctx.id}:header`;
       };
-      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId7(ctx));
-      getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
-      getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
+      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId8(ctx));
+      getPositionerEl6 = (ctx) => ctx.getById(getPositionerId6(ctx));
+      getContentEl8 = (ctx) => ctx.getById(getContentId8(ctx));
       getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
       getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
         let boundaryRect;
@@ -27590,10 +29811,10 @@ ${err}`);
           return store.get("stack").indexOf(panelId);
         }
       };
-      ({ not: not4, and: and5 } = createGuards());
+      ({ not: not4, and: and6 } = createGuards());
       FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
       FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
-      machine15 = createMachine({
+      machine16 = createMachine({
         props({ props }) {
           ensureProps(props, ["id"], "floating-panel");
           return __spreadValues({
@@ -27754,7 +29975,7 @@ ${err}`);
                   },
                   ESCAPE: [
                     {
-                      guard: and5("isOpenControlled", "closeOnEsc"),
+                      guard: and6("isOpenControlled", "closeOnEsc"),
                       actions: ["invokeOnClose"]
                     },
                     {
@@ -27897,7 +30118,7 @@ ${err}`);
               if (computed("hasSpecifiedPosition")) return;
               const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
               if (prop("persistRect") && hasPrevRect) return;
-              const triggerRect = getTriggerEl5(scope);
+              const triggerRect = getTriggerEl6(scope);
               const boundaryRect = getBoundaryRect(scope, (_a4 = prop("getBoundaryEl")) == null ? void 0 : _a4(), false);
               let anchorPosition = (_b = prop("getAnchorPosition")) == null ? void 0 : _b({
                 triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
@@ -27939,7 +30160,7 @@ ${err}`);
               context.set("position", position);
             },
             setPositionStyle({ scope, context }) {
-              const el = getPositionerEl5(scope);
+              const el = getPositionerEl6(scope);
               const position = context.get("position");
               el == null ? void 0 : el.style.setProperty("--x", `${position.x}px`);
               el == null ? void 0 : el.style.setProperty("--y", `${position.y}px`);
@@ -27993,7 +30214,7 @@ ${err}`);
             },
             setSizeStyle({ scope, context }) {
               queueMicrotask(() => {
-                const el = getPositionerEl5(scope);
+                const el = getPositionerEl6(scope);
                 const size3 = context.get("size");
                 el == null ? void 0 : el.style.setProperty("--width", `${size3.width}px`);
                 el == null ? void 0 : el.style.setProperty("--height", `${size3.height}px`);
@@ -28096,14 +30317,14 @@ ${err}`);
               if (prop("restoreFocus") === false) return;
               raf(() => {
                 var _a4, _b;
-                const element = (_b = (_a4 = prop("finalFocusEl")) == null ? void 0 : _a4()) != null ? _b : getTriggerEl5(scope);
+                const element = (_b = (_a4 = prop("finalFocusEl")) == null ? void 0 : _a4()) != null ? _b : getTriggerEl6(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
             setInitialFocus({ scope, prop }) {
               raf(() => {
                 var _a4, _b;
-                const element = (_b = (_a4 = prop("initialFocusEl")) == null ? void 0 : _a4()) != null ? _b : getContentEl7(scope);
+                const element = (_b = (_a4 = prop("initialFocusEl")) == null ? void 0 : _a4()) != null ? _b : getContentEl8(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -28115,10 +30336,10 @@ ${err}`);
       });
       FloatingPanel = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine15, props);
+          return new VanillaMachine(machine16, props);
         }
         initApi() {
-          return this.zagConnect(connect15);
+          return this.zagConnect(connect16);
         }
         render() {
           const triggerEl = this.el.querySelector(
@@ -28275,6 +30496,566 @@ ${err}`);
     }
   });
 
+  // ../priv/static/hover-card.mjs
+  var hover_card_exports = {};
+  __export(hover_card_exports, {
+    HoverCard: () => HoverCardHook
+  });
+  function connect17(service, normalize2) {
+    const { state: state2, send, prop, context, scope } = service;
+    const open = state2.hasTag("open");
+    const triggerValue = context.get("triggerValue");
+    const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
+    const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
+      placement: currentPlacement
+    }));
+    return {
+      open,
+      setOpen(nextOpen) {
+        const open2 = state2.hasTag("open");
+        if (open2 === nextOpen) return;
+        if (prop("disabled")) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "TRIGGER_VALUE.SET", value });
+      },
+      reposition(options = {}) {
+        send({ type: "POSITIONING.SET", options });
+      },
+      getArrowProps() {
+        return normalize2.element(__spreadProps(__spreadValues({
+          id: getArrowId(scope)
+        }, parts17.arrow.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.arrow
+        }));
+      },
+      getArrowTipProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts17.arrowTip.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.arrowTip
+        }));
+      },
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        return normalize2.element(__spreadProps(__spreadValues({}, parts17.trigger.attrs), {
+          dir: prop("dir"),
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
+          id: getTriggerId9(scope, value),
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "data-current": dataAttr(current),
+          "data-state": open ? "open" : "closed",
+          onPointerEnter(event) {
+            if (event.pointerType === "touch") return;
+            if (prop("disabled")) return;
+            const shouldSwitch = open && value != null && !current;
+            send({
+              type: shouldSwitch ? "TRIGGER_VALUE.SET" : "POINTER_ENTER",
+              src: "trigger",
+              value
+            });
+          },
+          onPointerLeave(event) {
+            if (event.pointerType === "touch") return;
+            if (prop("disabled")) return;
+            send({ type: "POINTER_LEAVE", src: "trigger" });
+          },
+          onFocus() {
+            if (prop("disabled")) return;
+            const shouldSwitch = open && value != null && !current;
+            send({
+              type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TRIGGER_FOCUS",
+              value
+            });
+          },
+          onBlur() {
+            if (prop("disabled")) return;
+            send({ type: "TRIGGER_BLUR" });
+          }
+        }));
+      },
+      getPositionerProps() {
+        return normalize2.element(__spreadProps(__spreadValues({
+          id: getPositionerId7(scope)
+        }, parts17.positioner.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.floating
+        }));
+      },
+      getContentProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts17.content.attrs), {
+          dir: prop("dir"),
+          id: getContentId9(scope),
+          hidden: !open,
+          tabIndex: -1,
+          "data-state": open ? "open" : "closed",
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
+          onPointerEnter(event) {
+            if (event.pointerType === "touch") return;
+            if (prop("disabled")) return;
+            send({ type: "POINTER_ENTER", src: "content" });
+          },
+          onPointerLeave(event) {
+            if (event.pointerType === "touch") return;
+            if (prop("disabled")) return;
+            send({ type: "POINTER_LEAVE", src: "content" });
+          }
+        }));
+      }
+    };
+  }
+  function createHoverCardCallbacks(el, pushEvent, liveSocket) {
+    const onTriggerValueChange = (details) => {
+      var _a4;
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: (_a4 = details.value) != null ? _a4 : ""
+        });
+      }
+    };
+    const onOpenChange = (details) => {
+      const eventName = getString(el, "onOpenChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          open: details.open
+        });
+      }
+      const eventNameClient = getString(el, "onOpenChangeClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              open: details.open
+            }
+          })
+        );
+      }
+    };
+    return { onOpenChange, onTriggerValueChange };
+  }
+  function hoverCardProps(el, hook) {
+    return __spreadValues({
+      id: el.id,
+      defaultOpen: getBoolean(el, "defaultOpen"),
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      openDelay: getNumber(el, "openDelay"),
+      closeDelay: getNumber(el, "closeDelay"),
+      positioning: readPositioningOptions(el)
+    }, createHoverCardCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket));
+  }
+  var anatomy17, parts17, getTriggerId9, getContentId9, getPositionerId7, getArrowId, getTriggerEl7, getContentEl9, getPositionerEl7, getTriggerEls4, getActiveTriggerEl3, not5, and7, machine17, HoverCard, HoverCardHook;
+  var init_hover_card = __esm({
+    "../priv/static/hover-card.mjs"() {
+      "use strict";
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_EAQ6WQNO();
+      init_chunk_CLKNJROH();
+      anatomy17 = createAnatomy("hoverCard").parts("arrow", "arrowTip", "trigger", "positioner", "content");
+      parts17 = anatomy17.build();
+      getTriggerId9 = (scope, value) => {
+        var _a4;
+        const customId = (_a4 = scope.ids) == null ? void 0 : _a4.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `hover-card:${scope.id}:trigger:${value}` : `hover-card:${scope.id}:trigger`;
+      };
+      getContentId9 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.content) != null ? _b : `hover-card:${scope.id}:content`;
+      };
+      getPositionerId7 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.positioner) != null ? _b : `hover-card:${scope.id}:popper`;
+      };
+      getArrowId = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.arrow) != null ? _b : `hover-card:${scope.id}:arrow`;
+      };
+      getTriggerEl7 = (scope) => scope.getById(getTriggerId9(scope));
+      getContentEl9 = (scope) => scope.getById(getContentId9(scope));
+      getPositionerEl7 = (scope) => scope.getById(getPositionerId7(scope));
+      getTriggerEls4 = (scope) => queryAll(scope.getRootNode(), `[data-scope="hover-card"][data-part="trigger"]${getByOwnerId(scope.id)}`);
+      getActiveTriggerEl3 = (scope, value) => {
+        var _a4;
+        if (value == null) {
+          return (_a4 = getTriggerEl7(scope)) != null ? _a4 : getTriggerEls4(scope)[0];
+        }
+        return scope.getById(getTriggerId9(scope, value));
+      };
+      ({ not: not5, and: and7 } = createGuards());
+      machine17 = createMachine({
+        props({ props }) {
+          return __spreadProps(__spreadValues({
+            disabled: false,
+            openDelay: 600,
+            closeDelay: 300
+          }, props), {
+            positioning: __spreadValues({
+              placement: "bottom"
+            }, props.positioning)
+          });
+        },
+        initialState({ prop }) {
+          const open = prop("open") || prop("defaultOpen");
+          return open ? "open" : "closed";
+        },
+        context({ prop, bindable: bindable2, scope }) {
+          return {
+            open: bindable2(() => ({
+              defaultValue: prop("defaultOpen"),
+              value: prop("open")
+            })),
+            currentPlacement: bindable2(() => ({
+              defaultValue: void 0
+            })),
+            isPointer: bindable2(() => ({
+              defaultValue: false
+            })),
+            triggerValue: bindable2(() => {
+              var _a4;
+              return {
+                defaultValue: (_a4 = prop("defaultTriggerValue")) != null ? _a4 : null,
+                value: prop("triggerValue"),
+                onChange(value) {
+                  const onTriggerValueChange = prop("onTriggerValueChange");
+                  if (!onTriggerValueChange) return;
+                  const triggerElement = getActiveTriggerEl3(scope, value);
+                  onTriggerValueChange({ value, triggerElement });
+                }
+              };
+            })
+          };
+        },
+        watch({ track, context, action, prop, send }) {
+          track([() => prop("disabled")], () => {
+            if (prop("disabled")) {
+              send({ type: "CLOSE", src: "disabled.change" });
+            }
+          });
+          track([() => context.get("open")], () => {
+            action(["toggleVisibility"]);
+          });
+        },
+        on: {
+          "TRIGGER_VALUE.SET": {
+            actions: ["setTriggerValue", "reposition"]
+          }
+        },
+        states: {
+          closed: {
+            tags: ["closed"],
+            entry: ["clearIsPointer"],
+            on: {
+              "CONTROLLED.OPEN": {
+                target: "open"
+              },
+              POINTER_ENTER: {
+                target: "opening",
+                actions: ["setIsPointer", "setTriggerValue"]
+              },
+              TRIGGER_FOCUS: {
+                target: "opening",
+                actions: ["setTriggerValue"]
+              },
+              OPEN: {
+                target: "opening",
+                actions: ["setTriggerValue"]
+              }
+            }
+          },
+          opening: {
+            tags: ["closed"],
+            effects: ["waitForOpenDelay"],
+            on: {
+              OPEN_DELAY: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["invokeOnOpen"]
+                }
+              ],
+              "CONTROLLED.OPEN": {
+                target: "open"
+              },
+              "CONTROLLED.CLOSE": {
+                target: "closed"
+              },
+              POINTER_LEAVE: [
+                {
+                  guard: "isOpenControlled",
+                  // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
+                  actions: ["invokeOnClose", "toggleVisibility"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              TRIGGER_BLUR: [
+                {
+                  guard: and7("isOpenControlled", not5("isPointer")),
+                  // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
+                  actions: ["invokeOnClose", "toggleVisibility"]
+                },
+                {
+                  guard: not5("isPointer"),
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
+                  actions: ["invokeOnClose", "toggleVisibility"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "TRIGGER_VALUE.SET": {
+                // Stay in opening state but update trigger value (will reposition when opened)
+                actions: ["setTriggerValue"]
+              }
+            }
+          },
+          open: {
+            tags: ["open"],
+            effects: ["trackDismissableElement", "trackPositioning"],
+            on: {
+              "CONTROLLED.CLOSE": {
+                target: "closed"
+              },
+              POINTER_ENTER: {
+                actions: ["setIsPointer"]
+              },
+              POINTER_LEAVE: {
+                target: "closing"
+              },
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              TRIGGER_BLUR: [
+                {
+                  guard: and7("isOpenControlled", not5("isPointer")),
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  guard: not5("isPointer"),
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "POSITIONING.SET": {
+                actions: ["reposition"]
+              }
+            }
+          },
+          closing: {
+            tags: ["open"],
+            effects: ["trackPositioning", "waitForCloseDelay"],
+            on: {
+              CLOSE_DELAY: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "CONTROLLED.CLOSE": {
+                target: "closed"
+              },
+              "CONTROLLED.OPEN": {
+                target: "open"
+              },
+              POINTER_ENTER: {
+                target: "open",
+                // no need to invokeOnOpen here because it's still open (but about to close)
+                actions: ["setIsPointer"]
+              },
+              TRIGGER_FOCUS: {
+                target: "open",
+                actions: ["setTriggerValue"]
+              },
+              "TRIGGER_VALUE.SET": {
+                target: "open",
+                actions: ["setTriggerValue", "reposition"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isPointer: ({ context }) => !!context.get("isPointer"),
+            isOpenControlled: ({ prop }) => prop("open") != null
+          },
+          effects: {
+            waitForOpenDelay({ send, prop }) {
+              const id = setTimeout(() => {
+                send({ type: "OPEN_DELAY" });
+              }, prop("openDelay"));
+              return () => clearTimeout(id);
+            },
+            waitForCloseDelay({ send, prop }) {
+              const id = setTimeout(() => {
+                send({ type: "CLOSE_DELAY" });
+              }, prop("closeDelay"));
+              return () => clearTimeout(id);
+            },
+            trackPositioning({ context, prop, scope }) {
+              if (!context.get("currentPlacement")) {
+                context.set("currentPlacement", prop("positioning").placement);
+              }
+              const getPositionerEl22 = () => getPositionerEl7(scope);
+              const getTriggerEl22 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
+                defer: true,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            trackDismissableElement({ send, scope, prop }) {
+              const getContentEl22 = () => getContentEl9(scope);
+              return trackDismissableElement(getContentEl22, {
+                type: "popover",
+                defer: true,
+                exclude: [getTriggerEl7(scope), ...getTriggerEls4(scope)].filter(Boolean),
+                onDismiss() {
+                  send({ type: "CLOSE", src: "interact-outside" });
+                },
+                onInteractOutside: prop("onInteractOutside"),
+                onPointerDownOutside: prop("onPointerDownOutside"),
+                onFocusOutside(event) {
+                  var _a4;
+                  event.preventDefault();
+                  (_a4 = prop("onFocusOutside")) == null ? void 0 : _a4(event);
+                }
+              });
+            }
+          },
+          actions: {
+            invokeOnClose({ prop }) {
+              var _a4;
+              (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: false });
+            },
+            invokeOnOpen({ prop }) {
+              var _a4;
+              (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: true });
+            },
+            setIsPointer({ context }) {
+              context.set("isPointer", true);
+            },
+            clearIsPointer({ context }) {
+              context.set("isPointer", false);
+            },
+            reposition({ context, prop, scope, event }) {
+              const getPositionerEl22 = () => getPositionerEl7(scope);
+              const getTriggerEl22 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+                defer: true,
+                listeners: false,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            setTriggerValue({ context, event }) {
+              if (event.value === void 0) return;
+              context.set("triggerValue", event.value);
+            },
+            toggleVisibility({ prop, event, send }) {
+              queueMicrotask(() => {
+                send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+              });
+            }
+          }
+        }
+      });
+      HoverCard = class extends Component {
+        initMachine(props) {
+          return new VanillaMachine(machine17, props);
+        }
+        initApi() {
+          return this.zagConnect(connect17);
+        }
+        syncDom() {
+          this.api = this.initApi();
+          this.render();
+        }
+        render() {
+          const rootEl = this.el;
+          rootEl.querySelectorAll('[data-scope="hover-card"][data-part="trigger"]').forEach((triggerEl) => {
+            const raw = triggerEl.dataset.value;
+            const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+          });
+          const positionerEl = rootEl.querySelector(
+            '[data-scope="hover-card"][data-part="positioner"]'
+          );
+          if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+          const contentEl = rootEl.querySelector(
+            '[data-scope="hover-card"][data-part="content"]'
+          );
+          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          const arrowEl = rootEl.querySelector('[data-scope="hover-card"][data-part="arrow"]');
+          if (arrowEl) this.spreadProps(arrowEl, this.api.getArrowProps());
+          const arrowTipEl = rootEl.querySelector(
+            '[data-scope="hover-card"][data-part="arrow-tip"]'
+          );
+          if (arrowTipEl) this.spreadProps(arrowTipEl, this.api.getArrowTipProps());
+        }
+      };
+      HoverCardHook = createZagLiveHook({
+        key: "hover-card",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const hoverCard = new HoverCard(el, hoverCardProps(el, hook));
+          dom2.add("corex:hover-card:set-open", (event) => {
+            hoverCard.api.setOpen(event.detail.open);
+          });
+          server.add("hover_card_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            hoverCard.api.setOpen(payload.open);
+          });
+          return hoverCard;
+        },
+        update(hook, hoverCard) {
+          hoverCard.updateProps(hoverCardProps(hook.el, hook));
+        }
+      });
+    }
+  });
+
   // ../priv/static/listbox.mjs
   var listbox_exports = {};
   __export(listbox_exports, {
@@ -28316,13 +31097,13 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_L27QKFAY();
-      init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
-      init_chunk_CPYFNSV2();
-      init_chunk_I5HWU3ET();
+      init_chunk_BRPHFNEG();
+      init_chunk_ZUMK6UW2();
+      init_chunk_KZFRQXNF();
+      init_chunk_RHLZLEPV();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
+      init_chunk_CLKNJROH();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -28473,7 +31254,7 @@ ${err}`);
     }
     return contentSize / speed;
   }
-  function connect16(service, normalize2) {
+  function connect18(service, normalize2) {
     const { scope, send, context, computed, prop } = service;
     const translations = mergeWithDefault(defaultTranslations8, prop("translations"));
     const side = prop("side");
@@ -28502,7 +31283,7 @@ ${err}`);
       },
       getRootProps() {
         const dir = prop("dir");
-        return normalize2.element(__spreadProps(__spreadValues({}, parts16.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts18.root.attrs), {
           id: dom.getRootId(scope),
           dir,
           role: "region",
@@ -28541,7 +31322,7 @@ ${err}`);
         }));
       },
       getViewportProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts16.viewport.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts18.viewport.attrs), {
           id: dom.getViewportId(scope),
           "data-part": "viewport",
           "data-orientation": orientation,
@@ -28569,7 +31350,7 @@ ${err}`);
       getContentProps(props) {
         const { index } = props;
         const clone = index > 0;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts16.content.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts18.content.attrs), {
           id: dom.getContentId(scope, index),
           dir: prop("dir"),
           "data-part": "content",
@@ -28599,7 +31380,7 @@ ${err}`);
       getEdgeProps(props) {
         const { side: side2 } = props;
         const dir = prop("dir");
-        return normalize2.element(__spreadProps(__spreadValues({}, parts16.edge.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts18.edge.attrs), {
           dir,
           "data-part": "edge",
           "data-side": side2,
@@ -28611,7 +31392,7 @@ ${err}`);
         }));
       },
       getItemProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts16.item.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts18.item.attrs), {
           dir: prop("dir"),
           style: {
             [isVertical ? "marginBlock" : "marginInline"]: "calc(var(--marquee-spacing) / 2)"
@@ -28662,14 +31443,14 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy16, parts16, dom, getEdgePositionStyles, getMarqueeTranslate, defaultTranslations8, machine16, PHX_ATTR_PREFIX, Marquee, MarqueeHook;
+  var anatomy18, parts18, dom, getEdgePositionStyles, getMarqueeTranslate, defaultTranslations8, machine18, PHX_ATTR_PREFIX, Marquee, MarqueeHook;
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
-      parts16 = anatomy16.build();
+      init_chunk_CLKNJROH();
+      anatomy18 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
+      parts18 = anatomy18.build();
       dom = {
         getRootId: (ctx) => {
           var _a4, _b;
@@ -28730,7 +31511,7 @@ ${err}`);
       defaultTranslations8 = {
         root: "Marquee content"
       };
-      machine16 = createMachine({
+      machine18 = createMachine({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -28930,10 +31711,10 @@ ${err}`);
           });
         }
         initMachine(props) {
-          return new VanillaMachine(machine16, props);
+          return new VanillaMachine(machine18, props);
         }
         initApi() {
-          return this.zagConnect(connect16);
+          return this.zagConnect(connect18);
         }
         buildDom() {
           const templateEl = this.el.querySelector(
@@ -29247,8 +32028,8 @@ ${err}`);
   }
   function getPortaledContentEl(scope) {
     var _a4;
-    const contentId = getContentId8(scope);
-    return (_a4 = getContentEl8(scope)) != null ? _a4 : scope.getDoc().getElementById(contentId);
+    const contentId = getContentId10(scope);
+    return (_a4 = getContentEl10(scope)) != null ? _a4 : scope.getDoc().getElementById(contentId);
   }
   function isTargetWithinMenuTree(target, children) {
     if (!isHTMLElement(target)) return false;
@@ -29305,7 +32086,7 @@ ${err}`);
     }
     for (const id in children) {
       const childMenu = children[id];
-      const childTriggerId = getTriggerId8(childMenu.scope);
+      const childTriggerId = getTriggerId10(childMenu.scope);
       if (childTriggerId === value) {
         return childTriggerId;
       }
@@ -29324,7 +32105,7 @@ ${err}`);
     for (const id in children) {
       const child = children[id];
       if (!child.state.hasTag("open")) continue;
-      if (getTriggerId8(child.scope) === highlighted) return true;
+      if (getTriggerId10(child.scope) === highlighted) return true;
     }
     return false;
   }
@@ -29340,7 +32121,7 @@ ${err}`);
       setParentRoutingLock(parent, false);
     }
   }
-  function connect17(service, normalize2) {
+  function connect19(service, normalize2) {
     const { context, send, state: state2, computed, prop, scope } = service;
     const open = state2.hasTag("open");
     const isSubmenu = context.get("isSubmenu");
@@ -29376,12 +32157,12 @@ ${err}`);
       const { closeOnSelect, valueText, value } = props;
       const itemState = getItemState(props);
       const id = getItemId6(scope, value);
-      return normalize2.element(__spreadProps(__spreadValues({}, parts17.item.attrs), {
+      return normalize2.element(__spreadProps(__spreadValues({}, parts19.item.attrs), {
         id,
         role: "menuitem",
         "aria-disabled": ariaAttr(itemState.disabled),
         "data-disabled": dataAttr(itemState.disabled),
-        "data-ownedby": getContentId8(scope),
+        "data-ownedby": getContentId10(scope),
         "data-highlighted": dataAttr(itemState.highlighted),
         "data-value": value,
         "data-valuetext": valueText,
@@ -29457,7 +32238,7 @@ ${err}`);
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
         const contextTriggerId = getContextTriggerId(scope, value);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.contextTrigger.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.contextTrigger.attrs), {
           dir: prop("dir"),
           id: contextTriggerId,
           "data-ownedby": scope.id,
@@ -29505,8 +32286,8 @@ ${err}`);
       getTriggerProps(props = {}) {
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
-        const triggerId = getTriggerId8(scope, value);
-        return normalize2.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, isSubmenu ? parts17.triggerItem.attrs : parts17.trigger.attrs), {
+        const triggerId = getTriggerId10(scope, value);
+        return normalize2.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, isSubmenu ? parts19.triggerItem.attrs : parts19.trigger.attrs), {
           "data-placement": currentPlacement,
           "data-side": currentPlacementSide,
           type: "button",
@@ -29519,8 +32300,8 @@ ${err}`);
         }), {
           "data-uid": prop("id"),
           "aria-haspopup": composite ? "menu" : "dialog",
-          "aria-controls": getContentId8(scope),
-          "data-controls": getContentId8(scope),
+          "aria-controls": getContentId10(scope),
+          "data-controls": getContentId10(scope),
           "aria-expanded": value == null ? open : open && current,
           "data-state": open ? "open" : "closed",
           onPointerMove(event) {
@@ -29592,35 +32373,35 @@ ${err}`);
         }));
       },
       getIndicatorProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.indicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.indicator.attrs), {
           dir: prop("dir"),
           "data-state": open ? "open" : "closed"
         }));
       },
       getPositionerProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.positioner.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.positioner.attrs), {
           dir: prop("dir"),
-          id: getPositionerId6(scope),
+          id: getPositionerId8(scope),
           style: popperStyles.floating
         }));
       },
       getArrowProps() {
         return normalize2.element(__spreadProps(__spreadValues({
-          id: getArrowId(scope)
-        }, parts17.arrow.attrs), {
+          id: getArrowId2(scope)
+        }, parts19.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.arrowTip.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
       },
       getContentProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.content.attrs), {
-          id: getContentId8(scope),
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.content.attrs), {
+          id: getContentId10(scope),
           "aria-label": prop("aria-label"),
           hidden: !open,
           "data-state": open ? "open" : "closed",
@@ -29628,7 +32409,7 @@ ${err}`);
           tabIndex: 0,
           dir: prop("dir"),
           "aria-activedescendant": computed("highlightedId") || void 0,
-          "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue != null ? triggerValue : void 0) : getTriggerId8(scope, triggerValue != null ? triggerValue : void 0),
+          "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue != null ? triggerValue : void 0) : getTriggerId10(scope, triggerValue != null ? triggerValue : void 0),
           "data-placement": currentPlacement,
           "data-side": currentPlacementSide,
           onPointerEnter(event) {
@@ -29697,7 +32478,7 @@ ${err}`);
         }));
       },
       getSeparatorProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.separator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.separator.attrs), {
           role: "separator",
           dir: prop("dir"),
           "aria-orientation": "horizontal"
@@ -29712,7 +32493,7 @@ ${err}`);
         const itemState = getOptionItemState(props);
         return __spreadValues(__spreadValues({}, getItemProps(option)), normalize2.element(__spreadProps(__spreadValues({
           "data-type": type
-        }, parts17.item.attrs), {
+        }, parts19.item.attrs), {
           dir: prop("dir"),
           "data-value": option.value,
           role: `menuitem${type}`,
@@ -29730,7 +32511,7 @@ ${err}`);
       getItemIndicatorProps(props) {
         const itemState = getOptionItemState(cast(props));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.itemIndicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
@@ -29741,7 +32522,7 @@ ${err}`);
       getItemTextProps(props) {
         const itemState = getOptionItemState(cast(props));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.itemText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.itemText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
@@ -29749,7 +32530,7 @@ ${err}`);
         }));
       },
       getItemGroupLabelProps(props) {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts17.itemGroupLabel.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts19.itemGroupLabel.attrs), {
           id: getGroupLabelId(scope, props.htmlFor),
           dir: prop("dir")
         }));
@@ -29757,7 +32538,7 @@ ${err}`);
       getItemGroupProps(props) {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getGroupId(scope, props.id)
-        }, parts17.itemGroup.attrs), {
+        }, parts19.itemGroup.attrs), {
           dir: prop("dir"),
           "aria-labelledby": getGroupLabelId(scope, props.id),
           role: "group"
@@ -29821,22 +32602,22 @@ ${err}`);
     if (!targetId) return false;
     return elId === targetId || elId === `menu:${targetId}`;
   }
-  var anatomy17, parts17, clsx, ownedBy, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl6, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
+  var anatomy19, parts19, clsx, ownedBy, CSS_REGEX, serialize, css, getTriggerId10, getContextTriggerId, getContentId10, getArrowId2, getPositionerId8, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl10, getPositionerEl8, getTriggerEl8, getItemEl3, getContextTriggerEl, getTriggerEls5, getContextTriggerEls, getActiveTriggerEl4, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not6, and8, or2, machine19, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_UZJUBX5G();
-      init_chunk_YKCP6S4O();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_4JF6I36R();
-      init_chunk_L27QKFAY();
-      init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
-      init_chunk_CPYFNSV2();
+      init_chunk_BRPHFNEG();
+      init_chunk_ZUMK6UW2();
+      init_chunk_KZFRQXNF();
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_RHLZLEPV();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy17 = createAnatomy("menu").parts(
+      init_chunk_CLKNJROH();
+      anatomy19 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
         "content",
@@ -29852,7 +32633,7 @@ ${err}`);
         "trigger",
         "triggerItem"
       );
-      parts17 = anatomy17.build();
+      parts19 = anatomy19.build();
       clsx = (...args) => args.map((str) => {
         var _a4;
         return (_a4 = str == null ? void 0 : str.trim) == null ? void 0 : _a4.call(str);
@@ -29880,7 +32661,7 @@ ${err}`);
         }
         return Object.assign({}, a2 != null ? a2 : {}, b2 != null ? b2 : {});
       };
-      getTriggerId8 = (ctx, value) => {
+      getTriggerId10 = (ctx, value) => {
         var _a4;
         const customId = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger;
         if (customId != null) return isFunction(customId) ? customId(value) : customId;
@@ -29892,15 +32673,15 @@ ${err}`);
         if (customId != null) return isFunction(customId) ? customId(value) : customId;
         return value ? `menu:${ctx.id}:ctx-trigger:${value}` : `menu:${ctx.id}:ctx-trigger`;
       };
-      getContentId8 = (ctx) => {
+      getContentId10 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `menu:${ctx.id}:content`;
       };
-      getArrowId = (ctx) => {
+      getArrowId2 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.arrow) != null ? _b : `menu:${ctx.id}:arrow`;
       };
-      getPositionerId6 = (ctx) => {
+      getPositionerId8 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `menu:${ctx.id}:popper`;
       };
@@ -29917,23 +32698,23 @@ ${err}`);
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.groupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `menu:${ctx.id}:group-label:${id}`;
       };
-      getContentEl8 = (ctx) => ctx.getById(getContentId8(ctx));
-      getPositionerEl6 = (ctx) => ctx.getById(getPositionerId6(ctx));
-      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId8(ctx));
+      getContentEl10 = (ctx) => ctx.getById(getContentId10(ctx));
+      getPositionerEl8 = (ctx) => ctx.getById(getPositionerId8(ctx));
+      getTriggerEl8 = (ctx) => ctx.getById(getTriggerId10(ctx));
       getItemEl3 = (ctx, value) => value ? ctx.getById(getItemId6(ctx, value)) : null;
       getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
-      getTriggerEls3 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
+      getTriggerEls5 = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="trigger"]${getByOwnerId(ctx.id)}`);
       getContextTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="context-trigger"]${getByOwnerId(ctx.id)}`);
-      getActiveTriggerEl2 = (ctx, value) => {
+      getActiveTriggerEl4 = (ctx, value) => {
         var _a4;
         if (value == null) {
-          return (_a4 = getTriggerEl6(ctx)) != null ? _a4 : getTriggerEls3(ctx)[0];
+          return (_a4 = getTriggerEl8(ctx)) != null ? _a4 : getTriggerEls5(ctx)[0];
         }
-        return ctx.getById(getTriggerId8(ctx, value));
+        return ctx.getById(getTriggerId10(ctx, value));
       };
       getElements = (ctx) => {
-        const selector = `[role^="menuitem"]${getByOwnerId(getContentId8(ctx))}:not([data-disabled])`;
-        return queryAll(getContentEl8(ctx), selector);
+        const selector = `[role^="menuitem"]${getByOwnerId(getContentId10(ctx))}:not([data-disabled])`;
+        return queryAll(getContentEl10(ctx), selector);
       };
       getFirstEl = (ctx) => first(getElements(ctx));
       getLastEl = (ctx) => last(getElements(ctx));
@@ -29967,8 +32748,8 @@ ${err}`);
         return !!((_a4 = el == null ? void 0 : el.getAttribute("role")) == null ? void 0 : _a4.startsWith("menuitem")) && !!(el == null ? void 0 : el.hasAttribute("data-controls"));
       };
       itemSelectEvent = "menu:select";
-      ({ not: not5, and: and6, or: or2 } = createGuards());
-      machine17 = createMachine({
+      ({ not: not6, and: and8, or: or2 } = createGuards());
+      machine19 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             closeOnSelect: true,
@@ -30025,7 +32806,7 @@ ${err}`);
                 onChange(value) {
                   const onTriggerValueChange = prop("onTriggerValueChange");
                   if (!onTriggerValueChange) return;
-                  const triggerElement = getActiveTriggerEl2(scope, value);
+                  const triggerElement = getActiveTriggerEl4(scope, value);
                   onTriggerValueChange({ value, triggerElement });
                 }
               };
@@ -30147,7 +32928,7 @@ ${err}`);
                 }
               ],
               TRIGGER_FOCUS: {
-                guard: not5("isSubmenu"),
+                guard: not6("isSubmenu"),
                 target: "closed"
               },
               TRIGGER_POINTERMOVE: {
@@ -30353,11 +33134,11 @@ ${err}`);
               ],
               TRIGGER_CLICK: [
                 {
-                  guard: and6(not5("isTriggerItem"), "isOpenControlled"),
+                  guard: and8(not6("isTriggerItem"), "isOpenControlled"),
                   actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
-                  guard: not5("isTriggerItem"),
+                  guard: not6("isTriggerItem"),
                   target: "closed",
                   actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
                 }
@@ -30373,7 +33154,7 @@ ${err}`);
               },
               ARROW_LEFT: [
                 {
-                  guard: and6("isSubmenu", "isOpenControlled"),
+                  guard: and8("isSubmenu", "isOpenControlled"),
                   actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
@@ -30403,7 +33184,7 @@ ${err}`);
               ],
               ITEM_POINTERMOVE: [
                 {
-                  guard: not5("isPointerRoutingLocked"),
+                  guard: not6("isPointerRoutingLocked"),
                   actions: ["setHighlightedItem", "focusMenu", "closeSiblingMenus"]
                 },
                 {
@@ -30411,22 +33192,22 @@ ${err}`);
                 }
               ],
               ITEM_POINTERLEAVE: {
-                guard: and6(not5("isPointerRoutingLocked"), not5("isTriggerItem")),
+                guard: and8(not6("isPointerRoutingLocked"), not6("isTriggerItem")),
                 actions: ["clearHighlightedItem"]
               },
               ITEM_CLICK: [
                 // == grouped ==
                 {
-                  guard: and6(
-                    not5("isTriggerItemHighlighted"),
-                    not5("isHighlightedItemEditable"),
+                  guard: and8(
+                    not6("isTriggerItemHighlighted"),
+                    not6("isHighlightedItemEditable"),
                     "closeOnSelect",
                     "isOpenControlled"
                   ),
                   actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
-                  guard: and6(not5("isTriggerItemHighlighted"), not5("isHighlightedItemEditable"), "closeOnSelect"),
+                  guard: and8(not6("isTriggerItemHighlighted"), not6("isHighlightedItemEditable"), "closeOnSelect"),
                   target: "closed",
                   actions: [
                     "invokeOnSelect",
@@ -30439,7 +33220,7 @@ ${err}`);
                 },
                 //
                 {
-                  guard: and6(not5("isTriggerItemHighlighted"), not5("isHighlightedItemEditable")),
+                  guard: and8(not6("isTriggerItemHighlighted"), not6("isHighlightedItemEditable")),
                   actions: ["invokeOnSelect", "setOptionState"]
                 },
                 { actions: ["setHighlightedItem"] }
@@ -30531,8 +33312,8 @@ ${err}`);
               if (hasContextTrigger) return;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
               context.set("currentPlacement", positioning.placement);
-              const getPositionerEl22 = () => getPositionerEl6(scope);
-              const getTriggerEl22 = () => getActiveTriggerEl2(scope, context.get("triggerValue"));
+              const getPositionerEl22 = () => getPositionerEl8(scope);
+              const getTriggerEl22 = () => getActiveTriggerEl4(scope, context.get("triggerValue"));
               return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, positioning), {
                 defer: true,
                 onComplete(data) {
@@ -30541,7 +33322,7 @@ ${err}`);
               }));
             },
             trackInteractOutside({ refs, scope, prop, context, send }) {
-              const getContentEl22 = () => getContentEl8(scope);
+              const getContentEl22 = () => getContentEl10(scope);
               let restoreFocus = true;
               const isWithinAnyContextTrigger = (target) => {
                 return getContextTriggerEls(scope).some((el) => contains(el, target));
@@ -30549,7 +33330,7 @@ ${err}`);
               return trackDismissableElement(getContentEl22, {
                 type: "menu",
                 defer: true,
-                exclude: [getTriggerEl6(scope), ...getTriggerEls3(scope)].filter(Boolean),
+                exclude: [getTriggerEl8(scope), ...getTriggerEls5(scope)].filter(Boolean),
                 onInteractOutside: prop("onInteractOutside"),
                 onRequestDismiss: prop("onRequestDismiss"),
                 onFocusOutside(event) {
@@ -30607,14 +33388,14 @@ ${err}`);
                 const modality = getInteractionModality();
                 if (modality === "pointer") return;
                 const itemEl = scope.getById(computed("highlightedId"));
-                const contentEl2 = getContentEl8(scope);
+                const contentEl2 = getContentEl10(scope);
                 scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
               };
               raf(() => {
                 setInteractionModality("virtual");
                 exec();
               });
-              const contentEl = () => getContentEl8(scope);
+              const contentEl = () => getContentEl10(scope);
               return observeAttributes(contentEl, {
                 defer: true,
                 attributes: ["aria-activedescendant"],
@@ -30633,12 +33414,12 @@ ${err}`);
             },
             reposition({ context, scope, prop, event, refs }) {
               var _a4, _b, _c;
-              const getPositionerEl22 = () => getPositionerEl6(scope);
+              const getPositionerEl22 = () => getPositionerEl8(scope);
               const anchorPoint = (_a4 = event.point) != null ? _a4 : context.get("anchorPoint");
               const getAnchorRect = anchorPoint ? () => __spreadValues({ width: 0, height: 0 }, anchorPoint) : void 0;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
               const triggerValue = (_b = event.value) != null ? _b : context.get("triggerValue");
-              const getTriggerEl22 = () => getActiveTriggerEl2(scope, triggerValue);
+              const getTriggerEl22 = () => getActiveTriggerEl4(scope, triggerValue);
               getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues(__spreadProps(__spreadValues({}, positioning), {
                 defer: true,
                 getAnchorRect
@@ -30670,7 +33451,7 @@ ${err}`);
               }
             },
             setIntentPolygon({ context, scope, event }) {
-              const menu = getContentEl8(scope);
+              const menu = getContentEl10(scope);
               const placement = context.get("currentPlacement");
               if (!menu || !placement) return;
               const rect = menu.getBoundingClientRect();
@@ -30689,7 +33470,7 @@ ${err}`);
             unlockParentOnOpen({ refs, context, scope }) {
               const parent = refs.get("parent");
               if (context.get("isSubmenu")) {
-                const value = getTriggerId8(scope);
+                const value = getTriggerId10(scope);
                 parent == null ? void 0 : parent.send({ type: "HIGHLIGHTED.SUGGEST", value });
               }
               setParentRoutingLock(parent, false);
@@ -30706,7 +33487,7 @@ ${err}`);
             },
             focusMenu({ scope }) {
               raf(() => {
-                const contentEl = getContentEl8(scope);
+                const contentEl = getContentEl10(scope);
                 const initialFocusEl = getInitialFocus({
                   root: contentEl,
                   enabled: !contains(contentEl, scope.getActiveElement()),
@@ -30719,7 +33500,7 @@ ${err}`);
               });
             },
             highlightFirstItem({ context, scope }) {
-              const fn = getContentEl8(scope) ? queueMicrotask : raf;
+              const fn = getContentEl10(scope) ? queueMicrotask : raf;
               fn(() => {
                 const first2 = getFirstEl(scope);
                 if (!first2) return;
@@ -30727,7 +33508,7 @@ ${err}`);
               });
             },
             highlightLastItem({ context, scope }) {
-              const fn = getContentEl8(scope) ? queueMicrotask : raf;
+              const fn = getContentEl10(scope) ? queueMicrotask : raf;
               fn(() => {
                 const last2 = getLastEl(scope);
                 if (!last2) return;
@@ -30761,7 +33542,7 @@ ${err}`);
             focusTrigger({ scope, context, event }) {
               if (context.get("isSubmenu") || context.get("anchorPoint") || event.restoreFocus === false) return;
               queueMicrotask(() => {
-                const triggerEl = getActiveTriggerEl2(scope, context.get("triggerValue"));
+                const triggerEl = getActiveTriggerEl4(scope, context.get("triggerValue"));
                 triggerEl == null ? void 0 : triggerEl.focus({ preventScroll: true });
               });
             },
@@ -30796,7 +33577,7 @@ ${err}`);
                 if (intentPolygon && event.point && isPointInPolygon(intentPolygon, event.point)) {
                   continue;
                 }
-                (_a4 = getContentEl8(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getContentEl10(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
                 child.send({ type: "CLOSE" });
               }
             },
@@ -30877,10 +33658,10 @@ ${err}`);
           });
         }
         initMachine(props) {
-          return new VanillaMachine(machine17, props);
+          return new VanillaMachine(machine19, props);
         }
         initApi() {
-          return this.zagConnect(connect17);
+          return this.zagConnect(connect19);
         }
         setChild(child) {
           this.api.setChild(child.machine.service);
@@ -31208,7 +33989,7 @@ ${err}`);
     }
     return newValue.length;
   }
-  function connect18(service, normalize2) {
+  function connect20(service, normalize2) {
     const { state: state2, send, prop, scope, computed } = service;
     const focused = state2.hasTag("focus");
     const disabled = computed("isDisabled");
@@ -31251,7 +34032,7 @@ ${err}`);
       getRootProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getRootId14(scope)
-        }, parts18.root.attrs), {
+        }, parts20.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused),
@@ -31260,7 +34041,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts18.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused),
@@ -31277,7 +34058,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts18.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
           dir: prop("dir"),
           role: "group",
           "aria-disabled": disabled,
@@ -31289,7 +34070,7 @@ ${err}`);
         }));
       },
       getValueTextProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts18.valueText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts20.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -31298,7 +34079,7 @@ ${err}`);
         }));
       },
       getInputProps() {
-        return normalize2.input(__spreadProps(__spreadValues({}, parts18.input.attrs), {
+        return normalize2.input(__spreadProps(__spreadValues({}, parts20.input.attrs), {
           dir: prop("dir"),
           name: prop("name"),
           form: prop("form"),
@@ -31384,7 +34165,7 @@ ${err}`);
         }));
       },
       getDecrementTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts18.decrementTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts20.decrementTrigger.attrs), {
           dir: prop("dir"),
           id: getDecrementTriggerId(scope),
           disabled: isDecrementDisabled,
@@ -31416,7 +34197,7 @@ ${err}`);
         }));
       },
       getIncrementTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts18.incrementTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts20.incrementTrigger.attrs), {
           dir: prop("dir"),
           id: getIncrementTriggerId(scope),
           disabled: isIncrementDisabled,
@@ -31446,7 +34227,7 @@ ${err}`);
         }));
       },
       getScrubberProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts18.scrubber.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts20.scrubber.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           id: getScrubberId(scope),
@@ -31731,17 +34512,17 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, defaultTranslations9, $1dfb119a85e764e5$var$formatterCache, $1dfb119a85e764e5$var$supportsSignDisplay, $1dfb119a85e764e5$var$supportsUnit, $1dfb119a85e764e5$var$UNITS, $1dfb119a85e764e5$export$cc77c4ff7e8673c5, $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX, $eb76cf4feb040f77$var$NUMBERING_SYSTEMS, $eb76cf4feb040f77$export$cd11ab140839f11d, $eb76cf4feb040f77$var$numberParserCache, $eb76cf4feb040f77$var$NumberParserImpl, $eb76cf4feb040f77$var$nonLiteralParts, $eb76cf4feb040f77$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
+  var anatomy20, parts20, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, defaultTranslations9, $1dfb119a85e764e5$var$formatterCache, $1dfb119a85e764e5$var$supportsSignDisplay, $1dfb119a85e764e5$var$supportsUnit, $1dfb119a85e764e5$var$UNITS, $1dfb119a85e764e5$export$cc77c4ff7e8673c5, $eb76cf4feb040f77$var$CURRENCY_SIGN_REGEX, $eb76cf4feb040f77$var$NUMBERING_SYSTEMS, $eb76cf4feb040f77$export$cd11ab140839f11d, $eb76cf4feb040f77$var$numberParserCache, $eb76cf4feb040f77$var$NumberParserImpl, $eb76cf4feb040f77$var$nonLiteralParts, $eb76cf4feb040f77$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not7, and9, machine20, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_HWUNIC34();
+      init_chunk_MMUMKVAL();
       init_chunk_AJX2XHOK();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy18 = createAnatomy("numberInput").parts(
+      init_chunk_CLKNJROH();
+      anatomy20 = createAnatomy("numberInput").parts(
         "root",
         "label",
         "input",
@@ -31751,7 +34532,7 @@ ${err}`);
         "decrementTrigger",
         "scrubber"
       );
-      parts18 = anatomy18.build();
+      parts20 = anatomy20.build();
       getRootId14 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `number-input:${ctx.id}`;
@@ -32122,8 +34903,8 @@ ${err}`);
         return defaultStep;
       };
       ({ choose: choose2, guards: guards3, createMachine: createMachine4 } = setup());
-      ({ not: not6, and: and7 } = guards3);
-      machine18 = createMachine4({
+      ({ not: not7, and: and9 } = guards3);
+      machine20 = createMachine4({
         props({ props }) {
           var _a4, _b;
           const step = getDefaultStep(props.step, props.formatOptions);
@@ -32270,12 +35051,12 @@ ${err}`);
               },
               "INPUT.BLUR": [
                 {
-                  guard: and7("clampValueOnBlur", not6("isValueEmpty"), not6("isInRange")),
+                  guard: and9("clampValueOnBlur", not7("isValueEmpty"), not7("isInRange")),
                   target: "idle",
                   actions: ["setClampedValue", "clearHint", "invokeOnBlur", "invokeOnValueCommit"]
                 },
                 {
-                  guard: not6("isInRange"),
+                  guard: not7("isInRange"),
                   target: "idle",
                   actions: ["setFormattedValue", "clearHint", "invokeOnBlur", "invokeOnInvalid", "invokeOnValueCommit"]
                 },
@@ -32299,7 +35080,7 @@ ${err}`);
             on: {
               CHANGE_DELAY: {
                 target: "spinning",
-                guard: and7("isInRange", "spinOnPress")
+                guard: and9("isInRange", "spinOnPress")
               },
               "TRIGGER.PRESS_UP": [
                 { guard: "isTouchPointer", target: "focused", actions: ["clearHint"] },
@@ -32556,10 +35337,10 @@ ${err}`);
       });
       NumberInput = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine18, props);
+          return new VanillaMachine(machine20, props);
         }
         initApi() {
-          return this.zagConnect(connect18);
+          return this.zagConnect(connect20);
         }
         render() {
           var _a4, _b, _c, _d;
@@ -32752,7 +35533,7 @@ ${err}`);
     readPayloadPage: () => readPayloadPage,
     readPayloadPageSize: () => readPayloadPageSize
   });
-  function connect19(service, normalize2) {
+  function connect21(service, normalize2) {
     const { send, scope, prop, computed, context } = service;
     const totalPages = computed("totalPages");
     const page = context.get("page");
@@ -32805,7 +35586,7 @@ ${err}`);
       getRootProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getRootId15(scope)
-        }, parts19.root.attrs), {
+        }, parts21.root.attrs), {
           dir: prop("dir"),
           "aria-label": translations.rootLabel
         }));
@@ -32813,7 +35594,7 @@ ${err}`);
       getEllipsisProps(props) {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getEllipsisId(scope, props.index)
-        }, parts19.ellipsis.attrs), {
+        }, parts21.ellipsis.attrs), {
           dir: prop("dir")
         }));
       },
@@ -32823,7 +35604,7 @@ ${err}`);
         const isCurrentPage = index === page;
         return normalize2.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
           id: getItemId7(scope, index)
-        }, parts19.item.attrs), {
+        }, parts21.item.attrs), {
           dir: prop("dir"),
           "data-index": index,
           "data-selected": dataAttr(isCurrentPage),
@@ -32839,7 +35620,7 @@ ${err}`);
       getPrevTriggerProps() {
         return normalize2.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
           id: getPrevTriggerId3(scope)
-        }, parts19.prevTrigger.attrs), {
+        }, parts21.prevTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(isFirstPage),
           "aria-label": translations.prevTriggerLabel,
@@ -32853,7 +35634,7 @@ ${err}`);
       getFirstTriggerProps() {
         return normalize2.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
           id: getFirstTriggerId(scope)
-        }, parts19.firstTrigger.attrs), {
+        }, parts21.firstTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(isFirstPage),
           "aria-label": translations.firstTriggerLabel,
@@ -32867,7 +35648,7 @@ ${err}`);
       getNextTriggerProps() {
         return normalize2.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
           id: getNextTriggerId3(scope)
-        }, parts19.nextTrigger.attrs), {
+        }, parts21.nextTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(isLastPage),
           "aria-label": translations.nextTriggerLabel,
@@ -32881,7 +35662,7 @@ ${err}`);
       getLastTriggerProps() {
         return normalize2.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
           id: getLastTriggerId(scope)
-        }, parts19.lastTrigger.attrs), {
+        }, parts21.lastTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(isLastPage),
           "aria-label": translations.lastTriggerLabel,
@@ -32900,7 +35681,7 @@ ${err}`);
     return __spreadProps(__spreadValues({}, props), { "aria-label": void 0 });
   }
   function corexPaginationConnect(service, normalize2) {
-    const api = connect19(service, normalize2);
+    const api = connect21(service, normalize2);
     return __spreadProps(__spreadValues({}, api), {
       getPrevTriggerProps() {
         return adjustDeadLinkTriggerProps(api.getPrevTriggerProps());
@@ -33045,15 +35826,15 @@ ${err}`);
     delete base.onPageSizeChange;
     return __spreadValues(__spreadValues(__spreadValues({}, base), controlled ? { page: getNumber(el, "page") } : {}), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {});
   }
-  var anatomy19, parts19, getRootId15, getFirstTriggerId, getPrevTriggerId3, getNextTriggerId3, getLastTriggerId, getEllipsisId, getItemId7, range, transform, ELLIPSIS, getRange, getTransformedRange, defaultTranslations10, machine19, clampPage, Pagination, PaginationHook;
+  var anatomy21, parts21, getRootId15, getFirstTriggerId, getPrevTriggerId3, getNextTriggerId3, getLastTriggerId, getEllipsisId, getItemId7, range, transform, ELLIPSIS, getRange, getTransformedRange, defaultTranslations10, machine21, clampPage, Pagination, PaginationHook;
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_HWUNIC34();
-      init_chunk_IPIIGVFP();
+      init_chunk_MMUMKVAL();
+      init_chunk_KZFRQXNF();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy19 = createAnatomy("pagination").parts(
+      init_chunk_CLKNJROH();
+      anatomy21 = createAnatomy("pagination").parts(
         "root",
         "item",
         "ellipsis",
@@ -33062,7 +35843,7 @@ ${err}`);
         "nextTrigger",
         "lastTrigger"
       );
-      parts19 = anatomy19.build();
+      parts21 = anatomy21.build();
       getRootId15 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `pagination:${ctx.id}`;
@@ -33160,7 +35941,7 @@ ${err}`);
           return `${isLastPage ? "last page, " : ""}page ${page}`;
         }
       };
-      machine19 = createMachine({
+      machine21 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultPageSize: 10,
@@ -33279,7 +36060,7 @@ ${err}`);
       clampPage = (page, totalPages) => Math.min(Math.max(page, 1), totalPages);
       Pagination = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine19, props);
+          return new VanillaMachine(machine21, props);
         }
         initApi() {
           return this.zagConnect(corexPaginationConnect);
@@ -33432,7 +36213,7 @@ ${err}`);
     PasswordInput: () => PasswordInputHook,
     visibilityChangePayload: () => visibilityChangePayload
   });
-  function connect20(service, normalize2) {
+  function connect22(service, normalize2) {
     const { scope, prop, context } = service;
     const visible = context.get("visible");
     const disabled = !!prop("disabled");
@@ -33456,7 +36237,7 @@ ${err}`);
         service.send({ type: "VISIBILITY.SET", value: !visible });
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts20.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -33464,7 +36245,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts22.label.attrs), {
           htmlFor: getInputId6(scope),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -33473,7 +36254,7 @@ ${err}`);
         }));
       },
       getInputProps() {
-        return normalize2.input(__spreadValues(__spreadProps(__spreadValues({}, parts20.input.attrs), {
+        return normalize2.input(__spreadValues(__spreadProps(__spreadValues({}, parts22.input.attrs), {
           id: getInputId6(scope),
           autoCapitalize: "off",
           name: prop("name"),
@@ -33492,7 +36273,7 @@ ${err}`);
       },
       getVisibilityTriggerProps() {
         var _a4;
-        return normalize2.button(__spreadProps(__spreadValues({}, parts20.visibilityTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts22.visibilityTrigger.attrs), {
           type: "button",
           tabIndex: -1,
           "aria-controls": getInputId6(scope),
@@ -33511,7 +36292,7 @@ ${err}`);
         }));
       },
       getIndicatorProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts20.indicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts22.indicator.attrs), {
           "aria-hidden": true,
           "data-state": visible ? "visible" : "hidden",
           "data-disabled": dataAttr(disabled),
@@ -33520,7 +36301,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts22.control.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
@@ -33531,13 +36312,13 @@ ${err}`);
   function visibilityChangePayload(el, details) {
     return { id: el.id, visible: details.visible };
   }
-  var anatomy20, parts20, getInputId6, getInputEl5, defaultTranslations11, passwordManagerProps, machine20, PasswordInput, PasswordInputHook;
+  var anatomy22, parts22, getInputId6, getInputEl5, defaultTranslations11, passwordManagerProps, machine22, PasswordInput, PasswordInputHook;
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy20 = createAnatomy("password-input").parts(
+      init_chunk_CLKNJROH();
+      anatomy22 = createAnatomy("password-input").parts(
         "root",
         "input",
         "label",
@@ -33545,7 +36326,7 @@ ${err}`);
         "indicator",
         "visibilityTrigger"
       );
-      parts20 = anatomy20.build();
+      parts22 = anatomy22.build();
       getInputId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) != null ? _b : `p-input-${ctx.id}-input`;
@@ -33566,7 +36347,7 @@ ${err}`);
         // Proton Pass
         "data-protonpass-ignore": "true"
       };
-      machine20 = createMachine({
+      machine22 = createMachine({
         props({ props }) {
           return __spreadValues({
             id: uuid(),
@@ -33645,10 +36426,10 @@ ${err}`);
       });
       PasswordInput = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine20, props);
+          return new VanillaMachine(machine22, props);
         }
         initApi() {
-          return this.zagConnect(connect20);
+          return this.zagConnect(connect22);
         }
         render() {
           var _a4;
@@ -33768,7 +36549,7 @@ ${err}`);
     const regex = new RegExp(pattern, "g");
     return regex.test(value);
   }
-  function connect21(service, normalize2) {
+  function connect23(service, normalize2) {
     const { send, context, computed, prop, scope } = service;
     const complete = computed("isValueComplete");
     const disabled = !!prop("disabled");
@@ -33803,7 +36584,7 @@ ${err}`);
       getRootProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           dir: prop("dir")
-        }, parts21.root.attrs), {
+        }, parts23.root.attrs), {
           id: getRootId16(scope),
           "data-invalid": dataAttr(invalid),
           "data-disabled": dataAttr(disabled),
@@ -33812,7 +36593,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts21.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts23.label.attrs), {
           dir: prop("dir"),
           htmlFor: getHiddenInputId5(scope),
           id: getLabelId11(scope),
@@ -33844,7 +36625,7 @@ ${err}`);
         });
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts21.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts23.control.attrs), {
           dir: prop("dir"),
           id: getControlId7(scope)
         }));
@@ -33855,7 +36636,7 @@ ${err}`);
         const inputType = prop("type") === "numeric" ? "tel" : "text";
         const valueLength = computed("valueLength");
         const tabbableIndex = focusedIndex !== -1 ? focusedIndex : Math.min(computed("filledValueLength"), valueLength - 1);
-        return normalize2.input(__spreadProps(__spreadValues({}, parts21.input.attrs), {
+        return normalize2.input(__spreadProps(__spreadValues({}, parts23.input.attrs), {
           dir: prop("dir"),
           disabled,
           tabIndex: index === tabbableIndex ? 0 : -1,
@@ -34137,18 +36918,18 @@ ${err}`);
       }
     });
   }
-  var anatomy21, parts21, getRootId16, getInputId7, getHiddenInputId5, getLabelId11, getControlId7, getRootEl5, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl5, setInputValue, REGEX, defaultTranslations12, choose3, createMachine5, machine21, PinInput, PinInputHook;
+  var anatomy23, parts23, getRootId16, getInputId7, getHiddenInputId5, getLabelId11, getControlId7, getRootEl5, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl5, setInputValue, REGEX, defaultTranslations12, choose3, createMachine5, machine23, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_AJX2XHOK();
-      init_chunk_56433QZX();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_QE4GGWXJ();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
-      parts21 = anatomy21.build();
+      init_chunk_CLKNJROH();
+      anatomy23 = createAnatomy("pinInput").parts("root", "label", "input", "control");
+      parts23 = anatomy23.build();
       getRootId16 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `pin-input:${ctx.id}`;
@@ -34190,7 +36971,7 @@ ${err}`);
         inputLabel: (index, length) => `pin code ${index + 1} of ${length}`
       };
       ({ choose: choose3, createMachine: createMachine5 } = setup());
-      machine21 = createMachine5({
+      machine23 = createMachine5({
         props({ props }) {
           return __spreadValues({
             placeholder: "\u25CB",
@@ -34488,10 +37269,10 @@ ${err}`);
       });
       PinInput = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine21, props);
+          return new VanillaMachine(machine23, props);
         }
         initApi() {
-          return this.zagConnect(connect21);
+          return this.zagConnect(connect23);
         }
         render() {
           var _a4, _b, _c, _d, _e;
@@ -34671,13 +37452,635 @@ ${err}`);
     }
   });
 
+  // ../priv/static/popover.mjs
+  var popover_exports = {};
+  __export(popover_exports, {
+    Popover: () => PopoverHook
+  });
+  function connect24(service, normalize2) {
+    const { state: state2, context, send, computed, prop, scope } = service;
+    const translations = mergeWithDefault(defaultTranslations13, prop("translations"));
+    const open = state2.matches("open");
+    const currentPlacement = context.get("currentPlacement");
+    const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
+    const portalled = computed("currentPortalled");
+    const rendered = context.get("renderedElements");
+    const triggerValue = context.get("triggerValue");
+    const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
+      placement: currentPlacement
+    }));
+    return {
+      portalled,
+      open,
+      setOpen(nextOpen) {
+        const open2 = state2.matches("open");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "TRIGGER_VALUE.SET", value });
+      },
+      reposition(options = {}) {
+        send({ type: "POSITIONING.SET", options });
+      },
+      getArrowProps() {
+        return normalize2.element(__spreadProps(__spreadValues({
+          id: getArrowId3(scope)
+        }, parts24.arrow.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.arrow
+        }));
+      },
+      getArrowTipProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts24.arrowTip.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.arrowTip
+        }));
+      },
+      getAnchorProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts24.anchor.attrs), {
+          dir: prop("dir"),
+          id: getAnchorId(scope)
+        }));
+      },
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        return normalize2.button(__spreadProps(__spreadValues({}, parts24.trigger.attrs), {
+          dir: prop("dir"),
+          type: "button",
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide,
+          id: getTriggerId11(scope, value),
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "data-current": dataAttr(current),
+          "aria-haspopup": "dialog",
+          "aria-expanded": value == null ? open : open && current,
+          "data-state": open ? "open" : "closed",
+          "aria-controls": getContentId11(scope),
+          onPointerDown(event) {
+            if (!isLeftClick(event)) return;
+            if (isSafari()) {
+              event.currentTarget.focus();
+            }
+          },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TOGGLE", value });
+          },
+          onBlur(event) {
+            send({ type: "TRIGGER_BLUR", target: event.relatedTarget });
+          }
+        }));
+      },
+      getIndicatorProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts24.indicator.attrs), {
+          dir: prop("dir"),
+          "data-state": open ? "open" : "closed"
+        }));
+      },
+      getPositionerProps() {
+        return normalize2.element(__spreadProps(__spreadValues({
+          id: getPositionerId9(scope)
+        }, parts24.positioner.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.floating
+        }));
+      },
+      getContentProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts24.content.attrs), {
+          dir: prop("dir"),
+          id: getContentId11(scope),
+          tabIndex: -1,
+          role: "dialog",
+          "aria-modal": ariaAttr(prop("modal")),
+          hidden: !open,
+          "data-state": open ? "open" : "closed",
+          "data-expanded": dataAttr(open),
+          "aria-labelledby": rendered.title ? getTitleId4(scope) : void 0,
+          "aria-describedby": rendered.description ? getDescriptionId3(scope) : void 0,
+          "data-placement": currentPlacement,
+          "data-side": currentPlacementSide
+        }));
+      },
+      getTitleProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts24.title.attrs), {
+          id: getTitleId4(scope),
+          dir: prop("dir")
+        }));
+      },
+      getDescriptionProps() {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts24.description.attrs), {
+          id: getDescriptionId3(scope),
+          dir: prop("dir")
+        }));
+      },
+      getCloseTriggerProps() {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts24.closeTrigger.attrs), {
+          dir: prop("dir"),
+          id: getCloseTriggerId3(scope),
+          type: "button",
+          "aria-label": translations.closeTriggerLabel,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            event.stopPropagation();
+            send({ type: "CLOSE" });
+          }
+        }));
+      }
+    };
+  }
+  function createPopoverCallbacks(el, pushEvent, liveSocket) {
+    const onTriggerValueChange = (details) => {
+      var _a4;
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: (_a4 = details.value) != null ? _a4 : ""
+        });
+      }
+    };
+    const onOpenChange = (details) => {
+      const eventName = getString(el, "onOpenChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          open: details.open
+        });
+      }
+      const eventNameClient = getString(el, "onOpenChangeClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              open: details.open
+            }
+          })
+        );
+      }
+    };
+    return { onOpenChange, onTriggerValueChange };
+  }
+  function popoverProps(el, hook) {
+    return __spreadValues({
+      id: el.id,
+      defaultOpen: getBoolean(el, "defaultOpen"),
+      dir: getDir(el),
+      modal: getBoolean(el, "modal"),
+      portalled: getBoolean(el, "portalled"),
+      autoFocus: getBoolean(el, "autoFocus"),
+      restoreFocus: getBoolean(el, "restoreFocus"),
+      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+      closeOnEscape: getBoolean(el, "closeOnEscape"),
+      positioning: readPositioningOptions(el)
+    }, createPopoverCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket));
+  }
+  var anatomy24, parts24, getAnchorId, getTriggerId11, getContentId11, getPositionerId9, getArrowId3, getTitleId4, getDescriptionId3, getCloseTriggerId3, getAnchorEl, getTriggerEl9, getTriggerEls6, getActiveTriggerEl5, getContentEl11, getPositionerEl9, getTitleEl3, getDescriptionEl3, defaultTranslations13, machine24, Popover, PopoverHook;
+  var init_popover = __esm({
+    "../priv/static/popover.mjs"() {
+      "use strict";
+      init_chunk_HV2J7H25();
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_EAQ6WQNO();
+      init_chunk_CLKNJROH();
+      anatomy24 = createAnatomy("popover").parts(
+        "arrow",
+        "arrowTip",
+        "anchor",
+        "trigger",
+        "indicator",
+        "positioner",
+        "content",
+        "title",
+        "description",
+        "closeTrigger"
+      );
+      parts24 = anatomy24.build();
+      getAnchorId = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.anchor) != null ? _b : `popover:${scope.id}:anchor`;
+      };
+      getTriggerId11 = (scope, value) => {
+        var _a4;
+        const customId = (_a4 = scope.ids) == null ? void 0 : _a4.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `popover:${scope.id}:trigger:${value}` : `popover:${scope.id}:trigger`;
+      };
+      getContentId11 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.content) != null ? _b : `popover:${scope.id}:content`;
+      };
+      getPositionerId9 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.positioner) != null ? _b : `popover:${scope.id}:popper`;
+      };
+      getArrowId3 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.arrow) != null ? _b : `popover:${scope.id}:arrow`;
+      };
+      getTitleId4 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.title) != null ? _b : `popover:${scope.id}:title`;
+      };
+      getDescriptionId3 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.description) != null ? _b : `popover:${scope.id}:desc`;
+      };
+      getCloseTriggerId3 = (scope) => {
+        var _a4, _b;
+        return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.closeTrigger) != null ? _b : `popover:${scope.id}:close`;
+      };
+      getAnchorEl = (scope) => scope.getById(getAnchorId(scope));
+      getTriggerEl9 = (scope) => scope.getById(getTriggerId11(scope));
+      getTriggerEls6 = (scope) => queryAll(scope.getRootNode(), `[data-scope="popover"][data-part="trigger"]${getByOwnerId(scope.id)}`);
+      getActiveTriggerEl5 = (scope, value) => {
+        var _a4;
+        if (value == null) {
+          return (_a4 = getTriggerEl9(scope)) != null ? _a4 : getTriggerEls6(scope)[0];
+        }
+        return scope.getById(getTriggerId11(scope, value));
+      };
+      getContentEl11 = (scope) => scope.getById(getContentId11(scope));
+      getPositionerEl9 = (scope) => scope.getById(getPositionerId9(scope));
+      getTitleEl3 = (scope) => scope.getById(getTitleId4(scope));
+      getDescriptionEl3 = (scope) => scope.getById(getDescriptionId3(scope));
+      defaultTranslations13 = {
+        closeTriggerLabel: "close"
+      };
+      machine24 = createMachine({
+        props({ props }) {
+          return __spreadProps(__spreadValues({
+            closeOnInteractOutside: true,
+            closeOnEscape: true,
+            autoFocus: true,
+            modal: false,
+            portalled: true,
+            restoreFocus: true
+          }, props), {
+            positioning: __spreadValues({
+              placement: "bottom"
+            }, props.positioning)
+          });
+        },
+        initialState({ prop }) {
+          const open = prop("open") || prop("defaultOpen");
+          return open ? "open" : "closed";
+        },
+        context({ bindable: bindable2, prop, scope }) {
+          return {
+            currentPlacement: bindable2(() => ({
+              defaultValue: void 0
+            })),
+            renderedElements: bindable2(() => ({
+              defaultValue: { title: true, description: true }
+            })),
+            triggerValue: bindable2(() => {
+              var _a4;
+              return {
+                defaultValue: (_a4 = prop("defaultTriggerValue")) != null ? _a4 : null,
+                value: prop("triggerValue"),
+                onChange(value) {
+                  const onTriggerValueChange = prop("onTriggerValueChange");
+                  if (!onTriggerValueChange) return;
+                  const triggerElement = getActiveTriggerEl5(scope, value);
+                  onTriggerValueChange({ value, triggerElement });
+                }
+              };
+            })
+          };
+        },
+        computed: {
+          currentPortalled: ({ prop }) => !!prop("modal") || !!prop("portalled")
+        },
+        watch({ track, prop, action }) {
+          track([() => prop("open")], () => {
+            action(["toggleVisibility"]);
+          });
+        },
+        entry: ["checkRenderedElements"],
+        on: {
+          "TRIGGER_VALUE.SET": {
+            actions: ["setTriggerValue", "reposition"]
+          }
+        },
+        states: {
+          closed: {
+            on: {
+              "CONTROLLED.OPEN": {
+                target: "open",
+                actions: ["setInitialFocus"]
+              },
+              TOGGLE: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnOpen", "setTriggerValue"]
+                },
+                {
+                  target: "open",
+                  actions: ["invokeOnOpen", "setTriggerValue", "setInitialFocus"]
+                }
+              ],
+              OPEN: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnOpen", "setTriggerValue"]
+                },
+                {
+                  target: "open",
+                  actions: ["invokeOnOpen", "setTriggerValue", "setInitialFocus"]
+                }
+              ]
+            }
+          },
+          open: {
+            effects: [
+              "trapFocus",
+              "preventScroll",
+              "hideContentBelow",
+              "trackDismissableElement",
+              "trackPositioning",
+              "proxyTabFocus"
+            ],
+            on: {
+              "CONTROLLED.CLOSE": {
+                target: "closed",
+                actions: ["setFinalFocus"]
+              },
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose", "setFinalFocus"]
+                }
+              ],
+              TOGGLE: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "POSITIONING.SET": {
+                actions: ["reposition"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isOpenControlled: ({ prop }) => prop("open") != void 0
+          },
+          effects: {
+            trackPositioning({ context, prop, scope }) {
+              context.set("currentPlacement", prop("positioning").placement);
+              const anchorEl = getAnchorEl(scope);
+              const getPositionerEl22 = () => getPositionerEl9(scope);
+              const getTriggerEl22 = () => anchorEl != null ? anchorEl : getActiveTriggerEl5(scope, context.get("triggerValue"));
+              return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
+                defer: true,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            trackDismissableElement({ send, prop, scope }) {
+              const getContentEl22 = () => getContentEl11(scope);
+              let restoreFocus = true;
+              return trackDismissableElement(getContentEl22, {
+                type: "popover",
+                pointerBlocking: prop("modal"),
+                exclude: [getTriggerEl9(scope), ...getTriggerEls6(scope)].filter(Boolean),
+                defer: true,
+                onEscapeKeyDown(event) {
+                  var _a4;
+                  (_a4 = prop("onEscapeKeyDown")) == null ? void 0 : _a4(event);
+                  if (prop("closeOnEscape")) return;
+                  event.preventDefault();
+                },
+                onInteractOutside(event) {
+                  var _a4;
+                  (_a4 = prop("onInteractOutside")) == null ? void 0 : _a4(event);
+                  if (event.defaultPrevented) return;
+                  restoreFocus = !(event.detail.focusable || event.detail.contextmenu);
+                  if (!prop("closeOnInteractOutside")) {
+                    event.preventDefault();
+                  }
+                },
+                onPointerDownOutside: prop("onPointerDownOutside"),
+                onFocusOutside: prop("onFocusOutside"),
+                persistentElements: prop("persistentElements"),
+                onRequestDismiss: prop("onRequestDismiss"),
+                onDismiss() {
+                  send({ type: "CLOSE", src: "interact-outside", restoreFocus });
+                }
+              });
+            },
+            proxyTabFocus({ prop, scope, context }) {
+              if (prop("modal") || !prop("portalled")) return;
+              const getContentEl22 = () => getContentEl11(scope);
+              return proxyTabFocus(getContentEl22, {
+                triggerElement: getActiveTriggerEl5(scope, context.get("triggerValue")),
+                defer: true,
+                getShadowRoot: true,
+                onFocus(el) {
+                  el.focus({ preventScroll: true });
+                }
+              });
+            },
+            hideContentBelow({ prop, scope, context }) {
+              if (!prop("modal")) return;
+              const getElements4 = () => [getContentEl11(scope), getActiveTriggerEl5(scope, context.get("triggerValue"))];
+              return ariaHidden(getElements4, { defer: true });
+            },
+            preventScroll({ prop, scope }) {
+              if (!prop("modal")) return;
+              return preventBodyScroll(scope.getDoc());
+            },
+            trapFocus({ prop, scope, context }) {
+              if (!prop("modal")) return;
+              const contentEl = () => getContentEl11(scope);
+              return trapFocus(contentEl, {
+                preventScroll: true,
+                returnFocusOnDeactivate: !!prop("restoreFocus"),
+                initialFocus: () => getInitialFocus({
+                  root: getContentEl11(scope),
+                  getInitialEl: prop("initialFocusEl"),
+                  enabled: prop("autoFocus")
+                }),
+                setReturnFocus: (el) => {
+                  var _a4;
+                  const finalFocusEl = (_a4 = prop("finalFocusEl")) == null ? void 0 : _a4();
+                  if (finalFocusEl) return finalFocusEl;
+                  const triggerValue = context.get("triggerValue");
+                  if (triggerValue) {
+                    const activeTriggerEl = getActiveTriggerEl5(scope, triggerValue);
+                    if (activeTriggerEl) return activeTriggerEl;
+                  }
+                  const fallbackTrigger = getTriggerEls6(scope)[0];
+                  if (fallbackTrigger) return fallbackTrigger;
+                  return el;
+                },
+                getShadowRoot: true
+              });
+            }
+          },
+          actions: {
+            reposition({ event, prop, scope, context }) {
+              const anchorEl = getAnchorEl(scope);
+              const getPositionerEl22 = () => getPositionerEl9(scope);
+              const getTriggerEl22 = () => anchorEl != null ? anchorEl : getActiveTriggerEl5(scope, context.get("triggerValue"));
+              getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+                defer: true,
+                listeners: false,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            setTriggerValue({ context, event }) {
+              if (event.value === void 0) return;
+              context.set("triggerValue", event.value);
+            },
+            checkRenderedElements({ context, scope }) {
+              raf(() => {
+                Object.assign(context.get("renderedElements"), {
+                  title: !!getTitleEl3(scope),
+                  description: !!getDescriptionEl3(scope)
+                });
+              });
+            },
+            setInitialFocus({ prop, scope }) {
+              if (prop("modal")) return;
+              raf(() => {
+                const element = getInitialFocus({
+                  root: getContentEl11(scope),
+                  getInitialEl: prop("initialFocusEl"),
+                  enabled: prop("autoFocus")
+                });
+                element == null ? void 0 : element.focus({ preventScroll: true });
+              });
+            },
+            setFinalFocus({ event, prop, scope, context }) {
+              var _a4, _b;
+              const eventRestoreFocus = (_b = event.restoreFocus) != null ? _b : (_a4 = event.previousEvent) == null ? void 0 : _a4.restoreFocus;
+              if (eventRestoreFocus != null && !eventRestoreFocus) return;
+              if (!prop("restoreFocus")) return;
+              raf(() => {
+                var _a5;
+                const finalFocusEl = (_a5 = prop("finalFocusEl")) == null ? void 0 : _a5();
+                if (finalFocusEl) {
+                  finalFocusEl.focus({ preventScroll: true });
+                  return;
+                }
+                const element = getActiveTriggerEl5(scope, context.get("triggerValue"));
+                element == null ? void 0 : element.focus({ preventScroll: true });
+              });
+            },
+            invokeOnOpen({ prop, flush }) {
+              flush(() => {
+                var _a4;
+                (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: true });
+              });
+            },
+            invokeOnClose({ prop, flush }) {
+              flush(() => {
+                var _a4;
+                (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: false });
+              });
+            },
+            toggleVisibility({ event, send, prop }) {
+              send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+            }
+          }
+        }
+      });
+      Popover = class extends Component {
+        initMachine(props) {
+          return new VanillaMachine(machine24, props);
+        }
+        initApi() {
+          return this.zagConnect(connect24);
+        }
+        syncDom() {
+          this.api = this.initApi();
+          this.render();
+        }
+        render() {
+          const rootEl = this.el;
+          rootEl.querySelectorAll('[data-scope="popover"][data-part="trigger"]').forEach((triggerEl) => {
+            const raw = triggerEl.dataset.value;
+            const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+          });
+          const positionerEl = rootEl.querySelector(
+            '[data-scope="popover"][data-part="positioner"]'
+          );
+          if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+          const contentEl = rootEl.querySelector(
+            '[data-scope="popover"][data-part="content"]'
+          );
+          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          const titleEl = rootEl.querySelector('[data-scope="popover"][data-part="title"]');
+          if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
+          const descriptionEl = rootEl.querySelector(
+            '[data-scope="popover"][data-part="description"]'
+          );
+          if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
+          const closeEl = rootEl.querySelector(
+            '[data-scope="popover"][data-part="close-trigger"]'
+          );
+          if (closeEl) this.spreadProps(closeEl, this.api.getCloseTriggerProps());
+          const arrowEl = rootEl.querySelector('[data-scope="popover"][data-part="arrow"]');
+          if (arrowEl) this.spreadProps(arrowEl, this.api.getArrowProps());
+          const arrowTipEl = rootEl.querySelector(
+            '[data-scope="popover"][data-part="arrow-tip"]'
+          );
+          if (arrowTipEl) this.spreadProps(arrowTipEl, this.api.getArrowTipProps());
+        }
+      };
+      PopoverHook = createZagLiveHook({
+        key: "popover",
+        mount(hook, { dom: dom2, server }) {
+          const el = hook.el;
+          const popover = new Popover(el, popoverProps(el, hook));
+          dom2.add("corex:popover:set-open", (event) => {
+            popover.api.setOpen(event.detail.open);
+          });
+          server.add("popover_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            popover.api.setOpen(payload.open);
+          });
+          return popover;
+        },
+        update(hook, popover) {
+          popover.updateProps(popoverProps(hook.el, hook));
+        }
+      });
+    }
+  });
+
   // ../priv/static/radio-group.mjs
   var radio_group_exports = {};
   __export(radio_group_exports, {
     RadioGroup: () => RadioGroupHook,
     valueChangePayload: () => valueChangePayload2
   });
-  function connect22(service, normalize2) {
+  function connect25(service, normalize2) {
     const { context, send, computed, prop, scope } = service;
     const groupDisabled = computed("isDisabled");
     const groupInvalid = prop("invalid");
@@ -34723,7 +38126,7 @@ ${err}`);
         send({ type: "SET_VALUE", value: null, isTrusted: false });
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
           role: "radiogroup",
           id: getRootId17(scope),
           "aria-labelledby": getLabelId12(scope),
@@ -34742,7 +38145,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts22.label.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts25.label.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           "data-disabled": dataAttr(groupDisabled),
@@ -34755,7 +38158,7 @@ ${err}`);
       getItemState,
       getItemProps(props) {
         const itemState = getItemState(props);
-        return normalize2.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts22.item.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts25.item.attrs), {
           dir: prop("dir"),
           id: getItemId8(scope, props.value),
           htmlFor: getItemHiddenInputId(scope, props.value)
@@ -34790,14 +38193,14 @@ ${err}`);
         }));
       },
       getItemTextProps(props) {
-        return normalize2.element(__spreadValues(__spreadProps(__spreadValues({}, parts22.itemText.attrs), {
+        return normalize2.element(__spreadValues(__spreadProps(__spreadValues({}, parts25.itemText.attrs), {
           dir: prop("dir"),
           id: getItemLabelId(scope, props.value)
         }), getItemDataAttrs(props)));
       },
       getItemControlProps(props) {
         const itemState = getItemState(props);
-        return normalize2.element(__spreadValues(__spreadProps(__spreadValues({}, parts22.itemControl.attrs), {
+        return normalize2.element(__spreadValues(__spreadProps(__spreadValues({}, parts25.itemControl.attrs), {
           dir: prop("dir"),
           id: getItemControlId(scope, props.value),
           "data-active": dataAttr(itemState.active),
@@ -34854,7 +38257,7 @@ ${err}`);
         const animateIndicator = context.get("animateIndicator");
         return normalize2.element(__spreadProps(__spreadValues({
           id: getIndicatorId2(scope)
-        }, parts22.indicator.attrs), {
+        }, parts25.indicator.attrs), {
           dir: prop("dir"),
           hidden: context.get("value") == null || isRectEmpty(rect),
           "data-disabled": dataAttr(groupDisabled),
@@ -34915,17 +38318,17 @@ ${err}`);
       value: details.value
     };
   }
-  var anatomy22, parts22, getRootId17, getLabelId12, getItemId8, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl6, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine22, RadioGroup, RadioGroupHook;
+  var anatomy25, parts25, getRootId17, getLabelId12, getItemId8, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl6, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not8, machine25, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
       init_chunk_AJX2XHOK();
-      init_chunk_CPYFNSV2();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_RHLZLEPV();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy22 = createAnatomy("radio-group").parts(
+      init_chunk_CLKNJROH();
+      anatomy25 = createAnatomy("radio-group").parts(
         "root",
         "label",
         "item",
@@ -34933,7 +38336,7 @@ ${err}`);
         "itemControl",
         "indicator"
       );
-      parts22 = anatomy22.build();
+      parts25 = anatomy25.build();
       getRootId17 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `radio-group:${ctx.id}`;
@@ -34991,8 +38394,8 @@ ${err}`);
         };
       };
       isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
-      ({ not: not7 } = createGuards());
-      machine22 = createMachine({
+      ({ not: not8 } = createGuards());
+      machine25 = createMachine({
         props({ props }) {
           return __spreadValues({
             orientation: "vertical"
@@ -35058,7 +38461,7 @@ ${err}`);
         on: {
           SET_VALUE: [
             {
-              guard: not7("isTrusted"),
+              guard: not8("isTrusted"),
               actions: ["setValue", "dispatchChangeEvent"]
             },
             {
@@ -35172,10 +38575,10 @@ ${err}`);
       });
       RadioGroup = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine22, props);
+          return new VanillaMachine(machine25, props);
         }
         initApi() {
-          return this.zagConnect(connect22);
+          return this.zagConnect(connect25);
         }
         render() {
           var _a4;
@@ -35372,9 +38775,9 @@ ${err}`);
     syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix,
     syncSelectHiddenSelectForPhoenix: () => syncSelectHiddenSelectForPhoenix
   });
-  function connect23(service, normalize2) {
+  function connect26(service, normalize2) {
     const { context, prop, scope, state: state2, computed, send } = service;
-    const translations = mergeWithDefault(defaultTranslations13, prop("translations"));
+    const translations = mergeWithDefault(defaultTranslations14, prop("translations"));
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
     const invalid = !!prop("invalid");
     const required = !!prop("required");
@@ -35423,7 +38826,7 @@ ${err}`);
       },
       focus() {
         var _a4;
-        (_a4 = getTriggerEl7(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+        (_a4 = getTriggerEl10(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
       },
       setOpen(nextOpen) {
         const open2 = state2.hasTag("open");
@@ -35454,7 +38857,7 @@ ${err}`);
       },
       getItemState,
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.root.attrs), {
           dir: prop("dir"),
           id: getRootId18(scope),
           "data-invalid": dataAttr(invalid),
@@ -35465,7 +38868,7 @@ ${err}`);
         return normalize2.label(__spreadProps(__spreadValues({
           dir: prop("dir"),
           id: getLabelId13(scope)
-        }, parts23.label.attrs), {
+        }, parts26.label.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -35475,12 +38878,12 @@ ${err}`);
             var _a4;
             if (event.defaultPrevented) return;
             if (disabled) return;
-            (_a4 = getTriggerEl7(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+            (_a4 = getTriggerEl10(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
           }
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.control.attrs), {
           dir: prop("dir"),
           id: getControlId8(scope),
           "data-state": open ? "open" : "closed",
@@ -35490,7 +38893,7 @@ ${err}`);
         }));
       },
       getValueTextProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.valueText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -35499,19 +38902,19 @@ ${err}`);
       },
       getTriggerProps() {
         return normalize2.button(__spreadProps(__spreadValues({
-          id: getTriggerId9(scope),
+          id: getTriggerId12(scope),
           disabled,
           dir: prop("dir"),
           type: "button",
           role: "combobox",
-          "aria-controls": getContentId9(scope),
+          "aria-controls": getContentId12(scope),
           "aria-expanded": open,
           "aria-haspopup": "listbox",
           "data-state": open ? "open" : "closed",
           "aria-invalid": invalid,
           "aria-required": required,
           "aria-labelledby": getLabelId13(scope)
-        }, parts23.trigger.attrs), {
+        }, parts26.trigger.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -35579,7 +38982,7 @@ ${err}`);
         }));
       },
       getIndicatorProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.indicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.indicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
           "data-state": open ? "open" : "closed",
@@ -35593,7 +38996,7 @@ ${err}`);
         return normalize2.element(__spreadProps(__spreadValues({
           id: getItemId9(scope, itemState.value),
           role: "option"
-        }, parts23.item.attrs), {
+        }, parts26.item.attrs), {
           dir: prop("dir"),
           "data-value": itemState.value,
           "aria-selected": itemState.selected,
@@ -35623,7 +39026,7 @@ ${err}`);
       },
       getItemTextProps(props) {
         const itemState = getItemState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.itemText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
@@ -35633,14 +39036,14 @@ ${err}`);
         const itemState = getItemState(props);
         return normalize2.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts23.itemIndicator.attrs), {
+        }, parts26.itemIndicator.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
       getItemGroupLabelProps(props) {
         const { htmlFor } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.itemGroupLabel.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.itemGroupLabel.attrs), {
           id: getItemGroupLabelId3(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
@@ -35648,7 +39051,7 @@ ${err}`);
       },
       getItemGroupProps(props) {
         const { id } = props;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.itemGroup.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           id: getItemGroupId4(scope, id),
           "aria-labelledby": getItemGroupLabelId3(scope, id),
@@ -35657,7 +39060,7 @@ ${err}`);
         }));
       },
       getClearTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts23.clearTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts26.clearTrigger.attrs), {
           id: getClearTriggerId3(scope),
           type: "button",
           "aria-label": translations.clearTriggerLabel,
@@ -35697,15 +39100,15 @@ ${err}`);
           // Let's forward the focus to the trigger.
           onFocus() {
             var _a4;
-            (_a4 = getTriggerEl7(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+            (_a4 = getTriggerEl10(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
           },
           "aria-labelledby": getLabelId13(scope)
         });
       },
       getPositionerProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.positioner.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.positioner.attrs), {
           dir: prop("dir"),
-          id: getPositionerId7(scope),
+          id: getPositionerId10(scope),
           style: popperStyles.floating
         }));
       },
@@ -35713,9 +39116,9 @@ ${err}`);
         return normalize2.element(__spreadProps(__spreadValues({
           hidden: !open,
           dir: prop("dir"),
-          id: getContentId9(scope),
+          id: getContentId12(scope),
           role: composite ? "listbox" : "dialog"
-        }, parts23.content.attrs), {
+        }, parts26.content.attrs), {
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
           "data-side": currentPlacementSide,
@@ -35777,10 +39180,10 @@ ${err}`);
         }));
       },
       getListProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts23.list.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts26.list.attrs), {
           tabIndex: 0,
           role: !composite ? "listbox" : void 0,
-          "aria-labelledby": getTriggerId9(scope),
+          "aria-labelledby": getTriggerId12(scope),
           "aria-activedescendant": !composite ? ariaActiveDescendant : void 0,
           "aria-multiselectable": !composite && prop("multiple") ? true : void 0
         }));
@@ -35910,23 +39313,23 @@ ${err}`);
     trigger.disabled = false;
     trigger.removeAttribute("disabled");
   }
-  var anatomy23, parts23, collection3, getRootId18, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl7, getClearTriggerEl3, getPositionerEl7, getItemEl4, defaultTranslations13, getSelectedValues, and8, not8, or3, machine23, Select, SelectHook;
+  var anatomy26, parts26, collection3, getRootId18, getContentId12, getTriggerId12, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId10, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl12, getTriggerEl10, getClearTriggerEl3, getPositionerEl10, getItemEl4, defaultTranslations14, getSelectedValues, and10, not9, or3, machine26, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_YKCP6S4O();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_4JF6I36R();
-      init_chunk_L27QKFAY();
-      init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
-      init_chunk_CPYFNSV2();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_BRPHFNEG();
+      init_chunk_ZUMK6UW2();
+      init_chunk_KZFRQXNF();
+      init_chunk_QBBRC35T();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_ZTJV2RYM();
+      init_chunk_RHLZLEPV();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy23 = createAnatomy("select").parts(
+      init_chunk_CLKNJROH();
+      anatomy26 = createAnatomy("select").parts(
         "label",
         "positioner",
         "trigger",
@@ -35943,7 +39346,7 @@ ${err}`);
         "control",
         "valueText"
       );
-      parts23 = anatomy23.build();
+      parts26 = anatomy26.build();
       collection3 = (options) => {
         return new ListCollection(options);
       };
@@ -35954,11 +39357,11 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `select:${ctx.id}`;
       };
-      getContentId9 = (ctx) => {
+      getContentId12 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `select:${ctx.id}:content`;
       };
-      getTriggerId9 = (ctx) => {
+      getTriggerId12 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `select:${ctx.id}:trigger`;
       };
@@ -35982,7 +39385,7 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenSelect) != null ? _b : `select:${ctx.id}:select`;
       };
-      getPositionerId7 = (ctx) => {
+      getPositionerId10 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `select:${ctx.id}:positioner`;
       };
@@ -35995,22 +39398,22 @@ ${err}`);
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `select:${ctx.id}:optgroup-label:${id}`;
       };
       getHiddenSelectEl = (ctx) => ctx.getById(getHiddenSelectId(ctx));
-      getContentEl9 = (ctx) => ctx.getById(getContentId9(ctx));
-      getTriggerEl7 = (ctx) => ctx.getById(getTriggerId9(ctx));
+      getContentEl12 = (ctx) => ctx.getById(getContentId12(ctx));
+      getTriggerEl10 = (ctx) => ctx.getById(getTriggerId12(ctx));
       getClearTriggerEl3 = (ctx) => ctx.getById(getClearTriggerId3(ctx));
-      getPositionerEl7 = (ctx) => ctx.getById(getPositionerId7(ctx));
+      getPositionerEl10 = (ctx) => ctx.getById(getPositionerId10(ctx));
       getItemEl4 = (ctx, id) => {
         if (id == null) return null;
         return ctx.getById(getItemId9(ctx, id));
       };
-      defaultTranslations13 = {
+      defaultTranslations14 = {
         clearTriggerLabel: "Clear value"
       };
       getSelectedValues = (el) => {
         return el.multiple ? Array.from(el.selectedOptions, (o2) => o2.value) : el.value ? [el.value] : [];
       };
-      ({ and: and8, not: not8, or: or3 } = createGuards());
-      machine23 = createMachine({
+      ({ and: and10, not: not9, or: or3 } = createGuards());
+      machine26 = createMachine({
         props({ props }) {
           var _a4;
           return __spreadProps(__spreadValues({
@@ -36265,34 +39668,34 @@ ${err}`);
               ],
               "TRIGGER.ARROW_LEFT": [
                 {
-                  guard: and8(not8("multiple"), "hasSelectedItems"),
+                  guard: and10(not9("multiple"), "hasSelectedItems"),
                   actions: ["selectPreviousItem"]
                 },
                 {
-                  guard: not8("multiple"),
+                  guard: not9("multiple"),
                   actions: ["selectLastItem"]
                 }
               ],
               "TRIGGER.ARROW_RIGHT": [
                 {
-                  guard: and8(not8("multiple"), "hasSelectedItems"),
+                  guard: and10(not9("multiple"), "hasSelectedItems"),
                   actions: ["selectNextItem"]
                 },
                 {
-                  guard: not8("multiple"),
+                  guard: not9("multiple"),
                   actions: ["selectFirstItem"]
                 }
               ],
               "TRIGGER.HOME": {
-                guard: not8("multiple"),
+                guard: not9("multiple"),
                 actions: ["selectFirstItem"]
               },
               "TRIGGER.END": {
-                guard: not8("multiple"),
+                guard: not9("multiple"),
                 actions: ["selectLastItem"]
               },
               "TRIGGER.TYPEAHEAD": {
-                guard: not8("multiple"),
+                guard: not9("multiple"),
                 actions: ["selectMatchingItem"]
               }
             }
@@ -36340,7 +39743,7 @@ ${err}`);
               ],
               "ITEM.CLICK": [
                 {
-                  guard: and8("closeOnSelect", "isOpenControlled"),
+                  guard: and10("closeOnSelect", "isOpenControlled"),
                   actions: ["selectHighlightedItem", "invokeOnClose"]
                 },
                 {
@@ -36360,7 +39763,7 @@ ${err}`);
               },
               "CONTENT.ARROW_DOWN": [
                 {
-                  guard: and8("hasHighlightedItem", "loop", "isLastItemHighlighted"),
+                  guard: and10("hasHighlightedItem", "loop", "isLastItemHighlighted"),
                   actions: ["highlightFirstItem"]
                 },
                 {
@@ -36373,7 +39776,7 @@ ${err}`);
               ],
               "CONTENT.ARROW_UP": [
                 {
-                  guard: and8("hasHighlightedItem", "loop", "isFirstItemHighlighted"),
+                  guard: and10("hasHighlightedItem", "loop", "isFirstItemHighlighted"),
                   actions: ["highlightLastItem"]
                 },
                 {
@@ -36448,12 +39851,12 @@ ${err}`);
               });
             },
             trackDismissableElement({ scope, send, prop }) {
-              const contentEl = () => getContentEl9(scope);
+              const contentEl = () => getContentEl12(scope);
               let restoreFocus = true;
               return trackDismissableElement(contentEl, {
                 type: "listbox",
                 defer: true,
-                exclude: [getTriggerEl7(scope), getClearTriggerEl3(scope)],
+                exclude: [getTriggerEl10(scope), getClearTriggerEl3(scope)],
                 onFocusOutside: prop("onFocusOutside"),
                 onPointerDownOutside: prop("onPointerDownOutside"),
                 onInteractOutside(event) {
@@ -36469,8 +39872,8 @@ ${err}`);
             computePlacement({ context, prop, scope }) {
               const positioning = prop("positioning");
               context.set("currentPlacement", positioning.placement);
-              const triggerEl = () => getTriggerEl7(scope);
-              const positionerEl = () => getPositionerEl7(scope);
+              const triggerEl = () => getTriggerEl10(scope);
+              const positionerEl = () => getPositionerEl10(scope);
               return getPlacement(triggerEl, positionerEl, __spreadProps(__spreadValues({
                 defer: true
               }, positioning), {
@@ -36485,7 +39888,7 @@ ${err}`);
                 if (highlightedValue == null) return;
                 const modality = getInteractionModality();
                 if (modality === "pointer") return;
-                const contentEl2 = getContentEl9(scope);
+                const contentEl2 = getContentEl12(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
                   const highlightedIndex = prop("collection").indexOf(highlightedValue);
@@ -36503,7 +39906,7 @@ ${err}`);
                 setInteractionModality("virtual");
                 exec(true);
               });
-              const contentEl = () => getContentEl9(scope);
+              const contentEl = () => getContentEl12(scope);
               return observeAttributes(contentEl, {
                 defer: true,
                 attributes: ["data-activedescendant"],
@@ -36515,8 +39918,8 @@ ${err}`);
           },
           actions: {
             reposition({ context, prop, scope, event }) {
-              const positionerEl = () => getPositionerEl7(scope);
-              getPlacement(getTriggerEl7(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+              const positionerEl = () => getPositionerEl10(scope);
+              getPlacement(getTriggerEl10(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 defer: true,
                 listeners: false,
                 onComplete(data) {
@@ -36552,7 +39955,7 @@ ${err}`);
             setInitialFocus({ scope }) {
               raf(() => {
                 const element = getInitialFocus({
-                  root: getContentEl9(scope)
+                  root: getContentEl12(scope)
                 });
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
@@ -36560,7 +39963,7 @@ ${err}`);
             focusTriggerEl({ event, scope }) {
               if (!restoreFocusFn(event)) return;
               raf(() => {
-                const element = getTriggerEl7(scope);
+                const element = getTriggerEl10(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -36665,7 +40068,7 @@ ${err}`);
                   getElement: () => getItemEl4(scope, firstValue)
                 });
               } else {
-                (_b = getContentEl9(scope)) == null ? void 0 : _b.scrollTo(0, 0);
+                (_b = getContentEl12(scope)) == null ? void 0 : _b.scrollTo(0, 0);
               }
             },
             invokeOnOpen({ prop, context }) {
@@ -36750,14 +40153,14 @@ ${err}`);
         }
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          return new VanillaMachine(machine23, __spreadProps(__spreadValues({}, props), {
+          return new VanillaMachine(machine26, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             }
           }));
         }
         initApi() {
-          return this.zagConnect(connect23);
+          return this.zagConnect(connect26);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -36952,14 +40355,14 @@ ${err}`);
     buildDrawingOptions: () => buildDrawingOptions,
     parsePathsFromDataset: () => parsePathsFromDataset
   });
-  function connect24(service, normalize2) {
+  function connect27(service, normalize2) {
     const { state: state2, send, prop, computed, context, scope } = service;
     const drawing = state2.matches("drawing");
     const empty = computed("isEmpty");
     const interactive = computed("isInteractive");
     const disabled = !!prop("disabled");
     const required = !!prop("required");
-    const translations = mergeWithDefault(defaultTranslations14, prop("translations"));
+    const translations = mergeWithDefault(defaultTranslations15, prop("translations"));
     return {
       empty,
       drawing,
@@ -36973,7 +40376,7 @@ ${err}`);
         return getDataUrl2(scope, { type, quality });
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts24.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts27.label.attrs), {
           dir: prop("dir"),
           id: getLabelId14(scope),
           "data-disabled": dataAttr(disabled),
@@ -36988,14 +40391,14 @@ ${err}`);
         }));
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           id: getRootId19(scope)
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts24.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts27.control.attrs), {
           dir: prop("dir"),
           tabIndex: disabled ? void 0 : 0,
           id: getControlId9(scope),
@@ -37032,7 +40435,7 @@ ${err}`);
         }));
       },
       getSegmentProps() {
-        return normalize2.svg(__spreadProps(__spreadValues({}, parts24.segment.attrs), {
+        return normalize2.svg(__spreadProps(__spreadValues({}, parts27.segment.attrs), {
           style: {
             position: "absolute",
             top: 0,
@@ -37045,18 +40448,18 @@ ${err}`);
         }));
       },
       getSegmentPathProps(props) {
-        return normalize2.path(__spreadProps(__spreadValues({}, parts24.segmentPath.attrs), {
+        return normalize2.path(__spreadProps(__spreadValues({}, parts27.segmentPath.attrs), {
           d: props.path
         }));
       },
       getGuideProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts24.guide.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts27.guide.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled)
         }));
       },
       getClearTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts24.clearTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts27.clearTrigger.attrs), {
           dir: prop("dir"),
           type: "button",
           "aria-label": translations.clearTrigger,
@@ -37320,16 +40723,16 @@ ${err}`);
     }
     syncFormInput(input, () => paths.length > 0 ? paths.join("\n") : "", opts.onPadTouched);
   }
-  var anatomy24, parts24, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, defaultTranslations14, e, t, n, r, a, E, D, O, F, z2, average, machine24, SignaturePad, SignaturePadHook;
+  var anatomy27, parts27, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, defaultTranslations15, e, t, n, r, a, E, D, O, F, z2, average, machine27, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_56433QZX();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_QE4GGWXJ();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy24 = createAnatomy("signature-pad").parts(
+      init_chunk_CLKNJROH();
+      anatomy27 = createAnatomy("signature-pad").parts(
         "root",
         "control",
         "segment",
@@ -37338,7 +40741,7 @@ ${err}`);
         "clearTrigger",
         "label"
       );
-      parts24 = anatomy24.build();
+      parts27 = anatomy27.build();
       getRootId19 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `signature-${ctx.id}`;
@@ -37360,7 +40763,7 @@ ${err}`);
       getDataUrl2 = (ctx, options) => {
         return getDataUrl(getSegmentEl(ctx), options);
       };
-      defaultTranslations14 = {
+      defaultTranslations15 = {
         control: "signature pad",
         clearTrigger: "clear signature"
       };
@@ -37375,7 +40778,7 @@ ${err}`);
       F = [0, 0];
       z2 = R;
       average = (a2, b2) => (a2 + b2) / 2;
-      machine24 = createMachine({
+      machine27 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             defaultPaths: []
@@ -37551,7 +40954,7 @@ ${err}`);
         }
         initMachine(props) {
           this.name = props.name;
-          return new VanillaMachine(machine24, props);
+          return new VanillaMachine(machine27, props);
         }
         setName(name) {
           this.name = name;
@@ -37560,7 +40963,7 @@ ${err}`);
           this.paths = paths;
         }
         initApi() {
-          return this.zagConnect(connect24);
+          return this.zagConnect(connect27);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -38049,7 +41452,7 @@ ${err}`);
     }
     return index;
   }
-  function connect25(service, normalize2) {
+  function connect28(service, normalize2) {
     const { state: state2, send, context, prop, computed, scope } = service;
     const ariaLabel = prop("aria-label");
     const ariaLabelledBy = prop("aria-labelledby");
@@ -38107,7 +41510,7 @@ ${err}`);
         send({ type: "FOCUS", index: 0 });
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts25.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts28.label.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-orientation": prop("orientation"),
@@ -38129,7 +41532,7 @@ ${err}`);
         }));
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.root.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-orientation": prop("orientation"),
           "data-dragging": dataAttr(dragging),
@@ -38141,7 +41544,7 @@ ${err}`);
         }));
       },
       getValueTextProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.valueText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-orientation": prop("orientation"),
@@ -38151,7 +41554,7 @@ ${err}`);
         }));
       },
       getTrackProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.track.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.track.attrs), {
           dir: prop("dir"),
           id: getTrackId(scope),
           "data-disabled": dataAttr(disabled),
@@ -38170,7 +41573,7 @@ ${err}`);
         const valueText = (_a4 = prop("getAriaValueText")) == null ? void 0 : _a4({ value, index });
         const _ariaLabel = Array.isArray(ariaLabel) ? ariaLabel[index] : ariaLabel;
         const _ariaLabelledBy = Array.isArray(ariaLabelledBy) ? ariaLabelledBy[index] : ariaLabelledBy;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.thumb.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.thumb.attrs), {
           dir: prop("dir"),
           "data-index": index,
           "data-name": name,
@@ -38276,7 +41679,7 @@ ${err}`);
       getRangeProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getRangeId(scope)
-        }, parts25.range.attrs), {
+        }, parts28.range.attrs), {
           dir: prop("dir"),
           "data-dragging": dataAttr(dragging),
           "data-focus": dataAttr(focused),
@@ -38287,7 +41690,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.control.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.control.attrs), {
           dir: prop("dir"),
           id: getControlId10(scope),
           "data-dragging": dataAttr(dragging),
@@ -38308,7 +41711,7 @@ ${err}`);
         }));
       },
       getMarkerGroupProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.markerGroup.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.markerGroup.attrs), {
           role: "presentation",
           dir: prop("dir"),
           "aria-hidden": true,
@@ -38326,7 +41729,7 @@ ${err}`);
         } else {
           markerState = "at-value";
         }
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.marker.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.marker.attrs), {
           id: getMarkerId(scope, props.value),
           role: "presentation",
           dir: prop("dir"),
@@ -38340,7 +41743,7 @@ ${err}`);
       getDraggingIndicatorProps(props) {
         const { index = 0 } = props;
         const isDragging = index === focusedIndex && dragging;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts25.draggingIndicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts28.draggingIndicator.attrs), {
           role: "presentation",
           dir: prop("dir"),
           hidden: !isDragging,
@@ -38502,17 +41905,17 @@ ${err}`);
       form: shouldGateHiddenName2(el) ? void 0 : getString(el, "form")
     });
   }
-  var anatomy25, parts25, getRootId20, getThumbId2, getHiddenInputId7, getControlId10, getTrackId, getRangeId, getLabelId15, getValueTextId2, getMarkerId, getRootEl7, getThumbEl2, getThumbEls, getFirstThumbEl, getHiddenInputEl6, getControlEl6, getThumbInset, getPointValue, dispatchChangeEvent, getOffsetRect2, isEqualSize, normalize, machine25, Slider, SliderHook;
+  var anatomy28, parts28, getRootId20, getThumbId2, getHiddenInputId7, getControlId10, getTrackId, getRangeId, getLabelId15, getValueTextId2, getMarkerId, getRootEl7, getThumbEl2, getThumbEls, getFirstThumbEl, getHiddenInputEl6, getControlEl6, getThumbInset, getPointValue, dispatchChangeEvent, getOffsetRect2, isEqualSize, normalize, machine28, Slider, SliderHook;
   var init_slider = __esm({
     "../priv/static/slider.mjs"() {
       "use strict";
-      init_chunk_HWUNIC34();
+      init_chunk_MMUMKVAL();
       init_chunk_AJX2XHOK();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy25 = createAnatomy("slider").parts(
+      init_chunk_CLKNJROH();
+      anatomy28 = createAnatomy("slider").parts(
         "root",
         "label",
         "thumb",
@@ -38524,7 +41927,7 @@ ${err}`);
         "marker",
         "draggingIndicator"
       );
-      parts25 = anatomy25.build();
+      parts28 = anatomy28.build();
       getRootId20 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `slider:${ctx.id}`;
@@ -38624,7 +42027,7 @@ ${err}`);
           return rangeValue;
         });
       };
-      machine25 = createMachine({
+      machine28 = createMachine({
         props({ props }) {
           var _a4, _b, _c, _d, _e, _f;
           const min4 = (_a4 = props.min) != null ? _a4 : 0;
@@ -38942,10 +42345,10 @@ ${err}`);
       });
       Slider = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine25, withMeasuredThumbSize(props, this.el));
+          return new VanillaMachine(machine28, withMeasuredThumbSize(props, this.el));
         }
         initApi() {
-          return this.zagConnect(connect25);
+          return this.zagConnect(connect28);
         }
         render() {
           var _a4;
@@ -39154,7 +42557,7 @@ ${err}`);
     Switch: () => SwitchHook,
     checkedChangePayload: () => checkedChangePayload
   });
-  function connect26(service, normalize2) {
+  function connect29(service, normalize2) {
     const { context, send, prop, scope } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -39185,7 +42588,7 @@ ${err}`);
         send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
       },
       getRootProps() {
-        return normalize2.label(__spreadProps(__spreadValues(__spreadValues({}, parts26.root.attrs), dataAttrs), {
+        return normalize2.label(__spreadProps(__spreadValues(__spreadValues({}, parts29.root.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getRootId21(scope),
           htmlFor: getHiddenInputId8(scope),
@@ -39211,20 +42614,20 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize2.element(__spreadProps(__spreadValues(__spreadValues({}, parts26.label.attrs), dataAttrs), {
+        return normalize2.element(__spreadProps(__spreadValues(__spreadValues({}, parts29.label.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getLabelId16(scope)
         }));
       },
       getThumbProps() {
-        return normalize2.element(__spreadProps(__spreadValues(__spreadValues({}, parts26.thumb.attrs), dataAttrs), {
+        return normalize2.element(__spreadProps(__spreadValues(__spreadValues({}, parts29.thumb.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getThumbId3(scope),
           "aria-hidden": true
         }));
       },
       getControlProps() {
-        return normalize2.element(__spreadProps(__spreadValues(__spreadValues({}, parts26.control.attrs), dataAttrs), {
+        return normalize2.element(__spreadProps(__spreadValues(__spreadValues({}, parts29.control.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getControlId11(scope),
           "aria-hidden": true
@@ -39262,17 +42665,17 @@ ${err}`);
       }
     };
   }
-  var anatomy26, parts26, getRootId21, getLabelId16, getThumbId3, getControlId11, getHiddenInputId8, getRootEl8, getHiddenInputEl7, not9, machine26, Switch, SwitchHook;
+  var anatomy29, parts29, getRootId21, getLabelId16, getThumbId3, getControlId11, getHiddenInputId8, getRootEl8, getHiddenInputEl7, not10, machine29, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_CPYFNSV2();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_RHLZLEPV();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy26 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-      parts26 = anatomy26.build();
+      init_chunk_CLKNJROH();
+      anatomy29 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+      parts29 = anatomy29.build();
       getRootId21 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `switch:${ctx.id}`;
@@ -39295,8 +42698,8 @@ ${err}`);
       };
       getRootEl8 = (ctx) => ctx.getById(getRootId21(ctx));
       getHiddenInputEl7 = (ctx) => ctx.getById(getHiddenInputId8(ctx));
-      ({ not: not9 } = createGuards());
-      machine26 = createMachine({
+      ({ not: not10 } = createGuards());
+      machine29 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultChecked: false,
@@ -39349,7 +42752,7 @@ ${err}`);
         on: {
           "CHECKED.TOGGLE": [
             {
-              guard: not9("isTrusted"),
+              guard: not10("isTrusted"),
               actions: ["toggleChecked", "dispatchChangeEvent"]
             },
             {
@@ -39358,7 +42761,7 @@ ${err}`);
           ],
           "CHECKED.SET": [
             {
-              guard: not9("isTrusted"),
+              guard: not10("isTrusted"),
               actions: ["setChecked", "dispatchChangeEvent"]
             },
             {
@@ -39437,10 +42840,10 @@ ${err}`);
       });
       Switch = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine26, props);
+          return new VanillaMachine(machine29, props);
         }
         initApi() {
-          return this.zagConnect(connect26);
+          return this.zagConnect(connect29);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -39586,14 +42989,14 @@ ${err}`);
     parseJsonTags: () => parseJsonTags,
     readPlaceholderFromMainInput: () => readPlaceholderFromMainInput
   });
-  function connect27(service, normalize2) {
+  function connect30(service, normalize2) {
     const { state: state2, send, computed, prop, scope, context } = service;
     const interactive = computed("isInteractive");
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
     const required = !!prop("required");
     const invalid = prop("invalid") || computed("isOverflowing");
-    const translations = mergeWithDefault(defaultTranslations15, prop("translations"));
+    const translations = mergeWithDefault(defaultTranslations16, prop("translations"));
     const focused = state2.hasTag("focused");
     const editingTag = state2.matches("editing:tag");
     const empty = computed("count") === 0;
@@ -39645,7 +43048,7 @@ ${err}`);
       getRootProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           dir: prop("dir")
-        }, parts27.root.attrs), {
+        }, parts30.root.attrs), {
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
           "data-disabled": dataAttr(disabled),
@@ -39659,7 +43062,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize2.label(__spreadProps(__spreadValues({}, parts27.label.attrs), {
+        return normalize2.label(__spreadProps(__spreadValues({}, parts30.label.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -39672,7 +43075,7 @@ ${err}`);
       getControlProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           id: getControlId12(scope)
-        }, parts27.control.attrs), {
+        }, parts30.control.attrs), {
           dir: prop("dir"),
           tabIndex: readOnly ? 0 : void 0,
           "data-disabled": dataAttr(disabled),
@@ -39682,7 +43085,7 @@ ${err}`);
         }));
       },
       getInputProps() {
-        return normalize2.input(__spreadProps(__spreadValues({}, parts27.input.attrs), {
+        return normalize2.input(__spreadProps(__spreadValues({}, parts30.input.attrs), {
           dir: prop("dir"),
           "data-invalid": dataAttr(invalid),
           "aria-invalid": ariaAttr(invalid),
@@ -39776,7 +43179,7 @@ ${err}`);
         });
       },
       getItemProps(props) {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts27.item.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts30.item.attrs), {
           dir: prop("dir"),
           "data-value": props.value,
           "data-disabled": dataAttr(disabled)
@@ -39784,7 +43187,7 @@ ${err}`);
       },
       getItemPreviewProps(props) {
         const itemState = getItemState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts27.itemPreview.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts30.itemPreview.attrs), {
           id: itemState.id,
           dir: prop("dir"),
           hidden: itemState.editing,
@@ -39805,7 +43208,7 @@ ${err}`);
       },
       getItemTextProps(props) {
         const itemState = getItemState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts27.itemText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts30.itemText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
@@ -39813,7 +43216,7 @@ ${err}`);
       },
       getItemInputProps(props) {
         const itemState = getItemState(props);
-        return normalize2.input(__spreadProps(__spreadValues({}, parts27.itemInput.attrs), {
+        return normalize2.input(__spreadProps(__spreadValues({}, parts30.itemInput.attrs), {
           dir: prop("dir"),
           "aria-label": translations.tagEdited(props.value),
           disabled,
@@ -39851,7 +43254,7 @@ ${err}`);
       },
       getItemDeleteTriggerProps(props) {
         const itemState = getItemState(props);
-        return normalize2.button(__spreadProps(__spreadValues({}, parts27.itemDeleteTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts30.itemDeleteTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "aria-disabled": itemState.disabled,
@@ -39883,7 +43286,7 @@ ${err}`);
         }));
       },
       getClearTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts27.clearTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts30.clearTrigger.attrs), {
           dir: prop("dir"),
           id: getClearTriggerId4(scope),
           type: "button",
@@ -40039,17 +43442,17 @@ ${err}`);
     if (getString(el, "submitName")) return void 0;
     return getString(el, "name");
   }
-  var anatomy27, parts27, getRootId22, getInputId8, getClearTriggerId4, getHiddenInputId9, getLabelId17, getControlId12, getItemId10, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl9, getInputEl6, getHiddenInputEl8, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, defaultTranslations15, and9, not10, or4, machine27, TAG_PLACEHOLDER, DEFAULT_DELETE_TEMPLATE, DEFAULT_TAG_EDITED_TEMPLATE, TagsInput, TagsInputHook;
+  var anatomy30, parts30, getRootId22, getInputId8, getClearTriggerId4, getHiddenInputId9, getLabelId17, getControlId12, getItemId10, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl9, getInputEl6, getHiddenInputEl8, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, defaultTranslations16, and11, not11, or4, machine30, TAG_PLACEHOLDER, DEFAULT_DELETE_TEMPLATE, DEFAULT_TAG_EDITED_TEMPLATE, TagsInput, TagsInputHook;
   var init_tags_input = __esm({
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_NUOTFVKH();
-      init_chunk_KNSNFBRP();
-      init_chunk_F6YUZM6O();
-      init_chunk_I5HWU3ET();
+      init_chunk_HY5BRBNW();
+      init_chunk_POHGVU2K();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy27 = createAnatomy("tagsInput").parts(
+      init_chunk_CLKNJROH();
+      anatomy30 = createAnatomy("tagsInput").parts(
         "root",
         "label",
         "control",
@@ -40061,7 +43464,7 @@ ${err}`);
         "itemText",
         "itemDeleteTrigger"
       );
-      parts27 = anatomy27.build();
+      parts30 = anatomy30.build();
       getRootId22 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tags-input:${ctx.id}`;
@@ -40127,7 +43530,7 @@ ${err}`);
         if (!inputEl) return;
         dispatchInputValueEvent(inputEl, { value });
       };
-      defaultTranslations15 = {
+      defaultTranslations16 = {
         clearTriggerLabel: "Clear all tags",
         deleteTagTriggerLabel: (value) => `Delete tag ${value}`,
         tagAdded: (value) => `Added tag ${value}`,
@@ -40139,8 +43542,8 @@ ${err}`);
         noTagsSelected: "No tags selected",
         inputLabel: (count) => count === 1 ? "1 tag" : `${count} tags`
       };
-      ({ and: and9, not: not10, or: or4 } = createGuards());
-      machine27 = createMachine({
+      ({ and: and11, not: not11, or: or4 } = createGuards());
+      machine30 = createMachine({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -40271,7 +43674,7 @@ ${err}`);
           },
           INSERT_TAG: {
             // (!isAtMax || allowOverflow) && !inputValueIsEmpty
-            guard: and9(or4(not10("isAtMax"), "allowOverflow"), not10("isInputValueEmpty")),
+            guard: and11(or4(not11("isAtMax"), "allowOverflow"), not11("isInputValueEmpty")),
             actions: ["addTag", "clearInputValue"]
           },
           EXTERNAL_BLUR: [
@@ -40286,7 +43689,7 @@ ${err}`);
                 target: "focused:input"
               },
               POINTER_DOWN: {
-                guard: not10("hasHighlightedTag"),
+                guard: not11("hasHighlightedTag"),
                 target: "focused:input"
               }
             }
@@ -40319,13 +43722,13 @@ ${err}`);
                 actions: ["raiseInsertTagEvent"]
               },
               ARROW_LEFT: {
-                guard: and9("hasTags", "isCaretAtStart"),
+                guard: and11("hasTags", "isCaretAtStart"),
                 target: "navigating:tag",
                 actions: ["highlightLastTag"]
               },
               BACKSPACE: {
                 target: "navigating:tag",
-                guard: and9("hasTags", "isCaretAtStart"),
+                guard: and11("hasTags", "isCaretAtStart"),
                 actions: ["highlightLastTag"]
               },
               DELETE: {
@@ -40349,14 +43752,14 @@ ${err}`);
             on: {
               ARROW_RIGHT: [
                 {
-                  guard: and9("hasTags", "isCaretAtStart", not10("isLastTagHighlighted")),
+                  guard: and11("hasTags", "isCaretAtStart", not11("isLastTagHighlighted")),
                   actions: ["highlightNextTag"]
                 },
                 { target: "focused:input" }
               ],
               ARROW_LEFT: [
                 {
-                  guard: not10("isCaretAtStart"),
+                  guard: not11("isCaretAtStart"),
                   target: "focused:input"
                 },
                 {
@@ -40368,7 +43771,7 @@ ${err}`);
                 actions: ["clearHighlightedId"]
               },
               ENTER: {
-                guard: and9("isTagEditable", "hasHighlightedTag"),
+                guard: and11("isTagEditable", "hasHighlightedTag"),
                 target: "editing:tag",
                 actions: ["setEditedId", "focusEditedTagInput"]
               },
@@ -40384,7 +43787,7 @@ ${err}`);
               },
               BACKSPACE: [
                 {
-                  guard: not10("isCaretAtStart"),
+                  guard: not11("isCaretAtStart"),
                   target: "focused:input"
                 },
                 {
@@ -40401,7 +43804,7 @@ ${err}`);
               ],
               DELETE: [
                 {
-                  guard: not10("isCaretAtStart"),
+                  guard: not11("isCaretAtStart"),
                   target: "focused:input"
                 },
                 {
@@ -40788,7 +44191,7 @@ ${err}`);
             // queue logs with screen reader and get it announced
             announceLog({ refs, prop }) {
               const liveRegion = refs.get("liveRegion");
-              const translations = mergeWithDefault(defaultTranslations15, prop("translations"));
+              const translations = mergeWithDefault(defaultTranslations16, prop("translations"));
               const log = refs.get("log");
               if (!log.current || liveRegion == null) return;
               const region = liveRegion;
@@ -40831,10 +44234,10 @@ ${err}`);
       DEFAULT_TAG_EDITED_TEMPLATE = "Editing tag %{tag}. Press enter to save or escape to cancel.";
       TagsInput = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine27, props);
+          return new VanillaMachine(machine30, props);
         }
         initApi() {
-          return this.zagConnect(connect27);
+          return this.zagConnect(connect30);
         }
         spreadItemParts(itemEl, index, value) {
           this.spreadProps(itemEl, this.api.getItemProps({ index, value }));
@@ -41125,7 +44528,7 @@ ${err}`);
     tabsFocusChangePayload: () => tabsFocusChangePayload,
     tabsValueChangePayload: () => tabsValueChangePayload
   });
-  function connect28(service, normalize2) {
+  function connect31(service, normalize2) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
     const focused = state2.matches("focused");
@@ -41149,7 +44552,7 @@ ${err}`);
         send({ type: "CLEAR_VALUE" });
       },
       setIndicatorRect(value) {
-        const id = getTriggerId10(scope, value);
+        const id = getTriggerId13(scope, value);
         send({ type: "SET_INDICATOR_RECT", id });
       },
       syncTabIndex() {
@@ -41167,10 +44570,10 @@ ${err}`);
         var _a4;
         const value = context.get("value");
         if (!value) return;
-        (_a4 = getTriggerEl8(scope, value)) == null ? void 0 : _a4.focus();
+        (_a4 = getTriggerEl11(scope, value)) == null ? void 0 : _a4.focus();
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts28.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts31.root.attrs), {
           id: getRootId23(scope),
           "data-orientation": prop("orientation"),
           "data-focus": dataAttr(focused),
@@ -41178,7 +44581,7 @@ ${err}`);
         }));
       },
       getListProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts28.list.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts31.list.attrs), {
           id: getListId(scope),
           role: "tablist",
           dir: prop("dir"),
@@ -41231,7 +44634,7 @@ ${err}`);
       getTriggerProps(props) {
         const { value, disabled } = props;
         const triggerState = getTriggerState(props);
-        return normalize2.button(__spreadProps(__spreadValues({}, parts28.trigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts31.trigger.attrs), {
           role: "tab",
           type: "button",
           disabled,
@@ -41243,10 +44646,10 @@ ${err}`);
           "aria-selected": triggerState.selected,
           "data-selected": dataAttr(triggerState.selected),
           "data-focus": dataAttr(triggerState.focused),
-          "aria-controls": triggerState.selected ? getContentId10(scope, value) : void 0,
+          "aria-controls": triggerState.selected ? getContentId13(scope, value) : void 0,
           "data-ownedby": getListId(scope),
           "data-ssr": dataAttr(context.get("ssr")),
-          id: getTriggerId10(scope, value),
+          id: getTriggerId13(scope, value),
           tabIndex: triggerState.selected && composite ? 0 : -1,
           onFocus() {
             send({ type: "TAB_FOCUS", value });
@@ -41271,11 +44674,11 @@ ${err}`);
       getContentProps(props) {
         const { value } = props;
         const selected = context.get("value") === value;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts28.content.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts31.content.attrs), {
           dir: prop("dir"),
-          id: getContentId10(scope, value),
+          id: getContentId13(scope, value),
           tabIndex: composite ? 0 : -1,
-          "aria-labelledby": getTriggerId10(scope, value),
+          "aria-labelledby": getTriggerId13(scope, value),
           role: "tabpanel",
           "data-ownedby": getListId(scope),
           "data-selected": dataAttr(selected),
@@ -41288,7 +44691,7 @@ ${err}`);
         const animateIndicator = context.get("animateIndicator");
         return normalize2.element(__spreadProps(__spreadValues({
           id: getIndicatorId3(scope)
-        }, parts28.indicator.attrs), {
+        }, parts31.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           hidden: isRectEmpty2(rect),
@@ -41336,16 +44739,16 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy28, parts28, getRootId23, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect3, getRectByValue, isRectEmpty2, createMachine6, machine28, Tabs, TabsHook;
+  var anatomy31, parts31, getRootId23, getListId, getContentId13, getTriggerId13, getIndicatorId3, getListEl, getContentEl13, getTriggerEl11, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect3, getRectByValue, isRectEmpty2, createMachine6, machine31, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_AJX2XHOK();
-      init_chunk_I5HWU3ET();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy28 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
-      parts28 = anatomy28.build();
+      init_chunk_CLKNJROH();
+      anatomy31 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+      parts31 = anatomy31.build();
       getRootId23 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tabs:${ctx.id}`;
@@ -41354,11 +44757,11 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.list) != null ? _b : `tabs:${ctx.id}:list`;
       };
-      getContentId10 = (ctx, value) => {
+      getContentId13 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `tabs:${ctx.id}:content-${value}`;
       };
-      getTriggerId10 = (ctx, value) => {
+      getTriggerId13 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `tabs:${ctx.id}:trigger-${value}`;
       };
@@ -41367,8 +44770,8 @@ ${err}`);
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.indicator) != null ? _b : `tabs:${ctx.id}:indicator`;
       };
       getListEl = (ctx) => ctx.getById(getListId(ctx));
-      getContentEl10 = (ctx, value) => ctx.getById(getContentId10(ctx, value));
-      getTriggerEl8 = (ctx, value) => value != null ? ctx.getById(getTriggerId10(ctx, value)) : null;
+      getContentEl13 = (ctx, value) => ctx.getById(getContentId13(ctx, value));
+      getTriggerEl11 = (ctx, value) => value != null ? ctx.getById(getTriggerId13(ctx, value)) : null;
       getIndicatorEl3 = (ctx) => ctx.getById(getIndicatorId3(ctx));
       getElements2 = (ctx) => {
         const selector = `[role=tab]${getByOwnerId(getListId(ctx))}:not([disabled])`;
@@ -41376,8 +44779,8 @@ ${err}`);
       };
       getFirstTriggerEl2 = (ctx) => first(getElements2(ctx));
       getLastTriggerEl2 = (ctx) => last(getElements2(ctx));
-      getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId10(ctx, opts.value), opts.loopFocus);
-      getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId10(ctx, opts.value), opts.loopFocus);
+      getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId13(ctx, opts.value), opts.loopFocus);
+      getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId13(ctx, opts.value), opts.loopFocus);
       getOffsetRect3 = (el) => {
         var _a4, _b, _c, _d;
         return {
@@ -41388,12 +44791,12 @@ ${err}`);
         };
       };
       getRectByValue = (ctx, value) => {
-        const tab = itemById(getElements2(ctx), getTriggerId10(ctx, value));
+        const tab = itemById(getElements2(ctx), getTriggerId13(ctx, value));
         return getOffsetRect3(tab);
       };
       isRectEmpty2 = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ createMachine: createMachine6 } = setup());
-      machine28 = createMachine6({
+      machine31 = createMachine6({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -41612,7 +45015,7 @@ ${err}`);
               raf(() => {
                 const value = context.get("value");
                 if (!value) return;
-                const contentEl = getContentEl10(scope, value);
+                const contentEl = getContentEl13(scope, value);
                 if (!contentEl) return;
                 const focusables = getFocusables(contentEl);
                 if (focusables.length > 0) {
@@ -41632,7 +45035,7 @@ ${err}`);
               const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               if (!value) return;
-              const triggerEl = getTriggerEl8(scope, value);
+              const triggerEl = getTriggerEl11(scope, value);
               if (!triggerEl) return;
               context.set("indicatorRect", getRectByValue(scope, value));
             },
@@ -41658,7 +45061,7 @@ ${err}`);
               const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               const exec = () => {
-                const triggerEl = getTriggerEl8(scope, context.get("value"));
+                const triggerEl = getTriggerEl11(scope, context.get("value"));
                 if (!triggerEl) return;
                 const rect = getOffsetRect3(triggerEl);
                 context.set("indicatorRect", (prev2) => isEqual(prev2, rect) ? prev2 : rect);
@@ -41676,7 +45079,7 @@ ${err}`);
               var _a4;
               const value = context.get("value");
               if (!value) return;
-              const triggerEl = getTriggerEl8(scope, value);
+              const triggerEl = getTriggerEl11(scope, value);
               if (isAnchorElement(triggerEl)) {
                 (_a4 = prop("navigate")) == null ? void 0 : _a4({ value, node: triggerEl, href: triggerEl.href });
               }
@@ -41691,13 +45094,13 @@ ${err}`);
           return __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) });
         }
         initMachine(props) {
-          return new VanillaMachine(machine28, this.withDomIds(props));
+          return new VanillaMachine(machine31, this.withDomIds(props));
         }
         updateProps(props) {
           return super.updateProps(this.withDomIds(props));
         }
         initApi() {
-          return this.zagConnect(connect28);
+          return this.zagConnect(connect31);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
@@ -41798,9 +45201,9 @@ ${err}`);
     Timer: () => TimerHook,
     parseTimerTranslations: () => parseTimerTranslations
   });
-  function connect29(service, normalize2) {
+  function connect32(service, normalize2) {
     const { state: state2, send, computed, scope, prop } = service;
-    const translations = mergeWithDefault(defaultTranslations16, prop("translations"));
+    const translations = mergeWithDefault(defaultTranslations17, prop("translations"));
     const running = state2.matches("running");
     const paused = state2.matches("paused");
     const time = computed("time");
@@ -41830,7 +45233,7 @@ ${err}`);
       getRootProps() {
         return normalize2.element(__spreadValues({
           id: getRootId24(scope)
-        }, parts29.root.attrs));
+        }, parts32.root.attrs));
       },
       getAreaProps() {
         var _a4;
@@ -41839,14 +45242,14 @@ ${err}`);
           id: getAreaId3(scope),
           "aria-label": (_a4 = translations.areaLabel) == null ? void 0 : _a4.call(translations, time, formattedTime),
           "aria-atomic": true
-        }, parts29.area.attrs));
+        }, parts32.area.attrs));
       },
       getControlProps() {
-        return normalize2.element(__spreadValues({}, parts29.control.attrs));
+        return normalize2.element(__spreadValues({}, parts32.control.attrs));
       },
       getItemProps(props) {
         const value = time[props.type];
-        return normalize2.element(__spreadProps(__spreadValues({}, parts29.item.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts32.item.attrs), {
           "data-type": props.type,
           style: {
             "--value": value
@@ -41854,19 +45257,19 @@ ${err}`);
         }));
       },
       getItemLabelProps(props) {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts29.itemLabel.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts32.itemLabel.attrs), {
           "data-type": props.type
         }));
       },
       getItemValueProps(props) {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts29.itemValue.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts32.itemValue.attrs), {
           "data-type": props.type
         }));
       },
       getSeparatorProps() {
         return normalize2.element(__spreadValues({
           "aria-hidden": true
-        }, parts29.separator.attrs));
+        }, parts32.separator.attrs));
       },
       getActionTriggerProps(props) {
         if (!validActions.has(props.action)) {
@@ -41874,7 +45277,7 @@ ${err}`);
             `[zag-js] Invalid action: ${props.action}. Must be one of: ${Array.from(validActions).join(", ")}`
           );
         }
-        return normalize2.button(__spreadProps(__spreadValues({}, parts29.actionTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts32.actionTrigger.attrs), {
           hidden: match(props.action, {
             start: () => running || paused,
             pause: () => !running,
@@ -42125,16 +45528,16 @@ ${err}`);
       translations: parseTimerTranslations(el)
     }, buildTimerCallbacks(el, pushEvent, canPush));
   }
-  var anatomy29, parts29, getRootId24, getAreaId3, defaultTranslations16, validActions, machine29, Timer2, TimerHook;
+  var anatomy32, parts32, getRootId24, getAreaId3, defaultTranslations17, validActions, machine32, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_HWUNIC34();
-      init_chunk_4Z6E5U4O();
+      init_chunk_MMUMKVAL();
+      init_chunk_OWGIU2G5();
       init_chunk_AJX2XHOK();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy29 = createAnatomy("timer").parts(
+      init_chunk_CLKNJROH();
+      anatomy32 = createAnatomy("timer").parts(
         "root",
         "area",
         "control",
@@ -42144,7 +45547,7 @@ ${err}`);
         "actionTrigger",
         "separator"
       );
-      parts29 = anatomy29.build();
+      parts32 = anatomy32.build();
       getRootId24 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `timer:${ctx.id}:root`;
@@ -42153,11 +45556,11 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.area) != null ? _b : `timer:${ctx.id}:area`;
       };
-      defaultTranslations16 = {
+      defaultTranslations17 = {
         areaLabel: (time, formattedTime) => `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
       };
       validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
-      machine29 = createMachine({
+      machine32 = createMachine({
         props({ props }) {
           validateProps(props);
           return __spreadValues({
@@ -42310,10 +45713,10 @@ ${err}`);
       });
       Timer2 = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine29, props);
+          return new VanillaMachine(machine32, props);
         }
         initApi() {
-          return this.zagConnect(connect29);
+          return this.zagConnect(connect32);
         }
         render() {
           var _a4;
@@ -42657,7 +46060,7 @@ ${err}`);
         const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
         const placement = computed("placement");
         const [side, align = "center"] = placement.split("-");
-        return normalize2.element(__spreadProps(__spreadValues({}, parts30.group.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts33.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
           role: "region",
@@ -42698,9 +46101,9 @@ ${err}`);
       }
     };
   }
-  function connect30(service, normalize2) {
+  function connect33(service, normalize2) {
     const { state: state2, send, prop, scope, context, computed } = service;
-    const translations = mergeWithDefault(defaultTranslations17, prop("translations"));
+    const translations = mergeWithDefault(defaultTranslations18, prop("translations"));
     const visible = state2.hasTag("visible");
     const paused = state2.hasTag("paused");
     const mounted = context.get("mounted");
@@ -42730,7 +46133,7 @@ ${err}`);
         send({ type: "DISMISS", src: "programmatic" });
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts30.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts33.root.attrs), {
           dir: prop("dir"),
           id: getRootId25(scope),
           "data-state": visible ? "open" : "closed",
@@ -42746,8 +46149,8 @@ ${err}`);
           "data-overlap": dataAttr(!stacked),
           role: "status",
           "aria-atomic": "true",
-          "aria-describedby": description ? getDescriptionId2(scope) : void 0,
-          "aria-labelledby": title ? getTitleId3(scope) : void 0,
+          "aria-describedby": description ? getDescriptionId4(scope) : void 0,
+          "aria-labelledby": title ? getTitleId5(scope) : void 0,
           tabIndex: 0,
           style: getPlacementStyle(service, visible),
           onKeyDown(event) {
@@ -42774,17 +46177,17 @@ ${err}`);
         });
       },
       getTitleProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts30.title.attrs), {
-          id: getTitleId3(scope)
+        return normalize2.element(__spreadProps(__spreadValues({}, parts33.title.attrs), {
+          id: getTitleId5(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts30.description.attrs), {
-          id: getDescriptionId2(scope)
+        return normalize2.element(__spreadProps(__spreadValues({}, parts33.description.attrs), {
+          id: getDescriptionId4(scope)
         }));
       },
       getActionTriggerProps() {
-        return normalize2.button(__spreadProps(__spreadValues({}, parts30.actionTrigger.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts33.actionTrigger.attrs), {
           type: "button",
           onClick(event) {
             var _a4;
@@ -42796,8 +46199,8 @@ ${err}`);
       },
       getCloseTriggerProps() {
         return normalize2.button(__spreadProps(__spreadValues({
-          id: getCloseTriggerId2(scope)
-        }, parts30.closeTrigger.attrs), {
+          id: getCloseTriggerId4(scope)
+        }, parts33.closeTrigger.attrs), {
           type: "button",
           "aria-label": translations == null ? void 0 : translations.closeTriggerLabel,
           onClick(event) {
@@ -43171,15 +46574,15 @@ ${err}`);
       redirectCtx: { liveSocket: self2.liveSocket }
     };
   }
-  var anatomy30, parts30, getRegionId, getRegionEl, getRootId25, getRootEl10, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, defaultTranslations17, not11, machine30, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, parseActionSpec, loadingMeta, ToastGroupHandle, ToastHook;
+  var anatomy33, parts33, getRegionId, getRegionEl, getRootId25, getRootEl10, getTitleId5, getDescriptionId4, getCloseTriggerId4, defaultTimeouts, getOffsets, guards4, createMachine22, and12, groupMachine, defaultTranslations18, not12, machine33, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, parseActionSpec, loadingMeta, ToastGroupHandle, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_4Z6E5U4O();
-      init_chunk_CKZ5NOMG();
-      init_chunk_KNSNFBRP();
-      init_chunk_JPQZXVRQ();
-      anatomy30 = createAnatomy("toast").parts(
+      init_chunk_OWGIU2G5();
+      init_chunk_QFRIDKAW();
+      init_chunk_HY5BRBNW();
+      init_chunk_CLKNJROH();
+      anatomy33 = createAnatomy("toast").parts(
         "group",
         "root",
         "title",
@@ -43187,14 +46590,14 @@ ${err}`);
         "actionTrigger",
         "closeTrigger"
       );
-      parts30 = anatomy30.build();
+      parts33 = anatomy33.build();
       getRegionId = (placement) => `toast-group:${placement}`;
       getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
       getRootId25 = (ctx) => `toast:${ctx.id}`;
       getRootEl10 = (ctx) => ctx.getById(getRootId25(ctx));
-      getTitleId3 = (ctx) => `toast:${ctx.id}:title`;
-      getDescriptionId2 = (ctx) => `toast:${ctx.id}:description`;
-      getCloseTriggerId2 = (ctx) => `toast${ctx.id}:close`;
+      getTitleId5 = (ctx) => `toast:${ctx.id}:title`;
+      getDescriptionId4 = (ctx) => `toast:${ctx.id}:description`;
+      getCloseTriggerId4 = (ctx) => `toast${ctx.id}:close`;
       defaultTimeouts = {
         info: 5e3,
         error: 5e3,
@@ -43205,7 +46608,7 @@ ${err}`);
       };
       getOffsets = (offsets) => typeof offsets === "string" ? { left: offsets, right: offsets, bottom: offsets, top: offsets } : offsets;
       ({ guards: guards4, createMachine: createMachine22 } = setup());
-      ({ and: and10 } = guards4);
+      ({ and: and12 } = guards4);
       groupMachine = createMachine22({
         props({ props }) {
           return __spreadProps(__spreadValues({
@@ -43260,7 +46663,7 @@ ${err}`);
           },
           "REGION.BLUR": [
             {
-              guard: and10("isOverlapping", "isPointerOut"),
+              guard: and12("isOverlapping", "isPointerOut"),
               target: "overlap",
               actions: ["collapseToasts", "resumeToasts", "restoreFocusIfPointerOut"]
             },
@@ -43458,11 +46861,11 @@ ${err}`);
           }
         }
       });
-      defaultTranslations17 = {
+      defaultTranslations18 = {
         closeTriggerLabel: "Dismiss notification"
       };
-      ({ not: not11 } = createGuards());
-      machine30 = createMachine({
+      ({ not: not12 } = createGuards());
+      machine33 = createMachine({
         props({ props }) {
           ensureProps(props, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
@@ -43565,7 +46968,7 @@ ${err}`);
             tags: ["visible", "paused"],
             on: {
               RESUME: {
-                guard: not11("isLoadingType"),
+                guard: not12("isLoadingType"),
                 target: "visible",
                 actions: ["setCloseTimer"]
               },
@@ -43784,10 +47187,10 @@ ${err}`);
           return super.updateProps(props);
         }
         initMachine(props) {
-          return new VanillaMachine(machine30, props);
+          return new VanillaMachine(machine33, props);
         }
         initApi() {
-          return this.zagConnect(connect30);
+          return this.zagConnect(connect33);
         }
         render() {
           var _a4, _b, _c, _d, _e;
@@ -44129,7 +47532,7 @@ ${err}`);
     Tooltip: () => TooltipHook,
     getCloseDelay: () => getCloseDelay
   });
-  function connect31(service, normalize2) {
+  function connect34(service, normalize2) {
     const { state: state2, context, send, scope, prop, event: _event } = service;
     const id = prop("id");
     const hasAriaLabel = !!prop("aria-label");
@@ -44137,7 +47540,7 @@ ${err}`);
     const triggerValue = context.get("triggerValue");
     const currentPlacement = context.get("currentPlacement");
     const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
-    const contentId = getContentId11(scope);
+    const contentId = getContentId14(scope);
     const disabled = prop("disabled");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: currentPlacement
@@ -44159,8 +47562,8 @@ ${err}`);
       getTriggerProps(props = {}) {
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
-        const triggerId = getTriggerId11(scope, value);
-        return normalize2.button(__spreadProps(__spreadValues({}, parts31.trigger.attrs), {
+        const triggerId = getTriggerId14(scope, value);
+        return normalize2.button(__spreadProps(__spreadValues({}, parts34.trigger.attrs), {
           id: triggerId,
           "data-ownedby": scope.id,
           "data-value": value,
@@ -44228,22 +47631,22 @@ ${err}`);
       },
       getArrowProps() {
         return normalize2.element(__spreadProps(__spreadValues({
-          id: getArrowId2(scope)
-        }, parts31.arrow.attrs), {
+          id: getArrowId4(scope)
+        }, parts34.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts31.arrowTip.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts34.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
       },
       getPositionerProps() {
         return normalize2.element(__spreadProps(__spreadValues({
-          id: getPositionerId8(scope)
-        }, parts31.positioner.attrs), {
+          id: getPositionerId11(scope)
+        }, parts34.positioner.attrs), {
           dir: prop("dir"),
           style: popperStyles.floating
         }));
@@ -44252,7 +47655,7 @@ ${err}`);
         const isCurrentTooltip = store2.get("id") === id;
         const isPrevTooltip = store2.get("prevId") === id;
         const instant = store2.get("instant") && (open && isCurrentTooltip || isPrevTooltip);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts31.content.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts34.content.attrs), {
           dir: prop("dir"),
           hidden: !open,
           "data-state": open ? "open" : "closed",
@@ -44330,53 +47733,53 @@ ${err}`);
       interactive: getBoolean(el, "interactive")
     }, createTooltipCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket));
   }
-  var anatomy31, parts31, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getTriggerEl9, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store2, and11, not12, machine31, Tooltip, TooltipHook;
+  var anatomy34, parts34, getTriggerId14, getContentId14, getArrowId4, getPositionerId11, getTriggerEl12, getPositionerEl11, getTriggerEls7, getActiveTriggerEl6, store2, and13, not13, machine34, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
       init_chunk_QSONVEW6();
-      init_chunk_YKCP6S4O();
-      init_chunk_4JF6I36R();
-      init_chunk_CPYFNSV2();
+      init_chunk_QBBRC35T();
+      init_chunk_ZTJV2RYM();
+      init_chunk_RHLZLEPV();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy31 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
-      parts31 = anatomy31.build();
-      getTriggerId11 = (scope, value) => {
+      init_chunk_CLKNJROH();
+      anatomy34 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
+      parts34 = anatomy34.build();
+      getTriggerId14 = (scope, value) => {
         var _a4;
         const customId = (_a4 = scope.ids) == null ? void 0 : _a4.trigger;
         if (customId != null) return isFunction(customId) ? customId(value) : customId;
         return value ? `tooltip:${scope.id}:trigger:${value}` : `tooltip:${scope.id}:trigger`;
       };
-      getContentId11 = (scope) => {
+      getContentId14 = (scope) => {
         var _a4, _b;
         return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.content) != null ? _b : `tooltip:${scope.id}:content`;
       };
-      getArrowId2 = (scope) => {
+      getArrowId4 = (scope) => {
         var _a4, _b;
         return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.arrow) != null ? _b : `tooltip:${scope.id}:arrow`;
       };
-      getPositionerId8 = (scope) => {
+      getPositionerId11 = (scope) => {
         var _a4, _b;
         return (_b = (_a4 = scope.ids) == null ? void 0 : _a4.positioner) != null ? _b : `tooltip:${scope.id}:popper`;
       };
-      getTriggerEl9 = (scope) => scope.getById(getTriggerId11(scope));
-      getPositionerEl8 = (scope) => scope.getById(getPositionerId8(scope));
-      getTriggerEls4 = (scope) => queryAll(scope.getRootNode(), `[data-scope="tooltip"][data-part="trigger"]${getByOwnerId(scope.id)}`);
-      getActiveTriggerEl3 = (scope, value) => {
+      getTriggerEl12 = (scope) => scope.getById(getTriggerId14(scope));
+      getPositionerEl11 = (scope) => scope.getById(getPositionerId11(scope));
+      getTriggerEls7 = (scope) => queryAll(scope.getRootNode(), `[data-scope="tooltip"][data-part="trigger"]${getByOwnerId(scope.id)}`);
+      getActiveTriggerEl6 = (scope, value) => {
         var _a4;
         if (value == null) {
-          return (_a4 = getTriggerEl9(scope)) != null ? _a4 : getTriggerEls4(scope)[0];
+          return (_a4 = getTriggerEl12(scope)) != null ? _a4 : getTriggerEls7(scope)[0];
         }
-        return scope.getById(getTriggerId11(scope, value));
+        return scope.getById(getTriggerId14(scope, value));
       };
       store2 = createStore({
         id: null,
         prevId: null,
         instant: false
       });
-      ({ and: and11, not: not12 } = createGuards());
-      machine31 = createMachine({
+      ({ and: and13, not: not13 } = createGuards());
+      machine34 = createMachine({
         initialState: ({ prop }) => {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "closed";
@@ -44413,7 +47816,7 @@ ${err}`);
               onChange(value) {
                 const onTriggerValueChange = prop("onTriggerValueChange");
                 if (!onTriggerValueChange) return;
-                const triggerElement = getActiveTriggerEl3(scope, value);
+                const triggerElement = getActiveTriggerEl6(scope, value);
                 onTriggerValueChange({ value, triggerElement });
               }
             };
@@ -44457,12 +47860,12 @@ ${err}`);
               },
               "pointer.move": [
                 {
-                  guard: and11("noVisibleTooltip", not12("hasPointerMoveOpened")),
+                  guard: and13("noVisibleTooltip", not13("hasPointerMoveOpened")),
                   target: "opening",
                   actions: ["setTriggerValue"]
                 },
                 {
-                  guard: not12("hasPointerMoveOpened"),
+                  guard: not13("hasPointerMoveOpened"),
                   target: "open",
                   actions: ["setPointerMoveOpened", "invokeOnOpen", "setTriggerValue"]
                 }
@@ -44660,8 +48063,8 @@ ${err}`);
             },
             reposition: ({ context, event, prop, scope }) => {
               if (event.type !== "positioning.set") return;
-              const getPositionerEl22 = () => getPositionerEl8(scope);
-              const getTriggerEl22 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              const getPositionerEl22 = () => getPositionerEl11(scope);
+              const getTriggerEl22 = () => getActiveTriggerEl6(scope, context.get("triggerValue"));
               getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 listeners: false,
                 onComplete(data) {
@@ -44672,8 +48075,8 @@ ${err}`);
             repositionImmediate: ({ context, event, prop, scope }) => {
               var _a4;
               const triggerValue = (_a4 = event.value) != null ? _a4 : context.get("triggerValue");
-              const getPositionerEl22 = () => getPositionerEl8(scope);
-              const getTriggerEl22 = () => getActiveTriggerEl3(scope, triggerValue);
+              const getPositionerEl22 = () => getPositionerEl11(scope);
+              const getTriggerEl22 = () => getActiveTriggerEl6(scope, triggerValue);
               return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -44715,8 +48118,8 @@ ${err}`);
               if (!context.get("currentPlacement")) {
                 context.set("currentPlacement", prop("positioning").placement);
               }
-              const getPositionerEl22 = () => getPositionerEl8(scope);
-              const getTriggerEl22 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              const getPositionerEl22 = () => getPositionerEl11(scope);
+              const getTriggerEl22 = () => getActiveTriggerEl6(scope, context.get("triggerValue"));
               return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 defer: true,
                 onComplete(data) {
@@ -44732,7 +48135,7 @@ ${err}`);
             trackScroll: ({ send, prop, scope, context }) => {
               if (!prop("closeOnScroll")) return;
               const triggerValue = context.get("triggerValue");
-              const triggerEl = getActiveTriggerEl3(scope, triggerValue);
+              const triggerEl = getActiveTriggerEl6(scope, triggerValue);
               if (!triggerEl) return;
               const overflowParents = getOverflowAncestors(triggerEl);
               const cleanups = overflowParents.map((overflowParent) => {
@@ -44786,10 +48189,10 @@ ${err}`);
       });
       Tooltip = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine31, props);
+          return new VanillaMachine(machine34, props);
         }
         initApi() {
-          return this.zagConnect(connect31);
+          return this.zagConnect(connect34);
         }
         syncDom() {
           this.api = this.initApi();
@@ -44853,7 +48256,7 @@ ${err}`);
     Toggle: () => ToggleHook,
     pressedChangePayload: () => pressedChangePayload
   });
-  function connect32(service, normalize2) {
+  function connect35(service, normalize2) {
     const { context, prop, send } = service;
     const pressed = context.get("pressed");
     return {
@@ -44865,7 +48268,7 @@ ${err}`);
       getRootProps() {
         return normalize2.element(__spreadProps(__spreadValues({
           type: "button"
-        }, parts32.root.attrs), {
+        }, parts35.root.attrs), {
           disabled: prop("disabled"),
           "aria-pressed": pressed,
           "data-state": pressed ? "on" : "off",
@@ -44879,7 +48282,7 @@ ${err}`);
         }));
       },
       getIndicatorProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts32.indicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts35.indicator.attrs), {
           "data-disabled": dataAttr(prop("disabled")),
           "data-pressed": dataAttr(pressed),
           "data-state": pressed ? "on" : "off"
@@ -44893,16 +48296,16 @@ ${err}`);
       pressed
     };
   }
-  var anatomy32, parts32, machine32, Toggle, ToggleHook;
+  var anatomy35, parts35, machine35, Toggle, ToggleHook;
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_I5HWU3ET();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy32 = createAnatomy("toggle", ["root", "indicator"]);
-      parts32 = anatomy32.build();
-      machine32 = createMachine({
+      init_chunk_CLKNJROH();
+      anatomy35 = createAnatomy("toggle", ["root", "indicator"]);
+      parts35 = anatomy35.build();
+      machine35 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultPressed: false
@@ -44947,10 +48350,10 @@ ${err}`);
       });
       Toggle = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine32, props);
+          return new VanillaMachine(machine35, props);
         }
         initApi() {
-          return this.zagConnect(connect32);
+          return this.zagConnect(connect35);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="toggle"][data-part="root"]');
@@ -45037,7 +48440,7 @@ ${err}`);
     readToggleGroupPayloadValue: () => readToggleGroupPayloadValue,
     valueChangePayload: () => valueChangePayload4
   });
-  function connect33(service, normalize2) {
+  function connect36(service, normalize2) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
@@ -45059,7 +48462,7 @@ ${err}`);
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts33.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts36.root.attrs), {
           id: getRootId26(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
@@ -45091,7 +48494,7 @@ ${err}`);
       getItemProps(props) {
         const itemState = getItemState(props);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize2.button(__spreadProps(__spreadValues({}, parts33.item.attrs), {
+        return normalize2.button(__spreadProps(__spreadValues({}, parts36.item.attrs), {
           id: itemState.id,
           type: "button",
           "data-ownedby": getRootId26(scope),
@@ -45176,15 +48579,15 @@ ${err}`);
     if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
     return void 0;
   }
-  var anatomy33, parts33, getRootId26, getItemId11, getRootEl11, getElements3, getFirstEl3, getLastEl3, getNextEl3, getPrevEl3, not13, and12, machine33, ToggleGroup, ToggleGroupHook;
+  var anatomy36, parts36, getRootId26, getItemId11, getRootEl11, getElements3, getFirstEl3, getLastEl3, getNextEl3, getPrevEl3, not14, and14, machine36, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_I5HWU3ET();
+      init_chunk_PWB4AEF6();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy33 = createAnatomy("toggle-group").parts("root", "item");
-      parts33 = anatomy33.build();
+      init_chunk_CLKNJROH();
+      anatomy36 = createAnatomy("toggle-group").parts("root", "item");
+      parts36 = anatomy36.build();
       getRootId26 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `toggle-group:${ctx.id}`;
@@ -45202,8 +48605,8 @@ ${err}`);
       getLastEl3 = (ctx) => last(getElements3(ctx));
       getNextEl3 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
       getPrevEl3 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
-      ({ not: not13, and: and12 } = createGuards());
-      machine33 = createMachine({
+      ({ not: not14, and: and14 } = createGuards());
+      machine36 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultValue: [],
@@ -45260,7 +48663,7 @@ ${err}`);
             on: {
               "ROOT.FOCUS": {
                 target: "focused",
-                guard: not13(and12("isClickFocus", "isTabbingBackward")),
+                guard: not14(and14("isClickFocus", "isTabbingBackward")),
                 actions: ["focusFirstToggle", "clearClickFocus"]
               },
               "TOGGLE.FOCUS": {
@@ -45292,7 +48695,7 @@ ${err}`);
               },
               "TOGGLE.SHIFT_TAB": [
                 {
-                  guard: not13("isFirstToggleFocused"),
+                  guard: not14("isFirstToggleFocused"),
                   target: "idle",
                   actions: ["setIsTabbingBackward"]
                 },
@@ -45382,10 +48785,10 @@ ${err}`);
       });
       ToggleGroup = class extends Component {
         initMachine(props) {
-          return new VanillaMachine(machine33, props);
+          return new VanillaMachine(machine36, props);
         }
         initApi() {
-          return this.zagConnect(connect33);
+          return this.zagConnect(connect36);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -45506,10 +48909,10 @@ ${err}`);
     });
     return map2;
   }
-  function connect34(service, normalize2) {
+  function connect37(service, normalize2) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
-    const translations = mergeWithDefault(defaultTranslations18, prop("translations"));
+    const translations = mergeWithDefault(defaultTranslations19, prop("translations"));
     const expandedValue = Array.from(context.get("expandedValue"));
     const selectedValue = Array.from(context.get("selectedValue"));
     const checkedValue = Array.from(context.get("checkedValue"));
@@ -45609,19 +49012,19 @@ ${err}`);
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.root.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.root.attrs), {
           id: getRootId27(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.label.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.label.attrs), {
           id: getLabelId18(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.tree.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
@@ -45730,7 +49133,7 @@ ${err}`);
       getNodeState,
       getItemProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.item.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
@@ -45771,7 +49174,7 @@ ${err}`);
       },
       getItemTextProps(props) {
         const itemState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.itemText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
@@ -45779,7 +49182,7 @@ ${err}`);
       },
       getItemIndicatorProps(props) {
         const itemState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.itemIndicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -45789,7 +49192,7 @@ ${err}`);
       },
       getBranchProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branch.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -45813,7 +49216,7 @@ ${err}`);
       },
       getBranchIndicatorProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branchIndicator.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -45824,7 +49227,7 @@ ${err}`);
       },
       getBranchTriggerProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branchTrigger.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -45841,7 +49244,7 @@ ${err}`);
       },
       getBranchControlProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branchControl.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
@@ -45875,7 +49278,7 @@ ${err}`);
       },
       getBranchTextProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branchText.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -45884,7 +49287,7 @@ ${err}`);
       },
       getBranchContentProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branchContent.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -45896,14 +49299,14 @@ ${err}`);
       },
       getBranchIndentGuideProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.branchIndentGuide.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
       getNodeCheckboxProps(props) {
         const nodeState = getNodeState(props);
         const checkedState = nodeState.checked;
-        return normalize2.element(__spreadProps(__spreadValues({}, parts34.nodeCheckbox.attrs), {
+        return normalize2.element(__spreadProps(__spreadValues({}, parts37.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -45922,7 +49325,7 @@ ${err}`);
       },
       getNodeRenameInputProps(props) {
         const nodeState = getNodeState(props);
-        return normalize2.input(__spreadProps(__spreadValues({}, parts34.nodeRenameInput.attrs), {
+        return normalize2.input(__spreadProps(__spreadValues({}, parts37.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": translations.renameInputLabel,
@@ -46078,17 +49481,17 @@ ${err}`);
       dir: getDir(el)
     };
   }
-  var anatomy34, parts34, collection4, getRootId27, getLabelId18, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, defaultTranslations18, and13, machine34, TreeView, BRANCH_CONTENT_SELECTOR, TreeViewHook;
+  var anatomy37, parts37, collection4, getRootId27, getLabelId18, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, defaultTranslations19, and15, machine37, TreeView, BRANCH_CONTENT_SELECTOR, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_BF7VYAZN();
-      init_chunk_R3ADGBXU();
-      init_chunk_IPIIGVFP();
+      init_chunk_SHBNM52E();
+      init_chunk_ZUMK6UW2();
+      init_chunk_KZFRQXNF();
       init_chunk_EAQ6WQNO();
-      init_chunk_JPQZXVRQ();
-      anatomy34 = createAnatomy("tree-view").parts(
+      init_chunk_CLKNJROH();
+      anatomy37 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -46105,7 +49508,7 @@ ${err}`);
         "root",
         "tree"
       );
-      parts34 = anatomy34.build();
+      parts37 = anatomy37.build();
       collection4 = (options) => {
         return new TreeCollection(options);
       };
@@ -46137,12 +49540,12 @@ ${err}`);
       getRenameInputEl = (ctx, value) => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
-      defaultTranslations18 = {
+      defaultTranslations19 = {
         treeLabel: "Tree View",
         renameInputLabel: "Rename tree item"
       };
-      ({ and: and13 } = createGuards());
-      machine34 = createMachine({
+      ({ and: and15 } = createGuards());
+      machine37 = createMachine({
         props({ props }) {
           return __spreadValues({
             selectionMode: "single",
@@ -46264,7 +49667,7 @@ ${err}`);
           },
           "SELECTED.ALL": [
             {
-              guard: and13("isMultipleSelection", "moveFocus"),
+              guard: and15("isMultipleSelection", "moveFocus"),
               actions: ["selectAllNodes", "focusTreeLastNode"]
             },
             {
@@ -46295,7 +49698,7 @@ ${err}`);
           },
           "NODE.ARROW_DOWN": [
             {
-              guard: and13("isShiftKey", "isMultipleSelection"),
+              guard: and15("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreeNextNode", "extendSelectionToNextNode"]
             },
             {
@@ -46304,7 +49707,7 @@ ${err}`);
           ],
           "NODE.ARROW_UP": [
             {
-              guard: and13("isShiftKey", "isMultipleSelection"),
+              guard: and15("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreePrevNode", "extendSelectionToPrevNode"]
             },
             {
@@ -46325,7 +49728,7 @@ ${err}`);
           ],
           "BRANCH_NODE.ARROW_RIGHT": [
             {
-              guard: and13("isBranchFocused", "isBranchExpanded"),
+              guard: and15("isBranchFocused", "isBranchExpanded"),
               actions: ["focusBranchFirstNode"]
             },
             {
@@ -46337,7 +49740,7 @@ ${err}`);
           },
           "NODE.HOME": [
             {
-              guard: and13("isShiftKey", "isMultipleSelection"),
+              guard: and15("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToFirstNode", "focusTreeFirstNode"]
             },
             {
@@ -46346,7 +49749,7 @@ ${err}`);
           ],
           "NODE.END": [
             {
-              guard: and13("isShiftKey", "isMultipleSelection"),
+              guard: and15("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToLastNode", "focusTreeLastNode"]
             },
             {
@@ -46355,11 +49758,11 @@ ${err}`);
           ],
           "NODE.CLICK": [
             {
-              guard: and13("isCtrlKey", "isMultipleSelection"),
+              guard: and15("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and13("isShiftKey", "isMultipleSelection"),
+              guard: and15("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -46368,11 +49771,11 @@ ${err}`);
           ],
           "BRANCH_NODE.CLICK": [
             {
-              guard: and13("isCtrlKey", "isMultipleSelection"),
+              guard: and15("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and13("isShiftKey", "isMultipleSelection"),
+              guard: and15("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -46776,10 +50179,10 @@ ${err}`);
           this.updateProps({ collection: treeCollection });
         }
         initMachine(props) {
-          return new VanillaMachine(machine34, __spreadValues({}, props));
+          return new VanillaMachine(machine37, __spreadValues({}, props));
         }
         initApi() {
-          return this.zagConnect(connect34);
+          return this.zagConnect(connect37);
         }
         getNodeAt(indexPath) {
           var _a4;
@@ -47303,9 +50706,11 @@ ${err}`);
     ColorPicker: createLazyHook(() => Promise.resolve().then(() => (init_color_picker(), color_picker_exports)), "ColorPicker"),
     DatePicker: createLazyHook(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
     Dialog: createLazyHook(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
+    Drawer: createLazyHook(() => Promise.resolve().then(() => (init_drawer(), drawer_exports)), "Drawer"),
     Editable: createLazyHook(() => Promise.resolve().then(() => (init_editable(), editable_exports)), "Editable"),
     FileUpload: createLazyHook(() => Promise.resolve().then(() => (init_file_upload(), file_upload_exports)), "FileUpload"),
     FloatingPanel: createLazyHook(() => Promise.resolve().then(() => (init_floating_panel(), floating_panel_exports)), "FloatingPanel"),
+    HoverCard: createLazyHook(() => Promise.resolve().then(() => (init_hover_card(), hover_card_exports)), "HoverCard"),
     Listbox: createLazyHook(() => Promise.resolve().then(() => (init_listbox(), listbox_exports)), "Listbox"),
     Marquee: createLazyHook(() => Promise.resolve().then(() => (init_marquee(), marquee_exports)), "Marquee"),
     Menu: createLazyHook(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
@@ -47313,6 +50718,7 @@ ${err}`);
     Pagination: createLazyHook(() => Promise.resolve().then(() => (init_pagination(), pagination_exports)), "Pagination"),
     PasswordInput: createLazyHook(() => Promise.resolve().then(() => (init_password_input(), password_input_exports)), "PasswordInput"),
     PinInput: createLazyHook(() => Promise.resolve().then(() => (init_pin_input(), pin_input_exports)), "PinInput"),
+    Popover: createLazyHook(() => Promise.resolve().then(() => (init_popover(), popover_exports)), "Popover"),
     RadioGroup: createLazyHook(() => Promise.resolve().then(() => (init_radio_group(), radio_group_exports)), "RadioGroup"),
     Select: createLazyHook(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
     SignaturePad: createLazyHook(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),

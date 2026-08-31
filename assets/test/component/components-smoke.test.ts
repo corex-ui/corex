@@ -10,6 +10,9 @@ import { ColorPicker, parse as parseColor } from "../../components/color-picker"
 import { Combobox } from "../../components/combobox";
 import { DatePicker } from "../../components/date-picker";
 import { Dialog } from "../../components/dialog";
+import { Drawer } from "../../components/drawer";
+import { HoverCard } from "../../components/hover-card";
+import { Popover } from "../../components/popover";
 import { Editable } from "../../components/editable";
 import { FileUpload } from "../../components/file-upload";
 import { FloatingPanel } from "../../components/floating-panel";
@@ -47,7 +50,9 @@ import {
   colorPickerTree,
   comboboxTree,
   dialogTree,
+  drawerTree,
   editableTree,
+  hoverCardTree,
   fileUploadTree,
   floatingPanelTree,
   listboxTree,
@@ -57,6 +62,7 @@ import {
   paginationTree,
   passwordInputTree,
   pinInputTree,
+  popoverTree,
   radioGroupTree,
   sampleTreeRoot,
   selectTree,
@@ -153,6 +159,21 @@ describe("component render smoke", () => {
       id: smokeId,
       selectionMode: "single",
     });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Drawer", () => {
+    const c = new Drawer(drawerTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("HoverCard", () => {
+    const c = new HoverCard(hoverCardTree(), { id: smokeId });
+    return { render: () => c.render(), destroy: () => c.destroy() };
+  });
+
+  smoke("Popover", () => {
+    const c = new Popover(popoverTree(), { id: smokeId });
     return { render: () => c.render(), destroy: () => c.destroy() };
   });
 

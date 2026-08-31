@@ -18,6 +18,8 @@ defmodule E2eWeb.StylePageExpectations do
     {"data_list_styling_page.html.heex", "data-list"},
     {"date_picker_styling_page.html.heex", "date-picker"},
     {"dialog_styling_page.html.heex", "dialog"},
+    {"drawer_styling_page.html.heex", "drawer"},
+    {"hover_card_styling_page.html.heex", "hover-card"},
     {"editable_styling_page.html.heex", "editable"},
     {"file_upload_styling_page.html.heex", "file-upload"},
     {"file_upload_live_styling_page.html.heex", "file-upload"},
@@ -32,6 +34,7 @@ defmodule E2eWeb.StylePageExpectations do
     {"pagination_styling_page.html.heex", "pagination"},
     {"password_input_styling_page.html.heex", "password-input"},
     {"pin_input_styling_page.html.heex", "pin-input"},
+    {"popover_styling_page.html.heex", "popover"},
     {"radio_group_styling_page.html.heex", "radio-group"},
     {"select_styling_page.html.heex", "select"},
     {"signature_styling_page.html.heex", "signature-pad"},
@@ -70,7 +73,7 @@ defmodule E2eWeb.StylePageExpectations do
     pagination
   )
 
-  @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel)
+  @skip_sizing ~W(avatar menu dialog tooltip link angle-slider floating-panel popover hover-card drawer)
   @skip_max_width_only ~W(pin-input)
 
   @fit_max_width_block_demo ~W(button switch toggle timer clipboard color-picker date-picker)

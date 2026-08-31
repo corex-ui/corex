@@ -13,7 +13,7 @@ import {
 } from "./chunks/chunk-AJX2XHOK.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-4JF6I36R.mjs";
+} from "./chunks/chunk-ZTJV2RYM.mjs";
 import {
   idMatches,
   notifyChange,
@@ -45,7 +45,7 @@ import {
   raf,
   resizeObserverBorderBox,
   trackPointerMove
-} from "./chunks/chunk-JPQZXVRQ.mjs";
+} from "./chunks/chunk-CLKNJROH.mjs";
 
 // ../node_modules/.pnpm/@zag-js+floating-panel@1.43.3/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(
