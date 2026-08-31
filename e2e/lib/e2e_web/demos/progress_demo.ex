@@ -1,13 +1,13 @@
 defmodule E2eWeb.Demos.ProgressDemo do
   use E2eWeb, :html
 
-  def anatomy_linear_code do
+  def anatomy_minimal_code do
     ~S"""
     <.progress class="progress" value={40} />
     """
   end
 
-  def anatomy_linear_example(assigns) do
+  def anatomy_minimal_example(assigns) do
     _ = assigns
 
     ~H"""

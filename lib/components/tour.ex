@@ -12,8 +12,10 @@ defmodule Corex.Tour do
   ### Minimal
 
     ```heex
-    <.action phx-click={Corex.Tour.start("product-tour")} class="button">Start tour</.action>
-    <.tour id="product-tour" class="tour" />
+    <.action phx-click={Corex.Tour.start("tour-anatomy-minimal")} class="button">Start tour</.action>
+    <button id="tour-target-nav" type="button" class="button ui-size-sm">Docs</button>
+    <button id="tour-target-playground" type="button" class="button ui-size-sm">Playground</button>
+    <.tour id="tour-anatomy-minimal" class="tour" />
     ```
 
   <!-- tabs-close -->

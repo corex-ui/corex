@@ -9,7 +9,7 @@ defmodule Corex.ImageCropper do
   ### Minimal
 
     ```heex
-    <.image_cropper class="image-cropper" />
+    <.image_cropper class="image-cropper" src="/images/cropper-demo.png" />
     ```
 
   <!-- tabs-close -->

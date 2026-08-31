@@ -15,6 +15,32 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
     """
   end
 
+  def anatomy_mega_menu_code do
+    ~S"""
+    <.navigation_menu class="navigation-menu">
+      <:item value="product" type="trigger">Product</:item>
+      <:content value="product">
+        <p>Feature overview</p>
+      </:content>
+      <:item value="docs" href="#">Docs</:item>
+    </.navigation_menu>
+    """
+  end
+
+  def anatomy_mega_menu_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.navigation_menu id="navigation-menu-anatomy-mega" class="navigation-menu">
+      <:item value="product" type="trigger">Product</:item>
+      <:content value="product">
+        <p>Feature overview</p>
+      </:content>
+      <:item value="docs" href="#">Docs</:item>
+    </.navigation_menu>
+    """
+  end
+
   alias E2eWeb.DemoScales
 
   def styling_color_code do
@@ -83,12 +109,12 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("navigation-menu"))
 
     ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm" tabindex="0">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.navigation_menu
-            :for={variant <- @matrix_variants}
-            id={"navigation-menu-mx-#{semantic.label}-#{variant.label}"}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"navigation-menu-matrix-#{semantic_index}-#{variant_index}"}
             class={
               DemoScales.join_matrix_modifiers("navigation-menu", semantic.modifier, variant.modifier)
             }

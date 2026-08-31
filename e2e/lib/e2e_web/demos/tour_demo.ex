@@ -94,12 +94,12 @@ defmodule E2eWeb.Demos.TourDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("tour"))
 
     ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm" tabindex="0">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.tour
-            :for={variant <- @matrix_variants}
-            id={"tour-mx-#{semantic.label}-#{variant.label}"}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"tour-matrix-#{semantic_index}-#{variant_index}"}
             class={DemoScales.join_matrix_modifiers("tour", semantic.modifier, variant.modifier)}
           />
         </div>

@@ -34,7 +34,7 @@ defmodule Corex.Drawer do
   ### Snap points
 
     ```heex
-    <.drawer class="drawer" snap_points="0.3,0.6,1" default_snap_point="0.6">
+    <.drawer class="drawer" snap_points="0.45,0.75,1" default_snap_point="0.75">
       <:trigger>Open</:trigger>
       <:content>
         <p>Drag between snap points.</p>

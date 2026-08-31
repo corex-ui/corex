@@ -13,7 +13,7 @@ defmodule Corex.CascadeSelect do
   ### Minimal
 
     ```heex
-    <.cascade_select class="cascade-select" />
+    <.cascade_select class="cascade-select" show_indicator={false} />
     ```
 
   ### With indicator
@@ -28,7 +28,7 @@ defmodule Corex.CascadeSelect do
 
     ```heex
     <.cascade_select class="cascade-select">
-      <:label>Location</:label>
+      <:label>Category</:label>
       <:indicator>▾</:indicator>
     </.cascade_select>
     ```

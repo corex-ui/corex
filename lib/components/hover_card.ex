@@ -9,8 +9,19 @@ defmodule Corex.HoverCard do
 
     ```heex
     <.hover_card class="hover-card" show_arrow={false}>
-      <:trigger>Hover me</:trigger>
-      <:content>Preview content</:content>
+      <:trigger>corex-ui</:trigger>
+      <:content>
+        <div class="flex gap-space items-start">
+          <.avatar class="avatar ui-size-lg">
+            <:fallback>Cx</:fallback>
+          </.avatar>
+          <div>
+            <p class="font-semibold">corex-ui/corex</p>
+            <p>Phoenix LiveView components with Zag.js behavior.</p>
+            <p>Elixir · TypeScript · 1.2k stars</p>
+          </div>
+        </div>
+      </:content>
     </.hover_card>
     ```
 

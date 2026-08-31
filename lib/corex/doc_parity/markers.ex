@@ -9,7 +9,8 @@ defmodule Corex.DocParity.Markers do
       "with triggers" => ["anatomy_with_triggers_code"]
     },
     "progress" => %{
-      "minimal" => ["anatomy_minimal_code"]
+      "minimal" => ["anatomy_minimal_code"],
+      "circular" => ["anatomy_circular_code"]
     },
     "rating_group" => %{
       "minimal" => ["anatomy_minimal_code"]
@@ -39,10 +40,13 @@ defmodule Corex.DocParity.Markers do
       "minimal" => ["anatomy_minimal_code"]
     },
     "navigation_menu" => %{
-      "minimal" => ["anatomy_minimal_code"]
+      "minimal" => ["anatomy_minimal_code"],
+      "mega menu" => ["anatomy_mega_menu_code"]
     },
     "cascade_select" => %{
-      "minimal" => ["anatomy_minimal_code"]
+      "minimal" => ["anatomy_minimal_code"],
+      "with indicator" => ["anatomy_indicator_code"],
+      "with label" => ["anatomy_label_code"]
     },
     "tour" => %{
       "minimal" => ["anatomy_minimal_code"]

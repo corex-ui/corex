@@ -9,7 +9,11 @@ defmodule Corex.QrCode do
   ### Minimal
 
     ```heex
-    <.qr_code class="qr-code" />
+    <.qr_code class="qr-code" value="https://github.com/corex-ui/corex">
+      <:overlay>
+        <img src="/images/tech/elixir.svg" alt="Corex" />
+      </:overlay>
+    </.qr_code>
     ```
 
   <!-- tabs-close -->

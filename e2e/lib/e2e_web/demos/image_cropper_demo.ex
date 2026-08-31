@@ -119,12 +119,12 @@ defmodule E2eWeb.Demos.ImageCropperDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("image-cropper"))
 
     ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm" tabindex="0">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.image_cropper
-            :for={variant <- @matrix_variants}
-            id={"image-cropper-mx-#{semantic.label}-#{variant.label}"}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"image-cropper-matrix-#{semantic_index}-#{variant_index}"}
             class={
               DemoScales.join_matrix_modifiers("image-cropper", semantic.modifier, variant.modifier)
             }

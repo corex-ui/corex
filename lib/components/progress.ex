@@ -10,7 +10,13 @@ defmodule Corex.Progress do
   ### Minimal
 
     ```heex
-    <.progress class="progress" />
+    <.progress class="progress" value={40} />
+    ```
+
+  ### Circular
+
+    ```heex
+    <.progress class="progress" variant="circular" value={65} />
     ```
 
   <!-- tabs-close -->
