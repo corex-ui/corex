@@ -10,7 +10,7 @@ import {
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunk-IPIIGVFP.mjs";
+} from "./chunk-5CUB6Y47.mjs";
 import {
   getInteractionModality,
   setInteractionModality,

@@ -87,6 +87,8 @@ Every Corex component exposes JS commands for client-side control and matching `
 
 Each component documents **API** and **Events** on its Hexdocs page.
 
+The [public demo](https://corex.gigalixirapp.com/en) (`e2e/` in this repo) is a showcase, not a starter app. Copy examples from component Hexdocs and from `mix corex.gen.live` / `mix corex.gen.html`.
+
 ## Become a sponsor
 
 Corex is open source. If you rely on it in production or want to help sustain development, [become a sponsor on GitHub](https://github.com/sponsors/corex-ui).

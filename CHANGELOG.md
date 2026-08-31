@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Security
+
+- Reject NUL, CR, and LF in the URL allowlist helper and the JS redirect helper after leading C0/space stripping, so embedded newlines (for example `mailto:` header injection) cannot pass the allowlist.
+- Document private reporting via [GitHub Security Advisories](https://github.com/corex-ui/corex/security/advisories/new), trusted HTML sinks, MCP, and the LiveView 1.1 Hex pin versus the upstream CVE floor. See [SECURITY.md](https://github.com/corex-ui/corex/blob/main/SECURITY.md).
+
+### Documentation
+
+- Clarify that `e2e/` is a published showcase, not a starter. Copy examples from component docs and `mix corex.gen.*`.
+
 ## 0.2.2 - 2026-08-29
 
 ### Upgrade notes

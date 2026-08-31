@@ -2,7 +2,7 @@
 
 End-to-end Phoenix + LiveView application used to develop, exercise, and validate **Corex UI components**.
 
-This application acts as examples and tests for different rendering and interaction modes, as well as for end-to-end and accessibility testing.
+This is the **published showcase** (and Wallaby/a11y test app). It is **not a starter** to clone, fork, or copy as a product. For application code, copy examples from component Hexdocs / demo sections in this app, and from `mix corex.gen.live` / `mix corex.gen.html`.
 
 ## Getting started
 
@@ -79,7 +79,7 @@ Then open `http://localhost:4000`. Prod uses digested, minified assets (smaller 
 
 ## Purpose
 
-This project is **not a library**. It exists to:
+This project is **not a library and not a starter app**. It exists to:
 
 - Showcase Corex UI components in realistic usage scenarios
 - Validate LiveView + JS hook integration

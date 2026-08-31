@@ -23,6 +23,10 @@ function stripLeadingC0AndSpace(destination: string): string {
   return destination.slice(i);
 }
 
+function containsNulOrNewline(destination: string): boolean {
+  return /[\0\r\n]/.test(destination);
+}
+
 /**
  * Returns a sanitized destination when allowed, otherwise `null`.
  * Always prefer this over the raw attribute when navigating.
@@ -30,6 +34,7 @@ function stripLeadingC0AndSpace(destination: string): string {
 export function sanitizeRedirectDestination(destination: string): string | null {
   const trimmed = stripLeadingC0AndSpace(destination);
   if (!trimmed) return null;
+  if (containsNulOrNewline(trimmed)) return null;
   if (trimmed.startsWith("//")) return null;
 
   const schemeMatch = SCHEME_PREFIX.exec(trimmed);
