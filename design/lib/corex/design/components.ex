@@ -226,6 +226,7 @@ defmodule Corex.Design.Components do
     "action" => "button",
     "file_upload_live" => "file-upload",
     "heroicon" => "icon",
+    "native_accordion" => "accordion",
     "navigate" => "link"
   }
 

@@ -7,13 +7,22 @@ defmodule Corex.ComponentEventsContractTest do
 
   @server_only ~W(
     on_draw_end
+    on_keydown
     on_select
     on_select_all
     on_sort
   )a
 
+  # NativeAccordion has no Zag/client CustomEvents; value changes are LV-only.
+  @server_only_by_file %{
+    "native_accordion.ex" => ~W(on_value_change)a
+  }
+
   test "on_* server events have matching on_*_client unless server-only" do
-    for path <- component_files(), event <- server_event_attrs(path), event not in @server_only do
+    for path <- component_files(),
+        event <- server_event_attrs(path),
+        event not in @server_only,
+        event not in Map.get(@server_only_by_file, Path.basename(path), []) do
       client = :"#{event}_client"
 
       assert has_attr?(path, client),

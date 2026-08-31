@@ -9,6 +9,14 @@ defmodule E2eWeb.PageController do
     render(conn, :accordion_styling_page)
   end
 
+  def native_accordion_page(conn, _params) do
+    render(conn, :native_accordion_page)
+  end
+
+  def native_accordion_styling_page(conn, _params) do
+    render(conn, :native_accordion_styling_page)
+  end
+
   def action_page(conn, _params) do
     render(conn, :action_page)
   end

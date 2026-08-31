@@ -21,6 +21,8 @@
   {"lib/components/marquee/connect.ex", :contract_with_opaque},
   {"lib/components/menu.ex", :contract_with_opaque},
   {"lib/components/menu/connect.ex", :contract_with_opaque},
+  {"lib/components/native_accordion.ex", :contract_with_opaque},
+  {"lib/components/native_accordion/js.ex", :contract_with_opaque},
   {"lib/components/number_input.ex", :contract_with_opaque},
   {"lib/components/pagination.ex", :contract_with_opaque},
   {"lib/components/password_input.ex", :contract_with_opaque},

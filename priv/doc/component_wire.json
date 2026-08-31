@@ -20,6 +20,7 @@
   {"id": "floating_panel", "phx_hook": "FloatingPanel", "connect_module": "Corex.FloatingPanel.Connect"},
   {"id": "heroicon", "phx_hook": null, "connect_module": null},
   {"id": "hidden_input", "phx_hook": null, "connect_module": null},
+  {"id": "native_accordion", "phx_hook": null, "connect_module": null},
   {"id": "native_input", "phx_hook": null, "connect_module": null},
   {"id": "listbox", "phx_hook": "Listbox", "connect_module": "Corex.Listbox.Connect"},
   {"id": "layout_heading", "phx_hook": null, "connect_module": null},

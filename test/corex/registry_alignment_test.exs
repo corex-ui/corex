@@ -8,6 +8,7 @@ defmodule Corex.RegistryAlignmentTest do
                         "file-upload-live",
                         "heroicon",
                         "hidden-input",
+                        "native-accordion",
                         "navigate"
                       ])
 

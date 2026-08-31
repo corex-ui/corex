@@ -3,6 +3,7 @@ defmodule E2eWeb.DocPageMatrix do
 
   @wallaby_pages %{
     accordion: [:playground, :anatomy, :api, :events, :patterns, :animation, :style],
+    native_accordion: [:playground, :anatomy, :api, :events, :patterns, :style],
     action: [:anatomy, :style],
     angle_slider: [:anatomy, :api, :events, :patterns],
     avatar: [:anatomy, :api, :events],

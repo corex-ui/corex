@@ -60,6 +60,16 @@ defmodule Corex do
     file_upload_live: {Corex.FileUploadLive, [file_upload_live: 1]},
     floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
     heroicon: {Corex.Heroicon, [heroicon: 1]},
+    native_accordion:
+      {Corex.NativeAccordion,
+       [
+         native_accordion: 1,
+         native_accordion_root: 1,
+         native_accordion_item: 1,
+         native_accordion_trigger: 1,
+         native_accordion_indicator: 1,
+         native_accordion_content: 1
+       ]},
     native_input: {Corex.NativeInput, [native_input: 1]},
     hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
@@ -209,7 +219,14 @@ defmodule Corex do
     """
   end
 
-  @heex_only_ids [:action, :file_upload_live, :heroicon, :hidden_input, :navigate]
+  @heex_only_ids [
+    :action,
+    :file_upload_live,
+    :heroicon,
+    :hidden_input,
+    :native_accordion,
+    :navigate
+  ]
 
   @unknown_heex_only_ids for id <- @heex_only_ids,
                              not Map.has_key?(@components, id),
@@ -232,8 +249,8 @@ defmodule Corex do
   HEEx registry ids with no matching Design CSS id after `_`/`-` normalization.
 
   These are helpers or LiveView-only entry points (`action`, `heroicon`, `navigate`,
-  `hidden_input`, `file_upload_live`). Aliased ones still resolve to a CSS host via
-  `Corex.Design.Components.fetch_css_id/1` when Design is available.
+  `hidden_input`, `file_upload_live`, `native_accordion`). Aliased ones still resolve
+  to a CSS host via `Corex.Design.Components.fetch_css_id/1` when Design is available.
   """
   @spec heex_only_ids() :: [atom()]
   def heex_only_ids, do: @heex_only_ids

@@ -1,0 +1,63 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="native-accordion-anatomy-page"
+    title={~t"Native Accordion Anatomy"}
+    subtitle={~t"Same anatomy as Accordion — structure, slots, and compound mode without Zag."}
+  >
+    <.demo_section
+      id="native-accordion-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.NativeAccordionDemo.minimal_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-accordion-anatomy-with-indicator"
+      title={~t"With Indicator"}
+      code={E2eWeb.Demos.NativeAccordionDemo.with_indicator_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.with_indicator_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-accordion-anatomy-custom-slots"
+      title={~t"Custom Slots"}
+      code={E2eWeb.Demos.NativeAccordionDemo.custom_slots_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.custom_slots_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-accordion-anatomy-manual-slots"
+      title={~t"Manual Slots"}
+      code={E2eWeb.Demos.NativeAccordionDemo.manual_slots_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.manual_slots_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-accordion-anatomy-compound"
+      title={~t"Compound"}
+      code={E2eWeb.Demos.NativeAccordionDemo.compound_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NativeAccordionDemo.compound_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

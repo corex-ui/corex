@@ -10,5 +10,6 @@ defmodule E2eWeb.PageHTML do
   embed_templates "page_html/*"
 
   embed_templates "page_html/accordion/*"
+  embed_templates "page_html/native_accordion/*"
   embed_templates "page_html/tree_view/*"
 end
