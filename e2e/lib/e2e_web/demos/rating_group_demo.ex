@@ -31,6 +31,28 @@ defmodule E2eWeb.Demos.RatingGroupDemo do
     """
   end
 
+  def anatomy_smileys_code do
+    ~S"""
+    <.rating_group class="rating-group" value={4.0}>
+      <:item :let={item}>
+        <span aria-hidden="true">{Enum.at(~w(😞 🙁 😐 🙂 😀), item.index - 1)}</span>
+      </:item>
+    </.rating_group>
+    """
+  end
+
+  def anatomy_smileys_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.rating_group id="rating-group-anatomy-smileys" class="rating-group" value={4.0}>
+      <:item :let={item}>
+        <span aria-hidden="true">{Enum.at(~w(😞 🙁 😐 🙂 😀), item.index - 1)}</span>
+      </:item>
+    </.rating_group>
+    """
+  end
+
   def styling_color_code do
     ~S"""
     <div class="flex flex-wrap gap-space-sm items-start">

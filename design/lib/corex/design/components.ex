@@ -308,7 +308,7 @@ defmodule Corex.Design.Components do
   @shape_hosts ~w(badge button)
 
   # Item chrome uses a fixed square radius; host `ui-rounded-*` has no effect.
-  @no_radius_hosts ~w(tree-view)
+  @no_radius_hosts ~w(tree-view rating-group)
 
   # Floating panels: ghost (transparent fill) is not a useful surface treatment.
   @no_ghost_hosts ~w(tooltip popover hover-card drawer tour cascade-select)

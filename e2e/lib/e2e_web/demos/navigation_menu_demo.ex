@@ -3,7 +3,32 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.navigation_menu class="navigation-menu" />
+    <.navigation_menu
+      class="navigation-menu"
+      items={
+        Corex.List.new([
+          %{value: "product", label: "Product"},
+          %{value: "docs", label: "Docs"},
+          %{value: "blog", label: "Blog", to: "#"},
+          %{value: "pricing", label: "Pricing", to: "#"}
+        ])
+      }
+    >
+      <:content value="product">
+        <p data-scope="navigation-menu" data-part="heading">Build with Corex</p>
+        <p>Phoenix LiveView components with Zag.js behavior, Design tokens, and an installer.</p>
+        <a href="#">Components</a>
+        <a href="#">Playground</a>
+        <a href="#">Design</a>
+      </:content>
+      <:content value="docs">
+        <p data-scope="navigation-menu" data-part="heading">Documentation</p>
+        <a href="#">Getting started</a>
+        <a href="#">Anatomy</a>
+        <a href="#">Forms</a>
+        <a href="#">Accessibility</a>
+      </:content>
+    </.navigation_menu>
     """
   end
 
@@ -11,22 +36,60 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
     _ = assigns
 
     ~H"""
-    <.navigation_menu id="navigation-menu-anatomy-minimal" class="navigation-menu" />
+    <.navigation_menu
+      id="navigation-menu-anatomy-minimal"
+      class="navigation-menu"
+      items={
+        Corex.List.new([
+          %{value: "product", label: "Product"},
+          %{value: "docs", label: "Docs"},
+          %{value: "blog", label: "Blog", to: "#"},
+          %{value: "pricing", label: "Pricing", to: "#"}
+        ])
+      }
+    >
+      <:content value="product">
+        <p data-scope="navigation-menu" data-part="heading">Build with Corex</p>
+        <p>Phoenix LiveView components with Zag.js behavior, Design tokens, and an installer.</p>
+        <a href="#">Components</a>
+        <a href="#">Playground</a>
+        <a href="#">Design</a>
+      </:content>
+      <:content value="docs">
+        <p data-scope="navigation-menu" data-part="heading">Documentation</p>
+        <a href="#">Getting started</a>
+        <a href="#">Anatomy</a>
+        <a href="#">Forms</a>
+        <a href="#">Accessibility</a>
+      </:content>
+    </.navigation_menu>
     """
   end
 
   def anatomy_mega_menu_code do
     ~S"""
-    <.navigation_menu class="navigation-menu">
-      <:item value="product" type="trigger">Product</:item>
-      <:content value="product">
-        <p data-scope="navigation-menu" data-part="heading">Product</p>
+    <.navigation_menu
+      class="navigation-menu"
+      items={
+        Corex.List.new([
+          %{value: "product", label: "Product", meta: %{icon: "hero-squares-2x2"}},
+          %{value: "docs", label: "Docs", to: "#", meta: %{icon: "hero-book-open"}}
+        ])
+      }
+    >
+      <:trigger :let={item}>
+        <.heroicon name={item.meta.icon} />{item.label}
+      </:trigger>
+      <:link :let={item}>
+        <.heroicon name={item.meta.icon} />{item.label}
+      </:link>
+      <:content :let={item} value="product">
+        <p data-scope="navigation-menu" data-part="heading">{item.label}</p>
         <a href="#">Components</a>
         <a href="#">Playground</a>
         <a href="#">Design tokens</a>
         <a href="#">Installer</a>
       </:content>
-      <:item value="docs" href="#">Docs</:item>
     </.navigation_menu>
     """
   end
@@ -35,16 +98,29 @@ defmodule E2eWeb.Demos.NavigationMenuDemo do
     _ = assigns
 
     ~H"""
-    <.navigation_menu id="navigation-menu-anatomy-mega" class="navigation-menu">
-      <:item value="product" type="trigger">Product</:item>
-      <:content value="product">
-        <p data-scope="navigation-menu" data-part="heading">Product</p>
+    <.navigation_menu
+      id="navigation-menu-anatomy-mega"
+      class="navigation-menu"
+      items={
+        Corex.List.new([
+          %{value: "product", label: "Product", meta: %{icon: "hero-squares-2x2"}},
+          %{value: "docs", label: "Docs", to: "#", meta: %{icon: "hero-book-open"}}
+        ])
+      }
+    >
+      <:trigger :let={item}>
+        <.heroicon name={item.meta.icon} />{item.label}
+      </:trigger>
+      <:link :let={item}>
+        <.heroicon name={item.meta.icon} />{item.label}
+      </:link>
+      <:content :let={item} value="product">
+        <p data-scope="navigation-menu" data-part="heading">{item.label}</p>
         <a href="#">Components</a>
         <a href="#">Playground</a>
         <a href="#">Design tokens</a>
         <a href="#">Installer</a>
       </:content>
-      <:item value="docs" href="#">Docs</:item>
     </.navigation_menu>
     """
   end

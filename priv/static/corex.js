@@ -49219,15 +49219,16 @@ ${err}`);
         );
       }
     };
-    return {
+    const indeterminate = el.hasAttribute("data-indeterminate");
+    return __spreadProps(__spreadValues({
       id: el.id,
-      dir: getDir(el),
-      defaultValue: (_a4 = getNumber(el, "value")) != null ? _a4 : 50,
+      dir: getDir(el)
+    }, indeterminate ? { value: null } : { defaultValue: (_a4 = getNumber(el, "value")) != null ? _a4 : 40 }), {
       min: getNumber(el, "min"),
       max: getNumber(el, "max"),
       orientation: getString(el, "orientation", ["horizontal", "vertical"]),
       onValueChange
-    };
+    });
   }
   var anatomy37, parts37, getRootId27, getTrackId2, getLabelId18, getCircleId, defaultTranslations19, circleProps, rootProps, machine37, isValidNumber, isValidMax, isValidMin, midValue, Progress, ProgressHook;
   var init_progress = __esm({
@@ -51556,6 +51557,9 @@ ${err}`);
           var _a4;
           const root = (_a4 = this.el.querySelector('[data-scope="presence"][data-part="root"]')) != null ? _a4 : this.el;
           this.api.setNode(root);
+          root.hidden = !this.api.present;
+          root.dataset.state = this.api.present ? "open" : "closed";
+          root.dataset.present = this.api.present ? "true" : "false";
         }
       };
       PresenceHook = createZagLiveHook({
@@ -51563,11 +51567,11 @@ ${err}`);
         mount(hook, { dom: dom3, server }) {
           const inst = new Presence(hook.el, presenceProps(hook.el, hook));
           dom3.add("corex:presence:set-present", (event) => {
-            inst.updateProps(presenceProps(hook.el, hook, event.detail.present));
+            inst.updateProps(presenceProps(hook.el, hook, event.detail.present), { force: true });
           });
           server.add("presence_set_present", (payload) => {
             if (!idMatches(hook.el.id, readPayloadId(payload))) return;
-            inst.updateProps(presenceProps(hook.el, hook, payload.present));
+            inst.updateProps(presenceProps(hook.el, hook, payload.present), { force: true });
           });
           return inst;
         },
@@ -52490,7 +52494,10 @@ ${err}`);
       id: el.id,
       dir: getDir(el),
       orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-      panels: [{ id: "a" }, { id: "b" }],
+      panels: [
+        { id: "a", minSize: 15 },
+        { id: "b", minSize: 15 }
+      ],
       defaultSize: [50, 50],
       onResize
     };
@@ -54237,10 +54244,12 @@ ${err}`);
         );
       }
     };
+    const scrollSelector = el.dataset.scrollEl;
     return {
       id: el.id,
       dir: getDir(el),
       items: safeParseJson(el.dataset.items, DEFAULT_ITEMS),
+      scrollEl: scrollSelector ? () => document.querySelector(scrollSelector) : void 0,
       onActiveChange
     };
   }
@@ -54518,7 +54527,10 @@ ${err}`);
       };
       DEFAULT_ITEMS = [
         { value: "intro", depth: 2 },
-        { value: "usage", depth: 2 }
+        { value: "install", depth: 2 },
+        { value: "usage", depth: 3 },
+        { value: "api", depth: 2 },
+        { value: "a11y", depth: 2 }
       ];
       TocHook = createZagLiveHook({
         key: "toc",
@@ -58492,9 +58504,15 @@ ${err}`);
             '[data-scope="image-cropper"][data-part="image"]'
           );
           if (image) this.spreadProps(image, this.api.getImageProps());
-          const selection = this.el.querySelector(
+          let selection = this.el.querySelector(
             '[data-scope="image-cropper"][data-part="selection"]'
           );
+          if (!selection && viewport) {
+            selection = document.createElement("div");
+            selection.dataset.scope = "image-cropper";
+            selection.dataset.part = "selection";
+            viewport.appendChild(selection);
+          }
           if (selection) {
             this.spreadProps(selection, this.api.getSelectionProps());
             for (const position of HANDLES) {
@@ -58508,15 +58526,40 @@ ${err}`);
                 handle.dataset.position = position;
                 selection.appendChild(handle);
               }
+              if (!handle.querySelector("span, div")) {
+                handle.appendChild(document.createElement("span"));
+              }
               this.spreadProps(handle, this.api.getHandleProps({ position }));
             }
+          }
+          this.syncImageSize();
+        }
+        syncImageSize() {
+          if (this.api.naturalSize.width > 0 && this.api.naturalSize.height > 0) return;
+          const image = this.el.querySelector(
+            '[data-scope="image-cropper"][data-part="image"]'
+          );
+          if (!(image == null ? void 0 : image.complete)) return;
+          const { naturalWidth: width, naturalHeight: height } = image;
+          if (width > 0 && height > 0) {
+            this.machine.send({ type: "SET_NATURAL_SIZE", src: "ssr", size: { width, height } });
           }
         }
       };
       ImageCropperHook = createZagLiveHook({
         key: "image-cropper",
-        mount(hook) {
-          return new ImageCropper(hook.el, imageCropperProps(hook.el, hook));
+        mount(hook, { dom: dom3 }) {
+          const inst = new ImageCropper(hook.el, imageCropperProps(hook.el, hook));
+          dom3.add("corex:image-cropper:preview", () => {
+            void inst.api.getCroppedImage({ output: "dataUrl" }).then((dataUrl) => {
+              if (typeof dataUrl !== "string") return;
+              document.querySelectorAll(`img[data-image-cropper-preview="${hook.el.id}"]`).forEach((img) => {
+                img.src = dataUrl;
+                img.hidden = false;
+              });
+            });
+          });
+          return inst;
         },
         update(hook, inst) {
           inst.updateProps(imageCropperProps(hook.el, hook));
@@ -60013,6 +60056,7 @@ ${err}`);
     });
   }
   function cascadeSelectProps(el, hook) {
+    var _a4;
     const onValueChange = (details) => {
       const eventName = getString(el, "onValueChange");
       if (eventName && canPushEvent(hook.liveSocket)) {
@@ -60031,6 +60075,7 @@ ${err}`);
       rootNode: safeParseJson(el.dataset.tree, DEFAULT_ROOT),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
+      positioning: (_a4 = readPositioningOptions(el)) != null ? _a4 : { strategy: "fixed", placement: "bottom-start" },
       onValueChange
     };
   }
@@ -60044,6 +60089,7 @@ ${err}`);
       init_chunk_7DTCDTRW();
       init_chunk_4ATAXYH3();
       init_chunk_AVGG6QG4();
+      init_chunk_55YTGZEH();
       init_chunk_2NCIS2R3();
       init_chunk_EAQ6WQNO();
       init_chunk_YMOPD357();
@@ -62410,23 +62456,34 @@ ${err}`);
         }
       });
       Tour = class extends Component {
+        constructor() {
+          super(...arguments);
+          __publicField(this, "portalled", /* @__PURE__ */ new Set());
+        }
         initMachine(props) {
           return new VanillaMachine(machine49, props);
         }
         initApi() {
           return this.zagConnect(connect49);
         }
+        unportal() {
+          var _a4;
+          const root = (_a4 = this.el.querySelector('[data-scope="tour"][data-part="root"]')) != null ? _a4 : this.el;
+          for (const node of this.portalled) {
+            if (node.isConnected) root.appendChild(node);
+          }
+          this.portalled.clear();
+        }
         render() {
           var _a4, _b, _c, _d;
-          const backdrop = this.el.querySelector(
-            '[data-scope="tour"][data-part="backdrop"]'
-          );
+          this.portalOverlay();
+          const backdrop = this.part("backdrop");
           if (backdrop) this.spreadProps(backdrop, this.api.getBackdropProps());
-          const positioner = this.el.querySelector(
-            '[data-scope="tour"][data-part="positioner"]'
-          );
+          const spotlight = this.part("spotlight");
+          if (spotlight) this.spreadProps(spotlight, this.api.getSpotlightProps());
+          const positioner = this.part("positioner");
           if (positioner) this.spreadProps(positioner, this.api.getPositionerProps());
-          const content = this.el.querySelector('[data-scope="tour"][data-part="content"]');
+          const content = this.part("content");
           if (content) {
             this.spreadProps(content, this.api.getContentProps());
             const title = content.querySelector('[data-scope="tour"][data-part="title"]');
@@ -62441,12 +62498,41 @@ ${err}`);
               this.spreadProps(description, this.api.getDescriptionProps());
               description.textContent = String((_d = (_c = this.api.step) == null ? void 0 : _c.description) != null ? _d : "");
             }
+            const progressText = content.querySelector(
+              '[data-scope="tour"][data-part="progress-text"]'
+            );
+            if (progressText) {
+              this.spreadProps(progressText, this.api.getProgressTextProps());
+              progressText.textContent = this.api.getProgressText();
+            }
             this.renderActions(content, this.api.step);
           }
-          const close = this.el.querySelector(
-            '[data-scope="tour"][data-part="close-trigger"]'
-          );
+          const close = this.part("close-trigger");
           if (close) this.spreadProps(close, this.api.getCloseTriggerProps());
+        }
+        part(name) {
+          const fromHost = this.el.querySelector(
+            `[data-scope="tour"][data-part="${name}"]`
+          );
+          if (fromHost) return fromHost;
+          for (const node of this.portalled) {
+            if (node.dataset.part === name) return node;
+            const nested = node.querySelector(`[data-scope="tour"][data-part="${name}"]`);
+            if (nested) return nested;
+          }
+          return null;
+        }
+        portalOverlay() {
+          var _a4;
+          const parts210 = ["backdrop", "spotlight", "positioner"];
+          for (const part of parts210) {
+            const node = (_a4 = this.el.querySelector(`[data-scope="tour"][data-part="${part}"]`)) != null ? _a4 : [...this.portalled].find((el) => el.dataset.part === part);
+            if (!node) continue;
+            if (node.parentElement !== document.body) {
+              document.body.appendChild(node);
+              this.portalled.add(node);
+            }
+          }
         }
         renderActions(content, step) {
           var _a4, _b;
@@ -62522,6 +62608,9 @@ ${err}`);
         },
         update(hook, inst) {
           inst.updateProps(tourProps(hook.el, hook));
+        },
+        destroy(_hook, inst) {
+          inst.unportal();
         }
       });
     }

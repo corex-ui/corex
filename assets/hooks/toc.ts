@@ -6,7 +6,10 @@ import { createZagLiveHook } from "../lib/zag-live-hook";
 
 const DEFAULT_ITEMS: TocItem[] = [
   { value: "intro", depth: 2 },
-  { value: "usage", depth: 2 },
+  { value: "install", depth: 2 },
+  { value: "usage", depth: 3 },
+  { value: "api", depth: 2 },
+  { value: "a11y", depth: 2 },
 ];
 
 function tocProps(el: HTMLElement, hook: HookInterface<HTMLElement>): TocProps {
@@ -25,10 +28,14 @@ function tocProps(el: HTMLElement, hook: HookInterface<HTMLElement>): TocProps {
       );
     }
   };
+  const scrollSelector = el.dataset.scrollEl;
   return {
     id: el.id,
     dir: getDir(el),
     items: safeParseJson<TocItem[]>(el.dataset.items, DEFAULT_ITEMS),
+    scrollEl: scrollSelector
+      ? () => document.querySelector<HTMLElement>(scrollSelector)
+      : undefined,
     onActiveChange,
   };
 }

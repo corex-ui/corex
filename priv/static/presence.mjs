@@ -245,6 +245,9 @@ var Presence = class extends Component {
   render() {
     const root = this.el.querySelector('[data-scope="presence"][data-part="root"]') ?? this.el;
     this.api.setNode(root);
+    root.hidden = !this.api.present;
+    root.dataset.state = this.api.present ? "open" : "closed";
+    root.dataset.present = this.api.present ? "true" : "false";
   }
 };
 
@@ -270,11 +273,11 @@ var PresenceHook = createZagLiveHook({
   mount(hook, { dom, server }) {
     const inst = new Presence(hook.el, presenceProps(hook.el, hook));
     dom.add("corex:presence:set-present", (event) => {
-      inst.updateProps(presenceProps(hook.el, hook, event.detail.present));
+      inst.updateProps(presenceProps(hook.el, hook, event.detail.present), { force: true });
     });
     server.add("presence_set_present", (payload) => {
       if (!idMatches(hook.el.id, readPayloadId(payload))) return;
-      inst.updateProps(presenceProps(hook.el, hook, payload.present));
+      inst.updateProps(presenceProps(hook.el, hook, payload.present), { force: true });
     });
     return inst;
   },

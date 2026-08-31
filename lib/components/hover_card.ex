@@ -46,10 +46,24 @@ defmodule Corex.HoverCard do
   ### Placement
 
     ```heex
-    <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "bottom"}}>
-      <:trigger>Bottom</:trigger>
-      <:content>Card below</:content>
-    </.hover_card>
+    <div class="flex flex-wrap items-center gap-space">
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "bottom"}}>
+        <:trigger>Bottom</:trigger>
+        <:content>Card below</:content>
+      </.hover_card>
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "top"}}>
+        <:trigger>Top</:trigger>
+        <:content>Card above</:content>
+      </.hover_card>
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "left"}}>
+        <:trigger>Left</:trigger>
+        <:content>Card on the left</:content>
+      </.hover_card>
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "right"}}>
+        <:trigger>Right</:trigger>
+        <:content>Card on the right</:content>
+      </.hover_card>
+    </div>
     ```
 
   <!-- tabs-close -->

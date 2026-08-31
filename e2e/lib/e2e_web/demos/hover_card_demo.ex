@@ -85,10 +85,24 @@ defmodule E2eWeb.Demos.HoverCardDemo do
 
   def anatomy_placement_code do
     ~S"""
-    <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "bottom"}}>
-      <:trigger>Bottom</:trigger>
-      <:content>Card below</:content>
-    </.hover_card>
+    <div class="flex flex-wrap items-center gap-space">
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "bottom"}}>
+        <:trigger>Bottom</:trigger>
+        <:content>Card below</:content>
+      </.hover_card>
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "top"}}>
+        <:trigger>Top</:trigger>
+        <:content>Card above</:content>
+      </.hover_card>
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "left"}}>
+        <:trigger>Left</:trigger>
+        <:content>Card on the left</:content>
+      </.hover_card>
+      <.hover_card class="hover-card" positioning={%Corex.Positioning{placement: "right"}}>
+        <:trigger>Right</:trigger>
+        <:content>Card on the right</:content>
+      </.hover_card>
+    </div>
     """
   end
 
@@ -96,14 +110,40 @@ defmodule E2eWeb.Demos.HoverCardDemo do
     _ = assigns
 
     ~H"""
-    <.hover_card
-      id="hover-card-anatomy-placement"
-      class="hover-card"
-      positioning={%Corex.Positioning{placement: "bottom"}}
-    >
-      <:trigger>Bottom</:trigger>
-      <:content>Card below</:content>
-    </.hover_card>
+    <div class="flex flex-wrap items-center gap-space">
+      <.hover_card
+        id="hover-card-anatomy-placement-bottom"
+        class="hover-card"
+        positioning={%Corex.Positioning{placement: "bottom"}}
+      >
+        <:trigger>Bottom</:trigger>
+        <:content>Card below</:content>
+      </.hover_card>
+      <.hover_card
+        id="hover-card-anatomy-placement-top"
+        class="hover-card"
+        positioning={%Corex.Positioning{placement: "top"}}
+      >
+        <:trigger>Top</:trigger>
+        <:content>Card above</:content>
+      </.hover_card>
+      <.hover_card
+        id="hover-card-anatomy-placement-left"
+        class="hover-card"
+        positioning={%Corex.Positioning{placement: "left"}}
+      >
+        <:trigger>Left</:trigger>
+        <:content>Card on the left</:content>
+      </.hover_card>
+      <.hover_card
+        id="hover-card-anatomy-placement-right"
+        class="hover-card"
+        positioning={%Corex.Positioning{placement: "right"}}
+      >
+        <:trigger>Right</:trigger>
+        <:content>Card on the right</:content>
+      </.hover_card>
+    </div>
     """
   end
 

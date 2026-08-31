@@ -21,7 +21,10 @@ function splitterProps(el: HTMLElement, hook: HookInterface<HTMLElement>): Split
     id: el.id,
     dir: getDir(el),
     orientation: getString(el, "orientation", ["horizontal", "vertical"] as const),
-    panels: [{ id: "a" }, { id: "b" }],
+    panels: [
+      { id: "a", minSize: 15 },
+      { id: "b", minSize: 15 },
+    ],
     defaultSize: [50, 50],
     onResize,
   };

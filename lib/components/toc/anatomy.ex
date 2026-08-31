@@ -4,11 +4,20 @@ defmodule Corex.Toc.Anatomy do
   defmodule Props do
     @moduledoc false
     @enforce_keys [:id]
-    defstruct [:id, dir: "ltr", on_value_change: nil, on_value_change_client: nil]
+    defstruct [
+      :id,
+      dir: "ltr",
+      items: nil,
+      scroll_el: nil,
+      on_value_change: nil,
+      on_value_change_client: nil
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
+            items: list() | nil,
+            scroll_el: String.t() | nil,
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil
           }

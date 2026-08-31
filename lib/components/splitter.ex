@@ -109,11 +109,12 @@ defmodule Corex.Splitter do
         >
           Sidebar. Drag the handle to resize this pane against the editor.
         </div>
-        <div
+        <button
+          type="button"
           {Connect.mounted_resize_trigger(%ResizeTrigger{id: @id, dir: @dir, trigger_id: "a:b"})}
           data-orientation={@orientation}
         >
-        </div>
+        </button>
         <div
           {Connect.mounted_panel(%Panel{id: @id, dir: @dir, panel_id: "b"})}
           data-orientation={@orientation}

@@ -26,7 +26,11 @@ describe("Tour", () => {
     });
     c.render();
     expect(el.querySelector('[data-part="root"]')).toBeTruthy();
-    expect(el.querySelector('[data-part="spotlight"]')).toBeTruthy();
+    expect(
+      document.body.querySelector('[data-scope="tour"][data-part="spotlight"]') ??
+        el.querySelector('[data-part="spotlight"]')
+    ).toBeTruthy();
+    c.unportal();
     c.destroy();
   });
 
@@ -43,6 +47,7 @@ describe("Tour", () => {
     c.api.start();
     await vi.waitFor(() => expect(c.api.open).toBe(true));
     expect(c.api.step?.title).toBe("Hi");
+    c.unportal();
     c.destroy();
     el.remove();
   });

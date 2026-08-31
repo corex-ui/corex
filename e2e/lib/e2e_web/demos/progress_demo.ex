@@ -154,4 +154,36 @@ defmodule E2eWeb.Demos.ProgressDemo do
     </div>
     """
   end
+
+  def patterns_server_heex do
+    ~S"""
+    <.action phx-click="progress_advance" class="button ui-size-sm">Advance</.action>
+    <.action phx-click="progress_reset" class="button ui-size-sm">Reset</.action>
+    <.progress id="patterns-progress" class="progress" value={@value} />
+    """
+  end
+
+  def patterns_server_elixir do
+    ~S"""
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :value, 20)}
+    end
+
+    def handle_event("progress_advance", _params, socket) do
+      value = min(socket.assigns.value + 20, 100)
+
+      {:noreply,
+       socket
+       |> assign(:value, value)
+       |> Corex.Progress.set_value("patterns-progress", value)}
+    end
+
+    def handle_event("progress_reset", _params, socket) do
+      {:noreply,
+       socket
+       |> assign(:value, 0)
+       |> Corex.Progress.set_value("patterns-progress", 0)}
+    end
+    """
+  end
 end

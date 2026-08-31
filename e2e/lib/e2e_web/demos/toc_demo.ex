@@ -20,25 +20,57 @@ defmodule E2eWeb.Demos.TocDemo do
   def anatomy_article_code do
     ~S"""
     <div class="grid grid-cols-[minmax(0,1fr)_12rem] gap-space items-start">
-      <article class="flex flex-col gap-space-lg">
+      <article id="toc-article" class="typo max-h-96 overflow-auto" tabindex="0">
         <h2 id="intro">Introduction</h2>
-        <p>Long-form content so the sticky TOC can track headings.</p>
-        <p>Corex is a Phoenix LiveView component library with Zag.js behavior.</p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique.
+          Nullam eget vestibulum ligula, at interdum tellus. Donec condimentum ex mi, congue molestie ipsum gravida a.
+        </p>
+        <p>
+          Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+          Integer vitae nisl sit amet lorem pretium tincidunt. Curabitur auctor, nisl a commodo vehicula,
+          nisi justo venenatis lectus, at tincidunt erat nisl a lorem.
+        </p>
         <h2 id="install">Install</h2>
-        <p>Add the Hex package, run the installer, and include Design CSS.</p>
-        <p>Keep the host id stable so hooks hydrate the same node after patch.</p>
+        <p>
+          Add the Hex package, run the installer, and include Design CSS. Lorem ipsum dolor sit amet,
+          consectetur adipiscing elit. Fusce posuere, lacus sit amet tincidunt tincidunt, nunc nisl
+          tincidunt nisl, vitae aliquam nisl nisl sit amet nisl.
+        </p>
+        <p>
+          Sed ac eros luctus, tincidunt nisl sit amet, aliquam nisl. Pellentesque habitant morbi tristique
+          senectus et netus et malesuada fames ac turpis egestas.
+        </p>
         <h3 id="usage">Usage</h3>
-        <p>Render hosts with a stable id. Hooks hydrate Zag machines after JS loads.</p>
-        <p>Open Anatomy, API, Events, and Style from the docs sidebar.</p>
+        <p>
+          Render hosts with a stable id. Hooks hydrate Zag machines after JavaScript loads.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
+        </p>
+        <p>
+          Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Nullam quis risus eget
+          urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes.
+        </p>
         <h2 id="api">API</h2>
-        <p>Client bindings dispatch CustomEvents. Server handlers push LiveView events.</p>
-        <p>Use set helpers from buttons instead of remounting the host.</p>
+        <p>
+          Client bindings dispatch CustomEvents. Server handlers push LiveView events.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas faucibus mollis interdum.
+        </p>
+        <p>
+          Cras mattis consectetur purus sit amet fermentum. Donec ullamcorper nulla non metus auctor fringilla.
+          Etiam porta sem malesuada magna mollis euismod.
+        </p>
         <h2 id="a11y">Accessibility</h2>
-        <p>Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.</p>
-        <p>Overflow regions that scroll should remain keyboard reachable.</p>
+        <p>
+          Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo risus, porta ac consectetur ac.
+        </p>
+        <p>
+          Vestibulum id ligula porta felis euismod semper. Integer posuere erat a ante venenatis dapibus
+          posuere velit aliquet. Aenean lacinia bibendum nulla sed consectetur.
+        </p>
       </article>
       <div class="sticky top-space">
-        <.toc class="toc" />
+        <.toc class="toc" scroll_el="#toc-article" />
       </div>
     </div>
     """
@@ -49,49 +81,72 @@ defmodule E2eWeb.Demos.TocDemo do
 
     ~H"""
     <div class="grid w-full grid-cols-1 md:grid-cols-[minmax(0,1fr)_12rem] gap-space items-start">
-      <article class="flex flex-col gap-space-lg max-h-96 overflow-auto pr-space" tabindex="0">
-        <section>
-          <h2 id="intro">Introduction</h2>
-          <p>
-            Corex is a Phoenix LiveView component library. This article is long enough to scroll so the table of contents can highlight the active section.
-          </p>
-          <p :for={_ <- 1..6}>
-            Keep scrolling. Each heading below maps to a TOC link.
-          </p>
-        </section>
-        <section>
-          <h2 id="install">Install</h2>
-          <p>Add the Hex package, run the installer, and include Design CSS.</p>
-          <p :for={_ <- 1..6}>Installation notes continue here.</p>
-        </section>
-        <section>
-          <h3 id="usage">Usage</h3>
-          <p>Render hosts with a stable id. Hooks hydrate Zag machines after JS loads.</p>
-          <p :for={_ <- 1..6}>Usage details continue here.</p>
-        </section>
-        <section>
-          <h2 id="api">API</h2>
-          <p>Client bindings dispatch CustomEvents. Server handlers push LiveView events.</p>
-          <p :for={_ <- 1..6}>API notes continue here.</p>
-        </section>
-        <section>
-          <h2 id="a11y">Accessibility</h2>
-          <p>Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.</p>
-          <p :for={_ <- 1..6}>Accessibility notes continue here.</p>
-        </section>
-        <section>
-          <h2 id="tokens">Tokens</h2>
-          <p>Design CSS maps semantic axes onto control tokens without extra wrappers.</p>
-          <p :for={_ <- 1..6}>Token notes continue here.</p>
-        </section>
-        <section>
-          <h2 id="patterns">Patterns</h2>
-          <p>Clone Select overlay SSR, avatar loading, and dialog surfaces instead of inventing new models.</p>
-          <p :for={_ <- 1..6}>Pattern notes continue here.</p>
-        </section>
+      <article id="toc-article" class="typo max-h-96 overflow-auto pr-space" tabindex="0">
+        <h2 id="intro">Introduction</h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique.
+          Nullam eget vestibulum ligula, at interdum tellus. Donec condimentum ex mi, congue molestie ipsum gravida a.
+        </p>
+        <p>
+          Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+          Integer vitae nisl sit amet lorem pretium tincidunt. Curabitur auctor, nisl a commodo vehicula,
+          nisi justo venenatis lectus, at tincidunt erat nisl a lorem.
+        </p>
+        <p>
+          Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+        </p>
+        <h2 id="install">Install</h2>
+        <p>
+          Add the Hex package, run the installer, and include Design CSS. Lorem ipsum dolor sit amet,
+          consectetur adipiscing elit. Fusce posuere, lacus sit amet tincidunt tincidunt, nunc nisl
+          tincidunt nisl, vitae aliquam nisl nisl sit amet nisl.
+        </p>
+        <p>
+          Sed ac eros luctus, tincidunt nisl sit amet, aliquam nisl. Pellentesque habitant morbi tristique
+          senectus et netus et malesuada fames ac turpis egestas.
+        </p>
+        <p>
+          Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit sit amet non magna.
+        </p>
+        <h3 id="usage">Usage</h3>
+        <p>
+          Render hosts with a stable id. Hooks hydrate Zag machines after JavaScript loads.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
+        </p>
+        <p>
+          Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Nullam quis risus eget
+          urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes.
+        </p>
+        <p>
+          Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui.
+        </p>
+        <h2 id="api">API</h2>
+        <p>
+          Client bindings dispatch CustomEvents. Server handlers push LiveView events.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas faucibus mollis interdum.
+        </p>
+        <p>
+          Cras mattis consectetur purus sit amet fermentum. Donec ullamcorper nulla non metus auctor fringilla.
+          Etiam porta sem malesuada magna mollis euismod.
+        </p>
+        <p>
+          Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+        </p>
+        <h2 id="a11y">Accessibility</h2>
+        <p>
+          Parts keep Zag data attributes so keyboard and screen reader behavior stay intact.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi leo risus, porta ac consectetur ac.
+        </p>
+        <p>
+          Vestibulum id ligula porta felis euismod semper. Integer posuere erat a ante venenatis dapibus
+          posuere velit aliquet. Aenean lacinia bibendum nulla sed consectetur.
+        </p>
+        <p>
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Nullam id dolor id nibh ultricies vehicula.
+        </p>
       </article>
       <div class="sticky top-space">
-        <.toc id="toc-anatomy-article" class="toc" />
+        <.toc id="toc-anatomy-article" class="toc" scroll_el="#toc-article" />
       </div>
     </div>
     """

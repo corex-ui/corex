@@ -31,9 +31,15 @@ export class ImageCropper extends Component<Props, Api, Schema> {
     );
     if (image) this.spreadProps(image, this.api.getImageProps());
 
-    const selection = this.el.querySelector<HTMLElement>(
+    let selection = this.el.querySelector<HTMLElement>(
       '[data-scope="image-cropper"][data-part="selection"]'
     );
+    if (!selection && viewport) {
+      selection = document.createElement("div");
+      selection.dataset.scope = "image-cropper";
+      selection.dataset.part = "selection";
+      viewport.appendChild(selection);
+    }
     if (selection) {
       this.spreadProps(selection, this.api.getSelectionProps());
       for (const position of HANDLES) {

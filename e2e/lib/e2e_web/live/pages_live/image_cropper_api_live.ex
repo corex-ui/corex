@@ -15,8 +15,24 @@ defmodule E2eWeb.ImageCropperApiLive do
         title="ImageCropper · API"
         subtitle="Host API."
       >
-        <.demo_section id="image-cropper-api-minimal" title="Host">
-          <:preview><.image_cropper id="image-cropper-api" class="image-cropper" /></:preview>
+        <.demo_section id="image-cropper-api-preview" title="View preview">
+          <:preview>
+            <div class="flex w-full flex-col gap-space">
+              <.action
+                phx-click={Corex.ImageCropper.preview("image-cropper-api")}
+                class="button ui-size-sm"
+              >
+                View preview
+              </.action>
+              <.image_cropper id="image-cropper-api" class="image-cropper" src="/images/beach.jpg" />
+              <img
+                data-image-cropper-preview="image-cropper-api"
+                alt="Crop preview"
+                class="max-w-xs rounded-md border border-border"
+                hidden
+              />
+            </div>
+          </:preview>
         </.demo_section>
       </.demo_page>
     </Layouts.app>

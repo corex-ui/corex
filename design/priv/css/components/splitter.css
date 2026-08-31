@@ -50,6 +50,11 @@
     padding: 0;
     outline: 0;
     flex-shrink: 0;
+    touch-action: none;
+    user-select: none;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
     transition: background-color var(--duration-normal) ease;
   }
 

@@ -26,8 +26,22 @@ function imageCropperProps(el: HTMLElement, hook: HookInterface<HTMLElement>): I
 
 const ImageCropperHook = createZagLiveHook({
   key: "image-cropper",
-  mount(hook) {
-    return new ImageCropper(hook.el, imageCropperProps(hook.el, hook));
+  mount(hook, { dom }) {
+    const inst = new ImageCropper(hook.el, imageCropperProps(hook.el, hook));
+
+    dom.add("corex:image-cropper:preview", () => {
+      void inst.api.getCroppedImage({ output: "dataUrl" }).then((dataUrl) => {
+        if (typeof dataUrl !== "string") return;
+        document
+          .querySelectorAll<HTMLImageElement>(`img[data-image-cropper-preview="${hook.el.id}"]`)
+          .forEach((img) => {
+            img.src = dataUrl;
+            img.hidden = false;
+          });
+      });
+    });
+
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(imageCropperProps(hook.el, hook));

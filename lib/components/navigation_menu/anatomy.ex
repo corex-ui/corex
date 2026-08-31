@@ -45,4 +45,12 @@ defmodule Corex.NavigationMenu.Anatomy do
     @ignored_attrs ["dir", "id", "data-state", "aria-expanded", "data-value"]
     def ignored_attrs, do: @ignored_attrs
   end
+
+  defmodule Link do
+    @moduledoc false
+    defstruct [:id, :dir, :value]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), value: String.t()}
+    @ignored_attrs ["dir", "id", "data-state", "data-value", "data-current"]
+    def ignored_attrs, do: @ignored_attrs
+  end
 end

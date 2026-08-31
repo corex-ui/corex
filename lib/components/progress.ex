@@ -144,9 +144,25 @@ defmodule Corex.Progress do
         <div :if={@variant == "linear"} {Connect.mounted_track(%Track{id: @id, dir: @dir})}>
           <div {Connect.mounted_range(%Range{id: @id, dir: @dir, value: @value, min: @min, max: @max})}></div>
         </div>
-        <svg :if={@variant == "circular"} {Connect.mounted_circle(%Circle{id: @id, dir: @dir})}>
-          <circle {Connect.mounted_circle_track(%CircleTrack{id: @id, dir: @dir})} fill="none" />
-          <circle {Connect.mounted_circle_range(%CircleRange{id: @id, dir: @dir})} fill="none" />
+        <svg
+          :if={@variant == "circular"}
+          viewBox="0 0 44 44"
+          {Connect.mounted_circle(%Circle{id: @id, dir: @dir, value: @value, min: @min, max: @max})}
+        >
+          <circle
+            cx="22"
+            cy="22"
+            r="20"
+            {Connect.mounted_circle_track(%CircleTrack{id: @id, dir: @dir})}
+            fill="none"
+          />
+          <circle
+            cx="22"
+            cy="22"
+            r="20"
+            {Connect.mounted_circle_range(%CircleRange{id: @id, dir: @dir, value: @value, min: @min, max: @max})}
+            fill="none"
+          />
         </svg>
         <span {Connect.mounted_value_text(%ValueText{id: @id, dir: @dir})}>
           {progress_value_text(@value, @min, @max)}

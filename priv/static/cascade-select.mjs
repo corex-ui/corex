@@ -19,6 +19,9 @@ import {
 } from "./chunks/chunk-4ATAXYH3.mjs";
 import "./chunks/chunk-AVGG6QG4.mjs";
 import {
+  readPositioningOptions
+} from "./chunks/chunk-55YTGZEH.mjs";
+import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
@@ -1773,6 +1776,7 @@ function cascadeSelectProps(el, hook) {
     rootNode: safeParseJson(el.dataset.tree, DEFAULT_ROOT),
     disabled: getBoolean(el, "disabled"),
     name: getString(el, "name"),
+    positioning: readPositioningOptions(el) ?? { strategy: "fixed", placement: "bottom-start" },
     onValueChange
   };
 }

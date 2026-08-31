@@ -1090,22 +1090,29 @@ function executeStepEffect(params, step, idx) {
 
 // components/tour.ts
 var Tour = class extends Component {
+  portalled = /* @__PURE__ */ new Set();
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
   initApi() {
     return this.zagConnect(connect);
   }
+  unportal() {
+    const root = this.el.querySelector('[data-scope="tour"][data-part="root"]') ?? this.el;
+    for (const node of this.portalled) {
+      if (node.isConnected) root.appendChild(node);
+    }
+    this.portalled.clear();
+  }
   render() {
-    const backdrop = this.el.querySelector(
-      '[data-scope="tour"][data-part="backdrop"]'
-    );
+    this.portalOverlay();
+    const backdrop = this.part("backdrop");
     if (backdrop) this.spreadProps(backdrop, this.api.getBackdropProps());
-    const positioner = this.el.querySelector(
-      '[data-scope="tour"][data-part="positioner"]'
-    );
+    const spotlight = this.part("spotlight");
+    if (spotlight) this.spreadProps(spotlight, this.api.getSpotlightProps());
+    const positioner = this.part("positioner");
     if (positioner) this.spreadProps(positioner, this.api.getPositionerProps());
-    const content = this.el.querySelector('[data-scope="tour"][data-part="content"]');
+    const content = this.part("content");
     if (content) {
       this.spreadProps(content, this.api.getContentProps());
       const title = content.querySelector('[data-scope="tour"][data-part="title"]');
@@ -1120,12 +1127,40 @@ var Tour = class extends Component {
         this.spreadProps(description, this.api.getDescriptionProps());
         description.textContent = String(this.api.step?.description ?? "");
       }
+      const progressText = content.querySelector(
+        '[data-scope="tour"][data-part="progress-text"]'
+      );
+      if (progressText) {
+        this.spreadProps(progressText, this.api.getProgressTextProps());
+        progressText.textContent = this.api.getProgressText();
+      }
       this.renderActions(content, this.api.step);
     }
-    const close = this.el.querySelector(
-      '[data-scope="tour"][data-part="close-trigger"]'
-    );
+    const close = this.part("close-trigger");
     if (close) this.spreadProps(close, this.api.getCloseTriggerProps());
+  }
+  part(name) {
+    const fromHost = this.el.querySelector(
+      `[data-scope="tour"][data-part="${name}"]`
+    );
+    if (fromHost) return fromHost;
+    for (const node of this.portalled) {
+      if (node.dataset.part === name) return node;
+      const nested = node.querySelector(`[data-scope="tour"][data-part="${name}"]`);
+      if (nested) return nested;
+    }
+    return null;
+  }
+  portalOverlay() {
+    const parts2 = ["backdrop", "spotlight", "positioner"];
+    for (const part of parts2) {
+      const node = this.el.querySelector(`[data-scope="tour"][data-part="${part}"]`) ?? [...this.portalled].find((el) => el.dataset.part === part);
+      if (!node) continue;
+      if (node.parentElement !== document.body) {
+        document.body.appendChild(node);
+        this.portalled.add(node);
+      }
+    }
   }
   renderActions(content, step) {
     const host = content.querySelector('[data-scope="tour"][data-part="actions"]') ?? (() => {
@@ -1235,6 +1270,9 @@ var TourHook = createZagLiveHook({
   },
   update(hook, inst) {
     inst.updateProps(tourProps(hook.el, hook));
+  },
+  destroy(_hook, inst) {
+    inst.unportal();
   }
 });
 export {

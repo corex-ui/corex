@@ -93,11 +93,15 @@ defmodule Corex.Progress.Connect do
 
   @spec circle(Circle.t()) :: map()
   def circle(assigns) do
+    percent = Anatomy.percent(assigns.value, assigns.min, assigns.max)
+
     %{
       "data-scope" => "progress",
       "data-part" => "circle",
       "dir" => Map.get(assigns, :dir),
-      "id" => "progress:" <> assigns.id <> ":circle"
+      "id" => "progress:" <> assigns.id <> ":circle",
+      "data-state" => if(is_nil(assigns.value), do: "indeterminate", else: "loading"),
+      "style" => circle_style(percent)
     }
   end
 
@@ -125,11 +129,15 @@ defmodule Corex.Progress.Connect do
 
   @spec circle_range(CircleRange.t()) :: map()
   def circle_range(assigns) do
+    percent = Anatomy.percent(assigns.value, assigns.min, assigns.max)
+
     %{
       "data-scope" => "progress",
       "data-part" => "circle-range",
       "dir" => Map.get(assigns, :dir),
-      "id" => "progress:" <> assigns.id <> ":circle-range"
+      "id" => "progress:" <> assigns.id <> ":circle-range",
+      "data-state" => if(is_nil(assigns.value), do: "indeterminate", else: "loading"),
+      "style" => circle_style(percent)
     }
   end
 
@@ -156,8 +164,21 @@ defmodule Corex.Progress.Connect do
   end
 
   defp root_style(nil), do: nil
-  defp root_style(percent), do: "--percent: #{percent}%"
+  defp root_style(percent), do: "--percent: #{percent}"
 
   defp range_style(nil), do: nil
   defp range_style(percent), do: "width: #{percent}%"
+
+  defp circle_style(nil) do
+    "--size: 44px; --thickness: 4px; --radius: 20px; --circumference: #{circumference()}; --percent: 0"
+  end
+
+  defp circle_style(percent) do
+    circ = circumference()
+    offset = circ * (100 - percent) / 100
+
+    "--size: 44px; --thickness: 4px; --radius: 20px; --percent: #{percent}; --circumference: #{circ}; --offset: #{offset}"
+  end
+
+  defp circumference, do: 2 * 3.14159 * 20
 end

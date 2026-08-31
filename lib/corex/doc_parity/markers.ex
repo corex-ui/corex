@@ -14,7 +14,9 @@ defmodule Corex.DocParity.Markers do
       "loading" => ["anatomy_loading_code"]
     },
     "rating_group" => %{
-      "minimal" => ["anatomy_minimal_code"]
+      "minimal" => ["anatomy_minimal_code"],
+      "half stars" => ["anatomy_half_code"],
+      "smileys" => ["anatomy_smileys_code"]
     },
     "steps" => %{
       "minimal" => ["anatomy_minimal_code"]
@@ -38,11 +40,12 @@ defmodule Corex.DocParity.Markers do
       "minimal" => ["anatomy_minimal_code"]
     },
     "image_cropper" => %{
-      "minimal" => ["anatomy_minimal_code"]
+      "minimal" => ["anatomy_minimal_code"],
+      "preview" => ["anatomy_preview_code"]
     },
     "navigation_menu" => %{
       "minimal" => ["anatomy_minimal_code"],
-      "mega menu" => ["anatomy_mega_menu_code"]
+      "custom slots" => ["anatomy_mega_menu_code"]
     },
     "cascade_select" => %{
       "minimal" => ["anatomy_minimal_code"],

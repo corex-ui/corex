@@ -37,8 +37,8 @@ defmodule Corex.Steps.Anatomy do
 
   defmodule List do
     @moduledoc false
-    defstruct [:id, :dir]
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    defstruct [:id, :dir, orientation: "horizontal"]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
     @ignored_attrs ["dir", "id", "data-orientation", "role"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -53,8 +53,8 @@ defmodule Corex.Steps.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :index]
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), index: integer()}
+    defstruct [:id, :dir, :index, step: 0]
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), index: integer(), step: integer()}
     @ignored_attrs ["dir", "id", "hidden", "data-state"]
     def ignored_attrs, do: @ignored_attrs
   end

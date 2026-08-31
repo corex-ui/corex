@@ -3,7 +3,7 @@ defmodule Corex.NavigationMenu.Connect do
   use Corex.Connect.Mounted
   use Corex.Component, :connect
 
-  alias Corex.NavigationMenu.Anatomy.{Content, List, Props, Root, Trigger}
+  alias Corex.NavigationMenu.Anatomy.{Content, Link, List, Props, Root, Trigger}
   alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
@@ -82,6 +82,23 @@ defmodule Corex.NavigationMenu.Connect do
   def ignore_trigger(assigns) do
     JS.ignore_attributes(Trigger.ignored_attrs(),
       to: Selectors.css_id("navigation-menu:" <> assigns.id <> ":trigger:" <> assigns.value)
+    )
+  end
+
+  @spec link(Link.t()) :: map()
+  def link(assigns) do
+    %{
+      "data-scope" => "navigation-menu",
+      "data-part" => "link",
+      "dir" => Map.get(assigns, :dir),
+      "data-value" => assigns.value,
+      "id" => "navigation-menu:" <> assigns.id <> ":link:" <> assigns.value
+    }
+  end
+
+  def ignore_link(assigns) do
+    JS.ignore_attributes(Link.ignored_attrs(),
+      to: Selectors.css_id("navigation-menu:" <> assigns.id <> ":link:" <> assigns.value)
     )
   end
 end

@@ -69,8 +69,15 @@ defmodule Corex.Progress.Anatomy do
 
   defmodule Circle do
     @moduledoc false
-    defstruct [:id, :dir]
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    defstruct [:id, :dir, value: 40, min: 0, max: 100]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            value: number() | nil,
+            min: integer(),
+            max: integer()
+          }
     @ignored_attrs ["dir", "id", "data-state", "style"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -79,15 +86,22 @@ defmodule Corex.Progress.Anatomy do
     @moduledoc false
     defstruct [:id, :dir]
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
-    @ignored_attrs ["dir", "id", "style"]
+    @ignored_attrs ["dir", "id", "style", "cx", "cy", "r"]
     def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule CircleRange do
     @moduledoc false
-    defstruct [:id, :dir]
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
-    @ignored_attrs ["dir", "id", "data-state", "style"]
+    defstruct [:id, :dir, value: 40, min: 0, max: 100]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            value: number() | nil,
+            min: integer(),
+            max: integer()
+          }
+    @ignored_attrs ["dir", "id", "data-state", "style", "cx", "cy", "r"]
     def ignored_attrs, do: @ignored_attrs
   end
 

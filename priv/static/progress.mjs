@@ -351,10 +351,11 @@ function progressProps(el, hook) {
       );
     }
   };
+  const indeterminate = el.hasAttribute("data-indeterminate");
   return {
     id: el.id,
     dir: getDir(el),
-    defaultValue: getNumber(el, "value") ?? 50,
+    ...indeterminate ? { value: null } : { defaultValue: getNumber(el, "value") ?? 40 },
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
     orientation: getString(el, "orientation", ["horizontal", "vertical"]),

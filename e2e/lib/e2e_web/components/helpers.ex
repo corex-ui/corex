@@ -718,10 +718,11 @@ defmodule E2eWeb.Helpers do
           id: "progress",
           style: true,
           playground: false,
-          pattern: false,
+          pattern: true,
           anatomy_to: ~p"/progress/anatomy",
           api_to: ~p"/progress/api",
           events_to: ~p"/progress/events",
+          patterns_to: ~p"/progress/patterns",
           style_to: ~p"/progress/style"
         },
         %{
@@ -897,6 +898,9 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/tree-view/style"
         }
       ]
+      # Zag beta hosts (cascade-select, date-input, drawer) stay in the library
+      # but are hidden from docs until those machines are ready.
+      |> Enum.reject(&(&1.id in ~w(cascade-select date-input drawer)))
       |> Enum.sort_by(& &1.label)
 
     Corex.Tree.new(Enum.map(components, &components_docs_node/1))

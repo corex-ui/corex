@@ -2056,9 +2056,15 @@ var ImageCropper = class extends Component {
       '[data-scope="image-cropper"][data-part="image"]'
     );
     if (image) this.spreadProps(image, this.api.getImageProps());
-    const selection = this.el.querySelector(
+    let selection = this.el.querySelector(
       '[data-scope="image-cropper"][data-part="selection"]'
     );
+    if (!selection && viewport) {
+      selection = document.createElement("div");
+      selection.dataset.scope = "image-cropper";
+      selection.dataset.part = "selection";
+      viewport.appendChild(selection);
+    }
     if (selection) {
       this.spreadProps(selection, this.api.getSelectionProps());
       for (const position of HANDLES) {
@@ -2072,8 +2078,23 @@ var ImageCropper = class extends Component {
           handle.dataset.position = position;
           selection.appendChild(handle);
         }
+        if (!handle.querySelector("span, div")) {
+          handle.appendChild(document.createElement("span"));
+        }
         this.spreadProps(handle, this.api.getHandleProps({ position }));
       }
+    }
+    this.syncImageSize();
+  }
+  syncImageSize() {
+    if (this.api.naturalSize.width > 0 && this.api.naturalSize.height > 0) return;
+    const image = this.el.querySelector(
+      '[data-scope="image-cropper"][data-part="image"]'
+    );
+    if (!image?.complete) return;
+    const { naturalWidth: width, naturalHeight: height } = image;
+    if (width > 0 && height > 0) {
+      this.machine.send({ type: "SET_NATURAL_SIZE", src: "ssr", size: { width, height } });
     }
   }
 };
@@ -2100,8 +2121,18 @@ function imageCropperProps(el, hook) {
 }
 var ImageCropperHook = createZagLiveHook({
   key: "image-cropper",
-  mount(hook) {
-    return new ImageCropper(hook.el, imageCropperProps(hook.el, hook));
+  mount(hook, { dom }) {
+    const inst = new ImageCropper(hook.el, imageCropperProps(hook.el, hook));
+    dom.add("corex:image-cropper:preview", () => {
+      void inst.api.getCroppedImage({ output: "dataUrl" }).then((dataUrl) => {
+        if (typeof dataUrl !== "string") return;
+        document.querySelectorAll(`img[data-image-cropper-preview="${hook.el.id}"]`).forEach((img) => {
+          img.src = dataUrl;
+          img.hidden = false;
+        });
+      });
+    });
+    return inst;
   },
   update(hook, inst) {
     inst.updateProps(imageCropperProps(hook.el, hook));

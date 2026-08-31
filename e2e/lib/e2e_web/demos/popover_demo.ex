@@ -45,10 +45,24 @@ defmodule E2eWeb.Demos.PopoverDemo do
 
   def anatomy_placement_code do
     ~S"""
-    <.popover class="popover" positioning={%Corex.Positioning{placement: "bottom"}}>
-      <:trigger>Bottom</:trigger>
-      <:content>Anchored below</:content>
-    </.popover>
+    <div class="flex flex-wrap items-center gap-space">
+      <.popover class="popover" positioning={%Corex.Positioning{placement: "bottom"}}>
+        <:trigger>Bottom</:trigger>
+        <:content>Anchored below</:content>
+      </.popover>
+      <.popover class="popover" positioning={%Corex.Positioning{placement: "top"}}>
+        <:trigger>Top</:trigger>
+        <:content>Anchored above</:content>
+      </.popover>
+      <.popover class="popover" positioning={%Corex.Positioning{placement: "left"}}>
+        <:trigger>Left</:trigger>
+        <:content>Anchored left</:content>
+      </.popover>
+      <.popover class="popover" positioning={%Corex.Positioning{placement: "right"}}>
+        <:trigger>Right</:trigger>
+        <:content>Anchored right</:content>
+      </.popover>
+    </div>
     """
   end
 
@@ -56,14 +70,40 @@ defmodule E2eWeb.Demos.PopoverDemo do
     _ = assigns
 
     ~H"""
-    <.popover
-      id="popover-anatomy-placement"
-      class="popover"
-      positioning={%Corex.Positioning{placement: "bottom"}}
-    >
-      <:trigger>Bottom</:trigger>
-      <:content>Anchored below</:content>
-    </.popover>
+    <div class="flex flex-wrap items-center gap-space">
+      <.popover
+        id="popover-anatomy-placement-bottom"
+        class="popover"
+        positioning={%Corex.Positioning{placement: "bottom"}}
+      >
+        <:trigger>Bottom</:trigger>
+        <:content>Anchored below</:content>
+      </.popover>
+      <.popover
+        id="popover-anatomy-placement-top"
+        class="popover"
+        positioning={%Corex.Positioning{placement: "top"}}
+      >
+        <:trigger>Top</:trigger>
+        <:content>Anchored above</:content>
+      </.popover>
+      <.popover
+        id="popover-anatomy-placement-left"
+        class="popover"
+        positioning={%Corex.Positioning{placement: "left"}}
+      >
+        <:trigger>Left</:trigger>
+        <:content>Anchored left</:content>
+      </.popover>
+      <.popover
+        id="popover-anatomy-placement-right"
+        class="popover"
+        positioning={%Corex.Positioning{placement: "right"}}
+      >
+        <:trigger>Right</:trigger>
+        <:content>Anchored right</:content>
+      </.popover>
+    </div>
     """
   end
 

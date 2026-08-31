@@ -2,6 +2,8 @@ defmodule Corex.ImageCropper do
   @moduledoc ~S'''
   ImageCropper for Phoenix LiveView. Behavior follows [Zag.js](https://zagjs.com/components/react/image-cropper).
 
+  Crop geometry is created after JavaScript hydrates. The server renders a loading viewport and the source image only.
+
   ## Anatomy
 
   <!-- tabs-open -->
@@ -9,7 +11,15 @@ defmodule Corex.ImageCropper do
   ### Minimal
 
     ```heex
-    <.image_cropper class="image-cropper" src="/images/cropper-demo.png" />
+    <.image_cropper class="image-cropper" src="/images/beach.jpg" />
+    ```
+
+  ### Preview
+
+    ```heex
+    <.action phx-click={Corex.ImageCropper.preview("cropper")} class="button ui-size-sm">View preview</.action>
+    <.image_cropper id="cropper" class="image-cropper" src="/images/beach.jpg" />
+    <img data-image-cropper-preview="cropper" alt="Crop preview" hidden />
     ```
 
   <!-- tabs-close -->
@@ -17,6 +27,10 @@ defmodule Corex.ImageCropper do
   ## API
 
   Requires a stable `id` on `<.image_cropper>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`preview/1`](#preview/1) | Export the current crop as a data URL (client) | `%Phoenix.LiveView.JS{}` |
 
   ## Events
 
@@ -31,7 +45,7 @@ defmodule Corex.ImageCropper do
   ### on_value_change
 
     ```heex
-    <.image_cropper class="image-cropper" />
+    <.image_cropper class="image-cropper" src="/images/beach.jpg" />
     ```
 
     ```elixir
@@ -74,14 +88,18 @@ defmodule Corex.ImageCropper do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.ImageCropper.Anatomy.{Handle, Image, Props, Root, Selection, Viewport}
+  import Corex.Api.Doc
+
+  alias Corex.ImageCropper.Anatomy.{Image, Props, Root, Viewport}
   alias Corex.ImageCropper.Connect
+  alias Corex.Selectors
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-  attr(:src, :string, default: "/images/cropper-demo.png")
+  attr(:src, :string, default: "/images/beach.jpg")
 
   attr(:rest, :global)
 
@@ -105,17 +123,22 @@ defmodule Corex.ImageCropper do
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div {Connect.mounted_viewport(%Viewport{id: @id, dir: @dir})}>
           <img {Connect.mounted_image(%Image{id: @id, dir: @dir})} src={@src} alt="" />
-          <div {Connect.mounted_selection(%Selection{id: @id, dir: @dir})}>
-            <div
-              :for={pos <- ~w(n e s w ne se sw nw)}
-              {Connect.mounted_handle(%Handle{id: @id, dir: @dir, position: pos})}
-            >
-              <span></span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
     """
+  end
+
+  api_doc(~S"""
+  Export the current crop as a data URL and paint `[data-image-cropper-preview="<id>"]`.
+  """)
+
+  @spec preview(String.t()) :: Phoenix.LiveView.JS.t()
+  def preview(image_cropper_id) when is_binary(image_cropper_id) do
+    JS.dispatch("corex:image-cropper:preview",
+      to: Selectors.css_id(image_cropper_id),
+      detail: %{},
+      bubbles: false
+    )
   end
 end

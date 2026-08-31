@@ -300,6 +300,7 @@ defmodule E2eWeb.Router do
 
       live("/progress/api", ProgressApiLive)
       live("/progress/events", ProgressEventsLive)
+      live("/progress/patterns", ProgressPatternsLive)
     end
 
     get("/templates", ShowcaseRedirectController, :to_showcases)

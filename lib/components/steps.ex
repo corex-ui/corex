@@ -119,19 +119,31 @@ defmodule Corex.Steps do
       })}
     >
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})} data-orientation={@orientation}>
-        <div {Connect.mounted_list(%List{id: @id, dir: @dir})}>
-          <div :for={i <- 0..(@count - 1)} data-scope="steps" data-part="item" data-index={i}>
+        <div {Connect.mounted_list(%List{id: @id, dir: @dir, orientation: @orientation})}>
+          <div
+            :for={i <- 0..(@count - 1)}
+            data-scope="steps"
+            data-part="item"
+            data-index={i}
+            data-orientation={@orientation}
+          >
             <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir, index: i})}>
               <span data-scope="steps" data-part="indicator" data-index={i}>{i + 1}</span>
               {step_title(i)}
             </button>
-            <div :if={i < @count - 1} data-scope="steps" data-part="separator" data-index={i}></div>
+            <div
+              :if={i < @count - 1}
+              data-scope="steps"
+              data-part="separator"
+              data-index={i}
+              data-orientation={@orientation}
+            >
+            </div>
           </div>
         </div>
         <div
           :for={i <- 0..(@count - 1)}
-          {Connect.mounted_content(%Content{id: @id, dir: @dir, index: i})}
-          hidden={i != @step}
+          {Connect.mounted_content(%Content{id: @id, dir: @dir, index: i, step: @step})}
         >
           <%= if slot = @content_by_index[i] do %>
             {render_slot(slot)}

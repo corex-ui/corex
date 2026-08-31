@@ -12,6 +12,22 @@ defmodule Corex.RatingGroup do
     <.rating_group class="rating-group" value={3.0} />
     ```
 
+  ### Half stars
+
+    ```heex
+    <.rating_group class="rating-group" allow_half value={3.5} />
+    ```
+
+  ### Smileys
+
+    ```heex
+    <.rating_group class="rating-group" value={4.0}>
+      <:item :let={item}>
+        <span aria-hidden="true">{Enum.at(~w(😞 🙁 😐 🙂 😀), item.index - 1)}</span>
+      </:item>
+    </.rating_group>
+    ```
+
   <!-- tabs-close -->
 
   ## API
@@ -61,7 +77,7 @@ defmodule Corex.RatingGroup do
     [data-scope="rating-group"][data-part="root"] {}
     ```
 
-  Axes: **Semantic**, **Size**, **Radius**. No variant axis. See the [modifier guide](modifiers.html).
+  Axes: **Semantic**, **Size**. No variant or radius axis. See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
 
@@ -98,6 +114,10 @@ defmodule Corex.RatingGroup do
   attr(:disabled, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
 
+  slot :item do
+    attr(:class, :string, required: false)
+  end
+
   attr(:rest, :global)
 
   def rating_group(assigns) do
@@ -125,23 +145,27 @@ defmodule Corex.RatingGroup do
       <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div data-scope="rating-group" data-part="control">
           <span :for={i <- 1..@count} data-scope="rating-group" data-part="item" data-index={i}>
-            <svg
-              data-scope="rating-group"
-              data-part="item-preview"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
+            <%= if @item != [] do %>
+              {render_slot(@item, %{index: i})}
+            <% else %>
+              <svg
                 data-scope="rating-group"
-                data-part="star-bg"
-                d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77 6.19 20.38l1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
-              />
-              <path
-                data-scope="rating-group"
-                data-part="star-fg"
-                d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77 6.19 20.38l1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
-              />
-            </svg>
+                data-part="item-preview"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  data-scope="rating-group"
+                  data-part="star-bg"
+                  d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77 6.19 20.38l1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
+                />
+                <path
+                  data-scope="rating-group"
+                  data-part="star-fg"
+                  d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77 6.19 20.38l1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
+                />
+              </svg>
+            <% end %>
           </span>
         </div>
         <input type="hidden" data-scope="rating-group" data-part="hidden-input" name={@name} />

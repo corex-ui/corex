@@ -43,6 +43,7 @@ defmodule Corex.Steps.Connect do
       "data-scope" => "steps",
       "data-part" => "list",
       "dir" => Map.get(assigns, :dir),
+      "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "steps:" <> assigns.id <> ":list"
     }
   end
@@ -76,14 +77,18 @@ defmodule Corex.Steps.Connect do
   @spec content(Content.t()) :: map()
   def content(assigns) do
     index = to_string(assigns.index)
+    current? = assigns.index == Map.get(assigns, :step, 0)
 
     %{
       "data-scope" => "steps",
       "data-part" => "content",
       "dir" => Map.get(assigns, :dir),
       "data-index" => index,
+      "data-state" => if(current?, do: "open", else: "closed"),
+      "hidden" => if(current?, do: nil, else: true),
       "id" => "steps:" <> assigns.id <> ":content:" <> index
     }
+    |> Map.reject(fn {_k, v} -> is_nil(v) end)
   end
 
   def ignore_content(assigns) do

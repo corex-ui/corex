@@ -123,8 +123,17 @@
     background-color: var(--ctl-fill, var(--color-ink));
   }
 
-  .steps [data-scope="steps"][data-part="content"][hidden] {
+  .steps [data-scope="steps"][data-part="content"] {
     display: none;
+  }
+
+  .steps [data-scope="steps"][data-part="content"][data-state="open"],
+  .steps [data-scope="steps"][data-part="content"]:not([hidden]) {
+    display: block;
+  }
+
+  .steps [data-scope="steps"][data-part="content"][hidden] {
+    display: none !important;
   }
 
   .steps [data-scope="steps"][data-part="actions"] {

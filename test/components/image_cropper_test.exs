@@ -19,7 +19,7 @@ defmodule Corex.ImageCropperTest do
     assert html =~ ~S(data-scope="image-cropper")
   end
 
-  test "renders Zag handles inside selection" do
+  test "does not stamp crop handles before JS hydrates" do
     html =
       render_component(
         fn assigns ->
@@ -30,8 +30,8 @@ defmodule Corex.ImageCropperTest do
         %{}
       )
 
-    assert html =~ ~S(data-part="handle")
-    assert html =~ ~S(data-position="n")
-    assert html =~ ~S(data-position="nw")
+    refute html =~ ~S(data-part="handle")
+    refute html =~ ~S(data-part="selection")
+    assert html =~ "/images/beach.jpg"
   end
 end

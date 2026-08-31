@@ -406,7 +406,10 @@ var Toc = class extends Component {
 // hooks/toc.ts
 var DEFAULT_ITEMS = [
   { value: "intro", depth: 2 },
-  { value: "usage", depth: 2 }
+  { value: "install", depth: 2 },
+  { value: "usage", depth: 3 },
+  { value: "api", depth: 2 },
+  { value: "a11y", depth: 2 }
 ];
 function tocProps(el, hook) {
   const onActiveChange = (details) => {
@@ -424,10 +427,12 @@ function tocProps(el, hook) {
       );
     }
   };
+  const scrollSelector = el.dataset.scrollEl;
   return {
     id: el.id,
     dir: getDir(el),
     items: safeParseJson(el.dataset.items, DEFAULT_ITEMS),
+    scrollEl: scrollSelector ? () => document.querySelector(scrollSelector) : void 0,
     onActiveChange
   };
 }

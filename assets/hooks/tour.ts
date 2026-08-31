@@ -100,6 +100,9 @@ const TourHook = createZagLiveHook({
   update(hook, inst) {
     inst.updateProps(tourProps(hook.el, hook));
   },
+  destroy(_hook, inst) {
+    inst.unportal();
+  },
 });
 
 export { TourHook as Tour };

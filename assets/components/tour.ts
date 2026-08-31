@@ -5,6 +5,8 @@ import { Component, type SchemaOf } from "../lib/core";
 type Schema = SchemaOf<typeof machine>;
 
 export class Tour extends Component<Props, Api, Schema> {
+  private portalled = new Set<HTMLElement>();
+
   initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
@@ -13,23 +15,27 @@ export class Tour extends Component<Props, Api, Schema> {
     return this.zagConnect(connect);
   }
 
+  unportal(): void {
+    const root =
+      this.el.querySelector<HTMLElement>('[data-scope="tour"][data-part="root"]') ?? this.el;
+    for (const node of this.portalled) {
+      if (node.isConnected) root.appendChild(node);
+    }
+    this.portalled.clear();
+  }
+
   render(): void {
-    const backdrop = this.el.querySelector<HTMLElement>(
-      '[data-scope="tour"][data-part="backdrop"]'
-    );
+    this.portalOverlay();
+    const backdrop = this.part("backdrop");
     if (backdrop) this.spreadProps(backdrop, this.api.getBackdropProps());
 
-    const spotlight = this.el.querySelector<HTMLElement>(
-      '[data-scope="tour"][data-part="spotlight"]'
-    );
+    const spotlight = this.part("spotlight");
     if (spotlight) this.spreadProps(spotlight, this.api.getSpotlightProps());
 
-    const positioner = this.el.querySelector<HTMLElement>(
-      '[data-scope="tour"][data-part="positioner"]'
-    );
+    const positioner = this.part("positioner");
     if (positioner) this.spreadProps(positioner, this.api.getPositionerProps());
 
-    const content = this.el.querySelector<HTMLElement>('[data-scope="tour"][data-part="content"]');
+    const content = this.part("content");
     if (content) {
       this.spreadProps(content, this.api.getContentProps());
       const title = content.querySelector<HTMLElement>('[data-scope="tour"][data-part="title"]');
@@ -54,10 +60,35 @@ export class Tour extends Component<Props, Api, Schema> {
       this.renderActions(content, this.api.step);
     }
 
-    const close = this.el.querySelector<HTMLElement>(
-      '[data-scope="tour"][data-part="close-trigger"]'
-    );
+    const close = this.part("close-trigger");
     if (close) this.spreadProps(close, this.api.getCloseTriggerProps());
+  }
+
+  private part(name: string): HTMLElement | null {
+    const fromHost = this.el.querySelector<HTMLElement>(
+      `[data-scope="tour"][data-part="${name}"]`
+    );
+    if (fromHost) return fromHost;
+    for (const node of this.portalled) {
+      if (node.dataset.part === name) return node;
+      const nested = node.querySelector<HTMLElement>(`[data-scope="tour"][data-part="${name}"]`);
+      if (nested) return nested;
+    }
+    return null;
+  }
+
+  private portalOverlay(): void {
+    const parts = ["backdrop", "spotlight", "positioner"] as const;
+    for (const part of parts) {
+      const node =
+        this.el.querySelector<HTMLElement>(`[data-scope="tour"][data-part="${part}"]`) ??
+        [...this.portalled].find((el) => el.dataset.part === part);
+      if (!node) continue;
+      if (node.parentElement !== document.body) {
+        document.body.appendChild(node);
+        this.portalled.add(node);
+      }
+    }
   }
 
   private renderActions(content: HTMLElement, step: StepDetails | null): void {

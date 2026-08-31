@@ -16,5 +16,8 @@ export class Presence extends Component<Props, Api, Schema> {
   render(): void {
     const root = this.el.querySelector<HTMLElement>('[data-scope="presence"][data-part="root"]') ?? this.el;
     this.api.setNode(root);
+    root.hidden = !this.api.present;
+    root.dataset.state = this.api.present ? "open" : "closed";
+    root.dataset.present = this.api.present ? "true" : "false";
   }
 }

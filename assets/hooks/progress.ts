@@ -22,7 +22,9 @@ function progressProps(el: HTMLElement, hook: HookInterface<HTMLElement>): Progr
   return {
     id: el.id,
     dir: getDir(el),
-    defaultValue: indeterminate ? null : (getNumber(el, "value") ?? 40),
+    ...(indeterminate
+      ? { value: null }
+      : { defaultValue: getNumber(el, "value") ?? 40 }),
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
     orientation: getString(el, "orientation", ["horizontal", "vertical"] as const),

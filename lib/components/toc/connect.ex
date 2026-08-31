@@ -13,7 +13,9 @@ defmodule Corex.Toc.Connect do
       "id" => assigns.id,
       "data-dir" => Map.get(assigns, :dir),
       "data-on-value-change" => Map.get(assigns, :on_value_change),
-      "data-on-value-change-client" => Map.get(assigns, :on_value_change_client)
+      "data-on-value-change-client" => Map.get(assigns, :on_value_change_client),
+      "data-items" => Corex.Dataset.encode_json(assigns.items || Corex.Toc.default_items()),
+      "data-scroll-el" => Map.get(assigns, :scroll_el)
     }
   end
 

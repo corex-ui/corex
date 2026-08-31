@@ -30,7 +30,7 @@ defmodule Corex.ProgressTest do
         %{}
       )
 
-    assert html =~ "--percent: 40.0%"
+    assert html =~ "--percent: 40.0"
     assert html =~ "width: 40.0%"
     refute html =~ ~S(data-indeterminate)
   end
@@ -49,5 +49,23 @@ defmodule Corex.ProgressTest do
     assert html =~ ~S(data-indeterminate)
     assert html =~ ~S(data-state="indeterminate")
     refute html =~ "--percent:"
+  end
+
+  test "circular stamps viewBox and circle geometry" do
+    html =
+      render_component(
+        fn assigns ->
+          ~H"""
+          <.progress id="progress-circle" class="progress" variant="circular" value={50} />
+          """
+        end,
+        %{}
+      )
+
+    assert html =~ ~S(viewBox="0 0 44 44")
+    assert html =~ ~S(cx="22")
+    assert html =~ ~S(r="20")
+    assert html =~ "--circumference"
+    assert html =~ "--offset"
   end
 end

@@ -9,7 +9,7 @@
     id="rating-group-styling-page"
     title={~t"Rating Group · Style"}
     subtitle={
-      ~t"Semantic colors, density, and corner radius via modifier classes on the host. No variant axis."
+      ~t"Semantic colors and density via modifier classes on the host. No variant or radius axis."
     }
   >
     <.demo_section
@@ -35,19 +35,6 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.RatingGroupDemo.styling_size_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="rating-group-styling-rounded"
-      title={~t"Rounded"}
-      code={E2eWeb.Demos.RatingGroupDemo.styling_rounded_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="rating-group" axis={:radius} />
-      </:description>
-      <:preview>
-        <E2eWeb.Demos.RatingGroupDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
 

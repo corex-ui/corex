@@ -33,6 +33,7 @@
   .navigation-menu [data-scope="navigation-menu"][data-part="link"] {
     display: inline-flex;
     align-items: center;
+    gap: var(--spacing-space-xs);
     font-weight: var(--font-weight-medium);
     color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
     background: var(--ctl-bg, transparent);

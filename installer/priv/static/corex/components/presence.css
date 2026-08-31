@@ -28,4 +28,8 @@
   .presence [data-scope="presence"][data-part="root"][data-present="false"] {
     animation: scaleFadeOut var(--duration-fast, 0.1s) ease-in;
   }
+
+  .presence [data-scope="presence"][data-part="root"][hidden] {
+    display: none;
+  }
 }
