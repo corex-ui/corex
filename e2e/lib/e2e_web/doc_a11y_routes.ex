@@ -304,7 +304,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/tour/api", "#tour-api-page"},
     {"/en/tour/events", "#tour-events-page"},
     {"/en/tour/style", "#tour-styling-page"},
-    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy"    {"/en/tooltip/anatomy", "#tooltip-anatomy-page"},
+    {"/en/tooltip/anatomy", "#tooltip-anatomy-page"},
     {"/en/tooltip/api", "#tooltip-api-page"},
     {"/en/tooltip/events", "#tooltip-events-page"},
     {"/en/tooltip/patterns", "#tooltip-patterns-page"},

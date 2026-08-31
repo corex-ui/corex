@@ -58,7 +58,7 @@ defmodule E2eWeb.StylePageExpectations do
     {"navigation_menu_styling_page.html.heex", "navigation-menu"},
     {"cascade_select_styling_page.html.heex", "cascade-select"},
     {"tour_styling_page.html.heex", "tour"},
-    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},    {"tooltip_styling_page.html.heex", "tooltip"},
+    {"tooltip_styling_page.html.heex", "tooltip"},
     {"tree_view/tree_view_styling_page.html.heex", "tree-view"}
   ]
 

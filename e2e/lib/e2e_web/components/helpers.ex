@@ -714,7 +714,6 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/popover/style"
         },
         %{
-        %{
           label: ~t"Progress",
           id: "progress",
           style: true,
@@ -857,7 +856,8 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/tour/events",
           style_to: ~p"/tour/style"
         },
-          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",          label: ~t"Tooltip",
+        %{
+          label: ~t"Tooltip",
           id: "tooltip",
           style: true,
           playground: false,

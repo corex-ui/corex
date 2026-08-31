@@ -2103,7 +2103,7 @@ defmodule E2eWeb.PageController do
   def tour_styling_page(conn, _params) do
     render(conn, :tour_styling_page)
   end
-  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do  def templates_page(conn, _params) do
+  def templates_page(conn, _params) do
     template_carousel_items = [
       Corex.Image.new("/images/templates/soonex/preview-hero.png",
         alt: ~t"Hero section"
