@@ -171,6 +171,8 @@ defmodule Corex.Design.Bundle do
         []
       end
 
+    # Showcase keeps all configured themes for the theme switcher. Override
+    # `config :corex_design, themes: [...]` to emit a subset of theme CSS.
     paths =
       ["./main.css"] ++
         Enum.map(Theme.themes(), &"./theme/#{&1}.css") ++

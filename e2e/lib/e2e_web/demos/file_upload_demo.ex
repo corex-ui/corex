@@ -643,8 +643,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     end
 
     def handle_event("file_upload_live_cancel", params, socket) do
-      %{"ref" => ref, "upload_field" => field} = params
-      {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+      {:noreply, Corex.FileUploadLive.cancel_upload_from_params(socket, :attachment, params)}
     end
     """
   end

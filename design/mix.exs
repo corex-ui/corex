@@ -19,7 +19,8 @@ defmodule CorexDesign.MixProject do
       package: package(),
       docs: docs(),
       source_url: @scm_url,
-      homepage_url: "https://corex.gigalixirapp.com/en"
+      homepage_url: "https://corex.gigalixirapp.com/en",
+      test_coverage: [tool: ExCoveralls, threshold: 80]
     ]
   end
 

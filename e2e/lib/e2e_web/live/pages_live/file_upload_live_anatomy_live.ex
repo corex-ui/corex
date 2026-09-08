@@ -30,9 +30,12 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
   def handle_event("file_upload_live_cancel", params, socket) do
-    %{"ref" => ref, "upload_field" => field} = params
-    name = String.to_existing_atom(field)
-    {:noreply, cancel_upload(socket, name, ref)}
+    {:noreply,
+     Corex.FileUploadLive.cancel_upload_from_params(
+       socket,
+       [:anatomy_minimal, :anatomy_label, :anatomy_custom],
+       params
+     )}
   end
 
   @impl true

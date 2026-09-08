@@ -13,7 +13,7 @@
     <section class="blog__post-body" aria-label={~t"Article"}>
       <div class="blog__inner">
         <div class="blog__article-shell typo markdown prose max-w-none">
-          <%!-- Trusted markdown HTML only; sanitize if posts are user-authored. --%>
+          <%!-- Markdown HTML is sanitized in `E2eWeb.Markdown.to_html!/1`. --%>
           {@post.html |> Phoenix.HTML.raw()}
         </div>
       </div>

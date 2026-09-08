@@ -26,7 +26,19 @@ updates:
     open-pull-requests-limit: 3
 
   - package-ecosystem: mix
+    directory: "/admin"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: mix
     directory: "/e2e"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: mix
+    directory: "/integration_test"
     schedule:
       interval: weekly
     open-pull-requests-limit: 3

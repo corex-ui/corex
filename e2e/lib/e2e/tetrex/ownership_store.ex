@@ -54,5 +54,16 @@ defmodule E2e.Tetrex.OwnershipStore do
     {:reply, name, %{state | pending: pending}}
   end
 
-  defp session_key(session), do: :erlang.phash2(session)
+  defp session_key(session) do
+    session
+    |> Map.new(fn
+      {key, value} when is_atom(key) -> {Atom.to_string(key), value}
+      pair -> pair
+    end)
+    |> Map.get("_csrf_token")
+    |> case do
+      nil -> :erlang.phash2(session)
+      token -> token
+    end
+  end
 end

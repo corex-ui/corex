@@ -51,11 +51,28 @@
         });
 
         const validThemes = ["neo", "uno", "duo", "leo"];
+        const themeFonts = {
+          neo: "https://fonts.googleapis.com/css2?family=Manrope:wght@300..800&family=Outfit:wght@300..800&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&display=swap",
+          uno: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&family=Sora:wght@300..800&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&display=swap",
+          leo: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap",
+          duo: "https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,300..900;1,300..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        };
+        const ensureThemeFonts = (theme) => {
+          let el = document.getElementById("theme-fonts");
+          if (!el) {
+            el = document.createElement("link");
+            el.id = "theme-fonts";
+            el.rel = "stylesheet";
+            document.head.appendChild(el);
+          }
+          el.href = themeFonts[theme] || themeFonts.neo;
+        };
         const setTheme = (theme) => {
           const resolved = validThemes.includes(theme) ? theme : "neo";
           localStorage.setItem("phx:theme", resolved);
           document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
           document.documentElement.setAttribute("data-theme", resolved);
+          ensureThemeFonts(resolved);
         };
 
         setTheme(localStorage.getItem("phx:theme") || document.documentElement.getAttribute("data-theme") || "neo");

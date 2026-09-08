@@ -40,16 +40,31 @@ defmodule E2eWeb.TetrexOwnership do
   end
 
   def assign_owned(socket, session) when is_map(session) do
+    session = stringify_keys(session)
+
+    slim = %{
+      @session_key => Map.get(session, @session_key, []),
+      "_csrf_token" => Map.get(session, "_csrf_token")
+    }
+
     socket
-    |> Phoenix.Component.assign(:browser_session, session)
+    |> Phoenix.Component.assign(:browser_session, slim)
     |> Phoenix.Component.assign(:owned_game_ids, list_owned(session))
   end
 
   defp list_from_session(session) do
     session
+    |> stringify_keys()
     |> Map.get(@session_key, [])
     |> List.wrap()
     |> Enum.take(@max_owned)
     |> MapSet.new()
+  end
+
+  defp stringify_keys(session) when is_map(session) do
+    Map.new(session, fn
+      {key, value} when is_atom(key) -> {Atom.to_string(key), value}
+      pair -> pair
+    end)
   end
 end

@@ -71,7 +71,8 @@ defmodule E2e.AccountsTest do
       assert user.level == 5
       assert user.currency == "eur"
       assert user.tags == ["alpha", "beta"]
-      assert user.password == "password1"
+      assert is_nil(user.password)
+      assert E2e.Accounts.Password.verify("password1", user.hashed_password)
       assert user.notifications == true
       assert user.role == "editor"
       assert user.pin == "1234"
@@ -283,7 +284,8 @@ defmodule E2e.AccountsTest do
       assert admin.level == 5
       assert admin.currency == "eur"
       assert admin.tags == ["alpha", "beta"]
-      assert admin.password == "password1"
+      assert is_nil(admin.password)
+      assert E2e.Accounts.Password.verify("password1", admin.hashed_password)
       assert admin.notifications == true
       assert admin.role == "admin"
       assert admin.pin == "1234"

@@ -2,11 +2,13 @@ defmodule E2e.Accounts.User do
   @moduledoc """
   Demo-only user schema for the Corex e2e app.
 
-  Passwords are stored in **plaintext** on purpose for form demos — do not copy
-  this pattern into production apps (use `phx.gen.auth` / hashing instead).
+  Passwords are hashed with bcrypt. The virtual `:password` field is for forms
+  and is never persisted.
   """
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias E2e.Accounts.Password
 
   @currencies ~W(eur usd gbp jpy chf cad aud sek nok sgd)
   @roles ~W(admin editor viewer)
@@ -25,7 +27,8 @@ defmodule E2e.Accounts.User do
     field :level, :integer, default: 1
     field :currency, :string
     field :tags, {:array, :string}
-    field :password, :string, redact: true
+    field :password, :string, virtual: true, redact: true
+    field :hashed_password, :string, redact: true
     field :notifications, :boolean, default: false
     field :role, :string
     field :pin, :string
@@ -67,7 +70,6 @@ defmodule E2e.Accounts.User do
       :terms,
       :level,
       :currency,
-      :password,
       :role,
       :pin,
       :accent_color,
@@ -78,7 +80,7 @@ defmodule E2e.Accounts.User do
     |> validate_inclusion(:country, @countries)
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> validate_inclusion(:currency, @currencies)
-    |> validate_length(:password, min: 8)
+    |> Password.validate()
     |> validate_inclusion(:role, @roles)
     |> validate_length(:pin, is: 4)
     |> validate_format(:pin, ~r/^\d+$/, message: "must be digits")

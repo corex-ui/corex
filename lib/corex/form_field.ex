@@ -9,7 +9,7 @@ defmodule Corex.FormField do
 
   import Phoenix.Component
 
-  alias Corex.Checkable.Helpers, as: CheckableHelpers
+  alias Corex.FormField.Checkable
 
   # Failed create/update/etc. — show every field error (submit attempted).
   # `:validate` still gates on `used_input?/1` so typing does not spam siblings.
@@ -99,7 +99,7 @@ defmodule Corex.FormField do
 
   @spec dataset_default_boolean(boolean() | :indeterminate) :: String.t()
   def dataset_default_boolean(checked) do
-    CheckableHelpers.checked_form_field_default_attr(checked)
+    Checkable.dataset_default_boolean(checked)
   end
 
   @spec dataset_default_string(String.t() | nil) :: String.t()
