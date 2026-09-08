@@ -2,7 +2,7 @@ defmodule E2e.Accounts.Admin do
   @moduledoc """
   Demo-only admin schema for the Corex e2e app.
 
-  Passwords are hashed with bcrypt. `/admins` is gated by a demo session login.
+  Passwords are hashed with bcrypt. The `/admins` showcase CRUD is public.
   """
   use Ecto.Schema
   import Ecto.Changeset
