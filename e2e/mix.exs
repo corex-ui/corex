@@ -84,7 +84,7 @@ defmodule E2e.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},
       {:gettext_sigils, "~> 0.5.1"},
-      {:localize_web, "~> 0.5"},
+      {:localize_web, "~> 1.1"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.11"},
