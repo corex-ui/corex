@@ -103,7 +103,7 @@ defmodule E2e.MixProject do
       {:yaml_elixir, "~> 2.9"},
       {:html_entities, "~> 0.5"},
       {:wallaby, "~> 0.30", only: :test},
-      {:a11y_audit, "~> 0.3.1", only: :test},
+      {:a11y_audit, "~> 0.5.0", only: :test},
       {:flagpack, "~> 0.6.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
       {:igniter, "~> 0.6", only: [:dev, :test]},
