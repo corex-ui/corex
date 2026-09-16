@@ -152,7 +152,10 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   use Mix.Task
 
-  alias Mix.Phoenix.{Context, Schema}
+  alias Mix.Corex, as: Corex
+  alias Mix.Corex.DesignComponents
+  alias Mix.Corex.Gen.Auth, as: GenAuth
+  alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
   alias Mix.Tasks.Phx.Gen.Auth.{HashingLibrary, Injector, Migration}
 
@@ -170,8 +173,12 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     agents_md: :boolean
   ]
 
-  @doc false
-  def run(args, test_opts \\ []) do
+  @impl Mix.Task
+  def run(args) do
+    run(args, [])
+  end
+
+  defp run(args, test_opts) do
     if Mix.Project.umbrella?() do
       Mix.raise(
         "mix corex.gen.auth must be invoked from within your *_web application root directory"
@@ -215,7 +222,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
     migration = Migration.build(ecto_adapter)
 
-    layout_opts = Mix.Corex.layout_generators_opts()
+    layout_opts = Corex.layout_generators_opts()
 
     binding = [
       context: context,
@@ -238,17 +245,17 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       agents_md: Keyword.get(opts, :agents_md, true),
       layout_mode: Keyword.has_key?(layout_opts, :mode),
       layout_theme: Keyword.has_key?(layout_opts, :theme),
-      layout_locale_paths: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
-      layout_locale_assigns: Mix.Corex.layout_locale_assigns?(layout_opts)
+      layout_locale_paths: Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_assigns: Corex.layout_locale_assigns?(layout_opts)
     ]
 
-    paths = Mix.Corex.generator_template_dirs("corex.gen.auth")
+    paths = Corex.generator_template_dirs("corex.gen.auth")
 
     prompt_for_conflicts(binding)
 
     context
     |> copy_new_files(binding, paths)
-    |> tap(fn _ -> Mix.Corex.DesignComponents.ensure_for_live!(build: false) end)
+    |> tap(fn _ -> DesignComponents.ensure_for_live!(build: false) end)
     |> maybe_inject_project_files(paths, binding, hashing_library)
     |> Gen.Notifier.maybe_print_mailer_installation_instructions()
     |> print_shell_instructions()
@@ -354,7 +361,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp scope_config(context, requested_scope, assign_key) do
-    existing_scopes = Mix.Phoenix.Scope.scopes_from_config(context.context_app)
+    existing_scopes = Scope.scopes_from_config(context.context_app)
 
     {_, default_scope} =
       Enum.find(existing_scopes, {nil, nil}, fn {_, scope} -> scope.default end)
@@ -381,15 +388,15 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp find_scope_name(context, existing_scopes) do
     cond do
       # user
-      is_new_scope?(existing_scopes, context.schema.singular) ->
+      unused_scope_name?(existing_scopes, context.schema.singular) ->
         context.schema.singular
 
       # accounts_user
-      is_new_scope?(existing_scopes, "#{context.basename}_#{context.schema.singular}") ->
+      unused_scope_name?(existing_scopes, "#{context.basename}_#{context.schema.singular}") ->
         "#{context.basename}_#{context.schema.singular}"
 
       # my_app_accounts_user
-      is_new_scope?(
+      unused_scope_name?(
         existing_scopes,
         "#{context.context_app}_#{context.basename}_#{context.schema.singular}"
       ) ->
@@ -399,20 +406,20 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
         Mix.raise("""
         Could not generate a scope name for #{context.schema.singular}! These scopes already exist:
 
-            * #{Enum.map(existing_scopes, fn {name, _scope} -> name end) |> Enum.join("\n    * ")}
+            * #{Enum.map_join(existing_scopes, "\n    * ", fn {name, _scope} -> name end)}
 
         You can customize the scope name by passing the --scope option.
         """)
     end
   end
 
-  defp is_new_scope?(existing_scopes, bin_key) do
+  defp unused_scope_name?(existing_scopes, bin_key) do
     key = String.to_atom(bin_key)
     not Map.has_key?(existing_scopes, key)
   end
 
   defp new_scope(context, key, default_scope, assign_key) do
-    Mix.Phoenix.Scope.new!(key, %{
+    Scope.new!(key, %{
       default: !default_scope,
       module: Module.concat([context.module, "Scope"]),
       assign_key: String.to_atom(assign_key),
@@ -433,7 +440,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     """
     config :#{context.context_app}, :scopes,
       #{key}: [
-        default: #{if default_scope, do: false, else: true},
+        default: #{!default_scope},
         module: #{inspect(context.module)}.Scope,
         assign_key: :#{assign_key},
         access_path: [:#{context.schema.singular}, :#{context.schema.opts[:primary_key] || :id}],
@@ -451,7 +458,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
     binding
     |> files_to_be_generated()
-    |> Mix.Corex.prompt_for_conflicts()
+    |> Corex.prompt_for_conflicts()
   end
 
   defp prompt_for_scope_conflicts(binding) do
@@ -503,8 +510,8 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     scope_config = binding[:scope_config]
 
     singular = schema.singular
-    web_pre = Mix.Corex.web_path(context_app)
-    web_test_pre = Mix.Corex.web_test_path(context_app)
+    web_pre = Corex.web_path(context_app)
+    web_test_pre = Corex.web_test_path(context_app)
     migrations_pre = migrations_path(context_app)
     web_path = to_string(schema.web_path)
     controller_pre = Path.join([web_pre, "controllers", web_path])
@@ -644,12 +651,12 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp copy_new_files(%Context{} = context, binding, paths) do
     files = files_to_be_generated(binding)
-    Mix.Corex.copy_from(paths, "", binding, files)
+    _ = Corex.copy_from(paths, "", binding, files)
     phoenix_paths = Mix.Phoenix.generator_paths()
     inject_context_functions(context, phoenix_paths, paths, binding)
     inject_tests(context, phoenix_paths, paths, binding)
     inject_context_test_fixtures(context, phoenix_paths, paths, binding)
-    _ = Mix.Corex.format_generated_files(files)
+    _ = Corex.format_generated_files(files)
 
     context
   end
@@ -658,7 +665,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     Gen.Context.ensure_context_file_exists(context, phoenix_paths, binding)
 
     paths
-    |> Mix.Corex.eval_from_roots("context_functions.ex.eex", binding)
+    |> Corex.eval_from_roots("context_functions.ex.eex", binding)
     |> prepend_newline()
     |> inject_before_final_end(file)
   end
@@ -667,7 +674,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     Gen.Context.ensure_test_file_exists(context, phoenix_paths, binding)
 
     paths
-    |> Mix.Corex.eval_from_roots("test_cases.exs.eex", binding)
+    |> Corex.eval_from_roots("test_cases.exs.eex", binding)
     |> prepend_newline()
     |> inject_before_final_end(test_file)
   end
@@ -681,7 +688,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     Gen.Context.ensure_test_fixtures_file_exists(context, phoenix_paths, binding)
 
     paths
-    |> Mix.Corex.eval_from_roots("context_fixtures_functions.ex.eex", binding)
+    |> Corex.eval_from_roots("context_fixtures_functions.ex.eex", binding)
     |> prepend_newline()
     |> inject_before_final_end(test_fixtures_file)
   end
@@ -690,18 +697,18 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     test_file = "test/support/conn_case.ex"
 
     paths
-    |> Mix.Corex.eval_from_roots("conn_case.exs.eex", binding)
+    |> Corex.eval_from_roots("conn_case.exs.eex", binding)
     |> inject_before_final_end(test_file)
 
     context
   end
 
   defp inject_routes(%Context{context_app: ctx_app} = context, paths, binding) do
-    web_prefix = Mix.Corex.web_path(ctx_app)
+    web_prefix = Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
 
     paths
-    |> Mix.Corex.eval_from_roots("routes.ex.eex", binding)
+    |> Corex.eval_from_roots("routes.ex.eex", binding)
     |> inject_before_final_end(file_path)
 
     context
@@ -710,7 +717,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp maybe_inject_mix_dependency(%Context{context_app: ctx_app} = context, %HashingLibrary{
          mix_dependency: mix_dependency
        }) do
-    file_path = Mix.Corex.context_app_path(ctx_app, "mix.exs")
+    file_path = Corex.context_app_path(ctx_app, "mix.exs")
 
     file = File.read!(file_path)
 
@@ -740,7 +747,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp maybe_inject_router_import(%Context{context_app: ctx_app} = context, binding) do
-    web_prefix = Mix.Corex.web_path(ctx_app)
+    web_prefix = Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
     auth_module = Keyword.fetch!(binding, :auth_module)
     inject = "import #{inspect(auth_module)}"
@@ -787,7 +794,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp maybe_inject_router_plug(%Context{context_app: ctx_app} = context, binding) do
-    web_prefix = Mix.Corex.web_path(ctx_app)
+    web_prefix = Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
     help_text = Injector.router_plug_help_text(file_path, binding)
 
@@ -815,7 +822,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp maybe_inject_app_layout_menu(%Context{} = context, binding) do
     if file_path = get_layout_html_path(context) do
-      case Mix.Corex.Gen.Auth.inject_layout_menu(binding, File.read!(file_path)) do
+      case GenAuth.inject_layout_menu(binding, File.read!(file_path)) do
         {:ok, new_content} ->
           print_injecting(file_path)
           File.write!(file_path, new_content)
@@ -826,11 +833,11 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
         {:error, :unable_to_inject} ->
           Mix.shell().info("""
 
-          #{Mix.Corex.Gen.Auth.layout_menu_help_text(file_path, binding)}
+          #{GenAuth.layout_menu_help_text(file_path, binding)}
           """)
       end
     else
-      {_dup, inject} = Mix.Corex.Gen.Auth.layout_menu_code(binding)
+      {_dup, inject} = GenAuth.layout_menu_code(binding)
 
       missing =
         context
@@ -861,7 +868,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp potential_layout_file_paths(%Context{context_app: ctx_app}) do
-    web_prefix = Mix.Corex.web_path(ctx_app)
+    web_prefix = Corex.web_path(ctx_app)
 
     [
       Path.join([web_prefix, "components", "layouts.ex"]),
@@ -951,14 +958,14 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp maybe_inject_layout_scope_assigns(%Context{} = context, binding) do
     assign_key = binding[:scope_config].scope.assign_key
-    web = Mix.Corex.web_path(context.context_app)
+    web = Corex.web_path(context.context_app)
 
     web
     |> Path.join("**/*.{ex,heex}")
     |> Path.wildcard()
     |> Enum.reject(&String.ends_with?(&1, "layouts.ex"))
     |> Enum.each(fn path ->
-      case Mix.Corex.Gen.Auth.inject_layout_scope_assign(File.read!(path), assign_key) do
+      case GenAuth.inject_layout_scope_assign(File.read!(path), assign_key) do
         {:ok, new_content} ->
           print_injecting(path, " - layout scope assign")
           File.write!(path, new_content)
@@ -973,52 +980,56 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp maybe_inject_agents_md(%Context{} = context, paths, binding) do
     if binding[:agents_md] do
-      # we add our own comment marker (not related to usage_rules)
-      # to check if phx.gen.auth already ran as we only want to inject once
-      # even if other options were used
-      auth_content =
-        """
-        <!-- phoenix-gen-auth-start -->
-        #{Mix.Corex.eval_from_roots(paths, "AGENTS.md.eex", binding)}
-        <!-- phoenix-gen-auth-end -->
-        """
-
-      file_path =
-        if Mix.Phoenix.in_umbrella?(File.cwd!()) do
-          Path.expand("../../")
-        else
-          File.cwd!()
-        end
-        |> Path.join("AGENTS.md")
-
-      with true <- File.exists?(file_path),
-           content = File.read!(file_path),
-           false <- content =~ "<!-- phoenix-gen-auth-start -->" do
-        print_injecting(file_path)
-        # inject before usage rules
-        case String.split(content, "<!-- usage-rules-start -->", parts: 2) do
-          [pre, post] ->
-            File.write!(file_path, [
-              pre,
-              String.trim_trailing(auth_content),
-              "\n\n",
-              "<!-- usage-rules-start -->",
-              post
-            ])
-
-          _ ->
-            # just append
-            File.write!(file_path, content <> "\n\n" <> String.trim_trailing(auth_content))
-        end
-      end
+      inject_agents_md(paths, binding)
     end
 
     context
   end
 
+  defp inject_agents_md(paths, binding) do
+    # Comment markers are Corex's own (not usage_rules); inject at most once.
+    auth_content = """
+    <!-- phoenix-gen-auth-start -->
+    #{Corex.eval_from_roots(paths, "AGENTS.md.eex", binding)}
+    <!-- phoenix-gen-auth-end -->
+    """
+
+    file_path = agents_md_path()
+
+    with true <- File.exists?(file_path),
+         content = File.read!(file_path),
+         false <- content =~ "<!-- phoenix-gen-auth-start -->" do
+      print_injecting(file_path)
+      write_agents_md(file_path, content, auth_content)
+    end
+  end
+
+  defp agents_md_path do
+    root =
+      if Mix.Phoenix.in_umbrella?(File.cwd!()) do
+        Path.expand("../../")
+      else
+        File.cwd!()
+      end
+
+    Path.join(root, "AGENTS.md")
+  end
+
+  defp write_agents_md(file_path, content, auth_content) do
+    trimmed = String.trim_trailing(auth_content)
+
+    case String.split(content, "<!-- usage-rules-start -->", parts: 2) do
+      [pre, rest] ->
+        File.write!(file_path, [pre, trimmed, "\n\n", "<!-- usage-rules-start -->", rest])
+
+      _ ->
+        File.write!(file_path, content <> "\n\n" <> trimmed)
+    end
+  end
+
   defp print_shell_instructions(%Context{} = context) do
-    layout_opts = Mix.Corex.layout_generators_opts()
-    locale_scoped = Mix.Corex.locale_scoped_routes?(context.web_module, layout_opts)
+    layout_opts = Corex.layout_generators_opts()
+    locale_scoped = Corex.locale_scoped_routes?(context.web_module, layout_opts)
     register_path = "/#{context.schema.plural}/register"
 
     Mix.shell().info("""
@@ -1035,7 +1046,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     if locale_scoped do
       Mix.shell().info("""
       Authentication routes were added to your router. With localized routes
-      (`path_prefixes` or a `/:locale` scope), open #{Mix.Corex.web_path(context.context_app)}/router.ex
+      (`path_prefixes` or a `/:locale` scope), open #{Corex.web_path(context.context_app)}/router.ex
       and keep the generated auth scopes inside the locale scope (not `scope "/"`).
 
       Once you are ready, visit "#{register_path}"
@@ -1142,11 +1153,17 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     )
   end
 
-  @doc false
+  @doc """
+  Raises a `Mix.Error` with generator usage help.
+
+  Invoked by `mix phx.gen.context` via `help_module` when arguments are invalid.
+  """
+  @spec raise_with_help(String.t()) :: no_return()
   def raise_with_help(msg) do
     raise_with_help(msg, :general)
   end
 
+  @spec raise_with_help(String.t(), :general | :phx_generator_args | :hashing_lib) :: no_return()
   defp raise_with_help(msg, :general) do
     Mix.raise("""
     #{msg}
@@ -1236,12 +1253,12 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp mix_test_output do
-    Application.get_env(Mix.Corex.otp_app(), :mix_test_output)
+    Application.get_env(Corex.otp_app(), :mix_test_output)
   end
 
   defp migrations_path(context_app) do
     case mix_test_output() do
-      nil -> Mix.Corex.context_app_path(context_app, "priv/repo/migrations")
+      nil -> Corex.context_app_path(context_app, "priv/repo/migrations")
       tmp -> Path.join(tmp, "migrations")
     end
   end

@@ -3,6 +3,8 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
   import MixGenHelpers
 
+  alias Mix.Corex.Gen.Auth, as: GenAuth
+
   test "run/1 raises on --no-live" do
     assert_raise Mix.Error, ~r/LiveView-only/, fn ->
       run_generator("corex.gen.auth", ["Accounts", "User", "users", "--no-live", "--no-compile"])
@@ -48,10 +50,10 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       end
 
       assert login =~ "password_input"
-      assert login =~ ~s(class="button ui-accent)
+      assert login =~ ~S(class="button ui-accent)
       assert registration =~ "native_input"
       assert settings =~ "password_input"
-      assert confirmation =~ ~s(class="button ui-accent)
+      assert confirmation =~ ~S(class="button ui-accent)
 
       schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
       assert schema_file =~ "Bcrypt.hash_pwd_salt"
@@ -60,8 +62,8 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       login_test =
         File.read!(Path.join([tmp, "test/live", "#{singular}_live", "login_test.exs"]))
 
-      assert login_test =~ ~s(id="login_form_magic_email-input")
-      refute login_test =~ ~s(id="login_form_magic_email" value=)
+      assert login_test =~ ~S(id="login_form_magic_email-input")
+      refute login_test =~ ~S(id="login_form_magic_email" value=)
     end)
   end
 
@@ -120,7 +122,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
           )
 
         assert output =~ "locale"
-        assert output =~ ~s(scope "/")
+        assert output =~ ~S(scope "/")
         login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
         assert login =~ "current_path={@current_path}"
         assert login =~ "mode={@mode}"
@@ -138,7 +140,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
     scope_config = %{scope: %{assign_key: :current_scope}}
 
     {_dup, code} =
-      Mix.Corex.Gen.Auth.layout_menu_code(
+      GenAuth.layout_menu_code(
         context: nil,
         schema: schema,
         scope_config: scope_config
@@ -156,11 +158,14 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
     layout = "      </div>\n    </header>\n"
 
-    {:ok, injected} =
-      Mix.Corex.Gen.Auth.inject_layout_menu(
-        [context: nil, schema: schema, scope_config: scope_config],
-        layout
-      )
+    injected =
+      case GenAuth.inject_layout_menu(
+             [context: nil, schema: schema, scope_config: scope_config],
+             layout
+           ) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
 
     assert injected =~ ~r/^      <nav /m
     assert injected =~ ~r/^    <\/header>/m
@@ -168,15 +173,18 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
   end
 
   test "inject_layout_scope_assign adds current_scope to Layouts.app" do
-    {:ok, injected} =
-      Mix.Corex.Gen.Auth.inject_layout_scope_assign(
-        "<Layouts.app\n  flash={@flash}\n  mode={@mode}>\n",
-        :current_scope
-      )
+    injected =
+      case GenAuth.inject_layout_scope_assign(
+             "<Layouts.app\n  flash={@flash}\n  mode={@mode}>\n",
+             :current_scope
+           ) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
 
     assert injected =~ "flash={@flash}\n  current_scope={@current_scope}\n"
 
     assert :already_injected =
-             Mix.Corex.Gen.Auth.inject_layout_scope_assign(injected, :current_scope)
+             GenAuth.inject_layout_scope_assign(injected, :current_scope)
   end
 end

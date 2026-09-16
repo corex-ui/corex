@@ -1,6 +1,8 @@
 defmodule Mix.Corex.Gen.Auth do
   @moduledoc false
 
+  alias Mix.Tasks.Phx.Gen.Auth.Injector
+
   @doc """
   Injects Corex account navigation into a layout template or `Layouts` module.
   """
@@ -22,7 +24,7 @@ defmodule Mix.Corex.Gen.Auth do
          )}
 
       String.contains?(template_str, "<body") ->
-        Mix.Tasks.Phx.Gen.Auth.Injector.app_layout_menu_inject(binding, template_str)
+        Injector.app_layout_menu_inject(binding, template_str)
 
       true ->
         {:error, :unable_to_inject}
