@@ -56,6 +56,12 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
       assert schema_file =~ "Bcrypt.hash_pwd_salt"
       assert File.exists?(Path.join(tmp, "#{singular}_token.ex"))
+
+      login_test =
+        File.read!(Path.join([tmp, "test/live", "#{singular}_live", "login_test.exs"]))
+
+      assert login_test =~ ~s(id="login_form_magic_email-input")
+      refute login_test =~ ~s(id="login_form_magic_email" value=)
     end)
   end
 
