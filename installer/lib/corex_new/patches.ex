@@ -830,7 +830,7 @@ defmodule Corex.New.Patches do
       "**Always** manually write your own tailwind-based components instead of using daisyUI for a unique, world-class design"
 
     corex_bullet =
-      "**Prefer Corex components and Corex Design tokens** (`use Corex`, `ui-*` modifiers). Scaffold with `mix corex.gen.html` / `mix corex.gen.live` instead of `mix phx.gen.*`"
+      "**Prefer Corex components and Corex Design tokens** (`use Corex`, `ui-*` modifiers). Scaffold with `mix corex.gen.html` / `mix corex.gen.live` / `mix corex.gen.auth` instead of `mix phx.gen.*`"
 
     cond do
       String.contains?(content, corex_bullet) ->

@@ -14,9 +14,10 @@ Enable private reporting on this repository (GitHub → Settings → Code securi
 
 ## Trust boundaries
 
-Corex is a UI component library and a pair of Mix generators (`mix corex.gen.live` / `mix corex.gen.html`). It is not an application framework’s auth layer.
+Corex is a UI component library and Mix generators (`mix corex.gen.live` / `mix corex.gen.html` / `mix corex.gen.auth`). It is not an application framework’s auth layer.
 
-- **Generated routes stay unauthenticated**, same as `mix phx.gen.live`. Add your own authentication and authorization.
+- **Generated CRUD routes stay unauthenticated**, same as `mix phx.gen.live`. Wrap them with the plugs and live sessions that `mix corex.gen.auth` (or your own auth) installs.
+- **`mix corex.gen.auth` is optional generated starter code** modeled on Phoenix 1.8 `phx.gen.auth` (magic links, hashing, tokens, scopes). Review hashing, mailer, session, and confirmation behavior before production. Generated auth is **your** threat model.
 - **`e2e/` is a published showcase** used to develop and demo Corex. It is not a starter app. Copy examples from component Hexdocs / demo sections and from the generators, not by forking `e2e/`.
 
 ## Redirect / `data-to` allowlist

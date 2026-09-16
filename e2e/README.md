@@ -2,7 +2,7 @@
 
 End-to-end Phoenix + LiveView application used to develop, exercise, and validate **Corex UI components**.
 
-This is the **published showcase** (and Wallaby/a11y test app). It is **not a starter** to clone, fork, or copy as a product. For application code, copy examples from component Hexdocs / demo sections in this app, and from `mix corex.gen.live` / `mix corex.gen.html`.
+This is the **published showcase** (and Wallaby/a11y test app). It is **not a starter** to clone, fork, or copy as a product. For application code, copy examples from component Hexdocs / demo sections in this app, and from `mix corex.gen.live` / `mix corex.gen.html` / `mix corex.gen.auth`.
 
 ## Getting started
 

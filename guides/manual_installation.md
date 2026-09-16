@@ -192,7 +192,7 @@ defp html_helpers do
 end
 ```
 
-Do not keep Phoenix `CoreComponents` in a Corex app. Use Corex components and scaffold with `mix corex.gen.html` / `mix corex.gen.live` instead of `mix phx.gen.*`.
+Do not keep Phoenix `CoreComponents` in a Corex app. Use Corex components and scaffold with `mix corex.gen.html` / `mix corex.gen.live` / `mix corex.gen.auth` instead of `mix phx.gen.*`.
 
 By default this imports every Corex function component (`accordion/1`, `combobox/1`, `dialog/1`, …). If you want a smaller surface area or to avoid name collisions with other components, narrow it with `only:` / `except:` and an optional `prefix:`:
 
