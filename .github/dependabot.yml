@@ -31,6 +31,12 @@ updates:
       interval: weekly
     open-pull-requests-limit: 3
 
+  - package-ecosystem: mix
+    directory: "/integration_test"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
   - package-ecosystem: npm
     directory: "/"
     schedule:

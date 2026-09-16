@@ -191,6 +191,17 @@ defmodule E2e.Place do
     from(Airport, order_by: [asc: :name], limit: ^count, offset: ^offset) |> Repo.all()
   end
 
+  @doc """
+  Returns airports whose IATA codes are in `codes`, ordered by city then name.
+  """
+  def list_airports_by_iata(codes) when is_list(codes) do
+    from(a in Airport,
+      where: a.iata_code in ^codes,
+      order_by: [asc: a.city_name, asc: a.name]
+    )
+    |> Repo.all()
+  end
+
   @popular_iata_by_continent [
     {"Popular in Europe", ["CDG", "LHR", "FRA", "AMS", "MAD", "BCN", "FCO", "ZRH", "VIE"]},
     {"Popular in Asia", ["NRT", "HND", "ICN", "PVG", "HKG", "SIN", "BKK", "KUL"]},

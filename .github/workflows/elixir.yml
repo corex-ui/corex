@@ -46,6 +46,12 @@ jobs:
         env:
           MIX_ENV: test
 
+      - name: Xref compile cycles (Corex, report only)
+        run: mix xref graph --format cycles --label compile
+        continue-on-error: true
+        env:
+          MIX_ENV: test
+
       - name: Elixir — build docs
         run: mix docs
         env:
@@ -70,6 +76,13 @@ jobs:
       - name: Elixir — E2E
         working-directory: e2e
         run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Xref compile cycles (E2E, report only)
+        working-directory: e2e
+        run: mix xref graph --format cycles --label compile
+        continue-on-error: true
         env:
           MIX_ENV: test
 

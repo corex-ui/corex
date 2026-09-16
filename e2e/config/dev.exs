@@ -20,7 +20,10 @@ config :corex_web, E2eWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}],
-  check_origin: false,
+  check_origin: [
+    "http://localhost:4000",
+    "http://127.0.0.1:4000"
+  ],
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "JQ3bjpj3drUYoLh2G4QBZr8KpmxWvAJGLV6DZzv9mIRqOkQqhpZwtu9np9fwDeSX",

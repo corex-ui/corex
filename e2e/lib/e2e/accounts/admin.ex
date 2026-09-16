@@ -2,11 +2,12 @@ defmodule E2e.Accounts.Admin do
   @moduledoc """
   Demo-only admin schema for the Corex e2e app.
 
-  Passwords are stored in **plaintext** and `/admins` routes are unauthenticated —
-  do not copy this into production apps.
+  Passwords are hashed with bcrypt. The `/admins` showcase CRUD is public.
   """
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias E2e.Accounts.Password
 
   @currencies ~W(eur usd gbp jpy chf cad aud sek nok sgd)
   @roles ~W(admin editor viewer)
@@ -23,7 +24,8 @@ defmodule E2e.Accounts.Admin do
     field :level, :integer, default: 1
     field :currency, :string
     field :tags, {:array, :string}
-    field :password, :string, redact: true
+    field :password, :string, virtual: true, redact: true
+    field :hashed_password, :string, redact: true
     field :notifications, :boolean, default: false
     field :role, :string
     field :pin, :string
@@ -65,7 +67,6 @@ defmodule E2e.Accounts.Admin do
       :terms,
       :level,
       :currency,
-      :password,
       :role,
       :pin,
       :accent_color,
@@ -76,7 +77,7 @@ defmodule E2e.Accounts.Admin do
     |> validate_inclusion(:country, Ecto.Enum.values(E2e.Accounts.Admin, :country))
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> validate_inclusion(:currency, @currencies)
-    |> validate_length(:password, min: 8)
+    |> Password.validate()
     |> validate_inclusion(:role, @roles)
     |> validate_pin()
     |> validate_number(:heading_angle, greater_than_or_equal_to: 0, less_than_or_equal_to: 360)

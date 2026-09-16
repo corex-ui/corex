@@ -307,8 +307,18 @@ defmodule Corex.FileUploadLive do
   Pass the same upload name atom given to `allow_upload/3`. Forged or unknown
   `upload_field` values are ignored without raising.
   """
-  @spec cancel_upload_from_params(Phoenix.LiveView.Socket.t(), atom(), map()) ::
-          Phoenix.LiveView.Socket.t()
+  @spec cancel_upload_from_params(
+          Phoenix.LiveView.Socket.t(),
+          atom() | [atom()],
+          map()
+        ) :: Phoenix.LiveView.Socket.t()
+  def cancel_upload_from_params(socket, expected_upload_names, params)
+      when is_list(expected_upload_names) do
+    Enum.reduce(expected_upload_names, socket, fn name, acc ->
+      cancel_upload_from_params(acc, name, params)
+    end)
+  end
+
   def cancel_upload_from_params(socket, expected_upload_name, %{
         "ref" => ref,
         "upload_field" => field

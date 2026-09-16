@@ -74,11 +74,16 @@ defmodule E2eWeb.PaginationPatternsLive do
   defp parse_page(_), do: 1
 
   defp pages_json(page_size) do
+    # Client-only demo: cap encoded pages so the socket assign stays small.
+    # The blog fixture is tiny; raise this only if the pattern dataset grows.
+    max_pages = 8
+
     total_pages =
       Blog.count()
       |> then(fn count ->
         if count == 0, do: 0, else: div(count + page_size - 1, page_size)
       end)
+      |> min(max_pages)
 
     1..max(total_pages, 1)
     |> Enum.map(fn page ->

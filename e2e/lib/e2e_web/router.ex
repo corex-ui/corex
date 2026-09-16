@@ -22,7 +22,17 @@ defmodule E2eWeb.Router do
     plug(E2eWeb.Plugs.SEO)
     plug(:put_root_layout, html: {E2eWeb.Layouts, :root})
     plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+
+    plug(:put_secure_browser_headers, %{
+      "content-security-policy" =>
+        "default-src 'self'; " <>
+          "script-src 'self' 'unsafe-inline'; " <>
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " <>
+          "font-src 'self' https://fonts.gstatic.com; " <>
+          "img-src 'self' data: blob:; " <>
+          "connect-src 'self' ws: wss: http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*; " <>
+          "frame-ancestors 'none'"
+    })
   end
 
   scope "/", E2eWeb do
@@ -50,17 +60,16 @@ defmodule E2eWeb.Router do
         E2eWeb.MountTelemetry,
         E2eWeb.SEO.Live
       ] do
+      live("/admins", AdminLive.Index, :index)
+      live("/admins/new", AdminLive.Form, :new)
+      live("/admins/:id", AdminLive.Show, :show)
+      live("/admins/:id/edit", AdminLive.Form, :edit)
+
       live("/showcases/tetrex", TetrexIndexLive, :index)
       live("/showcases/tetrex/new", TetrexLive, :new)
       live("/showcases/tetrex/:id/replay", TetrexLive, :replay)
       live("/showcases/tetrex/:id/watch", TetrexLive, :watch)
       live("/showcases/tetrex/:id", TetrexLive, :show)
-
-      # Demo-only CRUD — no auth. Do not copy into production apps.
-      live("/admins", AdminLive.Index, :index)
-      live("/admins/new", AdminLive.Form, :new)
-      live("/admins/:id", AdminLive.Show, :show)
-      live("/admins/:id/edit", AdminLive.Form, :edit)
 
       live("/forms/patterns", FormPatternsLive)
 

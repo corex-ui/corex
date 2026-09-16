@@ -1,12 +1,9 @@
 defmodule E2eWeb.ComboboxPatternsLive do
   use E2eWeb, :live_view
 
-  import Ecto.Query
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
   alias E2e.Place
-  alias E2e.Place.Airport
-  alias E2e.Repo
 
   @airport_page_size 40
   @search_limit 80
@@ -15,11 +12,13 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
   def mount(_params, _session, socket) do
     airports = Place.list_airports_first(@airport_page_size, 0) |> Enum.map(&format_airport/1)
+    grouped = grouped_airports()
 
     {:ok,
      socket
      |> assign(:airports, airports)
-     |> assign(:airports_grouped, load_airports_grouped_from_db())}
+     |> assign(:airports_grouped_all, grouped)
+     |> assign(:airports_grouped, grouped)}
   end
 
   def handle_event("search_airports", %{"reason" => "clear-trigger"}, socket) do
@@ -45,7 +44,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
   def handle_event("search_airports", _params, socket), do: {:noreply, socket}
 
   def handle_event("search_airports_grouped", %{"reason" => "clear-trigger"}, socket) do
-    {:noreply, assign(socket, :airports_grouped, load_airports_grouped_from_db())}
+    {:noreply, assign(socket, :airports_grouped, socket.assigns.airports_grouped_all)}
   end
 
   def handle_event("search_airports_grouped", %{"reason" => "item-select"}, socket) do
@@ -56,12 +55,13 @@ defmodule E2eWeb.ComboboxPatternsLive do
       when is_binary(value) do
     list =
       if byte_size(value) < 1 do
-        load_airports_grouped_from_db()
+        socket.assigns.airports_grouped_all
       else
         q = String.downcase(value)
 
-        load_airports_grouped_from_db()
-        |> Enum.filter(fn row -> String.contains?(String.downcase(row.label), q) end)
+        Enum.filter(socket.assigns.airports_grouped_all, fn row ->
+          String.contains?(String.downcase(row.label), q)
+        end)
       end
 
     {:noreply, assign(socket, :airports_grouped, list)}
@@ -69,12 +69,8 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
   def handle_event("search_airports_grouped", _params, socket), do: {:noreply, socket}
 
-  defp load_airports_grouped_from_db do
-    from(a in Airport,
-      where: a.iata_code in ^@grouped_iata,
-      order_by: [asc: a.city_name, asc: a.name]
-    )
-    |> Repo.all()
+  defp grouped_airports do
+    Place.list_airports_by_iata(@grouped_iata)
     |> Enum.map(fn a ->
       city = a.city_name || " - "
       %{value: a.iata_code, label: ~t"#{a.name} (#{a.iata_code})", group: city}

@@ -6,7 +6,6 @@ defmodule E2eWeb.AdminDialogStackingTest do
 
   alias E2eWeb.DataTableModel, as: DataTable
   alias E2eWeb.DialogModel, as: Dialog
-  alias E2eWeb.FormHelpers
 
   setup do
     admin = admin_fixture(%{name: "Delete Target Admin"})
@@ -21,7 +20,7 @@ defmodule E2eWeb.AdminDialogStackingTest do
     host = "admin-delete-#{admin.id}"
 
     session
-    |> FormHelpers.visit_path("/en/admins")
+    |> visit("/en/admins")
     |> Dialog.wait_root_dialog_ready(host)
     |> execute_script(
       """
