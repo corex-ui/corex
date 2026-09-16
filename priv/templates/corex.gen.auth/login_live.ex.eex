@@ -102,8 +102,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <.password_input
             field={@form[:password]}
             class="password-input"
-            autocomplete="current-password"
-            spellcheck="false"
+            auto_complete="current-password"
           >
             <:label>Password</:label>
             <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>

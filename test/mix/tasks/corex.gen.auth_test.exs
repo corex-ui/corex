@@ -149,4 +149,34 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
     refute code =~ "menu menu-horizontal"
     refute code =~ "<.link"
   end
+
+  test "inject_layout_menu indents account nav as a header child" do
+    schema = %{route_prefix: "/users", singular: "user"}
+    scope_config = %{scope: %{assign_key: :current_scope}}
+
+    layout = "      </div>\n    </header>\n"
+
+    {:ok, injected} =
+      Mix.Corex.Gen.Auth.inject_layout_menu(
+        [context: nil, schema: schema, scope_config: scope_config],
+        layout
+      )
+
+    assert injected =~ ~r/^      <nav /m
+    assert injected =~ ~r/^    <\/header>/m
+    refute injected =~ ~r/^              <nav /m
+  end
+
+  test "inject_layout_scope_assign adds current_scope to Layouts.app" do
+    {:ok, injected} =
+      Mix.Corex.Gen.Auth.inject_layout_scope_assign(
+        "<Layouts.app\n  flash={@flash}\n  mode={@mode}>\n",
+        :current_scope
+      )
+
+    assert injected =~ "flash={@flash}\n  current_scope={@current_scope}\n"
+
+    assert :already_injected =
+             Mix.Corex.Gen.Auth.inject_layout_scope_assign(injected, :current_scope)
+  end
 end

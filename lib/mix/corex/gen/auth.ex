@@ -5,14 +5,21 @@ defmodule Mix.Corex.Gen.Auth do
   Injects Corex account navigation into a layout template or `Layouts` module.
   """
   def inject_layout_menu(binding, template_str) when is_binary(template_str) do
-    {_dup, code} = layout_menu_code(binding, 10)
+    padding = header_child_padding(template_str)
+    {_dup, code} = layout_menu_code(binding, padding)
 
     cond do
       String.contains?(template_str, "#{binding[:schema].route_prefix}/log-in") ->
         :already_injected
 
       String.contains?(template_str, "</header>") ->
-        {:ok, String.replace(template_str, "</header>", "#{code}\n    </header>", global: false)}
+        {:ok,
+         Regex.replace(
+           ~r/^([ \t]*)<\/header>/m,
+           template_str,
+           "#{code}\n\\1</header>",
+           global: false
+         )}
 
       String.contains?(template_str, "<body") ->
         Mix.Tasks.Phx.Gen.Auth.Injector.app_layout_menu_inject(binding, template_str)
@@ -66,5 +73,37 @@ defmodule Mix.Corex.Gen.Auth do
       |> Enum.map_join("\n", &(indent <> &1))
 
     {already, indented}
+  end
+
+  @doc """
+  Adds `assign_key={@assign_key}` to `<Layouts.app` call sites so the account
+  menu in `Layouts.app/1` receives the plug-assigned scope.
+  """
+  def inject_layout_scope_assign(content, assign_key) when is_binary(content) do
+    attr = "#{assign_key}={@#{assign_key}}"
+
+    cond do
+      not String.contains?(content, "<Layouts.app") ->
+        :not_found
+
+      String.contains?(content, attr) ->
+        :already_injected
+
+      String.contains?(content, "flash={@flash}\n") ->
+        {:ok, String.replace(content, "flash={@flash}\n", "flash={@flash}\n  #{attr}\n")}
+
+      String.contains?(content, "flash={@flash}") ->
+        {:ok, String.replace(content, "flash={@flash}", "flash={@flash} #{attr}")}
+
+      true ->
+        {:ok, String.replace(content, "<Layouts.app", "<Layouts.app #{attr}", global: false)}
+    end
+  end
+
+  defp header_child_padding(template_str) do
+    case Regex.run(~r/^([ \t]*)<\/header>/m, template_str) do
+      [_, indent] -> String.length(indent) + 2
+      _ -> 6
+    end
   end
 end

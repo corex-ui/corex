@@ -74,8 +74,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <.password_input
             field={@password_form[:password]}
             class="password-input"
-            autocomplete="new-password"
-            spellcheck="false"
+            auto_complete="new-password"
             required
           >
             <:label>New password</:label>
@@ -89,8 +88,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <.password_input
             field={@password_form[:password_confirmation]}
             class="password-input"
-            autocomplete="new-password"
-            spellcheck="false"
+            auto_complete="new-password"
           >
             <:label>Confirm new password</:label>
             <:error :let={msg}>

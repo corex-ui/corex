@@ -191,7 +191,8 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       ) ++
         parsed
 
-    {context, _schema} = Gen.Context.build(context_args ++ ["--no-scope"], help_module: __MODULE__)
+    {context, _schema} =
+      Gen.Context.build(context_args ++ ["--no-scope"], help_module: __MODULE__)
 
     context = put_live_option(context)
     context = maybe_remap_for_test(context)
@@ -266,6 +267,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       |> maybe_inject_router_import(binding)
       |> maybe_inject_router_plug(binding)
       |> maybe_inject_app_layout_menu(binding)
+      |> maybe_inject_layout_scope_assigns(binding)
       |> maybe_inject_agents_md(paths, binding)
     end
   end
@@ -943,6 +945,28 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
         #{scope_config}
         """)
     end
+
+    context
+  end
+
+  defp maybe_inject_layout_scope_assigns(%Context{} = context, binding) do
+    assign_key = binding[:scope_config].scope.assign_key
+    web = Mix.Corex.web_path(context.context_app)
+
+    web
+    |> Path.join("**/*.{ex,heex}")
+    |> Path.wildcard()
+    |> Enum.reject(&String.ends_with?(&1, "layouts.ex"))
+    |> Enum.each(fn path ->
+      case Mix.Corex.Gen.Auth.inject_layout_scope_assign(File.read!(path), assign_key) do
+        {:ok, new_content} ->
+          print_injecting(path, " - layout scope assign")
+          File.write!(path, new_content)
+
+        _ ->
+          :ok
+      end
+    end)
 
     context
   end
