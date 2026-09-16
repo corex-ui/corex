@@ -55,6 +55,16 @@ mix corex.new my_app --mode --theme --lang
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
 
+Authentication is not a `mix corex.new` flag. After the app exists, scaffold LiveView auth with Corex form components:
+
+```bash
+mix corex.gen.auth Accounts User users
+mix deps.get
+mix ecto.migrate
+```
+
+See **`Mix.Tasks.Corex.Gen.Auth`**. Override templates from `priv/corex_templates/corex.gen.auth/`. `--no-live` is not supported.
+
 ### Existing Phoenix application
 
 Follow the [manual installation guide](https://hexdocs.pm/corex/manual_installation.html).

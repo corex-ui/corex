@@ -193,6 +193,48 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
     end
   end
 
+  describe "corex.gen.auth" do
+    test "has no compilation or formatter warnings" do
+      with_installer_tmp("gen_auth_compile", fn tmp_dir ->
+        {app_root_path, _} = generate_corex_app(tmp_dir, "corex_blog", [])
+
+        mix_run!(~w(corex.gen.auth Accounts User users), app_root_path)
+        mix_run!(~w(deps.get), app_root_path)
+
+        assert_file(Path.join(app_root_path, "mix.exs"), fn file ->
+          assert file =~ "bcrypt_elixir"
+        end)
+
+        login_path = Path.join(app_root_path, "lib/corex_blog_web/live/user_live/login.ex")
+
+        assert_file(login_path, fn file ->
+          assert file =~ "native_input"
+          assert file =~ "password_input"
+          assert file =~ ~s(class="button ui-accent)
+          refute file =~ "core_components"
+          refute file =~ "btn btn-primary"
+        end)
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+      end)
+    end
+
+    @tag database: :postgresql
+    test "has a passing test suite" do
+      with_installer_tmp("gen_auth_tests", fn tmp_dir ->
+        {app_root_path, _} = generate_corex_app(tmp_dir, "corex_blog", [])
+
+        mix_run!(~w(corex.gen.auth Accounts User users), app_root_path)
+        mix_run!(~w(deps.get), app_root_path)
+
+        assert_passes_formatter_check(app_root_path)
+        drop_test_database(app_root_path)
+        assert_tests_pass(app_root_path)
+      end)
+    end
+  end
+
   describe "corex.gen.html E2E patterns" do
     test "generated templates use layout_heading, data_list, @form.id, alert dialog delete" do
       with_installer_tmp("gen_html_e2e", fn tmp_dir ->

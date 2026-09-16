@@ -1,7 +1,7 @@
 ---
 name: corex-installation
 description: >-
-  Load when running mix corex.new, mix corex.design.build, adding {:corex} to mix.exs,
+  Load when running mix corex.new, mix corex.gen.auth, mix corex.design.build, adding {:corex} to mix.exs,
   configuring esbuild --format=esm --splitting, LiveSocket with csrfToken and
   hooks: { ...colocatedHooks, ...corex } in assets/js/app.js, use Corex in
   lib/*_web.ex, type="module" on app.js script tag, toggle.css select.css for
@@ -14,7 +14,10 @@ description: >-
 
 ```sh
 mix corex.new my_app
+mix corex.gen.auth Accounts User users
 ```
+
+There is no `mix corex.new --auth`. Run `mix corex.gen.auth` in an existing app (`mix help corex.gen.auth`).
 
 ## Existing app — order matters
 

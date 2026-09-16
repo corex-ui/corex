@@ -53,9 +53,46 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       assert settings =~ "password_input"
       assert confirmation =~ ~s(class="button ui-accent)
 
-      assert File.exists?(Path.join(tmp, "#{singular}.ex"))
+      schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
+      assert schema_file =~ "Bcrypt.hash_pwd_salt"
       assert File.exists?(Path.join(tmp, "#{singular}_token.ex"))
     end)
+  end
+
+  test "run/1 with --hashing-lib pbkdf2 uses Pbkdf2 in the schema" do
+    with_test_output(fn tmp ->
+      n = System.unique_integer([:positive])
+      schema = "AuthHash#{n}"
+      singular = Phoenix.Naming.underscore(schema)
+      plural = singular <> "s"
+
+      run_generator("corex.gen.auth", [
+        "AuthHashAccounts#{n}",
+        schema,
+        plural,
+        "--hashing-lib",
+        "pbkdf2",
+        "--no-compile"
+      ])
+
+      schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
+      assert schema_file =~ "Pbkdf2.hash_pwd_salt"
+      assert schema_file =~ "Pbkdf2.verify_pass"
+      refute schema_file =~ "Bcrypt."
+    end)
+  end
+
+  test "run/1 raises on unknown --hashing-lib" do
+    assert_raise Mix.Error, ~r/hashing-lib/, fn ->
+      run_generator("corex.gen.auth", [
+        "Accounts",
+        "User",
+        "users",
+        "--hashing-lib",
+        "md5",
+        "--no-compile"
+      ])
+    end
   end
 
   test "run/1 with locale layout prints locale-scoped route instructions" do
