@@ -342,11 +342,11 @@ defmodule Mix.Corex.Gen.Auth do
     entries =
       Enum.map_join(providers, ",\n", fn provider ->
         keys =
-          Enum.map_join(provider.env_keys, ",\n      ", fn {key, env} ->
+          Enum.map_join(provider.env_keys, ",\n    ", fn {key, env} ->
             "#{key}: System.get_env(#{inspect(env)})"
           end)
 
-        "    #{provider.id}: [\n      #{keys}\n    ]"
+        "  #{provider.id}: [\n    #{keys}\n  ]"
       end)
 
     """

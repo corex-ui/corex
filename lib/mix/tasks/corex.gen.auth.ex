@@ -1024,6 +1024,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       {:ok, new_file} ->
         print_injecting(file_path, " - oauth")
         File.write!(file_path, new_file)
+        format_file(file_path)
 
       :already_injected ->
         :ok

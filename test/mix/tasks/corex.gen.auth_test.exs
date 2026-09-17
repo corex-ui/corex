@@ -74,6 +74,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       refute confirmation =~ "Confirm and stay logged in"
 
       schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
+      assert schema_file =~ "field :hashed_password, :string, redact: true"
       assert schema_file =~ "Bcrypt.hash_pwd_salt"
       assert File.exists?(Path.join(tmp, "#{singular}_token.ex"))
 
@@ -167,6 +168,8 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
     assert code =~ "navigate"
     assert code =~ "log-in"
+    assert code =~ "Settings"
+    assert code =~ "Log out"
     assert code =~ "button ui-accent"
     assert code =~ "hidden md:flex"
     refute code =~ "Register"
@@ -541,6 +544,25 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
     assert injected =~ ~s("/auth/:provider")
     assert injected =~ "pipeline :user_oauth"
     assert :already_injected = GenAuth.inject_oauth_routes(injected, snippet)
+  end
+
+  test "oauth_runtime_config uses Mix formatter indent" do
+    providers = GenAuth.enabled_oauth_providers(google: true, github: true)
+    context = %{context_app: :demo, module: Demo.Accounts}
+
+    snippet = GenAuth.oauth_runtime_config(context: context, oauth_providers: providers)
+
+    assert snippet == """
+           config :demo, Demo.Accounts.OAuthProviders,
+             google: [
+               client_id: System.get_env("GOOGLE_CLIENT_ID"),
+               client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+             ],
+             github: [
+               client_id: System.get_env("GITHUB_CLIENT_ID"),
+               client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+             ]
+           """
   end
 
   test "enabled_oauth_providers copies facebook and apple registry entries" do
