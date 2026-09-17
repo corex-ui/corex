@@ -8,10 +8,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     test "renders login page", %{conn: conn} do
       {:ok, _lv, html} = live(conn, ~p"<%= schema.route_prefix %>/log-in")
 
-      assert html =~ "Log in"
+      assert html =~ "Sign in"
       assert html =~ "Sign up"
       assert html =~ "Continue"
-      assert html =~ "Log in with password"
+      assert html =~ "Use password instead"
       refute html =~ ~s(id="login_form_password")
     end
 
@@ -19,7 +19,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       {:ok, _lv, html} = live(conn, ~p"<%= schema.route_prefix %>/log-in?mode=password")
 
       assert html =~ ~s(id="login_form_password")
-      assert html =~ "Log in with email"
+      assert html =~ "Keep me signed in"
+      assert html =~ "Use email link instead"
       refute html =~ ~s(id="login_form_magic")
     end
   end
@@ -35,7 +36,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         |> render_submit()
 
       assert html =~ "Check your email"
-      assert html =~ "If your email is in our system"
+      assert html =~ "If an account exists for that address"
 
       assert <%= inspect schema.repo %>.get_by!(<%= inspect context.module %>.<%= inspect schema.alias %>Token, <%= schema.singular %>_id: <%= schema.singular %>.id).context ==
                "login"
@@ -49,7 +50,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         |> render_submit()
 
       assert html =~ "Check your email"
-      assert html =~ "If your email is in our system"
+      assert html =~ "If an account exists for that address"
     end
   end
 
@@ -95,7 +96,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         |> render_click()
         |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/register")
 
-      assert login_html =~ "Register"
+      assert login_html =~ "Create account"
     end
   end
 

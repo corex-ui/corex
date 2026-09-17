@@ -16,33 +16,24 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
     <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-sm flex-col items-center gap-size-lg pt-space-xl text-ink">
-        <div :if={@check_email} class="flex w-full flex-col items-center gap-size-lg">
-          <.layout_heading class="layout-heading">
+      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
+        <div :if={@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
+          <.layout_heading class="layout-heading" subtitle_tag="p">
             <:title>Check your email</:title>
             <:subtitle>
-              If your email is in our system, you will receive instructions for logging in shortly.
+              If an account exists for that address, you'll get a login link shortly.
             </:subtitle>
           </.layout_heading>
 
-          <div
-            :if={local_mail_adapter?()}
-            class="flex w-full gap-space rounded-md border border-border bg-surface p-space text-sm text-ink"
-          >
-            <.heroicon name="hero-information-circle" class="icon shrink-0" />
-            <div>
-              <p>You are running the local mail adapter.</p>
-              <p>
-                To see sent emails, visit
-                <.navigate to="/dev/mailbox" class="link">the mailbox page</.navigate>.
-              </p>
-            </div>
-          </div>
+          <p :if={local_mail_adapter?()} class="m-0 text-sm text-ink-muted">
+            Local emails are in the
+            <.navigate to="/dev/mailbox" class="link">mailbox</.navigate>.
+          </p>
         </div>
 
-        <div :if={!@check_email} class="flex w-full flex-col items-center gap-size-lg">
-          <.layout_heading class="layout-heading">
-            <:title>Log in</:title>
+        <div :if={!@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
+          <.layout_heading class="layout-heading" subtitle_tag="p">
+            <:title>Sign in</:title>
             <:subtitle>
               <%%= if @<%= scope_config.scope.assign_key %> do %>
                 You need to reauthenticate to perform sensitive actions on your account.
@@ -55,24 +46,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                 >
                   Sign up
                 </.navigate>
-                for an account now.
               <%% end %>
             </:subtitle>
           </.layout_heading>
-
-          <div
-            :if={local_mail_adapter?()}
-            class="flex w-full gap-space rounded-md border border-border bg-surface p-space text-sm text-ink"
-          >
-            <.heroicon name="hero-information-circle" class="icon shrink-0" />
-            <div>
-              <p>You are running the local mail adapter.</p>
-              <p>
-                To see sent emails, visit
-                <.navigate to="/dev/mailbox" class="link">the mailbox page</.navigate>.
-              </p>
-            </div>
-          </div>
 
           <.form
             :if={!@login_mode}
@@ -95,7 +71,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             >
               <:label>Email</:label>
             </.native_input>
-            <.action type="submit" class="button ui-accent ui-width-full">
+            <.action type="submit" class="button ui-accent ui-solid ui-width-full">
               Continue
             </.action>
           </.form>
@@ -106,7 +82,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               type="patch"
               class="link"
             >
-              Log in with password
+              Use password instead
             </.navigate>
           </p>
 
@@ -133,7 +109,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <:label>Email</:label>
             </.native_input>
             <.password_input
-              field={@form[:password]}
+              field={f[:password]}
               class="password-input"
               auto_complete="current-password"
             >
@@ -141,23 +117,24 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
               <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
             </.password_input>
-            <.action
-              type="submit"
-              class="button ui-accent ui-width-full"
-              name={@form[:remember_me].name}
-              value="true"
-            >
-              Log in and stay logged in <span aria-hidden="true">→</span>
-            </.action>
-            <.action type="submit" class="button ui-width-full">
-              Log in only this time
+            <.checkbox field={f[:remember_me]} class="checkbox" checked>
+              <:label>Keep me signed in</:label>
+              <:indicator><.heroicon name="hero-check" /></:indicator>
+            </.checkbox>
+            <.action type="submit" class="button ui-accent ui-solid ui-width-full">
+              Sign in
             </.action>
           </.form>
 
           <p :if={@login_mode} class="m-0 text-sm text-ink-muted">
             <.navigate to={~p"<%= schema.route_prefix %>/log-in"} type="patch" class="link">
-              Log in with email
+              Use email link instead
             </.navigate>
+          </p>
+
+          <p :if={local_mail_adapter?()} class="m-0 text-sm text-ink-muted">
+            Local emails are in the
+            <.navigate to="/dev/mailbox" class="link">mailbox</.navigate>.
           </p>
         </div>
       </article>
@@ -171,7 +148,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       Phoenix.Flash.get(socket.assigns.flash, :email) ||
         get_in(socket.assigns, [:<%= scope_config.scope.assign_key %>, Access.key(:<%= schema.singular %>), Access.key(:email)])
 
-    form = to_form(%{"email" => email}, as: "<%= schema.singular %>")
+    form = to_form(%{"email" => email, "remember_me" => "true"}, as: "<%= schema.singular %>")
 
     {:ok, assign(socket, form: form, trigger_submit: false, check_email: false)}
   end

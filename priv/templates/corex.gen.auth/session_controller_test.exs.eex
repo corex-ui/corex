@@ -12,9 +12,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     test "renders login page", %{conn: conn} do
       conn = get(conn, ~p"<%= schema.route_prefix %>/log-in")
       response = html_response(conn, 200)
-      assert response =~ "Log in"
+      assert response =~ "Sign in"
       assert response =~ ~p"<%= schema.route_prefix %>/register"
-      assert response =~ "Log in with email"
+      assert response =~ "Use password instead"
     end
 
     test "renders login page with email filled in (sudo mode)", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
@@ -26,7 +26,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert html =~ "You need to reauthenticate"
       refute html =~ "Register"
-      assert html =~ "Log in with email"
+      assert html =~ "Use password instead"
 
       assert html =~ ~s(id="login_form_magic_email-input")
       assert html =~ ~s(name="<%= schema.singular %>[email]")
@@ -36,9 +36,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     test "renders login page (email + password)", %{conn: conn} do
       conn = get(conn, ~p"<%= schema.route_prefix %>/log-in?mode=password")
       response = html_response(conn, 200)
-      assert response =~ "Log in"
+      assert response =~ "Sign in"
       assert response =~ ~p"<%= schema.route_prefix %>/register"
-      assert response =~ "Log in with email"
+      assert response =~ "Keep me signed in"
+      assert response =~ "Use email link instead"
     end
   end
 
@@ -50,7 +51,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         end)
 
       conn = get(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
-      assert html_response(conn, 200) =~ "Confirm and stay logged in"
+      assert html_response(conn, 200) =~ "Confirm your email"
     end
 
     test "renders login page for confirmed <%= schema.singular %>", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
@@ -62,7 +63,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       conn = get(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
       html = html_response(conn, 200)
       refute html =~ "Confirm my account"
-      assert html =~ "Log in"
+      assert html =~ "Welcome back"
     end
 
     test "raises error for invalid token", %{conn: conn} do
@@ -135,7 +136,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       <%= if live? do %>assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"
       assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in?mode=password"<% else %>response = html_response(conn, 200)
-      assert response =~ "Log in"
+      assert response =~ "Sign in"
       assert response =~ "Invalid email or password"<% end %>
     end
   end

@@ -18,93 +18,98 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
     <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-sm flex-col items-center gap-size-lg pt-space-xl text-ink">
+      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
         <.layout_heading class="layout-heading">
-          <:title>Account Settings</:title>
-          <:subtitle>Manage your email address and optional password.</:subtitle>
+          <:title>Account</:title>
         </.layout_heading>
 
-        <.form
-          for={@email_form}
-          id="email_form"
-          phx-submit="update_email"
-          phx-change="validate_email"
-          class="flex w-full flex-col gap-space"
-        >
-          <.native_input
-            field={@email_form[:email]}
-            type="email"
-            class="native-input"
-            autocomplete="username"
-            spellcheck="false"
-            required
-          >
-            <:label>Email</:label>
-            <:error :let={msg}>
-              <.heroicon name="hero-exclamation-circle" class="icon" />
-              {msg}
-            </:error>
-          </.native_input>
-          <.action type="submit" phx-disable-with="Changing..." class="button ui-accent">
-            Change Email
-          </.action>
-        </.form>
+        <section class="flex w-full flex-col gap-space">
+          <.layout_heading class="layout-heading" title_tag="h2">
+            <:title>Email</:title>
+          </.layout_heading>
 
-        <.layout_heading class="layout-heading">
-          <:title>Password</:title>
-          <:subtitle>
-            Set a password to log in without waiting for an email.
-          </:subtitle>
-        </.layout_heading>
+          <.form
+            for={@email_form}
+            id="email_form"
+            phx-submit="update_email"
+            phx-change="validate_email"
+            class="flex w-full flex-col gap-space"
+          >
+            <.native_input
+              field={@email_form[:email]}
+              type="email"
+              class="native-input"
+              autocomplete="username"
+              spellcheck="false"
+              required
+            >
+              <:label>Email</:label>
+              <:error :let={msg}>
+                <.heroicon name="hero-exclamation-circle" class="icon" />
+                {msg}
+              </:error>
+            </.native_input>
+            <.action type="submit" phx-disable-with="Changing..." class="button ui-accent ui-solid ui-width-full">
+              Change Email
+            </.action>
+          </.form>
+        </section>
 
-        <.form
-          for={@password_form}
-          id="password_form"
-          action={~p"<%= schema.route_prefix %>/update-password"}
-          method="post"
-          phx-change="validate_password"
-          phx-submit="update_password"
-          phx-trigger-action={@trigger_submit}
-          class="flex w-full flex-col gap-space"
-        >
-          <input
-            name={@password_form[:email].name}
-            type="hidden"
-            id="hidden_<%= schema.singular %>_email"
-            spellcheck="false"
-            value={@current_email}
-          />
-          <.password_input
-            field={@password_form[:password]}
-            class="password-input"
-            auto_complete="new-password"
-            required
+        <section class="flex w-full flex-col gap-space">
+          <.layout_heading class="layout-heading" title_tag="h2" subtitle_tag="p">
+            <:title>Password</:title>
+            <:subtitle>Optional. Sign in without an email link.</:subtitle>
+          </.layout_heading>
+
+          <.form
+            for={@password_form}
+            id="password_form"
+            action={~p"<%= schema.route_prefix %>/update-password"}
+            method="post"
+            phx-change="validate_password"
+            phx-submit="update_password"
+            phx-trigger-action={@trigger_submit}
+            class="flex w-full flex-col gap-space"
           >
-            <:label>New password</:label>
-            <:error :let={msg}>
-              <.heroicon name="hero-exclamation-circle" class="icon" />
-              {msg}
-            </:error>
-            <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-            <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-          </.password_input>
-          <.password_input
-            field={@password_form[:password_confirmation]}
-            class="password-input"
-            auto_complete="new-password"
-          >
-            <:label>Confirm new password</:label>
-            <:error :let={msg}>
-              <.heroicon name="hero-exclamation-circle" class="icon" />
-              {msg}
-            </:error>
-            <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-            <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-          </.password_input>
-          <.action type="submit" phx-disable-with="Saving..." class="button ui-accent">
-            Save Password
-          </.action>
-        </.form>
+            <input
+              name={@password_form[:email].name}
+              type="hidden"
+              id="hidden_<%= schema.singular %>_email"
+              spellcheck="false"
+              value={@current_email}
+            />
+            <.password_input
+              field={@password_form[:password]}
+              class="password-input"
+              auto_complete="new-password"
+              required
+            >
+              <:label>New password</:label>
+              <:error :let={msg}>
+                <.heroicon name="hero-exclamation-circle" class="icon" />
+                {msg}
+              </:error>
+              <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+              <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+            </.password_input>
+            <.password_input
+              field={@password_form[:password_confirmation]}
+              class="password-input"
+              auto_complete="new-password"
+            >
+              <:label>Confirm new password</:label>
+              <:error :let={msg}>
+                <.heroicon name="hero-exclamation-circle" class="icon" />
+                {msg}
+              </:error>
+              <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+              <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+            </.password_input>
+            <.action type="submit" phx-disable-with="Saving..." class="button ui-accent ui-solid ui-width-full">
+              Save Password
+            </.action>
+          </.form>
+        </section>
       </article>
     </Layouts.app>
     """

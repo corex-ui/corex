@@ -16,13 +16,17 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
     <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-sm flex-col items-center gap-size-lg pt-space-xl text-ink">
-        <.layout_heading class="layout-heading">
-          <:title>Welcome {@<%= schema.singular %>.email}</:title>
+      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
+        <.layout_heading :if={!@<%= schema.singular %>.confirmed_at} class="layout-heading">
+          <:title>Confirm your email</:title>
+        </.layout_heading>
+        <.layout_heading :if={@<%= schema.singular %>.confirmed_at} class="layout-heading">
+          <:title>Welcome back</:title>
         </.layout_heading>
 
         <.form
           :if={!@<%= schema.singular %>.confirmed_at}
+          :let={f}
           for={@form}
           id="confirmation_form"
           phx-mounted={JS.focus_first()}
@@ -31,23 +35,23 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           phx-trigger-action={@trigger_submit}
           class="flex w-full flex-col gap-space"
         >
-          <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+          <input type="hidden" name={f[:token].name} value={f[:token].value} />
+          <.checkbox field={f[:remember_me]} class="checkbox" checked>
+            <:label>Keep me signed in</:label>
+            <:indicator><.heroicon name="hero-check" /></:indicator>
+          </.checkbox>
           <.action
             type="submit"
-            name={@form[:remember_me].name}
-            value="true"
             phx-disable-with="Confirming..."
-            class="button ui-accent ui-width-full"
+            class="button ui-accent ui-solid ui-width-full"
           >
-            Confirm and stay logged in
-          </.action>
-          <.action type="submit" phx-disable-with="Confirming..." class="button ui-width-full">
-            Confirm and log in only this time
+            Continue
           </.action>
         </.form>
 
         <.form
           :if={@<%= schema.singular %>.confirmed_at}
+          :let={f}
           for={@form}
           id="login_form"
           phx-submit="submit"
@@ -56,30 +60,19 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           phx-trigger-action={@trigger_submit}
           class="flex w-full flex-col gap-space"
         >
-          <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-          <%%= if @<%= scope_config.scope.assign_key %> do %>
-            <.action type="submit" phx-disable-with="Logging in..." class="button ui-accent ui-width-full">
-              Log in
-            </.action>
-          <%% else %>
-            <.action
-              type="submit"
-              name={@form[:remember_me].name}
-              value="true"
-              phx-disable-with="Logging in..."
-              class="button ui-accent ui-width-full"
-            >
-              Keep me logged in on this device
-            </.action>
-            <.action type="submit" phx-disable-with="Logging in..." class="button ui-width-full">
-              Log me in only this time
-            </.action>
-          <%% end %>
+          <input type="hidden" name={f[:token].name} value={f[:token].value} />
+          <.checkbox field={f[:remember_me]} class="checkbox" checked>
+            <:label>Keep me signed in</:label>
+            <:indicator><.heroicon name="hero-check" /></:indicator>
+          </.checkbox>
+          <.action
+            type="submit"
+            phx-disable-with="Logging in..."
+            class="button ui-accent ui-solid ui-width-full"
+          >
+            Continue
+          </.action>
         </.form>
-
-        <p :if={!@<%= schema.singular %>.confirmed_at} class="m-0 w-full rounded-md border border-border bg-surface p-space text-sm text-ink-muted">
-          Tip: If you prefer passwords, you can enable them in the <%= schema.singular %> settings.
-        </p>
       </article>
     </Layouts.app>
     """
@@ -88,7 +81,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def mount(%{"token" => token}, _session, socket) do
     if <%= schema.singular %> = <%= inspect context.alias %>.get_<%= schema.singular %>_by_magic_link_token(token) do
-      form = to_form(%{"token" => token}, as: "<%= schema.singular %>")
+      form = to_form(%{"token" => token, "remember_me" => "true"}, as: "<%= schema.singular %>")
 
       {:ok, assign(socket, <%= schema.singular %>: <%= schema.singular %>, form: form, trigger_submit: false),
        temporary_assigns: [form: nil]}

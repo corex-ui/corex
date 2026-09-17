@@ -50,13 +50,22 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       end
 
       assert login =~ "password_input"
-      assert login =~ ~S(class="button ui-accent)
+      assert login =~ ~S(class="button ui-accent ui-solid ui-width-full")
       assert login =~ "mode=password"
       assert login =~ "check_email"
       assert login =~ "Continue"
+      assert login =~ "Keep me signed in"
+      assert login =~ "items-stretch"
+      refute login =~ "Log in and stay logged in"
       assert registration =~ "native_input"
+      assert registration =~ "check_email"
+      assert registration =~ "Create account"
       assert settings =~ "password_input"
-      assert confirmation =~ ~S(class="button ui-accent)
+      assert settings =~ ~S(title_tag="h2")
+      assert settings =~ "Account"
+      assert confirmation =~ ~S(class="button ui-accent ui-solid ui-width-full")
+      assert confirmation =~ "Keep me signed in"
+      refute confirmation =~ "Confirm and stay logged in"
 
       schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
       assert schema_file =~ "Bcrypt.hash_pwd_salt"

@@ -17,45 +17,60 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
     <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-sm flex-col items-center gap-size-lg pt-space-xl text-ink">
-        <.layout_heading class="layout-heading">
-          <:title>Register for an account</:title>
-          <:subtitle>
-            Already registered?
-            <.navigate to={~p"<%= schema.route_prefix %>/log-in"} type="navigate" class="link">
-              Log in
-            </.navigate>
-            to your account now.
-          </:subtitle>
-        </.layout_heading>
+      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
+        <div :if={@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
+          <.layout_heading class="layout-heading" subtitle_tag="p">
+            <:title>Check your email</:title>
+            <:subtitle>
+              If an account exists for that address, you'll get a login link shortly.
+            </:subtitle>
+          </.layout_heading>
 
-        <.form
-          for={@form}
-          id="registration_form"
-          phx-submit="save"
-          phx-change="validate"
-          class="flex w-full flex-col gap-space"
-        >
-          <.native_input
-            field={@form[:email]}
-            type="email"
-            class="native-input"
-            autocomplete="username"
-            spellcheck="false"
-            required
-            phx-mounted={JS.focus()}
+          <p :if={local_mail_adapter?()} class="m-0 text-sm text-ink-muted">
+            Local emails are in the
+            <.navigate to="/dev/mailbox" class="link">mailbox</.navigate>.
+          </p>
+        </div>
+
+        <div :if={!@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
+          <.layout_heading class="layout-heading" subtitle_tag="p">
+            <:title>Create account</:title>
+            <:subtitle>
+              Already have an account?
+              <.navigate to={~p"<%= schema.route_prefix %>/log-in"} type="navigate" class="link">
+                Sign in
+              </.navigate>
+            </:subtitle>
+          </.layout_heading>
+
+          <.form
+            for={@form}
+            id="registration_form"
+            phx-submit="save"
+            phx-change="validate"
+            class="flex w-full flex-col gap-space"
           >
-            <:label>Email</:label>
-            <:error :let={msg}>
-              <.heroicon name="hero-exclamation-circle" class="icon" />
-              {msg}
-            </:error>
-          </.native_input>
+            <.native_input
+              field={@form[:email]}
+              type="email"
+              class="native-input"
+              autocomplete="username"
+              spellcheck="false"
+              required
+              phx-mounted={JS.focus()}
+            >
+              <:label>Email</:label>
+              <:error :let={msg}>
+                <.heroicon name="hero-exclamation-circle" class="icon" />
+                {msg}
+              </:error>
+            </.native_input>
 
-          <.action type="submit" phx-disable-with="Creating account..." class="button ui-accent ui-width-full">
-            Create an account
-          </.action>
-        </.form>
+            <.action type="submit" phx-disable-with="Creating account..." class="button ui-accent ui-solid ui-width-full">
+              Create account
+            </.action>
+          </.form>
+        </div>
       </article>
     </Layouts.app>
     """
@@ -70,7 +85,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def mount(_params, _session, socket) do
     changeset = <%= inspect context.alias %>.change_<%= schema.singular %>_email(%<%= inspect schema.alias %>{}, %{}, validate_unique: false)
 
-    {:ok, assign_form(socket, changeset), temporary_assigns: [form: nil]}
+    {:ok, socket |> assign(:check_email, false) |> assign_form(changeset), temporary_assigns: [form: nil]}
   end
 
   @impl true
@@ -83,13 +98,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             &url(~p"<%= schema.route_prefix %>/log-in/#{&1}")
           )
 
-        {:noreply,
-         socket
-         |> put_flash(
-           :info,
-           "An email was sent to #{<%= schema.singular %>.email}, please access it to confirm your account."
-         )
-         |> push_navigate(to: ~p"<%= schema.route_prefix %>/log-in")}
+        {:noreply, assign(socket, :check_email, true)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -104,5 +113,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     form = to_form(changeset, as: "<%= schema.singular %>")
     assign(socket, form: form)
+  end
+
+  defp local_mail_adapter? do
+    Application.get_env(:<%= Mix.Phoenix.context_app() %>, <%= inspect context.base_module %>.Mailer)[:adapter] == Swoosh.Adapters.Local
   end
 end
