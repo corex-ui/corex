@@ -39,7 +39,7 @@ Components with a `translation` assign (Select, Editable, Dialog, and others) us
 | Key | Type | Default | Purpose |
 | --- | ---- | ------- | ------- |
 | `:debug` | boolean | `false` | When `true`, verbose logging in Corex (also enables MCP debug if `corex_mcp` is present) |
-| `:generators` | keyword | `[]` | Options for `mix corex.gen.live` and `mix corex.gen.html` (see below) |
+| `:generators` | keyword | `[]` | Options for `mix corex.gen.live`, `mix corex.gen.html`, and `mix corex.gen.auth` (see below) |
 
 Generator keys:
 

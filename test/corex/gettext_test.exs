@@ -28,6 +28,23 @@ defmodule Corex.GettextTest do
       assert Corex.Gettext.translate_error({"Error", []}) == "Error"
     end
 
+    test "interpolates Ecto count errors when backend is nil" do
+      Application.delete_env(:phoenix, :gettext_backend)
+
+      assert Corex.Gettext.translate_error(
+               {"should be at least %{count} character(s)", [count: 12]}
+             ) == "should be at least 12 character(s)"
+    end
+
+    test "skips non-scalar Ecto constraint metadata when backend is nil" do
+      Application.delete_env(:phoenix, :gettext_backend)
+
+      assert Corex.Gettext.translate_error(
+               {"has already been taken",
+                [constraint: :unique, constraint_name: "users_email_index"]}
+             ) == "has already been taken"
+    end
+
     test "uses dngettext when count present and backend configured" do
       Application.put_env(:phoenix, :gettext_backend, CorexTest.Gettext)
       result = Corex.Gettext.translate_error({"1 file", [count: 2]})

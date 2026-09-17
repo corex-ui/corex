@@ -1,0 +1,135 @@
+defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>OAuthController do
+  use <%= inspect context.web_module %>, :controller
+
+  alias <%= inspect context.module %>
+  alias <%= inspect context.module %>.OAuthProviders
+  alias <%= inspect auth_module %>
+
+  def request(conn, %{"provider" => provider}) do
+    redirect_uri = callback_url(conn, provider)
+
+    case OAuthProviders.fetch(provider) do
+      nil ->
+        conn
+        |> put_flash(:error, "Unknown sign-in provider.")
+        |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+
+      meta ->
+        if OAuthProviders.configured?(meta, redirect_uri) do
+          config = OAuthProviders.config(meta, redirect_uri)
+
+          case meta.strategy.authorize_url(config) do
+            {:ok, %{url: url, session_params: session_params}} ->
+              conn
+              |> put_session(:oauth, %{
+                "provider" => to_string(meta.id),
+                "session_params" => session_params,
+                "redirect_uri" => redirect_uri
+              })
+              |> redirect(external: url)
+
+            {:error, reason} ->
+              conn
+              |> put_flash(:error, oauth_error(reason))
+              |> redirect(to: return_path(conn))
+          end
+        else
+          missing = OAuthProviders.missing_env(meta, redirect_uri)
+
+          conn
+          |> put_flash(
+            :error,
+            "Set #{Enum.join(missing, ", ")} to enable #{meta.label} sign-in."
+          )
+          |> redirect(to: return_path(conn))
+        end
+    end
+  end
+
+  def callback(conn, %{"provider" => provider} = params) do
+    oauth = get_session(conn, :oauth) || %{}
+    conn = delete_session(conn, :oauth)
+    expected = to_string(provider)
+
+    with meta when not is_nil(meta) <- OAuthProviders.fetch(provider),
+         %{"provider" => ^expected, "session_params" => session_params, "redirect_uri" => redirect_uri} <-
+           oauth,
+         config <- Keyword.put(OAuthProviders.config(meta, redirect_uri), :session_params, session_params),
+         {:ok, %{user: user_info}} <- meta.strategy.callback(config, params) do
+      complete_oauth(conn, meta, user_info)
+    else
+      _ ->
+        conn
+        |> put_flash(:error, "Sign-in was cancelled or could not be completed.")
+        |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+    end
+  end
+
+  defp complete_oauth(conn, meta, user_info) do
+    current = current_<%= schema.singular %>(conn)
+
+    cond do
+      current ->
+        uid = user_info["sub"]
+
+        case <%= inspect context.alias %>.create_<%= schema.singular %>_identity(current, meta.id, uid) do
+          {:ok, _} ->
+            conn
+            |> put_flash(:info, "#{meta.label} connected.")
+            |> redirect(to: ~p"<%= schema.route_prefix %>/settings")
+
+          {:error, _} ->
+            conn
+            |> put_flash(:error, "Could not connect this #{meta.label} account.")
+            |> redirect(to: ~p"<%= schema.route_prefix %>/settings")
+        end
+
+      true ->
+        case <%= inspect context.alias %>.login_or_register_<%= schema.singular %>_with_oauth(meta.id, user_info) do
+          {:ok, <%= schema.singular %>} ->
+            conn
+            |> put_flash(:info, "Welcome back!")
+            |> <%= inspect schema.alias %>Auth.log_in_<%= schema.singular %>(<%= schema.singular %>, %{"remember_me" => "true"})
+
+          {:error, :email_required} ->
+            conn
+            |> put_flash(:error, "#{meta.label} did not share an email address.")
+            |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+
+          {:error, :missing_uid} ->
+            conn
+            |> put_flash(:error, "Sign-in was cancelled or could not be completed.")
+            |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+
+          {:error, _} ->
+            conn
+            |> put_flash(:error, "Could not sign in with #{meta.label}.")
+            |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+        end
+    end
+  end
+
+  defp current_<%= schema.singular %>(conn) do
+    get_in(conn.assigns, [:<%= scope_config.scope.assign_key %>, Access.key(:<%= schema.singular %>)])
+  end
+
+  defp return_path(conn) do
+    if current_<%= schema.singular %>(conn) do
+      ~p"<%= schema.route_prefix %>/settings"
+    else
+      ~p"<%= schema.route_prefix %>/log-in"
+    end
+  end
+
+  defp callback_url(conn, provider) do
+    conn
+    |> Phoenix.Controller.current_url()
+    |> URI.parse()
+    |> Map.put(:path, "/auth/#{provider}/callback")
+    |> Map.put(:query, nil)
+    |> Map.put(:fragment, nil)
+    |> URI.to_string()
+  end
+
+  defp oauth_error(_reason), do: "Sign-in could not be completed."
+end

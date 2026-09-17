@@ -19,6 +19,16 @@ Defaults: Corex Design, `corex_mcp` + MCP plug in `:dev`/`:test` only.
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
 
+Authentication is **not** `mix corex.new --auth`. After the app exists:
+
+```sh
+mix corex.gen.auth Accounts User users
+mix deps.get
+mix ecto.migrate
+```
+
+LiveView-only; `--no-live` raises. Override templates in `priv/corex_templates/corex.gen.auth/`. See `mix help corex.gen.auth`.
+
 ## Existing app — apply in order
 
 Replace `my_app` with your OTP app name.

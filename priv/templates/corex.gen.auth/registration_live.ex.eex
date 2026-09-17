@@ -1,0 +1,146 @@
+defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.Registration do
+  use <%= inspect context.web_module %>, :live_view
+
+  alias <%= inspect context.module %>
+  alias <%= inspect schema.module %>
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.auth
+      flash={@flash}<%= if layout_mode do %>
+      mode={@mode}<% end %><%= if layout_theme do %>
+      theme={@theme}<% end %><%= if layout_locale_paths do %>
+      locale={@locale}
+<% end %><%= if layout_locale_assigns do %>
+      current_path={@current_path}<% end %>
+      <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
+    >
+    <% else %><Layouts.auth flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
+      <article class="flex w-full flex-col items-stretch gap-size-lg text-left text-ink">
+        <div :if={@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
+          <.layout_heading class="layout-heading" subtitle_tag="p">
+            <:title>Check your email</:title>
+            <:subtitle>
+              If an account exists for that address, you'll get a login link shortly.
+            </:subtitle>
+          </.layout_heading>
+
+          <p :if={local_mail_adapter?()} class="m-0 text-sm text-ink-muted">
+            Local emails are in the
+            <.navigate to="/dev/mailbox" class="link">mailbox</.navigate>.
+          </p>
+        </div>
+
+        <div :if={!@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
+          <.layout_heading class="layout-heading" subtitle_tag="p">
+            <:title>Create account</:title>
+            <:subtitle>
+              Already have an account?
+              <.navigate to={~p"<%= schema.route_prefix %>/log-in"} type="navigate" class="link">
+                Sign in
+              </.navigate>
+            </:subtitle>
+          </.layout_heading>
+
+          <div :if={@oauth_providers != []} class="flex w-full flex-col gap-space">
+            <.navigate
+              :for={provider <- @oauth_providers}
+              to={"/auth/#{provider.id}"}
+              class="button ui-width-full"
+            >
+              Continue with {provider.label}
+            </.navigate>
+            <div class="flex items-center gap-space text-sm text-ink-muted">
+              <span class="h-px min-w-0 flex-1 bg-border" />
+              or
+              <span class="h-px min-w-0 flex-1 bg-border" />
+            </div>
+          </div>
+
+          <.form
+            for={@form}
+            id="registration_form"
+            phx-submit="save"
+            phx-change="validate"
+            class="flex w-full flex-col gap-space"
+          >
+            <.native_input
+              field={@form[:email]}
+              type="email"
+              class="native-input"
+              autocomplete="username"
+              spellcheck="false"
+              required
+              phx-mounted={JS.focus()}
+            >
+              <:label>Email</:label>
+              <:error :let={msg}>
+                <.heroicon name="hero-exclamation-circle" class="icon" />
+                {msg}
+              </:error>
+            </.native_input>
+
+            <.action type="submit" phx-disable-with="Creating account..." class="button ui-accent ui-solid ui-width-full">
+              Create account
+            </.action>
+          </.form>
+        </div>
+      </article>
+    </Layouts.auth>
+    """
+  end
+
+  @impl true
+  def mount(_params, _session, %{assigns: %{<%= scope_config.scope.assign_key %>: %{<%= schema.singular %>: <%= schema.singular %>}}} = socket)
+      when not is_nil(<%= schema.singular %>) do
+    {:ok, redirect(socket, to: <%= inspect auth_module %>.signed_in_path(socket))}
+  end
+
+  def mount(_params, _session, socket) do
+    changeset = <%= inspect context.alias %>.change_<%= schema.singular %>_email(%<%= inspect schema.alias %>{}, %{}, validate_unique: false)
+
+    {:ok,
+     socket
+     |> assign(:check_email, false)
+     |> assign(:oauth_providers, oauth_providers())
+     |> assign_form(changeset), temporary_assigns: [form: nil]}
+  end
+
+  @impl true
+  def handle_event("save", %{"<%= schema.singular %>" => <%= schema.singular %>_params}, socket) do
+    case <%= inspect context.alias %>.register_<%= schema.singular %>(<%= schema.singular %>_params) do
+      {:ok, <%= schema.singular %>} ->
+        {:ok, _} =
+          <%= inspect context.alias %>.deliver_login_instructions(
+            <%= schema.singular %>,
+            &url(~p"<%= schema.route_prefix %>/log-in/#{&1}")
+          )
+
+        {:noreply, assign(socket, :check_email, true)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  def handle_event("validate", %{"<%= schema.singular %>" => <%= schema.singular %>_params}, socket) do
+    changeset = <%= inspect context.alias %>.change_<%= schema.singular %>_email(%<%= inspect schema.alias %>{}, <%= schema.singular %>_params, validate_unique: false)
+    {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    form = to_form(changeset, as: "<%= schema.singular %>")
+    assign(socket, form: form)
+  end
+
+  defp oauth_providers do
+    <%= if oauth? do %><%= inspect context.module %>.OAuthProviders.list()
+    <% else %>[]
+    <% end %>
+  end
+
+  defp local_mail_adapter? do
+    Application.get_env(:<%= Mix.Phoenix.context_app() %>, <%= inspect context.base_module %>.Mailer)[:adapter] == Swoosh.Adapters.Local
+  end
+end

@@ -7,9 +7,14 @@
 - Reject NUL, CR, and LF in the URL allowlist helper and the JS redirect helper after leading C0/space stripping, so embedded newlines (for example `mailto:` header injection) cannot pass the allowlist.
 - Document private reporting via [GitHub Security Advisories](https://github.com/corex-ui/corex/security/advisories/new), trusted HTML sinks, MCP, and the LiveView 1.1 Hex pin versus the upstream CVE floor. See [SECURITY.md](https://github.com/corex-ui/corex/blob/main/SECURITY.md).
 
+### Mix generators
+
+- **`mix corex.gen.auth`** — LiveView authentication (magic-link login, optional password, confirmation, settings) using Corex form components. Behavior tracks Phoenix 1.8 `phx.gen.auth`. `--no-live` is not supported. Generated login is magic-link first (password via `?mode=password`); account controls inject into the header cluster and `site-nav-dialog`.
+
 ### Documentation
 
 - Clarify that `e2e/` is a published showcase, not a starter. Copy examples from component docs and `mix corex.gen.*`.
+- Document `mix corex.gen.auth` as optional generated starter code, not an auth framework.
 
 ## 0.2.2 - 2026-08-29
 

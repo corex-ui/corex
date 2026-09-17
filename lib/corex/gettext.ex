@@ -21,14 +21,25 @@ defmodule Corex.Gettext do
   def translate_error({msg, opts}) do
     backend = backend()
 
-    if is_nil(backend) do
-      msg
-    else
-      if count = opts[:count] do
+    cond do
+      is_nil(backend) ->
+        interpolate(msg, opts)
+
+      count = opts[:count] ->
         Gettext.dngettext(backend, "errors", msg, msg, count, opts)
-      else
+
+      true ->
         Gettext.dgettext(backend, "errors", msg, opts)
-      end
     end
+  end
+
+  defp interpolate(msg, opts) do
+    Enum.reduce(opts, msg, fn
+      {key, value}, acc when is_binary(value) or is_integer(value) or is_atom(value) ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+
+      {_key, _value}, acc ->
+        acc
+    end)
   end
 end

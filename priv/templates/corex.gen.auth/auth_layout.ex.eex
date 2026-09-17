@@ -1,0 +1,85 @@
+
+  @doc """
+  Renders the dedicated authentication shell.
+
+  Used by sign-in, registration, and magic-link confirmation. Settings stays
+  on `Layouts.app/1`.
+  """
+  attr :flash, :map, required: true, doc: "the map of flash messages"
+
+  attr :<%= scope_config.scope.assign_key %>, :map,
+    default: nil,
+    doc: "the current [scope](https://hexdocs.pm/phoenix/scopes.html)"
+<%= if layout_mode do %>
+  attr :mode, :string, default: "light", doc: "the current mode (dark or light)"
+<% end %><%= if layout_theme do %>
+  attr :theme, :string, default: "neo", doc: "the current theme"
+<% end %><%= if layout_locale_assigns do %>
+  attr :current_path, :string, default: "/", doc: "request path for locale switching"
+<% end %><%= if layout_locale_paths do %>
+  attr :locale, :string, default: nil, doc: "current locale"
+<% end %>
+  slot :inner_block, required: true
+
+  def auth(assigns) do
+    ~H"""
+    <div class="flex min-h-dvh flex-col bg-root text-ink">
+      <header class="flex h-size-lg shrink-0 items-center border-b border-border bg-root">
+        <div class="flex w-full items-center justify-between gap-space px-space-xl">
+          <.navigate
+            to={~p"/"}
+            class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-lg">
+              <path
+                d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
+                fill="currentColor"
+              >
+              </path>
+            </svg>
+            {<%= inspect app_name %>}
+          </.navigate>
+<%= if layout_mode or layout_theme or layout_locale_assigns do %>          <div class="flex shrink-0 items-center gap-space-sm">
+<%= if layout_theme do %>            <.theme_toggle id="auth-theme-select" theme={@theme} />
+<% end %><%= if layout_mode do %>            <.mode_toggle id="auth-mode-switcher" mode={@mode} />
+<% end %><%= if layout_locale_assigns do %>            <.language_switch current_path={@current_path} />
+<% end %>          </div>
+<% end %>        </div>
+      </header>
+
+      <main class="grid flex-1 lg:grid-cols-2">
+        <aside class="hidden flex-col justify-between border-r border-border bg-surface px-space-2xl py-space-2xl lg:flex">
+          <div class="flex max-w-sm flex-col gap-space">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-xl">
+              <path
+                d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
+                fill="currentColor"
+              >
+              </path>
+            </svg>
+            <p class="m-0 text-xl font-semibold text-ink">{<%= inspect app_name %>}</p>
+            <p class="m-0 text-sm text-ink-muted">{<%= inspect app_pitch %>}</p>
+          </div>
+        </aside>
+
+        <section class="flex items-center justify-center px-space-xl py-space-2xl">
+          <div class="flex w-full max-w-sm flex-col">
+            {render_slot(@inner_block)}
+          </div>
+        </section>
+      </main>
+
+      <.toast_group id="auth-layout-toast" class="toast" flash={@flash}>
+        <:loading><.heroicon name="hero-arrow-path" /></:loading>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.toast_group>
+      <.toast_client_error
+        toast_group_id="auth-layout-toast"
+        title="We lost the connection"
+        description="We're trying to reconnect you..."
+        type={:error}
+        duration={:infinity}
+      />
+    </div>
+    """
+  end

@@ -63,7 +63,7 @@ From each Mix project (`corex`, `design/`, `mcp/`, `installer/`), `mix deps.get`
 
 ### E2e app (`e2e/`)
 
-`e2e/` is the **published showcase** and Wallaby/a11y test app. It is not a starter to clone or fork into a product. Copy working examples from component Hexdocs / `e2e/lib/e2e_web/demos/*_demo.ex` and from `mix corex.gen.live` / `mix corex.gen.html`. See also [`e2e/README.md`](e2e/README.md).
+`e2e/` is the **published showcase** and Wallaby/a11y test app. It is not a starter to clone or fork into a product. Copy working examples from component Hexdocs / `e2e/lib/e2e_web/demos/*_demo.ex` and from `mix corex.gen.live` / `mix corex.gen.html` / `mix corex.gen.auth`. See also [`e2e/README.md`](e2e/README.md).
 
 Linting uses the same `.credo.exs` rules as the Corex library (Credo, ExSlop, and OeditusCredo checks via `mix credo --strict`).
 

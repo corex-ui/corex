@@ -1,0 +1,66 @@
+defmodule <%= inspect context.module %>.OAuthProviders do
+  @moduledoc """
+  Assent OAuth providers enabled by `mix corex.gen.auth`.
+
+  To add another provider (Discord, GitLab, Slack, LinkedIn, ...), copy an
+  entry in `@providers` and set matching environment variables. Assent already
+  ships the strategy — no extra Hex package.
+  """
+
+  @providers [
+<%= Enum.map_join(oauth_providers, ",\n", fn provider ->
+  env =
+    Enum.map_join(provider.env_keys, ", ", fn {key, env} ->
+      "#{key}: #{inspect(env)}"
+    end)
+
+  "    #{provider.id}: %{\n      strategy: #{provider.strategy},\n      label: #{inspect(provider.label)},\n      env_keys: [#{env}]\n    }"
+end) %>
+  ]
+
+  @doc "Returns enabled providers as a list of maps with `:id`."
+  def list do
+    Enum.map(@providers, fn {id, meta} -> Map.put(meta, :id, id) end)
+  end
+
+  @doc "Looks up a provider by atom or string id."
+  def fetch(id) when is_binary(id) do
+    fetch(String.to_existing_atom(id))
+  rescue
+    ArgumentError -> nil
+  end
+
+  def fetch(id) when is_atom(id) do
+    Enum.find(list(), &(&1.id == id))
+  end
+
+  @doc "Builds Assent config from application env plus `redirect_uri`."
+  def config(%{id: id}, redirect_uri) when is_binary(redirect_uri) do
+    overrides =
+      :<%= context.context_app %>
+      |> Application.get_env(__MODULE__, [])
+      |> Keyword.get(id, [])
+
+    [redirect_uri: redirect_uri]
+    |> Keyword.merge(overrides)
+    |> Enum.filter(fn {_key, value} -> is_binary(value) and value != "" end)
+  end
+
+  def configured?(provider, redirect_uri) do
+    missing_env(provider, redirect_uri) == []
+  end
+
+  def missing_env(%{env_keys: env_keys} = provider, redirect_uri) do
+    config = config(provider, redirect_uri)
+
+    Enum.flat_map(env_keys, fn {key, env_name} ->
+      value = Keyword.get(config, key)
+
+      if is_binary(value) and value != "" do
+        []
+      else
+        [env_name]
+      end
+    end)
+  end
+end

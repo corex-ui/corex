@@ -1,0 +1,95 @@
+defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>OAuthControllerTest do
+  use <%= inspect context.web_module %>.ConnCase<%= test_case_options %>
+
+  import <%= inspect context.module %>Fixtures
+  alias <%= inspect context.module %>
+  alias <%= inspect context.module %>.OAuthProviders
+
+  setup do
+    prev = Application.get_env(:<%= Mix.Phoenix.context_app() %>, OAuthProviders)
+
+    Application.put_env(:<%= Mix.Phoenix.context_app() %>, OAuthProviders, [])
+
+    on_exit(fn ->
+      if prev do
+        Application.put_env(:<%= Mix.Phoenix.context_app() %>, OAuthProviders, prev)
+      else
+        Application.delete_env(:<%= Mix.Phoenix.context_app() %>, OAuthProviders)
+      end
+    end)
+
+    :ok
+  end
+
+  describe "GET /auth/:provider" do
+    test "redirects unknown providers to log-in", %{conn: conn} do
+      conn = get(conn, "/auth/not-a-provider")
+      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unknown sign-in provider."
+    end
+
+    test "flashes missing env vars when credentials are unset", %{conn: conn} do
+      conn = get(conn, "/auth/<%= hd(oauth_providers).id %>")
+      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      message = Phoenix.Flash.get(conn.assigns.flash, :error)
+      assert message =~ "Set "
+      assert message =~ "<%= hd(hd(oauth_providers).env_keys) |> elem(1) %>"
+    end
+  end
+
+  describe "GET /auth/:provider/callback" do
+    test "rejects callbacks without a matching OAuth session", %{conn: conn} do
+      conn = get(conn, "/auth/<%= hd(oauth_providers).id %>/callback", %{"code" => "nope"})
+      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Sign-in was cancelled or could not be completed."
+    end
+  end
+
+  describe "oauth context" do
+    test "registers a <%= schema.singular %> from provider user info" do
+      email = unique_<%= schema.singular %>_email()
+
+      assert {:ok, <%= schema.singular %>} =
+               <%= inspect context.alias %>.login_or_register_<%= schema.singular %>_with_oauth(:<%= hd(oauth_providers).id %>, %{
+                 "sub" => "oauth-uid-1",
+                 "email" => email,
+                 "email_verified" => true
+               })
+
+      assert <%= schema.singular %>.email == email
+      refute is_nil(<%= schema.singular %>.confirmed_at)
+
+      assert <%= inspect context.alias %>.get_<%= schema.singular %>_by_identity(:<%= hd(oauth_providers).id %>, "oauth-uid-1").id ==
+               <%= schema.singular %>.id
+    end
+
+    test "links an existing <%= schema.singular %> by email" do
+      <%= schema.singular %> = <%= schema.singular %>_fixture()
+
+      assert {:ok, logged_in} =
+               <%= inspect context.alias %>.login_or_register_<%= schema.singular %>_with_oauth(:<%= hd(oauth_providers).id %>, %{
+                 "sub" => "oauth-uid-2",
+                 "email" => <%= schema.singular %>.email
+               })
+
+      assert logged_in.id == <%= schema.singular %>.id
+
+      assert <%= inspect context.alias %>.get_<%= schema.singular %>_by_identity(:<%= hd(oauth_providers).id %>, "oauth-uid-2").id ==
+               <%= schema.singular %>.id
+    end
+
+    test "unlinks an identity" do
+      <%= schema.singular %> = <%= schema.singular %>_fixture()
+
+      {:ok, _} =
+        <%= inspect context.alias %>.create_<%= schema.singular %>_identity(<%= schema.singular %>, :<%= hd(oauth_providers).id %>, "oauth-uid-3")
+
+      assert {:ok, 1} =
+               <%= inspect context.alias %>.unlink_<%= schema.singular %>_identity(<%= schema.singular %>, :<%= hd(oauth_providers).id %>)
+
+      refute <%= inspect context.alias %>.get_<%= schema.singular %>_by_identity(:<%= hd(oauth_providers).id %>, "oauth-uid-3")
+    end
+  end
+end

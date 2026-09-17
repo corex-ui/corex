@@ -1,0 +1,619 @@
+defmodule Mix.Tasks.Corex.Gen.AuthTest do
+  use ExUnit.Case, async: false
+
+  import MixGenHelpers
+
+  alias Mix.Corex.Gen.Auth, as: GenAuth
+
+  test "run/1 raises on --no-live" do
+    assert_raise Mix.Error, ~r/LiveView-only/, fn ->
+      run_generator("corex.gen.auth", ["Accounts", "User", "users", "--no-live", "--no-compile"])
+    end
+  end
+
+  test "run/1 raises without context/schema/table" do
+    assert_raise Mix.Error, ~r/Invalid arguments/, fn ->
+      run_generator("corex.gen.auth", ["Accounts", "--no-compile"])
+    end
+  end
+
+  test "run/1 generates Corex LiveView auth markup" do
+    with_test_output(fn tmp ->
+      n = System.unique_integer([:positive])
+      schema = "AuthUser#{n}"
+      singular = Phoenix.Naming.underscore(schema)
+      plural = singular <> "s"
+
+      run_generator("corex.gen.auth", [
+        "AuthAccounts#{n}",
+        schema,
+        plural,
+        "--no-compile"
+      ])
+
+      login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
+
+      registration =
+        File.read!(Path.join([tmp, "web/live", "#{singular}_live", "registration.ex"]))
+
+      settings = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "settings.ex"]))
+
+      confirmation =
+        File.read!(Path.join([tmp, "web/live", "#{singular}_live", "confirmation.ex"]))
+
+      for page <- [login, registration, settings, confirmation] do
+        assert page =~ "native_input" or page =~ "layout_heading" or page =~ "action"
+        refute page =~ "core_components"
+        refute page =~ "btn btn-primary"
+        refute page =~ "<.header>"
+        refute page =~ "<.input"
+      end
+
+      assert login =~ ~S(class="button ui-accent ui-solid ui-width-full")
+      refute login =~ "mode=password"
+      refute login =~ "password_input"
+      assert login =~ "Layouts.auth"
+      refute login =~ "Layouts.app"
+      assert login =~ "check_email"
+      assert login =~ "Continue"
+      refute login =~ "Keep me signed in"
+      refute login =~ "Log in and stay logged in"
+      refute login =~ "Use password instead"
+      assert registration =~ "native_input"
+      assert registration =~ "check_email"
+      assert registration =~ "Create account"
+      assert registration =~ "Layouts.auth"
+      refute settings =~ "password_input"
+      assert settings =~ ~S(title_tag="h2")
+      assert settings =~ "Account"
+      assert settings =~ "Layouts.app"
+      refute settings =~ "Save Password"
+      assert confirmation =~ ~S(class="button ui-accent ui-solid ui-width-full")
+      assert confirmation =~ "Keep me signed in"
+      assert confirmation =~ "Layouts.auth"
+      refute confirmation =~ "Confirm and stay logged in"
+
+      schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
+      assert schema_file =~ "field :hashed_password, :string, redact: true"
+      assert schema_file =~ "Bcrypt.hash_pwd_salt"
+      assert File.exists?(Path.join(tmp, "#{singular}_token.ex"))
+
+      login_test =
+        File.read!(Path.join([tmp, "test/live", "#{singular}_live", "login_test.exs"]))
+
+      assert login_test =~ ~S(id="login_form_magic_email-input")
+      refute login_test =~ ~S(id="login_form_magic_email" value=)
+    end)
+  end
+
+  test "run/1 with --hashing-lib pbkdf2 uses Pbkdf2 in the schema" do
+    with_test_output(fn tmp ->
+      n = System.unique_integer([:positive])
+      schema = "AuthHash#{n}"
+      singular = Phoenix.Naming.underscore(schema)
+      plural = singular <> "s"
+
+      run_generator("corex.gen.auth", [
+        "AuthHashAccounts#{n}",
+        schema,
+        plural,
+        "--hashing-lib",
+        "pbkdf2",
+        "--no-compile"
+      ])
+
+      schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
+      assert schema_file =~ "Pbkdf2.hash_pwd_salt"
+      assert schema_file =~ "Pbkdf2.verify_pass"
+      refute schema_file =~ "Bcrypt."
+    end)
+  end
+
+  test "run/1 raises on unknown --hashing-lib" do
+    assert_raise Mix.Error, ~r/hashing-lib/, fn ->
+      run_generator("corex.gen.auth", [
+        "Accounts",
+        "User",
+        "users",
+        "--hashing-lib",
+        "md5",
+        "--no-compile"
+      ])
+    end
+  end
+
+  test "run/1 with locale layout prints locale-scoped route instructions" do
+    with_test_output(fn tmp ->
+      prev = Application.get_env(:corex, :generators)
+      Application.put_env(:corex, :generators, layout: [locale: true, mode: true, theme: true])
+
+      try do
+        n = System.unique_integer([:positive])
+        schema = "AuthLocale#{n}"
+        singular = Phoenix.Naming.underscore(schema)
+        plural = singular <> "s"
+
+        output =
+          run_generator(
+            "corex.gen.auth",
+            ["AuthLocaleAccounts#{n}", schema, plural, "--no-compile"],
+            loud: true
+          )
+
+        assert output =~ "locale"
+        assert output =~ ~S(scope "/:locale")
+        login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
+        assert login =~ "current_path={@current_path}"
+        assert login =~ "mode={@mode}"
+        assert login =~ "Layouts.auth"
+      after
+        case prev do
+          nil -> Application.delete_env(:corex, :generators)
+          val -> Application.put_env(:corex, :generators, val)
+        end
+      end
+    end)
+  end
+
+  test "layout_menu_code uses a Log in button without Register" do
+    schema = %{route_prefix: "/users", singular: "user"}
+    scope_config = %{scope: %{assign_key: :current_scope}}
+
+    {_dup, code} =
+      GenAuth.layout_menu_code(
+        context: nil,
+        schema: schema,
+        scope_config: scope_config
+      )
+
+    assert code =~ "navigate"
+    assert code =~ "log-in"
+    assert code =~ "Settings"
+    assert code =~ "Log out"
+    assert code =~ "button ui-accent"
+    assert code =~ "hidden md:flex"
+    refute code =~ "Register"
+    refute code =~ ".email"
+    refute code =~ "menu menu-horizontal"
+    refute code =~ "<.link"
+  end
+
+  test "inject_layout_menu puts Log in in the right cluster and site-nav-dialog" do
+    schema = %{route_prefix: "/users", singular: "user"}
+    scope_config = %{scope: %{assign_key: :current_scope}}
+
+    layout = """
+    <header>
+      <div class="mx-auto flex h-size-lg w-full max-w-9xl items-center justify-between gap-space-lg px-space-xl">
+        <div class="flex min-w-0 items-center gap-space-xl">
+          <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden">
+            <:content>
+              <div>
+                <nav class="flex w-full flex-col gap-space-sm" aria-label="Site">
+                  <.navigate to={~p"/"}>Home</.navigate>
+                </nav>
+              </div>
+            </:content>
+          </.dialog>
+          <nav class="hidden md:flex" aria-label="Primary"></nav>
+        </div>
+        <div class="flex shrink-0 items-center gap-space-sm">
+          <.mode_toggle />
+        </div>
+      </div>
+    </header>
+    """
+
+    injected =
+      case GenAuth.inject_layout_menu(
+             [context: nil, schema: schema, scope_config: scope_config],
+             layout
+           ) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ "button ui-accent ui-size-sm"
+    refute injected =~ "Register"
+    refute injected =~ ".email"
+
+    [before_dialog_end, after_dialog] = String.split(injected, "</.dialog>", parts: 2)
+    assert before_dialog_end =~ ~S(to={~p"/users/log-in"})
+    assert before_dialog_end =~ "ui-width-full"
+    assert after_dialog =~ ~S(aria-label="Account")
+    assert after_dialog =~ ~S(class="flex shrink-0 items-center gap-space-sm")
+    assert after_dialog =~ ~S(to={~p"/users/log-in"})
+    refute after_dialog =~ "ui-width-full"
+  end
+
+  test "inject_layout_menu creates a right cluster when the header has none" do
+    schema = %{route_prefix: "/users", singular: "user"}
+    scope_config = %{scope: %{assign_key: :current_scope}}
+
+    layout = """
+        <div class="flex min-w-0 items-center gap-space-xl">
+          <.dialog id="site-nav-dialog">
+            <:content>
+              <nav class="flex w-full flex-col gap-space-sm" aria-label="Site">
+                <.navigate to={~p"/"}>Home</.navigate>
+              </nav>
+            </:content>
+          </.dialog>
+        </div>
+      </div>
+    </header>
+    """
+
+    injected =
+      case GenAuth.inject_layout_menu(
+             [context: nil, schema: schema, scope_config: scope_config],
+             layout
+           ) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ "hidden md:flex min-w-0 shrink-0 items-center gap-space"
+    assert injected =~ ~S(aria-label="Account")
+    assert injected =~ ~r/aria-label="Account"[\s\S]*<\/nav>\s*<\/div>\s*<\/header>/
+    refute injected =~ "Register"
+    refute injected =~ ".email"
+  end
+
+  test "inject_layout_scope_assign adds current_scope to Layouts.app" do
+    injected =
+      case GenAuth.inject_layout_scope_assign(
+             "<Layouts.app\n  flash={@flash}\n  mode={@mode}>\n",
+             :current_scope
+           ) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ "flash={@flash}\n  current_scope={@current_scope}\n"
+
+    assert :already_injected =
+             GenAuth.inject_layout_scope_assign(injected, :current_scope)
+  end
+
+  test "inject_auth_routes splices into scope /:locale after the locale home route" do
+    wrapped = """
+
+      ## Authentication routes
+
+      scope "/", Try2Web do
+        pipe_through [:browser, :require_authenticated_client]
+
+        live_session :require_authenticated_client,
+          on_mount: [{Try2Web.ClientAuth, :require_authenticated}] do
+          live "/clients/settings", ClientLive.Settings, :edit
+        end
+
+        post "/clients/update-password", ClientSessionController, :update_password
+      end
+
+      scope "/", Try2Web do
+        pipe_through [:browser]
+
+        live_session :current_client,
+          on_mount: [{Try2Web.ClientAuth, :mount_current_scope}] do
+          live "/clients/log-in", ClientLive.Login, :new
+        end
+      end
+    """
+
+    inner = """
+        live_session :current_client,
+          on_mount: [{Try2Web.ClientAuth, :mount_current_scope}] do
+          live "/clients/log-in", ClientLive.Login, :new
+        end
+
+        post "/clients/log-in", ClientSessionController, :create
+
+        scope "/" do
+          pipe_through [:require_authenticated_client]
+
+          live_session :require_authenticated_client,
+            on_mount: [{Try2Web.ClientAuth, :require_authenticated}] do
+            live "/clients/settings", ClientLive.Settings, :edit
+          end
+
+          post "/clients/update-password", ClientSessionController, :update_password
+        end
+    """
+
+    injected =
+      case GenAuth.inject_auth_routes(try2_router(), wrapped, inner) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    {unprefixed, locale} = locale_scope_halves(injected)
+
+    refute unprefixed =~ "live \"/clients/log-in\""
+    refute unprefixed =~ "pipe_through [:require_authenticated_client]"
+    assert locale =~ "live \"/clients/log-in\""
+    assert locale =~ "pipe_through [:require_authenticated_client]"
+    assert locale =~ "post \"/clients/update-password\""
+
+    refute injected =~
+             ~r/scope "\/", Try2Web do\n\s+pipe_through \[:browser, :require_authenticated_client\]/
+
+    assert :already_injected = GenAuth.inject_auth_routes(injected, wrapped, inner)
+  end
+
+  test "inject_auth_routes appends wrapped scopes when there is no locale scope" do
+    router = """
+    defmodule AppWeb.Router do
+      use AppWeb, :router
+
+      scope "/", AppWeb do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+    end
+    """
+
+    wrapped = """
+
+      ## Authentication routes
+
+      scope "/", AppWeb do
+        pipe_through [:browser]
+
+        live_session :current_user,
+          on_mount: [{AppWeb.UserAuth, :mount_current_scope}] do
+          live "/users/log-in", UserLive.Login, :new
+        end
+      end
+    """
+
+    injected =
+      case GenAuth.inject_auth_routes(router, wrapped, "    live \"/users/log-in\"\n") do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ ~S(scope "/", AppWeb do)
+    assert injected =~ "## Authentication routes"
+    assert injected =~ ~S(live "/users/log-in")
+    refute injected =~ ~S(scope "/:locale")
+  end
+
+  test "inject_auth_routes falls back to sibling locale scopes without a home route" do
+    router = """
+    defmodule AppWeb.Router do
+      use AppWeb, :router
+
+      scope "/:locale", AppWeb do
+        pipe_through :browser
+
+        live "/dashboard", DashboardLive
+      end
+    end
+    """
+
+    wrapped = """
+
+      ## Authentication routes
+
+      scope "/", AppWeb do
+        pipe_through [:browser]
+
+        live_session :current_user,
+          on_mount: [{AppWeb.UserAuth, :mount_current_scope}] do
+          live "/users/log-in", UserLive.Login, :new
+        end
+      end
+    """
+
+    inner = """
+        live_session :current_user,
+          on_mount: [{AppWeb.UserAuth, :mount_current_scope}] do
+          live "/users/log-in", UserLive.Login, :new
+        end
+    """
+
+    injected =
+      case GenAuth.inject_auth_routes(router, wrapped, inner) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ ~S(scope "/:locale", AppWeb do)
+    assert injected =~ ~S(live "/users/log-in")
+
+    refute injected =~
+             ~r/scope "\/", AppWeb do\n\s+pipe_through \[:browser\]\n\s+live_session :current_user/
+  end
+
+  test "run/1 with --google --github emits Assent files and social buttons" do
+    with_test_output(fn tmp ->
+      n = System.unique_integer([:positive])
+      schema = "AuthSocial#{n}"
+      singular = Phoenix.Naming.underscore(schema)
+      plural = singular <> "s"
+
+      run_generator("corex.gen.auth", [
+        "AuthSocialAccounts#{n}",
+        schema,
+        plural,
+        "--google",
+        "--github",
+        "--no-compile"
+      ])
+
+      login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
+      settings = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "settings.ex"]))
+      providers = File.read!(Path.join(tmp, "oauth_providers.ex"))
+      identity = File.read!(Path.join(tmp, "#{singular}_identity.ex"))
+
+      oauth_controller =
+        File.read!(Path.join([tmp, "web/controllers", "#{singular}_oauth_controller.ex"]))
+
+      migration =
+        tmp
+        |> Path.join("migrations")
+        |> File.ls!()
+        |> Enum.find(&String.contains?(&1, "#{plural}_auth_tables"))
+        |> then(&File.read!(Path.join([tmp, "migrations", &1])))
+
+      assert login =~ "Continue with {provider.label}"
+      assert login =~ "OAuthProviders.list()"
+      refute login =~ "Assent.Strategy.Apple"
+      refute login =~ "Assent.Strategy.Facebook"
+      assert settings =~ "Connected accounts"
+      assert providers =~ "Assent.Strategy.Google"
+      assert providers =~ "Assent.Strategy.Github"
+      assert providers =~ ~S(label: "Google")
+      assert providers =~ ~S(label: "GitHub")
+      refute providers =~ "Assent.Strategy.Apple"
+      assert identity =~ "schema \"#{plural}_identities\""
+      assert oauth_controller =~ "OAuthProviders.fetch"
+      assert migration =~ "#{plural}_identities"
+    end)
+  end
+
+  test "inject_auth_layout adds Layouts.auth before the module end" do
+    layout = """
+    defmodule AppWeb.Layouts do
+      use AppWeb, :html
+
+      def app(assigns) do
+        ~H\"\"\"
+        <div>app</div>
+        \"\"\"
+      end
+    end
+    """
+
+    snippet = """
+
+      def auth(assigns) do
+        ~H\"\"\"
+        <div class="min-h-dvh">auth</div>
+        \"\"\"
+      end
+    """
+
+    injected =
+      case GenAuth.inject_auth_layout(layout, snippet) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ "def auth(assigns)"
+    assert injected =~ "min-h-dvh"
+    assert String.trim_trailing(injected) =~ ~r/def auth\(assigns\) do.*end\nend/s
+    assert :already_injected = GenAuth.inject_auth_layout(injected, snippet)
+  end
+
+  test "inject_oauth_routes appends unprefixed /auth/:provider routes" do
+    router = """
+    defmodule AppWeb.Router do
+      use AppWeb, :router
+
+      scope "/", AppWeb do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+    end
+    """
+
+    snippet = """
+
+      pipeline :user_oauth do
+        plug :accepts, ["html"]
+      end
+
+      scope "/", AppWeb do
+        pipe_through :user_oauth
+
+        get "/auth/:provider", UserOAuthController, :request
+      end
+    """
+
+    injected =
+      case GenAuth.inject_oauth_routes(router, snippet) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ ~S("/auth/:provider")
+    assert injected =~ "pipeline :user_oauth"
+    assert :already_injected = GenAuth.inject_oauth_routes(injected, snippet)
+  end
+
+  test "oauth_runtime_config uses Mix formatter indent" do
+    providers = GenAuth.enabled_oauth_providers(google: true, github: true)
+    context = %{context_app: :demo, module: Demo.Accounts}
+
+    snippet = GenAuth.oauth_runtime_config(context: context, oauth_providers: providers)
+
+    assert snippet == """
+           config :demo, Demo.Accounts.OAuthProviders,
+             google: [
+               client_id: System.get_env("GOOGLE_CLIENT_ID"),
+               client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+             ],
+             github: [
+               client_id: System.get_env("GITHUB_CLIENT_ID"),
+               client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+             ]
+           """
+  end
+
+  test "enabled_oauth_providers copies facebook and apple registry entries" do
+    providers = GenAuth.enabled_oauth_providers(facebook: true, apple: true)
+
+    assert Enum.map(providers, & &1.id) == [:facebook, :apple]
+    assert Enum.any?(providers, &(&1.strategy == "Assent.Strategy.Facebook"))
+    assert Enum.any?(providers, &(&1.strategy == "Assent.Strategy.Apple"))
+
+    assert Enum.any?(providers, fn provider ->
+             Enum.any?(provider.env_keys, fn {_key, env} -> env == "APPLE_TEAM_ID" end)
+           end)
+  end
+
+  defp try2_router do
+    """
+    defmodule Try2Web.Router do
+      use Try2Web, :router
+
+      import Try2Web.ClientAuth
+
+      use Localize.Routes, gettext: Try2Web.Gettext, helpers: false
+
+      pipeline :browser do
+        plug :accepts, ["html"]
+        plug :fetch_session
+        plug :fetch_live_flash
+        plug :protect_from_forgery
+        plug :put_secure_browser_headers
+        plug :fetch_current_scope_for_client
+      end
+
+      scope "/", Try2Web do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+
+      scope "/:locale", Try2Web do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+    end
+    """
+  end
+
+  defp locale_scope_halves(router) do
+    case String.split(router, ~S(scope "/:locale"), parts: 2) do
+      [unprefixed, locale] -> {unprefixed, locale}
+      _ -> flunk("expected a scope \"/:locale\" in injected router")
+    end
+  end
+end
