@@ -49,22 +49,28 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
         refute page =~ "<.input"
       end
 
-      assert login =~ "password_input"
       assert login =~ ~S(class="button ui-accent ui-solid ui-width-full")
-      assert login =~ "mode=password"
+      refute login =~ "mode=password"
+      refute login =~ "password_input"
+      assert login =~ "Layouts.auth"
+      refute login =~ "Layouts.app"
       assert login =~ "check_email"
       assert login =~ "Continue"
-      assert login =~ "Keep me signed in"
-      assert login =~ "items-stretch"
+      refute login =~ "Keep me signed in"
       refute login =~ "Log in and stay logged in"
+      refute login =~ "Use password instead"
       assert registration =~ "native_input"
       assert registration =~ "check_email"
       assert registration =~ "Create account"
-      assert settings =~ "password_input"
+      assert registration =~ "Layouts.auth"
+      refute settings =~ "password_input"
       assert settings =~ ~S(title_tag="h2")
       assert settings =~ "Account"
+      assert settings =~ "Layouts.app"
+      refute settings =~ "Save Password"
       assert confirmation =~ ~S(class="button ui-accent ui-solid ui-width-full")
       assert confirmation =~ "Keep me signed in"
+      assert confirmation =~ "Layouts.auth"
       refute confirmation =~ "Confirm and stay logged in"
 
       schema_file = File.read!(Path.join(tmp, "#{singular}.ex"))
@@ -138,6 +144,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
         login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
         assert login =~ "current_path={@current_path}"
         assert login =~ "mode={@mode}"
+        assert login =~ "Layouts.auth"
       after
         case prev do
           nil -> Application.delete_env(:corex, :generators)
@@ -416,6 +423,136 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
     refute injected =~
              ~r/scope "\/", AppWeb do\n\s+pipe_through \[:browser\]\n\s+live_session :current_user/
+  end
+
+  test "run/1 with --google --github emits Assent files and social buttons" do
+    with_test_output(fn tmp ->
+      n = System.unique_integer([:positive])
+      schema = "AuthSocial#{n}"
+      singular = Phoenix.Naming.underscore(schema)
+      plural = singular <> "s"
+
+      run_generator("corex.gen.auth", [
+        "AuthSocialAccounts#{n}",
+        schema,
+        plural,
+        "--google",
+        "--github",
+        "--no-compile"
+      ])
+
+      login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
+      settings = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "settings.ex"]))
+      providers = File.read!(Path.join(tmp, "oauth_providers.ex"))
+      identity = File.read!(Path.join(tmp, "#{singular}_identity.ex"))
+
+      oauth_controller =
+        File.read!(Path.join([tmp, "web/controllers", "#{singular}_oauth_controller.ex"]))
+
+      migration =
+        tmp
+        |> Path.join("migrations")
+        |> File.ls!()
+        |> Enum.find(&String.contains?(&1, "#{plural}_auth_tables"))
+        |> then(&File.read!(Path.join([tmp, "migrations", &1])))
+
+      assert login =~ "Continue with {provider.label}"
+      assert login =~ "OAuthProviders.list()"
+      refute login =~ "Assent.Strategy.Apple"
+      refute login =~ "Assent.Strategy.Facebook"
+      assert settings =~ "Connected accounts"
+      assert providers =~ "Assent.Strategy.Google"
+      assert providers =~ "Assent.Strategy.Github"
+      assert providers =~ ~s(label: "Google")
+      assert providers =~ ~s(label: "GitHub")
+      refute providers =~ "Assent.Strategy.Apple"
+      assert identity =~ "schema \"#{plural}_identities\""
+      assert oauth_controller =~ "OAuthProviders.fetch"
+      assert migration =~ "#{plural}_identities"
+    end)
+  end
+
+  test "inject_auth_layout adds Layouts.auth before the module end" do
+    layout = """
+    defmodule AppWeb.Layouts do
+      use AppWeb, :html
+
+      def app(assigns) do
+        ~H\"\"\"
+        <div>app</div>
+        \"\"\"
+      end
+    end
+    """
+
+    snippet = """
+
+      def auth(assigns) do
+        ~H\"\"\"
+        <div class="min-h-dvh">auth</div>
+        \"\"\"
+      end
+    """
+
+    injected =
+      case GenAuth.inject_auth_layout(layout, snippet) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ "def auth(assigns)"
+    assert injected =~ "min-h-dvh"
+    assert String.trim_trailing(injected) =~ ~r/def auth\(assigns\) do.*end\nend/s
+    assert :already_injected = GenAuth.inject_auth_layout(injected, snippet)
+  end
+
+  test "inject_oauth_routes appends unprefixed /auth/:provider routes" do
+    router = """
+    defmodule AppWeb.Router do
+      use AppWeb, :router
+
+      scope "/", AppWeb do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+    end
+    """
+
+    snippet = """
+
+      pipeline :user_oauth do
+        plug :accepts, ["html"]
+      end
+
+      scope "/", AppWeb do
+        pipe_through :user_oauth
+
+        get "/auth/:provider", UserOAuthController, :request
+      end
+    """
+
+    injected =
+      case GenAuth.inject_oauth_routes(router, snippet) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ ~s("/auth/:provider")
+    assert injected =~ "pipeline :user_oauth"
+    assert :already_injected = GenAuth.inject_oauth_routes(injected, snippet)
+  end
+
+  test "enabled_oauth_providers copies facebook and apple registry entries" do
+    providers = GenAuth.enabled_oauth_providers(facebook: true, apple: true)
+
+    assert Enum.map(providers, & &1.id) == [:facebook, :apple]
+    assert Enum.any?(providers, &(&1.strategy == "Assent.Strategy.Facebook"))
+    assert Enum.any?(providers, &(&1.strategy == "Assent.Strategy.Apple"))
+
+    assert Enum.any?(providers, fn provider ->
+             Enum.any?(provider.env_keys, fn {_key, env} -> env == "APPLE_TEAM_ID" end)
+           end)
   end
 
   defp try2_router do

@@ -6,7 +6,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.auth
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
       theme={@theme}<% end %><%= if layout_locale_paths do %>
@@ -15,8 +15,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       current_path={@current_path}<% end %>
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
-    <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
+    <% else %><Layouts.auth flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
+      <article class="flex w-full flex-col items-stretch gap-size-lg text-left text-ink">
         <div :if={@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
           <.layout_heading class="layout-heading" subtitle_tag="p">
             <:title>Check your email</:title>
@@ -50,8 +50,22 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             </:subtitle>
           </.layout_heading>
 
+          <div :if={@oauth_providers != []} class="flex w-full flex-col gap-space">
+            <.navigate
+              :for={provider <- @oauth_providers}
+              to={"/auth/#{provider.id}"}
+              class="button ui-width-full"
+            >
+              Continue with {provider.label}
+            </.navigate>
+            <div class="flex items-center gap-space text-sm text-ink-muted">
+              <span class="h-px min-w-0 flex-1 bg-border" />
+              or
+              <span class="h-px min-w-0 flex-1 bg-border" />
+            </div>
+          </div>
+
           <.form
-            :if={!@login_mode}
             :let={f}
             for={@form}
             id="login_form_magic"
@@ -76,69 +90,13 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             </.action>
           </.form>
 
-          <p :if={!@login_mode} class="m-0 text-sm text-ink-muted">
-            <.navigate
-              to={~p"<%= schema.route_prefix %>/log-in?mode=password"}
-              type="patch"
-              class="link"
-            >
-              Use password instead
-            </.navigate>
-          </p>
-
-          <.form
-            :if={@login_mode}
-            :let={f}
-            for={@form}
-            id="login_form_password"
-            action={~p"<%= schema.route_prefix %>/log-in"}
-            phx-submit="submit_password"
-            phx-trigger-action={@trigger_submit}
-            class="flex w-full flex-col gap-space"
-          >
-            <.native_input
-              read_only={!!@<%= scope_config.scope.assign_key %>}
-              field={f[:email]}
-              type="email"
-              class="native-input"
-              autocomplete="username"
-              spellcheck="false"
-              required
-              phx-mounted={JS.focus()}
-            >
-              <:label>Email</:label>
-            </.native_input>
-            <.password_input
-              field={f[:password]}
-              class="password-input"
-              auto_complete="current-password"
-            >
-              <:label>Password</:label>
-              <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-              <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-            </.password_input>
-            <.checkbox field={f[:remember_me]} class="checkbox" checked>
-              <:label>Keep me signed in</:label>
-              <:indicator><.heroicon name="hero-check" /></:indicator>
-            </.checkbox>
-            <.action type="submit" class="button ui-accent ui-solid ui-width-full">
-              Sign in
-            </.action>
-          </.form>
-
-          <p :if={@login_mode} class="m-0 text-sm text-ink-muted">
-            <.navigate to={~p"<%= schema.route_prefix %>/log-in"} type="patch" class="link">
-              Use email link instead
-            </.navigate>
-          </p>
-
           <p :if={local_mail_adapter?()} class="m-0 text-sm text-ink-muted">
             Local emails are in the
             <.navigate to="/dev/mailbox" class="link">mailbox</.navigate>.
           </p>
         </div>
       </article>
-    </Layouts.app>
+    </Layouts.auth>
     """
   end
 
@@ -148,21 +106,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       Phoenix.Flash.get(socket.assigns.flash, :email) ||
         get_in(socket.assigns, [:<%= scope_config.scope.assign_key %>, Access.key(:<%= schema.singular %>), Access.key(:email)])
 
-    form = to_form(%{"email" => email, "remember_me" => "true"}, as: "<%= schema.singular %>")
+    form = to_form(%{"email" => email}, as: "<%= schema.singular %>")
 
-    {:ok, assign(socket, form: form, trigger_submit: false, check_email: false)}
+    {:ok, assign(socket, form: form, check_email: false, oauth_providers: oauth_providers())}
   end
 
   @impl true
-  def handle_params(params, _uri, socket) do
-    {:noreply, assign(socket, :login_mode, params["mode"] == "password")}
-  end
-
-  @impl true
-  def handle_event("submit_password", _params, socket) do
-    {:noreply, assign(socket, :trigger_submit, true)}
-  end
-
   def handle_event("submit_magic", %{"<%= schema.singular %>" => %{"email" => email}}, socket) do
     if <%= schema.singular %> = <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(email) do
       <%= inspect context.alias %>.deliver_login_instructions(
@@ -172,6 +121,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     {:noreply, assign(socket, :check_email, true)}
+  end
+
+  defp oauth_providers do
+    <%= if oauth? do %><%= inspect context.module %>.OAuthProviders.list()
+    <% else %>[]
+    <% end %>
   end
 
   defp local_mail_adapter? do

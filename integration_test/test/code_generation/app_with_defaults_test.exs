@@ -209,10 +209,18 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
 
         assert_file(login_path, fn file ->
           assert file =~ "native_input"
-          assert file =~ "password_input"
+          assert file =~ "Layouts.auth"
+          refute file =~ "password_input"
           assert file =~ ~s(class="button ui-accent)
           refute file =~ "core_components"
           refute file =~ "btn btn-primary"
+        end)
+
+        layouts_path = Path.join(app_root_path, "lib/corex_blog_web/components/layouts.ex")
+
+        assert_file(layouts_path, fn file ->
+          assert file =~ "def auth("
+          assert file =~ "min-h-dvh"
         end)
 
         assert_no_compilation_warnings(app_root_path)

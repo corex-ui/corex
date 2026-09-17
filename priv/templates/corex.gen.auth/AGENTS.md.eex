@@ -10,6 +10,8 @@
   - A plug `redirect_if_<%= schema.singular %>_is_authenticated` that redirects to a default path in case the <%= schema.singular %> is authenticated - useful for a registration page that should only be shown to unauthenticated <%= schema.plural %>
 - **Always let the user know in which router scopes<%= if live? do%>, `live_session`,<% end %> and pipeline you are placing the route, AND SAY WHY**
 - `phx.gen.auth` assigns the `<%= scope_config.scope.assign_key %>` assign - it **does not assign a `current_<%= schema.singular %>` assign**
+- Sign-in, registration, and magic-link confirmation use `Layouts.auth`. Account settings stay on `Layouts.app`.<%= if oauth? do %>
+- Social OAuth callbacks live at unprefixed `/auth/:provider` and `/auth/:provider/callback` (Assent). Do not nest these under `scope "/:locale"`.<% end %>
 - Always pass the assign `<%= scope_config.scope.assign_key %>` to context modules as first argument. When performing queries, use `<%= scope_config.scope.assign_key %>.<%= schema.singular %>` to filter the query results
 - To derive/access `current_<%= schema.singular %>` in templates, **always use the `@<%= scope_config.scope.assign_key %>.<%= schema.singular %>`**, never use **`@current_<%= schema.singular %>`** in templates<%= if live? do %> or LiveViews
 - **Never** duplicate `live_session` names. A `live_session :current_<%= schema.singular %>` can only be defined __once__ in the router, so all routes for the `live_session :current_<%= schema.singular %>`  must be grouped in a single block<% end %>

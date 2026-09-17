@@ -1,4 +1,4 @@
-  alias <%= inspect context.module %>.{<%= inspect schema.alias %>, <%= inspect schema.alias %>Token, <%= inspect schema.alias %>Notifier}
+  alias <%= inspect context.module %>.{<%= inspect schema.alias %>, <%= inspect schema.alias %>Token, <%= inspect schema.alias %>Notifier<%= if oauth? do %>, <%= inspect schema.alias %>Identity<% end %>}
 
   ## Database getters
 
@@ -272,6 +272,112 @@
     Repo.delete_all(from(<%= inspect schema.alias %>Token, where: [token: ^token, context: "session"]))
     :ok
   end
+<%= if oauth? do %>
+  ## OAuth identities
+
+  @doc """
+  Gets the <%= schema.singular %> linked to a provider uid.
+  """
+  def get_<%= schema.singular %>_by_identity(provider, uid) when is_binary(uid) do
+    provider = to_string(provider)
+
+    identity =
+      Repo.one(
+        from(i in <%= inspect schema.alias %>Identity,
+          where: i.provider == ^provider and i.uid == ^uid,
+          preload: [:<%= schema.singular %>]
+        )
+      )
+
+    identity && identity.<%= schema.singular %>
+  end
+
+  @doc """
+  Lists linked identities for a <%= schema.singular %>.
+  """
+  def list_<%= schema.singular %>_identities(%<%= inspect schema.alias %>{} = <%= schema.singular %>) do
+    Repo.all(
+      from(i in <%= inspect schema.alias %>Identity,
+        where: i.<%= schema.singular %>_id == ^<%= schema.singular %>.id
+      )
+    )
+  end
+
+  @doc """
+  Creates a linked identity for a <%= schema.singular %>.
+  """
+  def create_<%= schema.singular %>_identity(%<%= inspect schema.alias %>{} = <%= schema.singular %>, provider, uid)
+      when is_binary(uid) do
+    %<%= inspect schema.alias %>Identity{}
+    |> <%= inspect schema.alias %>Identity.changeset(%{
+      <%= schema.singular %>_id: <%= schema.singular %>.id,
+      provider: to_string(provider),
+      uid: uid
+    })
+    |> Repo.insert()
+  end
+
+  @doc """
+  Removes a linked identity for a provider.
+  """
+  def unlink_<%= schema.singular %>_identity(%<%= inspect schema.alias %>{} = <%= schema.singular %>, provider) do
+    provider = to_string(provider)
+
+    {count, _} =
+      Repo.delete_all(
+        from(i in <%= inspect schema.alias %>Identity,
+          where: i.<%= schema.singular %>_id == ^<%= schema.singular %>.id and i.provider == ^provider
+        )
+      )
+
+    {:ok, count}
+  end
+
+  @doc """
+  Logs in or registers a <%= schema.singular %> from an OAuth userinfo map.
+  """
+  def login_or_register_<%= schema.singular %>_with_oauth(provider, user_info) when is_map(user_info) do
+    uid = user_info["sub"]
+    email = user_info["email"]
+
+    cond do
+      not is_binary(uid) or uid == "" ->
+        {:error, :missing_uid}
+
+      <%= schema.singular %> = get_<%= schema.singular %>_by_identity(provider, uid) ->
+        {:ok, <%= schema.singular %>}
+
+      not is_binary(email) or email == "" ->
+        {:error, :email_required}
+
+      <%= schema.singular %> = get_<%= schema.singular %>_by_email(email) ->
+        case create_<%= schema.singular %>_identity(<%= schema.singular %>, provider, uid) do
+          {:ok, _} -> {:ok, maybe_confirm_oauth_<%= schema.singular %>(<%= schema.singular %>, user_info)}
+          {:error, changeset} -> {:error, changeset}
+        end
+
+      true ->
+        Repo.transact(fn ->
+          with {:ok, <%= schema.singular %>} <- register_<%= schema.singular %>(%{email: email}),
+               <%= schema.singular %> <- maybe_confirm_oauth_<%= schema.singular %>(<%= schema.singular %>, user_info),
+               {:ok, _identity} <- create_<%= schema.singular %>_identity(<%= schema.singular %>, provider, uid) do
+            {:ok, <%= schema.singular %>}
+          end
+        end)
+    end
+  end
+
+  defp maybe_confirm_oauth_<%= schema.singular %>(<%= schema.singular %>, user_info) do
+    verified? = user_info["email_verified"] in [true, "true"]
+
+    if verified? and is_nil(<%= schema.singular %>.confirmed_at) do
+      {:ok, <%= schema.singular %>} = Repo.update(<%= inspect schema.alias %>.confirm_changeset(<%= schema.singular %>))
+      <%= schema.singular %>
+    else
+      <%= schema.singular %>
+    end
+  end
+<% end %>
 
   ## Token helper
 

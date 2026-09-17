@@ -10,7 +10,9 @@ defmodule <%= inspect schema.module %> do
     field :hashed_password, :string, redact: true
     field :confirmed_at, <%= inspect schema.timestamp_type %>
     field :authenticated_at, <%= inspect schema.timestamp_type %>, virtual: true
-
+<%= if oauth? do %>
+    has_many :identities, <%= inspect schema.module %>Identity
+<% end %>
     timestamps(<%= if schema.timestamp_type != :naive_datetime, do: "type: #{inspect schema.timestamp_type}" %>)
   end
 

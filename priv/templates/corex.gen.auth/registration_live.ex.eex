@@ -7,7 +7,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.auth
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
       theme={@theme}<% end %><%= if layout_locale_paths do %>
@@ -16,8 +16,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       current_path={@current_path}<% end %>
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
-    <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
+    <% else %><Layouts.auth flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
+      <article class="flex w-full flex-col items-stretch gap-size-lg text-left text-ink">
         <div :if={@check_email} class="flex w-full flex-col items-stretch gap-size-lg">
           <.layout_heading class="layout-heading" subtitle_tag="p">
             <:title>Check your email</:title>
@@ -42,6 +42,21 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               </.navigate>
             </:subtitle>
           </.layout_heading>
+
+          <div :if={@oauth_providers != []} class="flex w-full flex-col gap-space">
+            <.navigate
+              :for={provider <- @oauth_providers}
+              to={"/auth/#{provider.id}"}
+              class="button ui-width-full"
+            >
+              Continue with {provider.label}
+            </.navigate>
+            <div class="flex items-center gap-space text-sm text-ink-muted">
+              <span class="h-px min-w-0 flex-1 bg-border" />
+              or
+              <span class="h-px min-w-0 flex-1 bg-border" />
+            </div>
+          </div>
 
           <.form
             for={@form}
@@ -72,7 +87,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.form>
         </div>
       </article>
-    </Layouts.app>
+    </Layouts.auth>
     """
   end
 
@@ -85,7 +100,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def mount(_params, _session, socket) do
     changeset = <%= inspect context.alias %>.change_<%= schema.singular %>_email(%<%= inspect schema.alias %>{}, %{}, validate_unique: false)
 
-    {:ok, socket |> assign(:check_email, false) |> assign_form(changeset), temporary_assigns: [form: nil]}
+    {:ok,
+     socket
+     |> assign(:check_email, false)
+     |> assign(:oauth_providers, oauth_providers())
+     |> assign_form(changeset), temporary_assigns: [form: nil]}
   end
 
   @impl true
@@ -113,6 +132,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     form = to_form(changeset, as: "<%= schema.singular %>")
     assign(socket, form: form)
+  end
+
+  defp oauth_providers do
+    <%= if oauth? do %><%= inspect context.module %>.OAuthProviders.list()
+    <% else %>[]
+    <% end %>
   end
 
   defp local_mail_adapter? do

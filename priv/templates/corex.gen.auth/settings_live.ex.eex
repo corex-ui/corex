@@ -55,60 +55,34 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.form>
         </section>
 
-        <section class="flex w-full flex-col gap-space">
+        <section :if={@oauth_providers != []} class="flex w-full flex-col gap-space">
           <.layout_heading class="layout-heading" title_tag="h2" subtitle_tag="p">
-            <:title>Password</:title>
-            <:subtitle>Optional. Sign in without an email link.</:subtitle>
+            <:title>Connected accounts</:title>
+            <:subtitle>Link a provider to sign in without an email link.</:subtitle>
           </.layout_heading>
 
-          <.form
-            for={@password_form}
-            id="password_form"
-            action={~p"<%= schema.route_prefix %>/update-password"}
-            method="post"
-            phx-change="validate_password"
-            phx-submit="update_password"
-            phx-trigger-action={@trigger_submit}
-            class="flex w-full flex-col gap-space"
+          <div
+            :for={provider <- @oauth_providers}
+            class="flex items-center justify-between gap-space"
           >
-            <input
-              name={@password_form[:email].name}
-              type="hidden"
-              id="hidden_<%= schema.singular %>_email"
-              spellcheck="false"
-              value={@current_email}
-            />
-            <.password_input
-              field={@password_form[:password]}
-              class="password-input"
-              auto_complete="new-password"
-              required
+            <p class="m-0 text-sm text-ink">{provider.label}</p>
+            <.action
+              :if={to_string(provider.id) in @linked_providers}
+              type="button"
+              phx-click="unlink_identity"
+              phx-value-provider={provider.id}
+              class="button ui-ghost ui-size-sm"
             >
-              <:label>New password</:label>
-              <:error :let={msg}>
-                <.heroicon name="hero-exclamation-circle" class="icon" />
-                {msg}
-              </:error>
-              <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-              <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-            </.password_input>
-            <.password_input
-              field={@password_form[:password_confirmation]}
-              class="password-input"
-              auto_complete="new-password"
-            >
-              <:label>Confirm new password</:label>
-              <:error :let={msg}>
-                <.heroicon name="hero-exclamation-circle" class="icon" />
-                {msg}
-              </:error>
-              <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-              <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-            </.password_input>
-            <.action type="submit" phx-disable-with="Saving..." class="button ui-accent ui-solid ui-width-full">
-              Save Password
+              Disconnect
             </.action>
-          </.form>
+            <.navigate
+              :if={to_string(provider.id) not in @linked_providers}
+              to={"/auth/#{provider.id}"}
+              class="button ui-size-sm"
+            >
+              Connect
+            </.navigate>
+          </div>
         </section>
       </article>
     </Layouts.app>
@@ -132,14 +106,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def mount(_params, _session, socket) do
     <%= schema.singular %> = socket.assigns.<%= scope_config.scope.assign_key %>.<%= schema.singular %>
     email_changeset = <%= inspect context.alias %>.change_<%= schema.singular %>_email(<%= schema.singular %>, %{}, validate_unique: false)
-    password_changeset = <%= inspect context.alias %>.change_<%= schema.singular %>_password(<%= schema.singular %>, %{}, hash_password: false)
 
     socket =
       socket
       |> assign(:current_email, <%= schema.singular %>.email)
       |> assign(:email_form, to_form(email_changeset))
-      |> assign(:password_form, to_form(password_changeset))
-      |> assign(:trigger_submit, false)
+      |> assign_oauth(<%= schema.singular %>)
 
     {:ok, socket}
   end
@@ -176,31 +148,36 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       changeset ->
         {:noreply, assign(socket, :email_form, to_form(changeset, action: :insert))}
     end
-  end
+  end<%= if oauth? do %>
 
-  def handle_event("validate_password", params, socket) do
-    %{"<%= schema.singular %>" => <%= schema.singular %>_params} = params
-
-    password_form =
-      socket.assigns.<%= scope_config.scope.assign_key %>.<%= schema.singular %>
-      |> <%= inspect context.alias %>.change_<%= schema.singular %>_password(<%= schema.singular %>_params, hash_password: false)
-      |> Map.put(:action, :validate)
-      |> to_form()
-
-    {:noreply, assign(socket, password_form: password_form)}
-  end
-
-  def handle_event("update_password", params, socket) do
-    %{"<%= schema.singular %>" => <%= schema.singular %>_params} = params
+  def handle_event("unlink_identity", %{"provider" => provider}, socket) do
     <%= schema.singular %> = socket.assigns.<%= scope_config.scope.assign_key %>.<%= schema.singular %>
     true = <%= inspect context.alias %>.sudo_mode?(<%= schema.singular %>)
+    {:ok, _} = <%= inspect context.alias %>.unlink_<%= schema.singular %>_identity(<%= schema.singular %>, provider)
 
-    case <%= inspect context.alias %>.change_<%= schema.singular %>_password(<%= schema.singular %>, <%= schema.singular %>_params) do
-      %{valid?: true} = changeset ->
-        {:noreply, assign(socket, trigger_submit: true, password_form: to_form(changeset))}
+    {:noreply,
+     socket
+     |> put_flash(:info, "Disconnected.")
+     |> assign_oauth(<%= schema.singular %>)}
+  end<% end %>
 
-      changeset ->
-        {:noreply, assign(socket, password_form: to_form(changeset, action: :insert))}
-    end
+  defp assign_oauth(socket, <%= schema.singular %>) do
+    <%= if oauth? do %>
+    linked =
+      <%= schema.singular %>
+      |> <%= inspect context.alias %>.list_<%= schema.singular %>_identities()
+      |> Enum.map(& &1.provider)
+      |> MapSet.new()
+
+    socket
+    |> assign(:oauth_providers, <%= inspect context.module %>.OAuthProviders.list())
+    |> assign(:linked_providers, linked)
+    <% else %>
+    _ = <%= schema.singular %>
+
+    socket
+    |> assign(:oauth_providers, [])
+    |> assign(:linked_providers, MapSet.new())
+    <% end %>
   end
 end

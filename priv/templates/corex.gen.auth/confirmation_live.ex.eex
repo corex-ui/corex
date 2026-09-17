@@ -6,7 +6,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths do %><Layouts.auth
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
       theme={@theme}<% end %><%= if layout_locale_paths do %>
@@ -15,8 +15,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       current_path={@current_path}<% end %>
       <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}
     >
-    <% else %><Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
-      <article class="mx-auto w-full max-w-sm flex flex-col items-stretch gap-size-lg pt-space-2xl text-left text-ink">
+    <% else %><Layouts.auth flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}><% end %>
+      <article class="flex w-full flex-col items-stretch gap-size-lg text-left text-ink">
         <.layout_heading :if={!@<%= schema.singular %>.confirmed_at} class="layout-heading">
           <:title>Confirm your email</:title>
         </.layout_heading>
@@ -74,7 +74,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.action>
         </.form>
       </article>
-    </Layouts.app>
+    </Layouts.auth>
     """
   end
 

@@ -1,0 +1,16 @@
+
+  pipeline :<%= schema.singular %>_oauth do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_secure_browser_headers
+    plug :fetch_<%= scope_config.scope.assign_key %>_for_<%= schema.singular %>
+  end
+
+  scope "/", <%= inspect context.web_module %> do
+    pipe_through :<%= schema.singular %>_oauth
+
+    get "/auth/:provider", <%= inspect schema.alias %>OAuthController, :request
+    get "/auth/:provider/callback", <%= inspect schema.alias %>OAuthController, :callback
+    post "/auth/:provider/callback", <%= inspect schema.alias %>OAuthController, :callback
+  end

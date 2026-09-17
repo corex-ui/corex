@@ -255,4 +255,128 @@ defmodule Mix.Corex.Gen.Auth do
     |> String.split("\n")
     |> Enum.map_join("\n", &(indent <> &1))
   end
+
+  @oauth_catalog [
+    google: %{
+      id: :google,
+      strategy: "Assent.Strategy.Google",
+      label: "Google",
+      env_keys: [client_id: "GOOGLE_CLIENT_ID", client_secret: "GOOGLE_CLIENT_SECRET"]
+    },
+    facebook: %{
+      id: :facebook,
+      strategy: "Assent.Strategy.Facebook",
+      label: "Facebook",
+      env_keys: [client_id: "FACEBOOK_CLIENT_ID", client_secret: "FACEBOOK_CLIENT_SECRET"]
+    },
+    github: %{
+      id: :github,
+      strategy: "Assent.Strategy.Github",
+      label: "GitHub",
+      env_keys: [client_id: "GITHUB_CLIENT_ID", client_secret: "GITHUB_CLIENT_SECRET"]
+    },
+    apple: %{
+      id: :apple,
+      strategy: "Assent.Strategy.Apple",
+      label: "Apple",
+      env_keys: [
+        client_id: "APPLE_CLIENT_ID",
+        team_id: "APPLE_TEAM_ID",
+        private_key_id: "APPLE_PRIVATE_KEY_ID",
+        private_key: "APPLE_PRIVATE_KEY"
+      ]
+    }
+  ]
+
+  @doc "Returns Mix switch names for OAuth providers."
+  def oauth_switch_names, do: Keyword.keys(@oauth_catalog)
+
+  @doc "Returns catalog entries for OAuth flags that are set on `opts`."
+  def enabled_oauth_providers(opts) when is_list(opts) do
+    @oauth_catalog
+    |> Enum.filter(fn {id, _meta} -> Keyword.get(opts, id, false) end)
+    |> Enum.map(fn {_id, meta} -> meta end)
+  end
+
+  @doc "Mix dependency tuple for Assent."
+  def oauth_mix_dependency, do: ~S({:assent, "~> 0.3.1"})
+
+  @doc """
+  Injects `Layouts.auth/1` before the module's final `end`.
+  """
+  def inject_auth_layout(content, snippet)
+      when is_binary(content) and is_binary(snippet) do
+    if String.contains?(content, "def auth(") do
+      :already_injected
+    else
+      Injector.inject_before_final_end(content, snippet)
+    end
+  end
+
+  def auth_layout_help_text(file_path) do
+    """
+    Add a `Layouts.auth/1` function to #{Path.relative_to_cwd(file_path)}
+    for sign-in and registration pages (full-height canvas, no site chrome).
+    """
+  end
+
+  @doc """
+  Appends unprefixed `/auth/:provider` routes (no CSRF) for Assent callbacks.
+  """
+  def inject_oauth_routes(router, snippet)
+      when is_binary(router) and is_binary(snippet) do
+    if String.contains?(router, ~S("/auth/:provider")) do
+      :already_injected
+    else
+      Injector.inject_before_final_end(router, snippet)
+    end
+  end
+
+  @doc "Runtime config snippet that reads OAuth client secrets from the environment."
+  def oauth_runtime_config(binding) when is_list(binding) do
+    context = Keyword.fetch!(binding, :context)
+    providers = Keyword.fetch!(binding, :oauth_providers)
+    app = context.context_app
+    module = "#{inspect(context.module)}.OAuthProviders"
+
+    entries =
+      Enum.map_join(providers, ",\n", fn provider ->
+        keys =
+          Enum.map_join(provider.env_keys, ",\n      ", fn {key, env} ->
+            "#{key}: System.get_env(#{inspect(env)})"
+          end)
+
+        "    #{provider.id}: [\n      #{keys}\n    ]"
+      end)
+
+    """
+    config :#{app}, #{module},
+    #{entries}
+    """
+  end
+
+  @doc "Post-run help listing enabled providers and required env vars."
+  def oauth_shell_help(binding) when is_list(binding) do
+    providers = Keyword.get(binding, :oauth_providers, [])
+
+    env_lines =
+      providers
+      |> Enum.flat_map(& &1.env_keys)
+      |> Enum.map_join("\n", fn {_key, env} -> "        #{env}" end)
+
+    """
+    Social sign-in is enabled for #{Enum.map_join(providers, ", ", & &1.label)}.
+
+    Set these environment variables (dev flashes the names if they are missing):
+
+    #{env_lines}
+
+    Redirect URIs (register each in the provider console):
+
+        /auth/:provider/callback
+
+    To add another Assent provider later (Discord, GitLab, Slack, ...), copy an
+    entry in `oauth_providers.ex` and add matching env vars. No extra Hex package.
+    """
+  end
 end

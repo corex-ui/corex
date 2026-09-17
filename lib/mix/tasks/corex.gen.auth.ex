@@ -2,19 +2,20 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   @shortdoc "Generates LiveView authentication with Corex components"
 
   @moduledoc """
-  Generates LiveView authentication (magic-link login, optional password, confirmation,
-  settings, and scopes) using Corex form components instead of Phoenix core components.
+  Generates LiveView authentication (magic-link login, optional social OAuth,
+  confirmation, settings, and scopes) using Corex form components instead of Phoenix core components.
 
   Domain and security behavior tracks `mix phx.gen.auth` on Phoenix 1.8. Web templates
-  emit `<.native_input>`, `<.password_input>`, `<.action class="button">`, and
-  `<.layout_heading>`. Copy templates into `priv/corex_templates/corex.gen.auth/` to
-  override them.
+  emit `<.native_input>`, `<.action class="button">`, and `<.layout_heading>` on a
+  dedicated `Layouts.auth` shell. Copy templates into `priv/corex_templates/corex.gen.auth/`
+  to override them.
 
   This generator is **LiveView-only**. `--live` is implied. `--no-live` raises; use
   `mix phx.gen.auth --no-live` for controller templates.
 
   ```console
   $ mix corex.gen.auth Accounts User users
+  $ mix corex.gen.auth Accounts User users --google --github --apple --facebook
   ```
 
   The first argument is the context module followed by the schema module
@@ -40,6 +41,13 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   `mix corex.gen.auth` always generates LiveView authentication. There is no
   `--no-live` / controller template path in this generator.
+
+  ## Social sign-in
+
+  Pass any combination of `--google`, `--facebook`, `--apple`, and `--github` to generate
+  Assent OAuth buttons, an identities table, and `/auth/:provider` routes. With no flags,
+  the generated UI is magic-link only. Password hashing stays in the schema so you can
+  restore a password form later; generated screens do not offer password login.
 
   ## Mixing magic link and password registration
 
@@ -170,8 +178,14 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     compile: :boolean,
     scope: :string,
     assign_key: :string,
-    agents_md: :boolean
+    agents_md: :boolean,
+    google: :boolean,
+    facebook: :boolean,
+    apple: :boolean,
+    github: :boolean
   ]
+
+  @oauth_opt_keys [:google, :facebook, :apple, :github]
 
   @impl Mix.Task
   def run(args) do
@@ -191,9 +205,11 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     reject_no_live!(opts)
     validate_args!(parsed)
     hashing_library = build_hashing_library!(opts)
+    oauth_providers = GenAuth.enabled_oauth_providers(opts)
 
     context_args =
-      OptionParser.to_argv(Keyword.drop(opts, [:scope, :assign_key, :agents_md]),
+      OptionParser.to_argv(
+        Keyword.drop(opts, [:scope, :assign_key, :agents_md] ++ @oauth_opt_keys),
         switches: @switches
       ) ++
         parsed
@@ -246,7 +262,11 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       layout_mode: Keyword.has_key?(layout_opts, :mode),
       layout_theme: Keyword.has_key?(layout_opts, :theme),
       layout_locale_paths: Corex.layout_locale_paths?(context.web_module, layout_opts),
-      layout_locale_assigns: Corex.layout_locale_assigns?(layout_opts)
+      layout_locale_assigns: Corex.layout_locale_assigns?(layout_opts),
+      oauth_providers: oauth_providers,
+      oauth?: oauth_providers != [],
+      app_name: app_display_name(),
+      app_pitch: app_pitch()
     ]
 
     paths = Corex.generator_template_dirs("corex.gen.auth")
@@ -258,7 +278,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     |> tap(fn _ -> DesignComponents.ensure_for_live!(build: false) end)
     |> maybe_inject_project_files(paths, binding, hashing_library)
     |> Gen.Notifier.maybe_print_mailer_installation_instructions()
-    |> print_shell_instructions()
+    |> print_shell_instructions(binding)
   end
 
   defp maybe_inject_project_files(context, paths, binding, hashing_library) do
@@ -274,6 +294,8 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       |> maybe_inject_router_import(binding)
       |> maybe_inject_router_plug(binding)
       |> maybe_inject_app_layout_menu(binding)
+      |> maybe_inject_auth_layout(paths, binding)
+      |> maybe_inject_oauth_support(paths, binding)
       |> maybe_inject_layout_scope_assigns(binding)
       |> maybe_inject_agents_md(paths, binding)
     end
@@ -283,6 +305,27 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     context.web_module
     |> inspect()
     |> Phoenix.Naming.underscore()
+  end
+
+  defp app_display_name do
+    Mix.Project.config()
+    |> Keyword.get(:app, :app)
+    |> to_string()
+    |> Phoenix.Naming.humanize()
+  end
+
+  defp app_pitch do
+    case Mix.Project.config()[:description] do
+      pitch when is_binary(pitch) and pitch != "" -> pitch
+      _ -> "Sign in to continue."
+    end
+  end
+
+  defp format_file(path) when is_binary(path) do
+    if File.exists?(path) do
+      Mix.Task.reenable("format")
+      Mix.Task.run("format", [path])
+    end
   end
 
   defp validate_args!([_, _, _]), do: :ok
@@ -590,7 +633,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
           ]
         ]
 
-        remap_files(default_files ++ live_files)
+        remap_files(default_files ++ live_files ++ oauth_files(binding))
 
       _ ->
         non_live_files = [
@@ -647,6 +690,33 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp remap_files(files) do
     for {source, dest} <- files, do: {:eex, to_string(source), Path.join(dest)}
+  end
+
+  defp oauth_files(binding) do
+    if binding[:oauth?] do
+      schema = binding[:schema]
+      context = binding[:context]
+      context_app = context.context_app
+      singular = schema.singular
+      web_pre = Corex.web_path(context_app)
+      web_test_pre = Corex.web_test_path(context_app)
+      web_path = to_string(schema.web_path)
+      controller_pre = Path.join([web_pre, "controllers", web_path])
+
+      [
+        "schema_identity.ex.eex": [context.dir, "#{singular}_identity.ex"],
+        "oauth_providers.ex.eex": [context.dir, "oauth_providers.ex"],
+        "oauth_controller.ex.eex": [controller_pre, "#{singular}_oauth_controller.ex"],
+        "oauth_controller_test.exs.eex": [
+          web_test_pre,
+          "controllers",
+          web_path,
+          "#{singular}_oauth_controller_test.exs"
+        ]
+      ]
+    else
+      []
+    end
   end
 
   defp copy_new_files(%Context{} = context, binding, paths) do
@@ -742,9 +812,18 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     context
   end
 
-  defp maybe_inject_mix_dependency(%Context{context_app: ctx_app} = context, %HashingLibrary{
+  defp maybe_inject_mix_dependency(%Context{} = context, %HashingLibrary{
          mix_dependency: mix_dependency
        }) do
+    inject_mix_dependency(context, mix_dependency)
+  end
+
+  defp maybe_inject_mix_dependency(%Context{} = context, mix_dependency)
+       when is_binary(mix_dependency) do
+    inject_mix_dependency(context, mix_dependency)
+  end
+
+  defp inject_mix_dependency(%Context{context_app: ctx_app} = context, mix_dependency) do
     file_path = Corex.context_app_path(ctx_app, "mix.exs")
 
     file = File.read!(file_path)
@@ -884,6 +963,109 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
       #{inject}
       """)
+    end
+
+    context
+  end
+
+  defp maybe_inject_auth_layout(%Context{} = context, paths, binding) do
+    if file_path = get_layout_html_path(context) do
+      snippet = Corex.eval_from_roots(paths, "auth_layout.ex.eex", binding)
+
+      case GenAuth.inject_auth_layout(File.read!(file_path), snippet) do
+        {:ok, new_content} ->
+          print_injecting(file_path, " - auth layout")
+          File.write!(file_path, new_content)
+          format_file(file_path)
+
+        :already_injected ->
+          :ok
+
+        {:error, :unable_to_inject} ->
+          Mix.shell().info("""
+
+          #{GenAuth.auth_layout_help_text(file_path)}
+          """)
+      end
+    end
+
+    context
+  end
+
+  defp maybe_inject_oauth_support(%Context{} = context, paths, binding) do
+    if binding[:oauth?] do
+      context
+      |> maybe_inject_mix_dependency(GenAuth.oauth_mix_dependency())
+      |> inject_oauth_runtime_config(binding)
+      |> inject_oauth_routes(paths, binding)
+    else
+      context
+    end
+  end
+
+  defp inject_oauth_runtime_config(%Context{} = context, binding) do
+    file_path =
+      if Mix.Phoenix.in_umbrella?(File.cwd!()) do
+        Path.expand("../../")
+      else
+        File.cwd!()
+      end
+      |> Path.join("config/runtime.exs")
+
+    file =
+      case read_file(file_path) do
+        {:ok, file} -> file
+        {:error, {:file_read_error, _}} -> "import Config\n"
+      end
+
+    code = GenAuth.oauth_runtime_config(binding)
+
+    case Injector.config_inject(file, code) do
+      {:ok, new_file} ->
+        print_injecting(file_path, " - oauth")
+        File.write!(file_path, new_file)
+
+      :already_injected ->
+        :ok
+
+      {:error, :unable_to_inject} ->
+        Mix.shell().info("""
+
+        Add the following to #{Path.relative_to_cwd(file_path)}:
+
+        #{code}
+        """)
+    end
+
+    context
+  end
+
+  defp inject_oauth_routes(%Context{context_app: ctx_app} = context, paths, binding) do
+    web_prefix = Corex.web_path(ctx_app)
+    file_path = Path.join(web_prefix, "router.ex")
+    snippet = Corex.eval_from_roots(paths, "oauth_routes.ex.eex", binding)
+
+    with {:ok, file} <- read_file(file_path),
+         {:ok, new_file} <- GenAuth.inject_oauth_routes(file, snippet) do
+      print_injecting(file_path, " - oauth routes")
+      File.write!(file_path, new_file)
+      format_file(file_path)
+    else
+      :already_injected ->
+        :ok
+
+      {:error, {:file_read_error, _}} ->
+        print_injecting(file_path)
+
+        print_unable_to_read_file_error(
+          file_path,
+          """
+
+          Please add the following OAuth routes to #{Path.relative_to_cwd(file_path)}:
+
+          #{snippet}
+          """
+        )
     end
 
     context
@@ -1055,7 +1237,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     end
   end
 
-  defp print_shell_instructions(%Context{} = context) do
+  defp print_shell_instructions(%Context{} = context, binding) do
     layout_opts = Corex.layout_generators_opts()
     locale_scoped = Corex.locale_scoped_routes?(context.web_module, layout_opts)
     register_path = "/#{context.schema.plural}/register"
@@ -1087,6 +1269,10 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       to create your account and then access "/dev/mailbox" to
       see the account confirmation email.
       """)
+    end
+
+    if binding[:oauth?] do
+      Mix.shell().info(GenAuth.oauth_shell_help(binding))
     end
 
     context

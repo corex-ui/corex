@@ -1,0 +1,27 @@
+defmodule <%= inspect schema.module %>Identity do
+  use Ecto.Schema
+  import Ecto.Changeset
+<%= if schema.binary_id do %>
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id<% end %>
+  schema "<%= schema.table %>_identities" do
+    field :provider, :string
+    field :uid, :string
+
+    belongs_to :<%= schema.singular %>, <%= inspect schema.module %>
+
+    timestamps(<%= if schema.timestamp_type != :naive_datetime, do: "type: #{inspect schema.timestamp_type}" %>)
+  end
+
+  @doc """
+  A changeset for creating a linked identity.
+  """
+  def changeset(identity, attrs) do
+    identity
+    |> cast(attrs, [:provider, :uid, :<%= schema.singular %>_id])
+    |> validate_required([:provider, :uid, :<%= schema.singular %>_id])
+    |> unique_constraint([:provider, :uid])
+    |> unique_constraint([:<%= schema.singular %>_id, :provider])
+    |> assoc_constraint(:<%= schema.singular %>)
+  end
+end
