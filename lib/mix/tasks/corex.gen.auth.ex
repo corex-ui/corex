@@ -706,10 +706,32 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp inject_routes(%Context{context_app: ctx_app} = context, paths, binding) do
     web_prefix = Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
+    wrapped = Corex.eval_from_roots(paths, "routes.ex.eex", binding)
+    inner = Corex.eval_from_roots(paths, "routes_locale.ex.eex", binding)
 
-    paths
-    |> Corex.eval_from_roots("routes.ex.eex", binding)
-    |> inject_before_final_end(file_path)
+    with {:ok, file} <- read_file(file_path),
+         {:ok, new_file} <- GenAuth.inject_auth_routes(file, wrapped, inner) do
+      print_injecting(file_path)
+      File.write!(file_path, new_file)
+    else
+      :already_injected ->
+        :ok
+
+      {:error, {:file_read_error, _}} ->
+        print_injecting(file_path)
+
+        print_unable_to_read_file_error(
+          file_path,
+          """
+
+          Please add the following to your equivalent
+          #{Path.relative_to_cwd(file_path)} module, inside `scope "/:locale"`
+          when that scope exists, otherwise at the end of the module:
+
+          #{indent_spaces(wrapped, 2)}
+          """
+        )
+    end
 
     context
   end
@@ -1045,9 +1067,8 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
     if locale_scoped do
       Mix.shell().info("""
-      Authentication routes were added to your router. With localized routes
-      (`path_prefixes` or a `/:locale` scope), open #{Corex.web_path(context.context_app)}/router.ex
-      and keep the generated auth scopes inside the locale scope (not `scope "/"`).
+      Authentication routes were added inside your locale scope (`scope "/:locale"`).
+      With verified route path_prefixes, ~p"#{register_path}" resolves to /<locale>#{register_path}.
 
       Once you are ready, visit "#{register_path}"
       (or "/<locale>#{register_path}" when the locale is in the path)

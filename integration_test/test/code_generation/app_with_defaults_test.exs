@@ -220,6 +220,29 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       end)
     end
 
+    test "locale app injects auth routes into scope /:locale without verified-route warnings" do
+      with_installer_tmp("gen_auth_locale_compile", fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "try_auth", ["--lang", "--mode", "--theme"])
+
+        mix_run!(~w(corex.gen.auth Identity Client clients), app_root_path)
+        mix_run!(~w(deps.get), app_root_path)
+
+        router = File.read!(Path.join(app_root_path, "lib/try_auth_web/router.ex"))
+        {unprefixed, locale} = String.split(router, ~s(scope "/:locale"), parts: 2)
+
+        refute unprefixed =~ ~s(live "/clients/log-in")
+        assert locale =~ ~s(live "/clients/log-in")
+        assert locale =~ "pipe_through [:require_authenticated_client]"
+
+        refute router =~
+                 ~r/scope "\/", TryAuthWeb do\n\s+pipe_through \[:browser, :require_authenticated_client\]/
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+      end)
+    end
+
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("gen_auth_tests", fn tmp_dir ->

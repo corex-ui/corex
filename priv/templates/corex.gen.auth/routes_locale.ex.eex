@@ -1,0 +1,23 @@
+    ## Authentication routes
+
+    live_session :current_<%= schema.singular %>,
+      on_mount: [{<%= inspect auth_module %>, :mount_<%= scope_config.scope.assign_key %>}] do
+      live "/<%= schema.plural %>/register", <%= inspect schema.alias %>Live.Registration, :new
+      live "/<%= schema.plural %>/log-in", <%= inspect schema.alias %>Live.Login, :new
+      live "/<%= schema.plural %>/log-in/:token", <%= inspect schema.alias %>Live.Confirmation, :new
+    end
+
+    post "/<%= schema.plural %>/log-in", <%= inspect schema.alias %>SessionController, :create
+    delete "/<%= schema.plural %>/log-out", <%= inspect schema.alias %>SessionController, :delete
+
+    scope "/" do
+      pipe_through [:require_authenticated_<%= schema.singular %>]
+
+      live_session :require_authenticated_<%= schema.singular %>,
+        on_mount: [{<%= inspect auth_module %>, :require_authenticated}] do
+        live "/<%= schema.plural %>/settings", <%= inspect schema.alias %>Live.Settings, :edit
+        live "/<%= schema.plural %>/settings/confirm-email/:token", <%= inspect schema.alias %>Live.Settings, :confirm_email
+      end
+
+      post "/<%= schema.plural %>/update-password", <%= inspect schema.alias %>SessionController, :update_password
+    end

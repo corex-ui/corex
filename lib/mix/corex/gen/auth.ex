@@ -3,6 +3,9 @@ defmodule Mix.Corex.Gen.Auth do
 
   alias Mix.Tasks.Phx.Gen.Auth.Injector
 
+  @home_route_anchor "get \"/\", PageController, :home\n"
+  @locale_scope_split ~r/scope\s+"\/:locale"/
+
   @doc """
   Injects Corex account navigation into a layout template or `Layouts` module.
   """
@@ -100,6 +103,75 @@ defmodule Mix.Corex.Gen.Auth do
       true ->
         {:ok, String.replace(content, "<Layouts.app", "<Layouts.app #{attr}", global: false)}
     end
+  end
+
+  @doc """
+  Injects generated auth routes into a router source string.
+
+  When the router already has `scope "/:locale"`, `inner` is spliced into that
+  block (after the locale home route). Otherwise `wrapped` is appended before
+  the module's final `end`. If the locale scope exists but the home-route
+  anchor is missing, sibling `scope "/:locale"` blocks are appended instead.
+  """
+  def inject_auth_routes(router, wrapped, inner)
+      when is_binary(router) and is_binary(wrapped) and is_binary(inner) do
+    cond do
+      already_injected?(router, wrapped, inner) ->
+        :already_injected
+
+      locale_scoped?(router) ->
+        case inject_after_home_in_locale_scope(router, pad_inject(inner)) do
+          {:ok, content} -> {:ok, content}
+          :error -> Injector.inject_before_final_end(router, locale_wrapped_scopes(wrapped))
+        end
+
+      true ->
+        Injector.inject_before_final_end(router, wrapped)
+    end
+  end
+
+  defp already_injected?(router, wrapped, inner) do
+    String.contains?(router, String.trim(inner)) or
+      String.contains?(router, String.trim(wrapped)) or
+      log_in_injected?(router, inner)
+  end
+
+  defp log_in_injected?(router, inner) do
+    case Regex.run(~r{live\s+"(/[^"]+/log-in)"}, inner) do
+      [_, path] -> String.contains?(router, path)
+      nil -> false
+    end
+  end
+
+  defp locale_scoped?(router), do: Regex.match?(@locale_scope_split, router)
+
+  defp pad_inject(inner) do
+    inner = String.trim_trailing(inner)
+    inner = if String.starts_with?(inner, "\n"), do: inner, else: "\n" <> inner
+    inner <> "\n"
+  end
+
+  defp inject_after_home_in_locale_scope(content, routes_to_inject) do
+    parts = String.split(content, @locale_scope_split, parts: 2)
+
+    if length(parts) == 2 do
+      [head, locale_block] = parts
+      locale_parts = String.split(locale_block, @home_route_anchor, parts: 2)
+
+      if length(locale_parts) == 2 do
+        [before_get, after_get] = locale_parts
+        new_locale_block = before_get <> @home_route_anchor <> routes_to_inject <> after_get
+        {:ok, head <> ~S(scope "/:locale") <> new_locale_block}
+      else
+        :error
+      end
+    else
+      :error
+    end
+  end
+
+  defp locale_wrapped_scopes(wrapped) do
+    Regex.replace(~r/(scope\s+")\/(")/, wrapped, "\\1/:locale\\2")
   end
 
   defp header_child_padding(template_str) do

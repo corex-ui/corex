@@ -122,7 +122,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
           )
 
         assert output =~ "locale"
-        assert output =~ ~S(scope "/")
+        assert output =~ ~S(scope "/:locale")
         login = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "login.ex"]))
         assert login =~ "current_path={@current_path}"
         assert login =~ "mode={@mode}"
@@ -186,5 +186,197 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
     assert :already_injected =
              GenAuth.inject_layout_scope_assign(injected, :current_scope)
+  end
+
+  test "inject_auth_routes splices into scope /:locale after the locale home route" do
+    wrapped = """
+
+      ## Authentication routes
+
+      scope "/", Try2Web do
+        pipe_through [:browser, :require_authenticated_client]
+
+        live_session :require_authenticated_client,
+          on_mount: [{Try2Web.ClientAuth, :require_authenticated}] do
+          live "/clients/settings", ClientLive.Settings, :edit
+        end
+
+        post "/clients/update-password", ClientSessionController, :update_password
+      end
+
+      scope "/", Try2Web do
+        pipe_through [:browser]
+
+        live_session :current_client,
+          on_mount: [{Try2Web.ClientAuth, :mount_current_scope}] do
+          live "/clients/log-in", ClientLive.Login, :new
+        end
+      end
+    """
+
+    inner = """
+        live_session :current_client,
+          on_mount: [{Try2Web.ClientAuth, :mount_current_scope}] do
+          live "/clients/log-in", ClientLive.Login, :new
+        end
+
+        post "/clients/log-in", ClientSessionController, :create
+
+        scope "/" do
+          pipe_through [:require_authenticated_client]
+
+          live_session :require_authenticated_client,
+            on_mount: [{Try2Web.ClientAuth, :require_authenticated}] do
+            live "/clients/settings", ClientLive.Settings, :edit
+          end
+
+          post "/clients/update-password", ClientSessionController, :update_password
+        end
+    """
+
+    injected =
+      case GenAuth.inject_auth_routes(try2_router(), wrapped, inner) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    {unprefixed, locale} = locale_scope_halves(injected)
+
+    refute unprefixed =~ "live \"/clients/log-in\""
+    refute unprefixed =~ "pipe_through [:require_authenticated_client]"
+    assert locale =~ "live \"/clients/log-in\""
+    assert locale =~ "pipe_through [:require_authenticated_client]"
+    assert locale =~ "post \"/clients/update-password\""
+
+    refute injected =~
+             ~r/scope "\/", Try2Web do\n\s+pipe_through \[:browser, :require_authenticated_client\]/
+
+    assert :already_injected = GenAuth.inject_auth_routes(injected, wrapped, inner)
+  end
+
+  test "inject_auth_routes appends wrapped scopes when there is no locale scope" do
+    router = """
+    defmodule AppWeb.Router do
+      use AppWeb, :router
+
+      scope "/", AppWeb do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+    end
+    """
+
+    wrapped = """
+
+      ## Authentication routes
+
+      scope "/", AppWeb do
+        pipe_through [:browser]
+
+        live_session :current_user,
+          on_mount: [{AppWeb.UserAuth, :mount_current_scope}] do
+          live "/users/log-in", UserLive.Login, :new
+        end
+      end
+    """
+
+    injected =
+      case GenAuth.inject_auth_routes(router, wrapped, "    live \"/users/log-in\"\n") do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ ~S(scope "/", AppWeb do)
+    assert injected =~ "## Authentication routes"
+    assert injected =~ ~S(live "/users/log-in")
+    refute injected =~ ~S(scope "/:locale")
+  end
+
+  test "inject_auth_routes falls back to sibling locale scopes without a home route" do
+    router = """
+    defmodule AppWeb.Router do
+      use AppWeb, :router
+
+      scope "/:locale", AppWeb do
+        pipe_through :browser
+
+        live "/dashboard", DashboardLive
+      end
+    end
+    """
+
+    wrapped = """
+
+      ## Authentication routes
+
+      scope "/", AppWeb do
+        pipe_through [:browser]
+
+        live_session :current_user,
+          on_mount: [{AppWeb.UserAuth, :mount_current_scope}] do
+          live "/users/log-in", UserLive.Login, :new
+        end
+      end
+    """
+
+    inner = """
+        live_session :current_user,
+          on_mount: [{AppWeb.UserAuth, :mount_current_scope}] do
+          live "/users/log-in", UserLive.Login, :new
+        end
+    """
+
+    injected =
+      case GenAuth.inject_auth_routes(router, wrapped, inner) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ ~S(scope "/:locale", AppWeb do)
+    assert injected =~ ~S(live "/users/log-in")
+
+    refute injected =~
+             ~r/scope "\/", AppWeb do\n\s+pipe_through \[:browser\]\n\s+live_session :current_user/
+  end
+
+  defp try2_router do
+    """
+    defmodule Try2Web.Router do
+      use Try2Web, :router
+
+      import Try2Web.ClientAuth
+
+      use Localize.Routes, gettext: Try2Web.Gettext, helpers: false
+
+      pipeline :browser do
+        plug :accepts, ["html"]
+        plug :fetch_session
+        plug :fetch_live_flash
+        plug :protect_from_forgery
+        plug :put_secure_browser_headers
+        plug :fetch_current_scope_for_client
+      end
+
+      scope "/", Try2Web do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+
+      scope "/:locale", Try2Web do
+        pipe_through :browser
+
+        get "/", PageController, :home
+      end
+    end
+    """
+  end
+
+  defp locale_scope_halves(router) do
+    case String.split(router, ~S(scope "/:locale"), parts: 2) do
+      [unprefixed, locale] -> {unprefixed, locale}
+      _ -> flunk("expected a scope \"/:locale\" in injected router")
+    end
   end
 end
