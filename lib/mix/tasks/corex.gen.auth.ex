@@ -656,7 +656,13 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     inject_context_functions(context, phoenix_paths, paths, binding)
     inject_tests(context, phoenix_paths, paths, binding)
     inject_context_test_fixtures(context, phoenix_paths, paths, binding)
-    _ = Corex.format_generated_files(files)
+
+    injected =
+      [context.file, context.test_file, context.test_fixtures_file]
+      |> Enum.filter(&(is_binary(&1) and File.exists?(&1)))
+      |> Enum.map(&{:eex, "injected", &1})
+
+    _ = Corex.format_generated_files(files ++ injected)
 
     context
   end

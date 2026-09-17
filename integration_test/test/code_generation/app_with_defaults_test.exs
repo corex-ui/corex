@@ -229,7 +229,12 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         mix_run!(~w(deps.get), app_root_path)
 
         router = File.read!(Path.join(app_root_path, "lib/try_auth_web/router.ex"))
-        {unprefixed, locale} = String.split(router, ~s(scope "/:locale"), parts: 2)
+
+        [unprefixed, locale] =
+          case String.split(router, ~s(scope "/:locale"), parts: 2) do
+            [before, after_scope] -> [before, after_scope]
+            _ -> flunk(~S(expected a scope "/:locale" in injected router))
+          end
 
         refute unprefixed =~ ~s(live "/clients/log-in")
         assert locale =~ ~s(live "/clients/log-in")
