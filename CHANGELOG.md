@@ -9,7 +9,7 @@
 
 ### Mix generators
 
-- **`mix corex.gen.auth`** — LiveView authentication (magic-link login, optional password, confirmation, settings) using Corex form components. Behavior tracks Phoenix 1.8 `phx.gen.auth`. `--no-live` is not supported.
+- **`mix corex.gen.auth`** — LiveView authentication (magic-link login, optional password, confirmation, settings) using Corex form components. Behavior tracks Phoenix 1.8 `phx.gen.auth`. `--no-live` is not supported. Generated login is magic-link first (password via `?mode=password`); account controls inject into the header cluster and `site-nav-dialog`.
 
 ### Documentation
 

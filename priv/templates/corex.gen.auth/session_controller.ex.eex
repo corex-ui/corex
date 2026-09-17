@@ -42,7 +42,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       conn
       |> put_flash(:error, "Invalid email or password")
       |> put_flash(:email, String.slice(email, 0, 160))
-      |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+      |> redirect(to: ~p"<%= schema.route_prefix %>/log-in?mode=password")
     end
   end
 

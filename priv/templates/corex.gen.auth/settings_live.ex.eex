@@ -21,7 +21,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <article class="mx-auto flex w-full min-w-0 max-w-sm flex-col items-center gap-size-lg pt-space-xl text-ink">
         <.layout_heading class="layout-heading">
           <:title>Account Settings</:title>
-          <:subtitle>Manage your account email address and password settings</:subtitle>
+          <:subtitle>Manage your email address and optional password.</:subtitle>
         </.layout_heading>
 
         <.form
@@ -50,9 +50,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.action>
         </.form>
 
-        <p class="m-0 flex w-full items-center gap-space text-sm text-ink-muted before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-          or
-        </p>
+        <.layout_heading class="layout-heading">
+          <:title>Password</:title>
+          <:subtitle>
+            Set a password to log in without waiting for an email.
+          </:subtitle>
+        </.layout_heading>
 
         <.form
           for={@password_form}

@@ -134,7 +134,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         })
 
       <%= if live? do %>assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"<% else %>response = html_response(conn, 200)
+      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in?mode=password"<% else %>response = html_response(conn, 200)
       assert response =~ "Log in"
       assert response =~ "Invalid email or password"<% end %>
     end

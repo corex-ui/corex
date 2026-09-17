@@ -5,79 +5,49 @@ defmodule Mix.Corex.Gen.Auth do
 
   @home_route_anchor "get \"/\", PageController, :home\n"
   @locale_scope_split ~r/scope\s+"\/:locale"/
+  @right_cluster_open ~r/^([ \t]*)<div class="flex shrink-0 items-center gap-space-sm">\n/m
+  @header_inner_close ~r/^([ \t]*)<\/div>\n([ \t]*)<\/header>/m
 
   @doc """
   Injects Corex account navigation into a layout template or `Layouts` module.
+
+  Desktop controls go in the header's right cluster (created when missing).
+  Mobile controls go in the existing `site-nav-dialog` site nav.
   """
   def inject_layout_menu(binding, template_str) when is_binary(template_str) do
-    padding = header_child_padding(template_str)
-    {_dup, code} = layout_menu_code(binding, padding)
+    if String.contains?(template_str, "#{binding[:schema].route_prefix}/log-in") do
+      :already_injected
+    else
+      {content, desktop?} = inject_desktop_account(binding, template_str)
+      {content, mobile?} = inject_mobile_account(binding, content)
 
-    cond do
-      String.contains?(template_str, "#{binding[:schema].route_prefix}/log-in") ->
-        :already_injected
-
-      String.contains?(template_str, "</header>") ->
-        {:ok,
-         Regex.replace(
-           ~r/^([ \t]*)<\/header>/m,
-           template_str,
-           "#{code}\n\\1</header>",
-           global: false
-         )}
-
-      String.contains?(template_str, "<body") ->
-        Injector.app_layout_menu_inject(binding, template_str)
-
-      true ->
+      if desktop? or mobile? do
+        {:ok, content}
+      else
         {:error, :unable_to_inject}
+      end
     end
   end
 
   def layout_menu_help_text(file_path, binding) do
-    {_dup, code} = layout_menu_code(binding)
+    {_dup, desktop} = desktop_account_code(binding)
+    {_dup, mobile} = mobile_account_code(binding)
 
     """
     Add the following #{binding[:schema].singular} menu items to #{Path.relative_to_cwd(file_path)}:
 
-    #{code}
+    Desktop (header right cluster):
+
+    #{desktop}
+
+    Mobile (inside the site-nav-dialog site nav):
+
+    #{mobile}
     """
   end
 
   def layout_menu_code(binding, padding \\ 4) do
-    schema = binding[:schema]
-    assign_key = binding[:scope_config].scope.assign_key
-    prefix = schema.route_prefix
-    already = "#{prefix}/log-in"
-    indent = String.duplicate(" ", padding)
-
-    template = """
-    <nav class="flex shrink-0 items-center gap-space" aria-label="Account">
-      <%= if @#{assign_key} do %>
-        <span class="truncate text-sm text-ink-muted">{@#{assign_key}.#{schema.singular}.email}</span>
-        <.navigate to={~p"#{prefix}/settings"} type="navigate" class="link ui-nav ui-size-sm">
-          Settings
-        </.navigate>
-        <.navigate to={~p"#{prefix}/log-out"} method="delete" class="link ui-nav ui-size-sm">
-          Log out
-        </.navigate>
-      <% else %>
-        <.navigate to={~p"#{prefix}/register"} type="navigate" class="link ui-nav ui-size-sm">
-          Register
-        </.navigate>
-        <.navigate to={~p"#{prefix}/log-in"} type="navigate" class="link ui-nav ui-size-sm">
-          Log in
-        </.navigate>
-      <% end %>
-    </nav>\
-    """
-
-    indented =
-      template
-      |> String.split("\n")
-      |> Enum.map_join("\n", &(indent <> &1))
-
-    {already, indented}
+    desktop_account_code(binding, padding)
   end
 
   @doc """
@@ -174,10 +144,118 @@ defmodule Mix.Corex.Gen.Auth do
     Regex.replace(~r/(scope\s+")\/(")/, wrapped, "\\1/:locale\\2")
   end
 
-  defp header_child_padding(template_str) do
-    case Regex.run(~r/^([ \t]*)<\/header>/m, template_str) do
-      [_, indent] -> String.length(indent) + 2
-      _ -> 6
+  defp inject_desktop_account(binding, content) do
+    if Regex.match?(@right_cluster_open, content) do
+      [full, indent] = Regex.run(@right_cluster_open, content)
+      padding = String.length(indent) + 2
+      {_already, code} = desktop_account_code(binding, padding)
+      {String.replace(content, full, full <> code <> "\n", global: false), true}
+    else
+      inject_desktop_before_header_close(binding, content)
     end
+  end
+
+  defp inject_desktop_before_header_close(binding, content) do
+    case Regex.run(@header_inner_close, content) do
+      [full, div_indent, _header_indent] ->
+        padding = String.length(div_indent) + 2
+        {_already, code} = desktop_account_code(binding, padding)
+        {String.replace(content, full, "#{code}\n#{full}", global: false), true}
+
+      nil ->
+        {content, false}
+    end
+  end
+
+  defp inject_mobile_account(binding, content) do
+    case String.split(content, ~S(id="site-nav-dialog"), parts: 2) do
+      [head, rest] ->
+        case Regex.run(~r/\n([ \t]*)<\/nav>/, rest) do
+          [match, indent] ->
+            padding = String.length(indent) + 2
+            {_already, code} = mobile_account_code(binding, padding)
+            updated = String.replace(rest, match, "\n#{code}" <> match, global: false)
+            {head <> ~S(id="site-nav-dialog") <> updated, true}
+
+          nil ->
+            {content, false}
+        end
+
+      _ ->
+        {content, false}
+    end
+  end
+
+  defp desktop_account_code(binding, padding \\ 4) do
+    {already, items} = account_item_template(binding, :desktop)
+
+    template = """
+    <nav class="hidden md:flex min-w-0 shrink-0 items-center gap-space" aria-label="Account">
+    #{indent_lines(items, 2)}
+    </nav>\
+    """
+
+    {already, indent_lines(template, padding)}
+  end
+
+  defp mobile_account_code(binding, padding \\ 4) do
+    {already, items} = account_item_template(binding, :mobile)
+    {already, indent_lines(items, padding)}
+  end
+
+  defp account_item_template(binding, variant) do
+    schema = binding[:schema]
+    assign_key = binding[:scope_config].scope.assign_key
+    prefix = schema.route_prefix
+
+    {login_class, nav_class, email_class} = account_classes(variant)
+
+    template = """
+    <%= if @#{assign_key} do %>
+      <span class="#{email_class}">{@#{assign_key}.#{schema.singular}.email}</span>
+      <.navigate
+        to={~p"#{prefix}/settings"}
+        type="navigate"
+        class="#{nav_class}"
+      >
+        Settings
+      </.navigate>
+      <.navigate
+        to={~p"#{prefix}/log-out"}
+        method="delete"
+        class="#{nav_class}"
+      >
+        Log out
+      </.navigate>
+    <% else %>
+      <.navigate
+        to={~p"#{prefix}/log-in"}
+        type="navigate"
+        class="#{login_class}"
+      >
+        Log in
+      </.navigate>
+    <% end %>\
+    """
+
+    {"#{prefix}/log-in", template}
+  end
+
+  defp account_classes(:desktop) do
+    {"button ui-accent ui-size-sm", "link ui-nav ui-size-sm",
+     "hidden max-w-40 truncate text-sm text-ink-muted lg:inline"}
+  end
+
+  defp account_classes(:mobile) do
+    {"button ui-accent ui-size-sm ui-width-full", "link ui-nav ui-size-md",
+     "truncate text-sm text-ink-muted"}
+  end
+
+  defp indent_lines(template, padding) do
+    indent = String.duplicate(" ", padding)
+
+    template
+    |> String.split("\n")
+    |> Enum.map_join("\n", &(indent <> &1))
   end
 end

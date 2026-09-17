@@ -51,6 +51,9 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
       assert login =~ "password_input"
       assert login =~ ~S(class="button ui-accent)
+      assert login =~ "mode=password"
+      assert login =~ "check_email"
+      assert login =~ "Continue"
       assert registration =~ "native_input"
       assert settings =~ "password_input"
       assert confirmation =~ ~S(class="button ui-accent)
@@ -135,7 +138,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
     end)
   end
 
-  test "layout_menu_code uses Corex navigate" do
+  test "layout_menu_code uses a Log in button without Register" do
     schema = %{route_prefix: "/users", singular: "user"}
     scope_config = %{scope: %{assign_key: :current_scope}}
 
@@ -148,15 +151,38 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
     assert code =~ "navigate"
     assert code =~ "log-in"
+    assert code =~ "button ui-accent"
+    assert code =~ "hidden md:flex"
+    refute code =~ "Register"
     refute code =~ "menu menu-horizontal"
     refute code =~ "<.link"
   end
 
-  test "inject_layout_menu indents account nav as a header child" do
+  test "inject_layout_menu puts Log in in the right cluster and site-nav-dialog" do
     schema = %{route_prefix: "/users", singular: "user"}
     scope_config = %{scope: %{assign_key: :current_scope}}
 
-    layout = "      </div>\n    </header>\n"
+    layout = """
+    <header>
+      <div class="mx-auto flex h-size-lg w-full max-w-9xl items-center justify-between gap-space-lg px-space-xl">
+        <div class="flex min-w-0 items-center gap-space-xl">
+          <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden">
+            <:content>
+              <div>
+                <nav class="flex w-full flex-col gap-space-sm" aria-label="Site">
+                  <.navigate to={~p"/"}>Home</.navigate>
+                </nav>
+              </div>
+            </:content>
+          </.dialog>
+          <nav class="hidden md:flex" aria-label="Primary"></nav>
+        </div>
+        <div class="flex shrink-0 items-center gap-space-sm">
+          <.mode_toggle />
+        </div>
+      </div>
+    </header>
+    """
 
     injected =
       case GenAuth.inject_layout_menu(
@@ -167,9 +193,49 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
         other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
       end
 
-    assert injected =~ ~r/^      <nav /m
-    assert injected =~ ~r/^    <\/header>/m
-    refute injected =~ ~r/^              <nav /m
+    assert injected =~ "button ui-accent ui-size-sm"
+    refute injected =~ "Register"
+
+    [before_dialog_end, after_dialog] = String.split(injected, "</.dialog>", parts: 2)
+    assert before_dialog_end =~ ~S(to={~p"/users/log-in"})
+    assert before_dialog_end =~ "ui-width-full"
+    assert after_dialog =~ ~S(aria-label="Account")
+    assert after_dialog =~ ~S(class="flex shrink-0 items-center gap-space-sm")
+    assert after_dialog =~ ~S(to={~p"/users/log-in"})
+    refute after_dialog =~ "ui-width-full"
+  end
+
+  test "inject_layout_menu creates a right cluster when the header has none" do
+    schema = %{route_prefix: "/users", singular: "user"}
+    scope_config = %{scope: %{assign_key: :current_scope}}
+
+    layout = """
+        <div class="flex min-w-0 items-center gap-space-xl">
+          <.dialog id="site-nav-dialog">
+            <:content>
+              <nav class="flex w-full flex-col gap-space-sm" aria-label="Site">
+                <.navigate to={~p"/"}>Home</.navigate>
+              </nav>
+            </:content>
+          </.dialog>
+        </div>
+      </div>
+    </header>
+    """
+
+    injected =
+      case GenAuth.inject_layout_menu(
+             [context: nil, schema: schema, scope_config: scope_config],
+             layout
+           ) do
+        {:ok, content} -> content
+        other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
+      end
+
+    assert injected =~ "hidden md:flex min-w-0 shrink-0 items-center gap-space"
+    assert injected =~ ~S(aria-label="Account")
+    assert injected =~ ~r/aria-label="Account"[\s\S]*<\/nav>\s*<\/div>\s*<\/header>/
+    refute injected =~ "Register"
   end
 
   test "inject_layout_scope_assign adds current_scope to Layouts.app" do
