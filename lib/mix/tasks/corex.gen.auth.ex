@@ -980,12 +980,6 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
         :already_injected ->
           :ok
-
-        {:error, :unable_to_inject} ->
-          Mix.shell().info("""
-
-          #{GenAuth.auth_layout_help_text(file_path)}
-          """)
       end
     end
 

@@ -466,8 +466,8 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
       assert settings =~ "Connected accounts"
       assert providers =~ "Assent.Strategy.Google"
       assert providers =~ "Assent.Strategy.Github"
-      assert providers =~ ~s(label: "Google")
-      assert providers =~ ~s(label: "GitHub")
+      assert providers =~ ~S(label: "Google")
+      assert providers =~ ~S(label: "GitHub")
       refute providers =~ "Assent.Strategy.Apple"
       assert identity =~ "schema \"#{plural}_identities\""
       assert oauth_controller =~ "OAuthProviders.fetch"
@@ -541,7 +541,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
         other -> flunk("expected {:ok, content}, got: #{inspect(other)}")
       end
 
-    assert injected =~ ~s("/auth/:provider")
+    assert injected =~ ~S("/auth/:provider")
     assert injected =~ "pipeline :user_oauth"
     assert :already_injected = GenAuth.inject_oauth_routes(injected, snippet)
   end

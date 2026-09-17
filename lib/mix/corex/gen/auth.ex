@@ -313,13 +313,6 @@ defmodule Mix.Corex.Gen.Auth do
     end
   end
 
-  def auth_layout_help_text(file_path) do
-    """
-    Add a `Layouts.auth/1` function to #{Path.relative_to_cwd(file_path)}
-    for sign-in and registration pages (full-height canvas, no site chrome).
-    """
-  end
-
   @doc """
   Appends unprefixed `/auth/:provider` routes (no CSRF) for Assent callbacks.
   """
