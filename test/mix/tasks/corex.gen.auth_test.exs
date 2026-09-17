@@ -163,6 +163,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
     assert code =~ "button ui-accent"
     assert code =~ "hidden md:flex"
     refute code =~ "Register"
+    refute code =~ ".email"
     refute code =~ "menu menu-horizontal"
     refute code =~ "<.link"
   end
@@ -204,6 +205,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
 
     assert injected =~ "button ui-accent ui-size-sm"
     refute injected =~ "Register"
+    refute injected =~ ".email"
 
     [before_dialog_end, after_dialog] = String.split(injected, "</.dialog>", parts: 2)
     assert before_dialog_end =~ ~S(to={~p"/users/log-in"})
@@ -245,6 +247,7 @@ defmodule Mix.Tasks.Corex.Gen.AuthTest do
     assert injected =~ ~S(aria-label="Account")
     assert injected =~ ~r/aria-label="Account"[\s\S]*<\/nav>\s*<\/div>\s*<\/header>/
     refute injected =~ "Register"
+    refute injected =~ ".email"
   end
 
   test "inject_layout_scope_assign adds current_scope to Layouts.app" do

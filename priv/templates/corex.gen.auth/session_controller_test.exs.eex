@@ -90,9 +90,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
       response = html_response(conn, 200)
-      assert response =~ <%= schema.singular %>.email
       assert response =~ ~p"<%= schema.route_prefix %>/settings"
       assert response =~ ~p"<%= schema.route_prefix %>/log-out"
+      refute response =~ <%= schema.singular %>.email
     end
 
     test "logs the <%= schema.singular %> in with remember me", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
@@ -166,9 +166,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
       response = html_response(conn, 200)
-      assert response =~ <%= schema.singular %>.email
       assert response =~ ~p"<%= schema.route_prefix %>/settings"
       assert response =~ ~p"<%= schema.route_prefix %>/log-out"
+      refute response =~ <%= schema.singular %>.email
     end
 
     test "confirms unconfirmed <%= schema.singular %>", %{conn: conn, unconfirmed_<%= schema.singular %>: <%= schema.singular %>} do
@@ -190,9 +190,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")
       response = html_response(conn, 200)
-      assert response =~ <%= schema.singular %>.email
       assert response =~ ~p"<%= schema.route_prefix %>/settings"
       assert response =~ ~p"<%= schema.route_prefix %>/log-out"
+      refute response =~ <%= schema.singular %>.email
     end
 
     test "<%= if live?, do: "redirects to login page", else: "emits error message" %> when magic link is invalid", %{conn: conn} do

@@ -208,11 +208,10 @@ defmodule Mix.Corex.Gen.Auth do
     assign_key = binding[:scope_config].scope.assign_key
     prefix = schema.route_prefix
 
-    {login_class, nav_class, email_class} = account_classes(variant)
+    {login_class, nav_class} = account_classes(variant)
 
     template = """
     <%= if @#{assign_key} do %>
-      <span class="#{email_class}">{@#{assign_key}.#{schema.singular}.email}</span>
       <.navigate
         to={~p"#{prefix}/settings"}
         type="navigate"
@@ -242,13 +241,11 @@ defmodule Mix.Corex.Gen.Auth do
   end
 
   defp account_classes(:desktop) do
-    {"button ui-accent ui-size-sm", "link ui-nav ui-size-sm",
-     "hidden max-w-40 truncate text-sm text-ink-muted lg:inline"}
+    {"button ui-accent ui-size-sm", "link ui-nav ui-size-sm"}
   end
 
   defp account_classes(:mobile) do
-    {"button ui-accent ui-size-sm ui-width-full", "link ui-nav ui-size-md",
-     "truncate text-sm text-ink-muted"}
+    {"button ui-accent ui-size-sm ui-width-full", "link ui-nav ui-size-md"}
   end
 
   defp indent_lines(template, padding) do
