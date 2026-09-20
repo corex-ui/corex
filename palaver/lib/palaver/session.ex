@@ -465,18 +465,20 @@ defmodule Palaver.Session do
   defp watch_hands(same, same), do: :ok
 
   defp watch_hands(old, new) do
-    case old do
-      {:node, node} -> Node.monitor(node, false)
-      _other -> :ok
-    end
-
-    case new do
-      {:node, node} -> Node.monitor(node, true)
-      _other -> :ok
-    end
-
+    watch(old, false)
+    watch(new, true)
     :ok
   end
+
+  # Node.monitor/2 raises on a VM that was never made distributed. Naming a node
+  # with distribution switched off should make tools unreachable, which is true,
+  # rather than take the conversation down with it.
+  defp watch({:node, node}, flag) do
+    if Node.alive?(), do: Node.monitor(node, flag)
+    :ok
+  end
+
+  defp watch(_hands, _flag), do: :ok
 
   defp generate_id, do: 8 |> :crypto.strong_rand_bytes() |> Base.url_encode64(padding: false)
 end
