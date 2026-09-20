@@ -16,8 +16,9 @@ defmodule Palaver.Mind.Stub do
       ]
 
   Which step to play is derived from the conversation itself, by counting the
-  assistant messages already in the history, so the stub needs no state of its
-  own and can be shared by any number of conversations.
+  assistant messages since the last thing the user said, so the stub needs no
+  state of its own and can be shared by any number of conversations across any
+  number of turns.
 
   ## Options
 
@@ -36,9 +37,8 @@ defmodule Palaver.Mind.Stub do
   def stream(%{messages: messages}, opts, sink) do
     script = Keyword.get(opts, :script, @default_script)
     delay = Keyword.get(opts, :delay, 0)
-    step = Enum.count(messages, &(&1.role == :assistant))
 
-    case step_at(script, step, Keyword.get(opts, :repeat_last, false)) do
+    case step_at(script, step_of(messages), Keyword.get(opts, :repeat_last, false)) do
       {:error, reason} ->
         {:error, reason}
 
@@ -50,6 +50,15 @@ defmodule Palaver.Mind.Stub do
 
         :ok
     end
+  end
+
+  # Steps are counted within the current turn, not across the whole history, so
+  # the same script plays again for every new thing the user says.
+  defp step_of(messages) do
+    messages
+    |> Enum.reverse()
+    |> Enum.take_while(&(&1.role != :user))
+    |> Enum.count(&(&1.role == :assistant))
   end
 
   defp step_at(script, step, repeat_last) do
