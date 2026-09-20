@@ -54,6 +54,13 @@ corex-*.tar
 
 /integration_test/_build/
 /integration_test/deps/
+
+/palaver/_build/
+/palaver/cover/
+/palaver/deps/
+/palaver/doc/
+/palaver/demo/_build/
+/palaver/demo/deps/
 .dexter.db*
 
 /.claude/
