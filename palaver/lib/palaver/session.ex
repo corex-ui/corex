@@ -131,7 +131,14 @@ defmodule Palaver.Session do
   def handle_call({:load_plugin, module}, _from, state) do
     name = module.name()
     state = %{state | plugins: Map.put(state.plugins, name, module)}
-    state = emit(state, :plugin_changed, %{loaded: name, schema: module.schema(), tools: tool_names(state)})
+
+    state =
+      emit(state, :plugin_changed, %{
+        loaded: name,
+        schema: module.schema(),
+        tools: tool_names(state)
+      })
+
     {:reply, :ok, state}
   end
 
@@ -185,7 +192,8 @@ defmodule Palaver.Session do
         {:noreply, record_result(state, call, {:error, {:tool_crashed, reason}})}
 
       match?(%{pid: ^pid}, state.mind_worker) ->
-        {:noreply, close_mind_step(%{state | mind_worker: nil}, {:error, {:mind_crashed, reason}})}
+        {:noreply,
+         close_mind_step(%{state | mind_worker: nil}, {:error, {:mind_crashed, reason}})}
 
       Map.has_key?(state.subscribers, pid) ->
         {:noreply, drop_subscriber(state, pid)}
@@ -220,7 +228,15 @@ defmodule Palaver.Session do
   ## Turn machinery
 
   defp new_turn do
-    %{step: 1, tokens: [], calls: [], results: %{}, awaiting_mind: false, mind_error: nil, pending: 0}
+    %{
+      step: 1,
+      tokens: [],
+      calls: [],
+      results: %{},
+      awaiting_mind: false,
+      mind_error: nil,
+      pending: 0
+    }
   end
 
   defp start_step(state) do
