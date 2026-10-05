@@ -22,9 +22,10 @@ defmodule Corex.Code do
 
   ## Security
 
-  Highlighted output is injected with `Phoenix.HTML.raw/1`. Treat the `code` attr as
-  **trusted** (developer-authored or sanitized). Do not pass untrusted user input —
-  an HTML-capable Makeup lexer can emit markup into the page.
+  Highlighted output is assigned as `{:safe, html}` and interpolated without
+  escaping. Treat the `code` attr as **trusted** (developer-authored or sanitized).
+  Do not pass untrusted user input — an HTML-capable Makeup lexer can emit markup
+  into the page.
 
   ## Anatomy
 
@@ -127,9 +128,7 @@ defmodule Corex.Code do
       """
     end
 
-    assigns =
-      assigns
-      |> then(&assign(&1, :highlighted_html, highlight_code(&1)))
+    assigns = assign(assigns, :highlighted_html, {:safe, highlight_code(assigns)})
 
     ~H"""
       <pre
@@ -139,10 +138,10 @@ defmodule Corex.Code do
         tabindex="0"
         {@rest}
       >
-        <code data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</code>
+        <code data-scope="code" data-part="content">{@highlighted_html}</code>
       </pre>
       <code :if={@inline} data-scope="code" data-part="root" {@rest}>
-        <span data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</span>
+        <span data-scope="code" data-part="content">{@highlighted_html}</span>
       </code>
     """
   end
