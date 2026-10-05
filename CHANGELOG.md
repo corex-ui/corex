@@ -16,6 +16,7 @@
 - Phoenix **1.8.15**, LiveView **1.2.12**, Zag.js **1.44.0**.
 - Dev tooling: `ex_slop` **0.4.5**, Tidewave **0.9.1**, Makeup **1.2.3**, Prettier **3.9.9**, Vitest **5.0.3**, Sobelow **0.16.0**.
 - `Corex.Code` renders highlighted HTML from a `{:safe, _}` assign so Sobelow 0.16 does not flag `Phoenix.HTML.raw/1`. The `code` attr stays trusted input.
+- The integration test harness has no `lib/` sources, so its lint alias no longer runs Sobelow. Sobelow 0.16 aborts when the scan root is empty.
 - Showcase and integration apps: LiveDashboard **0.9.1** (`~> 0.9.1`), Live Capture **0.3.0**, Swoosh **1.28.1**, Req **0.7.4**, Telemetry Metrics **1.2.0**, Motion **13.5.1**.
 
 ## 0.2.2 - 2026-08-29
