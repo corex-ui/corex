@@ -1,9 +1,15 @@
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 import type { RedirectContext } from "../../lib/redirect";
 
-export function mockLiveSocket(connected = true) {
-  const patch = vi.fn();
-  const navigate = vi.fn();
+type AnyMock = Mock<(...args: unknown[]) => unknown>;
+
+export function mockLiveSocket(connected = true): {
+  patch: AnyMock;
+  navigate: AnyMock;
+  ctx: RedirectContext;
+} {
+  const patch = vi.fn() as AnyMock;
+  const navigate = vi.fn() as AnyMock;
   return {
     patch,
     navigate,
@@ -12,6 +18,6 @@ export function mockLiveSocket(connected = true) {
         getSocket: () => ({ isConnected: () => connected }),
         js: () => ({ patch, navigate }),
       },
-    } satisfies RedirectContext,
+    },
   };
 }

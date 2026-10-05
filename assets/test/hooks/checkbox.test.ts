@@ -40,8 +40,7 @@ describe("checkbox_set_checked_many", () => {
           | ReturnType<typeof import("../../lib/hook-handlers").createHookHandleEventRegistry>
           | undefined,
         domRegistry: undefined as
-          | ReturnType<typeof import("../../lib/dom-events").createDomEventRegistry>
-          | undefined,
+          ReturnType<typeof import("../../lib/dom-events").createDomEventRegistry> | undefined,
       },
     });
 

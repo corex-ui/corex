@@ -2,11 +2,7 @@ import { notifyPhoenixFormChange, reapplyLiveViewValueInputUsage } from "./live-
 import { associateInputWithFormIfOutside, getBoolean, getString } from "./util";
 
 export type ArraySubmitScope =
-  | "tags-input"
-  | "combobox"
-  | "date-picker"
-  | "signature-pad"
-  | "pin-input";
+  "tags-input" | "combobox" | "date-picker" | "signature-pad" | "pin-input";
 
 export type SyncArrayHiddenInputsOptions = {
   onTouched?: () => void;

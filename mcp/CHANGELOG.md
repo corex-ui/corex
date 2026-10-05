@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3 - 2026-10-05
+
+Patch release aligned with Corex 0.2.3. No MCP API changes.
+
+See the monorepo
+[CHANGELOG](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+
 ## 0.2.2 - 2026-08-29
 
 ### Upgrade notes

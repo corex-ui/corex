@@ -290,8 +290,7 @@ function numberListOrDefault(values: number[]): number[] {
 }
 
 export type NumberListZag =
-  | { value: number[]; defaultValue?: never }
-  | { value?: never; defaultValue: number[] };
+  { value: number[]; defaultValue?: never } | { value?: never; defaultValue: number[] };
 
 export function mountNumberListBinding(el: HTMLElement): NumberListZag {
   if (getBoolean(el, "controlled")) {

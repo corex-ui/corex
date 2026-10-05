@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.3 - 2026-10-05
 
 ### Security
 
@@ -10,6 +10,12 @@
 ### Documentation
 
 - Clarify that `e2e/` is a published showcase, not a starter. Copy examples from component docs and `mix corex.gen.*`.
+
+### Dependencies
+
+- Phoenix **1.8.15**, LiveView **1.2.12**, Zag.js **1.44.0**.
+- Dev tooling: `ex_slop` **0.4.5**, Tidewave **0.9.1**, Sobelow **0.16.0**, Makeup **1.2.3**, Prettier **3.9.9**, Vitest **5.0.3**.
+- Showcase and integration apps: LiveDashboard **0.9.1** (`~> 0.9.1`), Live Capture **0.3.0**, Swoosh **1.28.1**, Req **0.7.4**, Telemetry Metrics **1.2.0**, Motion **13.5.1**.
 
 ## 0.2.2 - 2026-08-29
 

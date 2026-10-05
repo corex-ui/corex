@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
+import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { createLazyHook } from "../../hooks/lazy-hook";
+import { createLazyHook, type HookModule } from "../../hooks/lazy-hook";
+
+type HookFn<K extends "updated" | "beforeUpdate"> = NonNullable<Hook<object, HTMLElement>[K]>;
 
 describe("createLazyHook", () => {
   it("delegates mounted to the loaded hook", async () => {
@@ -48,13 +51,9 @@ describe("createLazyHook", () => {
   });
 
   it("replays updated after mount completes", async () => {
-    let resolveImport!: (value: {
-      TestHook: { mounted: () => void; updated: ReturnType<typeof vi.fn>; destroyed: () => void };
-    }) => void;
-    const updated = vi.fn();
-    const importPromise = new Promise<{
-      TestHook: { mounted: () => void; updated: ReturnType<typeof vi.fn>; destroyed: () => void };
-    }>((resolve) => {
+    let resolveImport!: (value: HookModule) => void;
+    const updated = vi.fn() as HookFn<"updated">;
+    const importPromise = new Promise<HookModule>((resolve) => {
       resolveImport = resolve;
     });
 
@@ -75,29 +74,15 @@ describe("createLazyHook", () => {
   });
 
   it("replays beforeUpdate before updated after mount completes", async () => {
-    let resolveImport!: (value: {
-      TestHook: {
-        mounted: () => void;
-        beforeUpdate: ReturnType<typeof vi.fn>;
-        updated: ReturnType<typeof vi.fn>;
-        destroyed: () => void;
-      };
-    }) => void;
+    let resolveImport!: (value: HookModule) => void;
     const callOrder: string[] = [];
     const beforeUpdate = vi.fn(() => {
       callOrder.push("beforeUpdate");
-    });
+    }) as HookFn<"beforeUpdate">;
     const updated = vi.fn(() => {
       callOrder.push("updated");
-    });
-    const importPromise = new Promise<{
-      TestHook: {
-        mounted: () => void;
-        beforeUpdate: ReturnType<typeof vi.fn>;
-        updated: ReturnType<typeof vi.fn>;
-        destroyed: () => void;
-      };
-    }>((resolve) => {
+    }) as HookFn<"updated">;
+    const importPromise = new Promise<HookModule>((resolve) => {
       resolveImport = resolve;
     });
 
