@@ -1,24 +1,45 @@
-import { expect, vi } from "vitest";
+import { expect, vi, type Mock } from "vitest";
 import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { mockLiveSocket } from "./mock-live-socket";
 
-export function mockHookJs() {
+type AnyMock = Mock<(...args: unknown[]) => unknown>;
+type HandleEventMock = Mock<(event: string, callback: (payload: unknown) => void) => CallbackRef>;
+
+const anyMock = (): AnyMock => vi.fn() as AnyMock;
+
+export function mockHookJs(): {
+  exec: AnyMock;
+  show: AnyMock;
+  hide: AnyMock;
+  toggle: AnyMock;
+  addClass: AnyMock;
+  removeClass: AnyMock;
+  toggleClass: AnyMock;
+  transition: AnyMock;
+  setAttribute: AnyMock;
+  removeAttribute: AnyMock;
+  toggleAttribute: AnyMock;
+  push: AnyMock;
+  navigate: AnyMock;
+  patch: AnyMock;
+  ignoreAttributes: AnyMock;
+} {
   return {
-    exec: vi.fn(),
-    show: vi.fn(),
-    hide: vi.fn(),
-    toggle: vi.fn(),
-    addClass: vi.fn(),
-    removeClass: vi.fn(),
-    toggleClass: vi.fn(),
-    transition: vi.fn(),
-    setAttribute: vi.fn(),
-    removeAttribute: vi.fn(),
-    toggleAttribute: vi.fn(),
-    push: vi.fn(),
-    navigate: vi.fn(),
-    patch: vi.fn(),
-    ignoreAttributes: vi.fn(),
+    exec: anyMock(),
+    show: anyMock(),
+    hide: anyMock(),
+    toggle: anyMock(),
+    addClass: anyMock(),
+    removeClass: anyMock(),
+    toggleClass: anyMock(),
+    transition: anyMock(),
+    setAttribute: anyMock(),
+    removeAttribute: anyMock(),
+    toggleAttribute: anyMock(),
+    push: anyMock(),
+    navigate: anyMock(),
+    patch: anyMock(),
+    ignoreAttributes: anyMock(),
   };
 }
 
@@ -26,13 +47,11 @@ export type MockHookJs = ReturnType<typeof mockHookJs>;
 
 type BaseHookContext<E extends HTMLElement> = {
   el: E;
-  pushEvent: ReturnType<typeof vi.fn>;
+  pushEvent: AnyMock;
   js: () => MockHookJs;
   liveSocket: ReturnType<typeof mockLiveSocket>["ctx"]["liveSocket"];
-  handleEvent: ReturnType<
-    typeof vi.fn<(event: string, callback: (payload: unknown) => void) => CallbackRef>
-  >;
-  removeHandleEvent: ReturnType<typeof vi.fn>;
+  handleEvent: HandleEventMock;
+  removeHandleEvent: AnyMock;
 };
 
 type MockHookContextOptions<Extra extends Record<string, unknown>> = {
@@ -43,7 +62,16 @@ type MockHookContextOptions<Extra extends Record<string, unknown>> = {
 export function mockHookContext<
   E extends HTMLElement,
   Extra extends Record<string, unknown> = Record<string, never>,
->(el: E, opts: MockHookContextOptions<Extra> = {}) {
+>(
+  el: E,
+  opts: MockHookContextOptions<Extra> = {}
+): {
+  hook: BaseHookContext<E> & Extra;
+  patch: AnyMock;
+  navigate: AnyMock;
+  jsCommands: MockHookJs;
+  liveSocket: ReturnType<typeof mockLiveSocket>["ctx"]["liveSocket"];
+} {
   const connected = opts.connected ?? false;
   const { ctx, patch, navigate } = mockLiveSocket(connected);
   const jsCommands = mockHookJs();
@@ -52,16 +80,14 @@ export function mockHookContext<
 
   const base: BaseHookContext<E> = {
     el,
-    pushEvent: vi.fn(),
+    pushEvent: anyMock(),
     js: () => jsCommands,
     liveSocket: ctx.liveSocket,
-    handleEvent: vi.fn(
-      (event: string, callback: (payload: unknown) => void): CallbackRef => ({
-        event,
-        callback,
-      })
-    ),
-    removeHandleEvent: vi.fn(),
+    handleEvent: vi.fn((event: string, callback: (payload: unknown) => void): CallbackRef => ({
+      event,
+      callback,
+    })) as HandleEventMock,
+    removeHandleEvent: anyMock(),
   };
 
   const hook = { ...base, ...opts.overrides } as BaseHookContext<E> & Extra;

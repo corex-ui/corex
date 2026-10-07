@@ -39,7 +39,7 @@ that still contain NUL, CR, or LF after that strip are rejected.
 These APIs inject HTML. Pass **developer-authored or already-sanitized** markup only — never untrusted user input.
 
 - **Toast action labels.** `labelHtml` is set only for `%Phoenix.LiveView.Rendered{}` or `{:safe, _}`. Plain string labels use `textContent`. Client `create` ignores `:action`.
-- **`Corex.Code`.** Makeup output is injected with `Phoenix.HTML.raw/1`. An HTML-capable lexer can emit markup.
+- **`Corex.Code`.** Makeup output is assigned as `{:safe, html}` and rendered unescaped. An HTML-capable lexer can emit markup.
 
 ## MCP
 

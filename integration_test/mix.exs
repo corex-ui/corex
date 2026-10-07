@@ -48,7 +48,7 @@ defmodule Corex.Integration.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:lazy_html, ">= 0.1.0"},
       {:phoenix_live_reload, "~> 1.2"},
-      {:phoenix_live_dashboard, "~> 0.8.3"},
+      {:phoenix_live_dashboard, "~> 0.9.1"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},
@@ -68,8 +68,7 @@ defmodule Corex.Integration.MixProject do
        depth: 1},
       {:req, "~> 0.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:oeditus_credo, "~> 0.11.0", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
+      {:oeditus_credo, "~> 0.11.0", only: [:dev, :test], runtime: false}
     ] ++ maybe_ex_slop()
   end
 
@@ -83,12 +82,13 @@ defmodule Corex.Integration.MixProject do
 
   defp aliases do
     [
+      # This harness has no `lib/` sources. Sobelow 0.16 aborts when the
+      # scan root is empty, and it does not scan `test/`.
       lint: [
         "format --check-formatted",
         "compile --force --warnings-as-errors",
         "compile --force --warnings-as-errors --env test",
-        "credo --strict",
-        "sobelow --exit"
+        "credo --strict"
       ]
     ]
   end

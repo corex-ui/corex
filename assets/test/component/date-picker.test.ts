@@ -64,8 +64,7 @@ describe("buildZagDatePickerTranslations", () => {
       placeholderYear: "YYYY",
     });
     const placeholder = t.placeholder as
-      | (() => { day: string; month: string; year: string })
-      | undefined;
+      (() => { day: string; month: string; year: string }) | undefined;
     expect(placeholder?.()).toEqual({ day: "DD", month: "MM", year: "YYYY" });
   });
 });
