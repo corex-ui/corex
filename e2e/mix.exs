@@ -93,7 +93,7 @@ defmodule E2e.MixProject do
       {:corex_mcp, path: "../mcp", only: [:dev, :test]},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
-      {:makeup_html, "~> 0.2"},
+      {:makeup_html, "~> 1.0"},
       {:makeup_eex, "~> 2.0"},
       {:makeup_css, "~> 0.2"},
       {:makeup_js, "~> 0.1.0"},
