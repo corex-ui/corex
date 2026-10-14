@@ -98,7 +98,7 @@ defmodule E2e.MixProject do
       {:makeup_css, "~> 0.2"},
       {:makeup_js, "~> 0.1.0"},
       {:makeup_syntect, "~> 0.1"},
-      {:mdex, "~> 0.13.5"},
+      {:mdex, "~> 0.14.2"},
       {:floki, "~> 0.38"},
       {:yaml_elixir, "~> 2.9"},
       {:html_entities, "~> 0.5"},
