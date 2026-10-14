@@ -226,7 +226,7 @@
     "@zag-js/tree-view": "^1.44.0",
     "@zag-js/types": "^1.44.0",
     "@zag-js/vanilla": "^1.44.0",
-    "eslint": "^10.10.0",
+    "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "globals": "^17.12.0",
