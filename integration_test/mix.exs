@@ -45,7 +45,7 @@ defmodule Corex.Integration.MixProject do
       {:ecto_sqlite3, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_view, "~> 1.1"},
-      {:dns_cluster, "~> 0.2.0"},
+      {:dns_cluster, "~> 0.3.1"},
       {:lazy_html, ">= 0.1.0"},
       {:phoenix_live_reload, "~> 1.2"},
       {:phoenix_live_dashboard, "~> 0.9.1"},
