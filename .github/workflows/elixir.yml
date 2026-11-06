@@ -134,6 +134,17 @@ jobs:
         env:
           MIX_ENV: test
 
+      - name: Hex advisories — Corex
+        run: mix hex.audit
+
+      - name: Hex advisories — E2E
+        working-directory: e2e
+        run: mix hex.audit
+
+      - name: Hex advisories — integration test
+        working-directory: integration_test
+        run: mix hex.audit
+
       - name: Set up pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
@@ -148,6 +159,9 @@ jobs:
 
       - name: Install JavaScript dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: npm advisories
+        run: pnpm audit --audit-level high
 
       - name: TypeScript — Zag.js lockstep
         run: pnpm run check:zag
